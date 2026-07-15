@@ -1,0 +1,8 @@
+import type { Metadata } from "next";
+import { WakafForm } from "@/components/forms";
+
+export const metadata: Metadata = { title: "Wakaf" };
+
+export default function WakafPage() {
+  return <><section className="pattern border-b border-[var(--line)] py-20"><div className="container grid items-end gap-10 lg:grid-cols-[1.15fr_.85fr]"><div><p className="arabic text-3xl text-[var(--gold)]" lang="ar">الوَقْف</p><h1 className="display mt-5 text-[clamp(4.5rem,10vw,9rem)] font-semibold leading-[.82] tracking-[-.055em] text-[var(--teal-dark)]">Wakaf for<br /><em className="font-medium text-[var(--teal)]">lasting good.</em></h1></div><p className="lead">Explore how project selection, a flexible contribution, and transparent fulfilment can live in one calm experience.</p></div></section><section className="section"><div className="container grid items-start gap-14 lg:grid-cols-[.72fr_1.28fr]"><div className="prose lg:sticky lg:top-8"><p className="eyebrow">Choose with clarity</p><h2>Three sample projects.</h2><p>The demo includes Quran distribution, clean water, and community education so the team can compare fixed minimums with flexible contribution amounts.</p><h2>Designed for review</h2><p>Every contribution becomes an order in the same operational dashboard, ready for assignment and evidence upload.</p><div className="rounded-2xl border border-[var(--line)] bg-[var(--cream-dark)] p-5 text-sm leading-7 text-[var(--muted)]"><strong className="text-[var(--teal-dark)]">Important</strong><br />Project names, minimums, and descriptions are demonstration content and do not represent active Wakaf campaigns.</div></div><WakafForm /></div></section></>;
+}
