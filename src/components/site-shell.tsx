@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { Brand } from "@/components/brand";
 
-const nav = [["About", "/about"], ["Korban", "/korban"], ["Wakaf", "/wakaf"], ["Contact", "/contact"]];
+const nav = [["About", "/about"], ["Korban", "/korban"], ["Wakaf", "/wakaf"], ["Designs", "/designs"], ["Contact", "/contact"]];
 
 export function DemoBar() {
   return <div className="demo-bar">Interactive demonstration · No real payment or service order will be taken</div>;
