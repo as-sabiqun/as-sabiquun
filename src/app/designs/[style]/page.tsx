@@ -7,11 +7,13 @@ const styles = ["heritage", "modern", "editorial", "community"] as const;
 type Style = (typeof styles)[number];
 
 const names: Record<Style, string> = {
-  heritage: "A · Sacred Heritage",
-  modern: "B · Modern Trust",
-  editorial: "C · Quiet Editorial",
-  community: "D · Warm Community",
+  heritage: "A · Emerald Sanctuary",
+  modern: "B · Noor Digital",
+  editorial: "C · Modern Manuscript",
+  community: "D · Amanah Community",
 };
+
+const stages = ["Intention received", "Team review", "Vendor fulfilment", "Proof delivered"];
 
 export function generateStaticParams() {
   return styles.map((style) => ({ style }));
@@ -24,7 +26,7 @@ export async function generateMetadata({ params }: PageProps<"/designs/[style]">
 
 function DirectionBar({ current }: { current: Style }) {
   return (
-    <div className="sticky top-0 z-50 border-b border-black/10 bg-white/95 text-[#17211f] backdrop-blur">
+    <div className="sticky top-0 z-50 border-b border-black/10 bg-white/95 text-[#14221f] backdrop-blur">
       <div className="mx-auto flex min-h-16 w-[min(1280px,calc(100%-24px))] items-center gap-3 overflow-x-auto py-2">
         <Link href="/designs" className="mr-auto shrink-0 text-sm font-black">← All directions</Link>
         {styles.map((style) => (
@@ -37,43 +39,73 @@ function DirectionBar({ current }: { current: Style }) {
   );
 }
 
+function BrandLockup({ inverse = false }: { inverse?: boolean }) {
+  return (
+    <div className="flex items-center gap-3">
+      <span className="grid h-11 w-11 place-items-center rounded-full bg-[#f8f3e8]"><BrandMark className="h-9 w-9" /></span>
+      <span><strong className={`display block text-[1.35rem] leading-none ${inverse ? "text-white" : "text-[#103f36]"}`}>As-Sābiqūn</strong><small className={`mt-1 block text-[.52rem] font-bold uppercase tracking-[.19em] ${inverse ? "text-[#c8a968]" : "text-[#9a7334]"}`}>Association Consultancy</small></span>
+    </div>
+  );
+}
+
+function EightPoint({ className = "h-20 w-20" }: { className?: string }) {
+  return (
+    <svg viewBox="0 0 100 100" className={className} aria-hidden>
+      <path d="M50 4 61 31 88 20 69 43 96 50 69 57 88 80 61 69 50 96 39 69 12 80 31 57 4 50 31 43 12 20 39 31Z" fill="none" stroke="currentColor" strokeWidth="2" />
+      <circle cx="50" cy="50" r="17" fill="none" stroke="currentColor" strokeWidth="2" />
+      <circle cx="50" cy="50" r="4" fill="currentColor" />
+    </svg>
+  );
+}
+
+function Arch({ children, className = "" }: { children: React.ReactNode; className?: string }) {
+  return <div className={`rounded-t-[999px] border ${className}`}>{children}</div>;
+}
+
+function ProcessPanel({ dark = false }: { dark?: boolean }) {
+  return (
+    <div className={`rounded-3xl border p-6 md:p-7 ${dark ? "border-white/15 bg-white/[.06]" : "border-black/10 bg-white"}`}>
+      <div className={`flex items-center justify-between border-b pb-5 ${dark ? "border-white/15" : "border-black/10"}`}><div><p className={`text-[.68rem] font-black uppercase tracking-[.16em] ${dark ? "text-[#b8d8ca]" : "text-[#60766e]"}`}>Fulfilment record</p><h3 className="mt-1 text-xl font-black">Korban · Demo 0017</h3></div><span className={`rounded-full px-3 py-2 text-[.65rem] font-black ${dark ? "bg-[#c8a968] text-[#112d27]" : "bg-[#dff4e8] text-[#164c3e]"}`}>IN REVIEW</span></div>
+      <div className="mt-5 space-y-1">
+        {stages.map((stage, index) => (
+          <div key={stage} className={`grid grid-cols-[34px_1fr_auto] items-center gap-3 rounded-xl px-3 py-3 ${index === 1 ? dark ? "bg-white/10" : "bg-[#f1f7f3]" : ""}`}>
+            <span className={`grid h-8 w-8 place-items-center rounded-full text-xs font-black ${index === 0 ? "bg-[#1d5c4c] text-white" : index === 1 ? "border border-[#c8a968] text-[#c8a968]" : dark ? "border border-white/20 text-white/50" : "border border-black/10 text-black/40"}`}>{index + 1}</span>
+            <strong className="text-sm">{stage}</strong>
+            <span className={`text-[.68rem] font-bold ${dark ? "text-white/50" : "text-[#72827d]"}`}>{index === 0 ? "Done" : index === 1 ? "Current" : "Next"}</span>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
 function Palette({ colors, labels, dark = false }: { colors: string[]; labels: string[]; dark?: boolean }) {
   return (
-    <div className={`grid gap-5 border-t pt-10 md:grid-cols-[1fr_1.4fr] ${dark ? "border-white/20" : "border-black/15"}`}>
-      <div><p className="text-xs font-bold uppercase tracking-[.18em] opacity-60">System sample</p><h2 className="mt-3 text-3xl font-semibold">Core palette & controls</h2></div>
-      <div className="flex flex-wrap items-center gap-3">
-        {colors.map((color, index) => <div key={color} className="grid gap-2 text-xs font-semibold"><span className={`h-12 w-20 rounded-full border ${dark ? "border-white/20" : "border-black/10"}`} style={{ background: color }} /><span>{labels[index]}</span></div>)}
-      </div>
+    <div className={`grid gap-6 border-t pt-9 md:grid-cols-[1fr_1.4fr] ${dark ? "border-white/15" : "border-black/10"}`}>
+      <div><p className="text-[.68rem] font-black uppercase tracking-[.17em] opacity-55">Design foundation</p><h2 className="mt-2 text-2xl font-black">Palette & interface tone</h2></div>
+      <div className="flex flex-wrap gap-4">{colors.map((color, index) => <div key={color} className="grid gap-2 text-xs font-bold"><span className={`h-11 w-20 rounded-full border ${dark ? "border-white/15" : "border-black/10"}`} style={{ backgroundColor: color }} /><span>{labels[index]}</span></div>)}</div>
     </div>
   );
 }
 
 function Heritage() {
   return (
-    <div className="bg-[#fbf6ec] text-[#073f46]">
-      <header className="border-b border-[#d8cfbf]">
-        <div className="mx-auto flex h-24 w-[min(1180px,calc(100%-32px))] items-center justify-between">
-          <div className="flex items-center gap-3"><BrandMark className="h-12 w-12" /><div><strong className="display block text-2xl leading-none">As-Sābiqūn</strong><span className="text-[.55rem] font-bold uppercase tracking-[.2em] text-[#a66f22]">Association Consultancy</span></div></div>
-          <nav className="hidden gap-8 text-sm font-semibold md:flex"><span>Purpose</span><span>Korban</span><span>Wakaf</span></nav>
-          <Link href="/korban" className="rounded-full bg-[#075b65] px-5 py-3 text-sm font-bold text-white">Begin a service</Link>
-        </div>
+    <div className="min-h-screen bg-[#f4efe3] text-[#173a33]">
+      <header className="border-b border-[#173a33]/15 bg-[#f4efe3]/95">
+        <div className="mx-auto flex h-24 w-[min(1200px,calc(100%-32px))] items-center justify-between"><BrandLockup /><nav className="hidden gap-8 text-sm font-bold lg:flex"><span>Our purpose</span><span>Islamic services</span><span>How it works</span><span>Contact</span></nav><Link href="/korban" className="rounded-full bg-[#174d40] px-5 py-3 text-sm font-black text-white">Arrange a service</Link></div>
       </header>
 
       <main>
-        <section className="pattern overflow-hidden border-b border-[#d8cfbf] py-20 md:py-28">
-          <div className="mx-auto grid w-[min(1180px,calc(100%-32px))] gap-14 lg:grid-cols-[1.1fr_.9fr] lg:items-center">
-            <div><p className="arabic text-3xl text-[#b17a27]" lang="ar" dir="rtl">السَّابِقُونَ</p><h1 className="display mt-4 text-[clamp(4rem,8vw,7.5rem)] font-semibold leading-[.8] tracking-[-.055em]">Serve with<br /><em className="text-[#075b65]">ihsan.</em></h1><p className="mt-8 max-w-xl text-lg leading-8 text-[#6e6a61]">A trusted passage from sincere intention to documented action—beginning with Korban and Wakaf.</p><div className="mt-9 flex flex-wrap gap-3"><Link href="/korban" className="rounded-full bg-[#075b65] px-6 py-4 font-bold text-white">Explore services →</Link><Link href="/about" className="rounded-full border border-[#075b65] px-6 py-4 font-bold">Our amanah</Link></div></div>
-            <div className="relative rounded-[40px] border border-[#d8cfbf] bg-[#fffdf8]/80 p-8 shadow-[0_30px_80px_rgba(7,63,70,.12)]">
-              <div className="mx-auto grid aspect-square max-w-[360px] place-items-center rounded-full border border-[#b17a27]/40"><div className="grid h-[78%] w-[78%] place-items-center rounded-full border border-[#075b65]/25"><BrandMark className="h-40 w-40" /></div></div>
-              <p className="arabic mt-8 text-center text-3xl text-[#b17a27]" lang="ar">الأمانة</p><p className="display mt-2 text-center text-3xl font-semibold">Trust, made visible.</p>
-            </div>
+        <section className="relative overflow-hidden border-b border-[#173a33]/15 py-20 md:py-28">
+          <EightPoint className="absolute -right-20 -top-28 h-[440px] w-[440px] text-[#b08a45]/15" />
+          <div className="relative mx-auto grid w-[min(1200px,calc(100%-32px))] items-center gap-14 lg:grid-cols-[1.05fr_.95fr]">
+            <div><p className="arabic text-2xl text-[#a5772e]" lang="ar" dir="rtl">الأمانة • الإحسان • الوضوح</p><h1 className="display mt-5 max-w-3xl text-[clamp(3.8rem,7vw,6.6rem)] font-semibold leading-[.86] tracking-[-.05em]">Faithful service.<br /><em className="text-[#1d5c4c]">Clearly delivered.</em></h1><p className="mt-8 max-w-xl text-lg leading-8 text-[#60716b]">A modern home for Korban and Wakaf—coordinated with care, transparent at every handoff, and completed with documented proof.</p><div className="mt-9 flex flex-wrap gap-3"><Link href="/korban" className="rounded-full bg-[#174d40] px-6 py-4 font-black text-white">Explore Korban <span aria-hidden>→</span></Link><Link href="/wakaf" className="rounded-full border border-[#174d40] px-6 py-4 font-black">View Wakaf</Link></div><div className="mt-10 flex flex-wrap gap-x-8 gap-y-3 text-xs font-bold uppercase tracking-[.11em] text-[#60716b]"><span>Transparent scope</span><span>Human coordination</span><span>Recorded proof</span></div></div>
+            <Arch className="relative min-h-[560px] overflow-hidden border-[#9f7a39]/35 bg-[#123f36] p-5 text-white shadow-[0_30px_80px_rgba(23,58,51,.2)]"><div className="absolute inset-0 opacity-10" style={{ backgroundImage: "linear-gradient(45deg,#fff 1px,transparent 1px),linear-gradient(-45deg,#fff 1px,transparent 1px)", backgroundSize: "42px 42px" }} /><div className="relative flex h-full min-h-[520px] flex-col rounded-t-[999px] border border-white/15 p-7 pt-20"><p className="text-center text-[.68rem] font-black uppercase tracking-[.2em] text-[#d6bb83]">Begin with intention</p><EightPoint className="mx-auto mt-7 h-28 w-28 text-[#d6bb83]" /><h2 className="display mt-8 text-center text-4xl font-semibold">Two services.<br />One standard of care.</h2><div className="mt-auto grid grid-cols-2 gap-3"><Link href="/korban" className="rounded-2xl bg-[#f4efe3] p-4 text-[#173a33]"><span className="arabic text-2xl text-[#a5772e]">قربان</span><strong className="mt-4 block">Korban</strong><small className="mt-1 block text-[#64746e]">S$280 · cow share</small></Link><Link href="/wakaf" className="rounded-2xl border border-white/25 p-4"><span className="arabic text-2xl text-[#d6bb83]">وقف</span><strong className="mt-4 block">Wakaf</strong><small className="mt-1 block text-white/60">From S$10</small></Link></div></div></Arch>
           </div>
         </section>
 
-        <section className="mx-auto w-[min(1180px,calc(100%-32px))] py-24">
-          <div className="grid gap-5 md:grid-cols-3">{[["٠١","Korban","One clear overseas cow-share journey."],["٠٢","Wakaf","Purposeful giving with recorded outcomes."],["٠٣","Consultancy","Guidance for responsible modern work."]].map(([n,t,d]) => <article key={t} className="rounded-3xl border border-[#d8cfbf] bg-[#fffdf8] p-7"><span className="arabic text-3xl text-[#b17a27]">{n}</span><h2 className="display mt-16 text-4xl font-semibold">{t}</h2><p className="mt-3 leading-7 text-[#6e6a61]">{d}</p></article>)}</div>
-          <div className="mt-20"><Palette colors={["#073f46","#075b65","#b17a27","#fbf6ec"]} labels={["Deep teal","Service teal","Gold","Cream"]} /></div>
-        </section>
+        <section className="mx-auto grid w-[min(1200px,calc(100%-32px))] gap-12 py-24 lg:grid-cols-[.85fr_1.15fr] lg:items-center"><div><p className="text-xs font-black uppercase tracking-[.17em] text-[#a5772e]">Amanah in practice</p><h2 className="display mt-4 text-5xl font-semibold leading-[.95]">You should always know what happens next.</h2><p className="mt-6 max-w-lg leading-8 text-[#60716b]">The service record follows your intention from submission through team review, vendor fulfilment, and completion evidence.</p></div><ProcessPanel /></section>
+        <section className="bg-[#123f36] py-16 text-white"><div className="mx-auto w-[min(1200px,calc(100%-32px))]"><Palette colors={["#123f36","#1d5c4c","#b08a45","#f4efe3"]} labels={["Sanctuary","Service","Antique gold","Warm ivory"]} dark /></div></section>
       </main>
     </div>
   );
@@ -81,29 +113,12 @@ function Heritage() {
 
 function Modern() {
   return (
-    <div className="bg-[#f5fff8] font-sans text-[#082b21]">
-      <header className="border-b border-[#082b21]/15 bg-[#f5fff8]">
-        <div className="mx-auto flex h-20 w-[min(1240px,calc(100%-32px))] items-center justify-between">
-          <div className="flex items-center gap-3 font-black tracking-[-.03em]"><span className="grid h-9 w-9 place-items-center rounded-lg bg-[#0b513d] text-white">AS</span>AS-SĀBIQŪN</div>
-          <nav className="hidden items-center gap-8 text-sm font-bold md:flex"><span>Services</span><span>How it works</span><span>Trust centre</span></nav>
-          <Link href="/korban" className="rounded-lg bg-[#0b513d] px-5 py-3 text-sm font-bold text-white">Start now ↗</Link>
-        </div>
-      </header>
-
+    <div className="min-h-screen bg-[#071d19] font-sans text-white">
+      <header className="border-b border-white/10"><div className="mx-auto flex h-20 w-[min(1240px,calc(100%-32px))] items-center justify-between"><BrandLockup inverse /><nav className="hidden gap-8 text-sm font-bold text-white/70 lg:flex"><span>Services</span><span>Process</span><span>Accountability</span></nav><Link href="/korban" className="rounded-xl bg-[#8be1bd] px-5 py-3 text-sm font-black text-[#09251f]">Begin Korban</Link></div></header>
       <main>
-        <section className="relative overflow-hidden bg-[#063d2e] py-20 text-white md:py-28">
-          <div className="absolute inset-0 opacity-20" style={{ backgroundImage: "linear-gradient(#91ffbd33 1px,transparent 1px),linear-gradient(90deg,#91ffbd33 1px,transparent 1px)", backgroundSize: "44px 44px" }} />
-          <div className="relative mx-auto grid w-[min(1240px,calc(100%-32px))] gap-14 lg:grid-cols-[1.05fr_.95fr] lg:items-center">
-            <div><span className="rounded-full border border-[#67f1a1]/50 bg-[#39e68a]/10 px-3 py-2 text-xs font-bold uppercase tracking-[.12em] text-[#8affb7]">Islamic services · Singapore</span><h1 className="mt-7 text-[clamp(4rem,8vw,7.2rem)] font-black leading-[.84] tracking-[-.065em]">Good deeds.<br /><span className="text-[#57ed95]">Clear delivery.</span></h1><p className="mt-8 max-w-xl text-lg leading-8 text-[#c6e6d7]">Book a service, follow its progress, and receive documented proof—without chasing updates.</p><div className="mt-9 flex gap-3"><Link href="/korban" className="rounded-xl bg-[#57ed95] px-6 py-4 font-black text-[#063d2e]">Arrange Korban</Link><Link href="/wakaf" className="rounded-xl border border-white/30 px-6 py-4 font-bold">View Wakaf</Link></div></div>
-            <div className="rounded-3xl border border-white/20 bg-white p-5 text-[#082b21] shadow-2xl">
-              <div className="flex items-center justify-between border-b border-black/10 pb-5"><div><p className="text-xs font-bold uppercase tracking-[.12em] text-[#577269]">Order overview</p><p className="mt-1 text-2xl font-black">Korban 1448H</p></div><span className="rounded-full bg-[#caffdc] px-3 py-2 text-xs font-black text-[#0b513d]">OPEN</span></div>
-              <div className="grid grid-cols-3 gap-2 py-5">{[["S$280","per share"],["4 steps","end to end"],["100%","documented"]].map(([v,l]) => <div key={l} className="rounded-xl bg-[#eff8f2] p-4"><strong className="block text-xl">{v}</strong><span className="mt-1 block text-xs text-[#60756d]">{l}</span></div>)}</div>
-              <div className="space-y-3">{[["1","Details received","Done"],["2","Payment confirmed","Done"],["3","Vendor assigned","Current"],["4","Proof delivered","Next"]].map(([n,t,s]) => <div key={n} className="flex items-center gap-3 rounded-xl border border-black/10 p-4"><span className={`grid h-8 w-8 place-items-center rounded-full text-xs font-black ${s === "Done" ? "bg-[#0b513d] text-white" : "bg-[#dff4e7]"}`}>{n}</span><strong className="mr-auto text-sm">{t}</strong><span className="text-xs font-bold text-[#6e817a]">{s}</span></div>)}</div>
-            </div>
-          </div>
-        </section>
+        <section className="relative overflow-hidden py-20 md:py-28"><div className="absolute inset-0 opacity-[.08]" style={{ backgroundImage: "linear-gradient(#fff 1px,transparent 1px),linear-gradient(90deg,#fff 1px,transparent 1px)", backgroundSize: "60px 60px" }} /><EightPoint className="absolute -bottom-52 -left-40 h-[620px] w-[620px] text-[#8be1bd]/10" /><div className="relative mx-auto grid w-[min(1240px,calc(100%-32px))] items-center gap-14 lg:grid-cols-[1.05fr_.95fr]"><div><span className="inline-flex items-center gap-2 rounded-full border border-[#8be1bd]/25 bg-[#8be1bd]/10 px-4 py-2 text-xs font-black uppercase tracking-[.13em] text-[#a8eccf]"><span className="h-2 w-2 rounded-full bg-[#8be1bd]" /> Islamic services · Demo live</span><p className="arabic mt-9 text-2xl text-[#c9ab70]" lang="ar">بِوُضُوحٍ وَأَمَانَةٍ</p><h1 className="mt-3 max-w-3xl text-[clamp(3.8rem,7vw,6.5rem)] font-black leading-[.86] tracking-[-.065em]">Islamic services,<br /><span className="text-[#8be1bd]">built for clarity.</span></h1><p className="mt-8 max-w-xl text-lg leading-8 text-[#b4cbc3]">Choose the service. See the exact scope. Follow each handoff. Receive the completion record.</p><div className="mt-9 flex flex-wrap gap-3"><Link href="/korban" className="rounded-xl bg-[#8be1bd] px-6 py-4 font-black text-[#09251f]">Arrange Korban →</Link><Link href="/wakaf" className="rounded-xl border border-white/20 px-6 py-4 font-black text-white">Explore Wakaf</Link></div></div><ProcessPanel dark /></div></section>
 
-        <section className="mx-auto w-[min(1240px,calc(100%-32px))] py-24"><div className="grid gap-6 md:grid-cols-3">{[["01","Choose with confidence","Scope and price are visible before you begin."],["02","Track every handoff","Know when the team and vendor take action."],["03","Keep the evidence","Completion photos and videos stay with the record."]].map(([n,t,d]) => <article key={n} className="border-t-4 border-[#0b513d] bg-white p-6 shadow-[0_12px_30px_rgba(8,43,33,.06)]"><span className="font-black text-[#0b513d]">{n}</span><h2 className="mt-12 text-2xl font-black tracking-[-.03em]">{t}</h2><p className="mt-3 leading-7 text-[#61756e]">{d}</p></article>)}</div><div className="mt-20"><Palette colors={["#063d2e","#0b513d","#57ed95","#f5fff8"]} labels={["Foundation","Action","Signal","Canvas"]} /></div></section>
+        <section className="bg-[#f7faf8] py-24 text-[#102e27]"><div className="mx-auto w-[min(1240px,calc(100%-32px))]"><div className="grid gap-8 lg:grid-cols-[.7fr_1.3fr]"><div><p className="text-xs font-black uppercase tracking-[.17em] text-[#487366]">Available now</p><h2 className="mt-4 text-4xl font-black tracking-[-.045em]">Choose a clear path.</h2></div><div className="grid gap-4 md:grid-cols-2">{[["ق","Korban","Overseas cow share","S$280","/korban"],["و","Wakaf","Quran, water, education","From S$10","/wakaf"]].map(([ar,title,detail,price,href]) => <Link key={title} href={href} className="group rounded-3xl border border-black/10 bg-white p-6 shadow-[0_12px_35px_rgba(16,46,39,.06)] transition hover:-translate-y-0.5 hover:border-[#1d5c4c]"><div className="flex items-start justify-between"><span className="arabic grid h-12 w-12 place-items-center rounded-2xl bg-[#e3f2ea] text-2xl text-[#1d5c4c]">{ar}</span><span className="text-xl transition group-hover:translate-x-1">↗</span></div><h3 className="mt-12 text-2xl font-black">{title}</h3><p className="mt-2 text-sm text-[#61746e]">{detail}</p><p className="mt-6 border-t border-black/10 pt-4 text-sm font-black">{price}</p></Link>)}</div></div><div className="mt-20"><Palette colors={["#071d19","#164c3e","#8be1bd","#f7faf8"]} labels={["Night","Emerald","Noor","Interface white"]} /></div></div></section>
       </main>
     </div>
   );
@@ -111,28 +126,15 @@ function Modern() {
 
 function Editorial() {
   return (
-    <div className="bg-[#eee9df] text-[#171713]">
-      <header className="border-b border-black/20">
-        <div className="mx-auto flex h-20 w-[min(1200px,calc(100%-32px))] items-center justify-between"><p className="display text-3xl font-bold italic">As-Sābiqūn</p><p className="hidden text-xs font-bold uppercase tracking-[.18em] md:block">Service · Stewardship · Society</p><Link href="/korban" className="border-b-2 border-[#171713] pb-1 text-sm font-bold">Begin here ↗</Link></div>
-      </header>
-
+    <div className="min-h-screen bg-[#eee7d8] text-[#172d28]">
+      <header className="border-b border-[#172d28]/20"><div className="mx-auto grid min-h-24 w-[min(1200px,calc(100%-32px))] grid-cols-[1fr_auto] items-center gap-6 md:grid-cols-[1fr_auto_1fr]"><BrandLockup /><p className="hidden text-center text-[.65rem] font-black uppercase tracking-[.22em] md:block">Islamic service · Singapore</p><Link href="/korban" className="justify-self-end border-b border-[#172d28] pb-1 text-sm font-black">Begin a service ↗</Link></div></header>
       <main>
-        <section className="mx-auto w-[min(1200px,calc(100%-32px))] py-14 md:py-20">
-          <div className="flex items-center justify-between border-b border-black/20 pb-4 text-xs font-bold uppercase tracking-[.14em]"><span>Issue № 01 · Islamic services</span><span>Singapore · 2026</span></div>
-          <h1 className="display mt-8 max-w-6xl text-[clamp(4.5rem,11vw,10rem)] font-semibold leading-[.74] tracking-[-.065em]">A sincere act<br /><em className="text-[#b6492e]">deserves care.</em></h1>
-          <div className="mt-12 grid gap-8 border-y border-black/20 py-8 md:grid-cols-[.8fr_1.4fr_.8fr]">
-            <p className="text-xs font-bold uppercase tracking-[.14em]">Our premise</p><p className="display text-3xl leading-tight">Faith-led services should feel considered, legible, and accountable from first intention to final proof.</p><p className="text-sm leading-7 text-[#5f5b53]">As-Sābiqūn coordinates the practical details while preserving the meaning behind the service.</p>
-          </div>
-        </section>
+        <section className="mx-auto w-[min(1200px,calc(100%-32px))] py-16 md:py-24"><div className="grid gap-10 lg:grid-cols-[1.3fr_.7fr]"><div><p className="flex items-center gap-4 text-[.68rem] font-black uppercase tracking-[.18em] text-[#8d672f]"><span className="h-px w-12 bg-[#8d672f]" /> An enduring act, carefully handled</p><h1 className="display mt-7 max-w-4xl text-[clamp(4rem,8vw,7rem)] font-semibold leading-[.78] tracking-[-.06em]">A modern house<br />for <em className="text-[#1d5c4c]">enduring acts.</em></h1><div className="mt-12 grid gap-6 border-y border-[#172d28]/20 py-7 md:grid-cols-[.7fr_1.3fr]"><p className="text-xs font-black uppercase tracking-[.16em]">Our premise</p><p className="display text-2xl leading-snug">Faith-led services should be as clear in their handling as they are sincere in their intention.</p></div></div><Arch className="relative min-h-[500px] overflow-hidden border-[#8d672f]/35 bg-[#173f36] p-8 text-[#eee7d8]"><EightPoint className="mx-auto mt-16 h-32 w-32 text-[#c2a165]" /><p className="arabic mt-9 text-center text-4xl text-[#c2a165]" lang="ar">السَّابِقُونَ</p><p className="display mt-4 text-center text-3xl">Service with<br />amanah and ihsan.</p></Arch></div></section>
 
-        <section className="bg-[#171713] py-20 text-[#eee9df]">
-          <div className="mx-auto grid w-[min(1200px,calc(100%-32px))] gap-10 md:grid-cols-[1.15fr_.85fr]">
-            <div><p className="text-xs font-bold uppercase tracking-[.16em] text-[#e6785b]">The first collection</p><h2 className="display mt-5 text-6xl font-semibold leading-[.9]">Korban<br />& Wakaf</h2><p className="mt-8 max-w-lg leading-8 text-[#bab5aa]">Two enduring acts, presented through a quiet digital experience with clear scope, human coordination, and recorded fulfilment.</p></div>
-            <div className="grid gap-3">{[["01","Korban","S$280 · Cow share"],["02","Wakaf Quran","From S$10"],["03","Water project","From S$25"]].map(([n,t,p]) => <Link href={n === "01" ? "/korban" : "/wakaf"} key={n} className="group flex items-center gap-5 border-t border-white/25 py-5"><span className="text-xs text-[#e6785b]">{n}</span><strong className="display mr-auto text-3xl">{t}</strong><span className="text-sm text-[#bab5aa]">{p}</span><span className="text-2xl group-hover:text-[#e6785b]">↗</span></Link>)}</div>
-          </div>
-        </section>
+        <section className="border-y border-[#172d28]/20"><div className="mx-auto w-[min(1200px,calc(100%-32px))]">{[["01","Korban","Overseas cow share","S$280","/korban"],["02","Wakaf Quran","Distribution project","From S$10","/wakaf"],["03","Water Wakaf","Community water project","From S$25","/wakaf"]].map(([n,title,detail,price,href]) => <Link key={n} href={href} className="group grid items-center gap-4 border-b border-[#172d28]/20 py-6 last:border-0 md:grid-cols-[60px_1fr_1fr_auto_40px]"><span className="text-xs font-black text-[#9a7134]">{n}</span><strong className="display text-3xl">{title}</strong><span className="text-sm text-[#62716d]">{detail}</span><span className="text-sm font-black">{price}</span><span className="text-xl transition group-hover:translate-x-1">→</span></Link>)}</div></section>
 
-        <section className="mx-auto w-[min(1200px,calc(100%-32px))] py-20"><blockquote className="display max-w-5xl text-[clamp(3rem,6vw,6rem)] font-semibold leading-[.92] tracking-[-.04em]">“Trust is not decoration. It is the structure beneath every handoff.”</blockquote><div className="mt-20"><Palette colors={["#171713","#b6492e","#d3c8b6","#eee9df"]} labels={["Ink","Ember","Stone","Paper"]} /></div></section>
+        <section className="mx-auto grid w-[min(1200px,calc(100%-32px))] gap-12 py-24 lg:grid-cols-[.8fr_1.2fr]"><div><p className="text-xs font-black uppercase tracking-[.17em] text-[#8d672f]">From intention to evidence</p><blockquote className="display mt-5 text-4xl font-semibold leading-tight">“Trust is the structure beneath every handoff.”</blockquote></div><ProcessPanel /></section>
+        <section className="bg-[#172d28] py-16 text-[#eee7d8]"><div className="mx-auto w-[min(1200px,calc(100%-32px))]"><Palette colors={["#172d28","#1d5c4c","#9a7134","#eee7d8"]} labels={["Manuscript ink","Service green","Illuminated gold","Washi ivory"]} dark /></div></section>
       </main>
     </div>
   );
@@ -140,23 +142,12 @@ function Editorial() {
 
 function Community() {
   return (
-    <div className="overflow-hidden bg-[#fff7e9] font-sans text-[#214e3b]">
-      <header className="relative z-10">
-        <div className="mx-auto flex h-24 w-[min(1180px,calc(100%-32px))] items-center justify-between"><div className="flex items-center gap-3 text-xl font-black"><span className="grid h-11 w-11 place-items-center rounded-full bg-[#214e3b] text-sm text-white">AS</span>As-Sābiqūn</div><nav className="hidden gap-7 text-sm font-bold md:flex"><span>What we do</span><span>Our community</span><span>Questions</span></nav><Link href="/korban" className="rounded-full bg-[#214e3b] px-5 py-3 text-sm font-black text-white">Let’s begin</Link></div>
-      </header>
-
+    <div className="min-h-screen bg-[#faf8f2] font-sans text-[#153e35]">
+      <header className="border-b border-[#153e35]/15"><div className="mx-auto flex h-24 w-[min(1200px,calc(100%-32px))] items-center justify-between"><BrandLockup /><nav className="hidden gap-8 text-sm font-bold lg:flex"><span>Who we serve</span><span>Our services</span><span>Accountability</span></nav><Link href="/korban" className="rounded-full bg-[#164c3e] px-5 py-3 text-sm font-black text-white">Explore services</Link></div></header>
       <main>
-        <section className="relative pb-24 pt-12 md:pb-32 md:pt-20">
-          <span className="absolute -left-20 top-10 h-64 w-64 rounded-full bg-[#ffd9a3]" /><span className="absolute -right-24 bottom-4 h-80 w-80 rounded-full bg-[#b9dcc9]" />
-          <div className="relative mx-auto grid w-[min(1180px,calc(100%-32px))] gap-12 lg:grid-cols-[1.1fr_.9fr] lg:items-center">
-            <div><p className="inline-flex -rotate-2 rounded-full bg-[#f5a780] px-4 py-2 text-xs font-black uppercase tracking-[.12em] text-[#572c1f]">Faith in action ♡</p><h1 className="mt-7 text-[clamp(4.2rem,9vw,8rem)] font-black leading-[.8] tracking-[-.07em]">Good made<br /><span className="text-[#d26343]">easier,</span> together.</h1><p className="mt-8 max-w-xl text-lg leading-8 text-[#567162]">Simple Islamic services, handled by real people and explained in plain language.</p><div className="mt-9 flex flex-wrap gap-3"><Link href="/korban" className="rounded-full bg-[#214e3b] px-7 py-4 font-black text-white">Arrange Korban →</Link><Link href="/wakaf" className="rounded-full border-2 border-[#214e3b] px-7 py-4 font-black">Explore Wakaf</Link></div></div>
-            <div className="relative mx-auto aspect-square w-full max-w-[480px]"><div className="absolute inset-10 rotate-6 rounded-[42%_58%_48%_52%] bg-[#f5a780]" /><div className="absolute inset-20 -rotate-6 rounded-[55%_45%_60%_40%] bg-[#fff0cc]" /><div className="absolute inset-0 grid place-items-center"><BrandMark className="h-48 w-48" /></div><span className="absolute left-1 top-1 grid h-24 w-24 -rotate-6 place-items-center rounded-3xl bg-white text-center text-sm font-black shadow-xl">Clear<br />steps</span><span className="absolute bottom-3 right-0 grid h-28 w-28 rotate-6 place-items-center rounded-full bg-[#214e3b] text-center text-sm font-black text-white shadow-xl">Proof<br />included ✓</span></div>
-          </div>
-        </section>
+        <section className="relative overflow-hidden py-20 md:py-28"><div className="absolute right-0 top-0 h-full w-1/3 bg-[#efe6d3]" /><div className="relative mx-auto grid w-[min(1200px,calc(100%-32px))] items-center gap-14 lg:grid-cols-[1.05fr_.95fr]"><div><p className="arabic text-2xl text-[#a17033]" lang="ar">خِدْمَةٌ لِلْأُمَّةِ</p><h1 className="mt-5 max-w-3xl text-[clamp(3.8rem,7vw,6.4rem)] font-black leading-[.86] tracking-[-.06em]">Serving the ummah,<br /><span className="text-[#a17033]">one clear step</span> at a time.</h1><p className="mt-8 max-w-xl text-lg leading-8 text-[#60736c]">For individuals and organisations who want Islamic services handled by real people, with visible scope and documented outcomes.</p><div className="mt-9 flex flex-wrap gap-3"><Link href="/korban" className="rounded-full bg-[#164c3e] px-6 py-4 font-black text-white">Arrange Korban →</Link><Link href="/contact" className="rounded-full border border-[#164c3e] px-6 py-4 font-black">Speak to the team</Link></div></div><div className="relative mx-auto w-full max-w-[500px]"><Arch className="relative min-h-[560px] overflow-hidden border-[#a17033]/30 bg-[#efe6d3] p-8"><div className="absolute inset-0 opacity-[.14]" style={{ backgroundImage: "radial-gradient(circle at center,#164c3e 1px,transparent 1.5px)", backgroundSize: "24px 24px" }} /><div className="relative grid min-h-[496px] place-items-center rounded-t-[999px] border border-[#164c3e]/20 bg-[#faf8f2]/80"><div className="text-center"><EightPoint className="mx-auto h-28 w-28 text-[#a17033]" /><p className="arabic mt-7 text-4xl text-[#164c3e]" lang="ar">أمانة</p><p className="mt-3 text-sm font-black uppercase tracking-[.16em] text-[#60736c]">A process you can see</p></div></div></Arch><div className="absolute -bottom-5 left-1/2 grid w-[86%] -translate-x-1/2 grid-cols-3 rounded-2xl border border-black/10 bg-white p-5 text-center shadow-xl"><div><strong className="block text-lg">Clear</strong><small>scope</small></div><div className="border-x border-black/10"><strong className="block text-lg">Human</strong><small>review</small></div><div><strong className="block text-lg">Recorded</strong><small>proof</small></div></div></div></div></section>
 
-        <section className="rounded-t-[56px] bg-[#214e3b] py-20 text-[#fff7e9]">
-          <div className="mx-auto w-[min(1180px,calc(100%-32px))]"><div className="text-center"><p className="text-sm font-black uppercase tracking-[.15em] text-[#f5a780]">Start where you are</p><h2 className="mt-4 text-5xl font-black tracking-[-.05em] md:text-7xl">Two ways to do good.</h2></div><div className="mt-12 grid gap-5 md:grid-cols-2">{[["🐄","Korban","Arrange a cow share through one friendly, guided form.","/korban"],["💧","Wakaf","Choose a project and contribute the amount that feels right.","/wakaf"]].map(([icon,t,d,href]) => <Link key={t} href={href} className="group rounded-[36px] bg-[#fff7e9] p-8 text-[#214e3b]"><span className="text-5xl">{icon}</span><h3 className="mt-12 text-4xl font-black tracking-[-.04em]">{t}</h3><p className="mt-3 max-w-md leading-7 text-[#5b7569]">{d}</p><span className="mt-8 inline-grid h-12 w-12 place-items-center rounded-full bg-[#f5a780] text-xl transition group-hover:translate-x-1">→</span></Link>)}</div><div className="mt-20"><Palette colors={["#214e3b","#f5a780","#ffd9a3","#fff7e9"]} labels={["Evergreen","Coral","Sun","Warm white"]} dark /></div></div>
-        </section>
+        <section className="mx-auto w-[min(1200px,calc(100%-32px))] py-24"><div className="grid gap-8 lg:grid-cols-[.75fr_1.25fr]"><div><p className="text-xs font-black uppercase tracking-[.17em] text-[#a17033]">Begin with what you need</p><h2 className="mt-4 text-4xl font-black tracking-[-.045em]">Services designed around trust.</h2></div><div className="grid gap-4 md:grid-cols-2">{[["قربان","Korban","Cow share · S$280","/korban"],["وقف","Wakaf","Projects from S$10","/wakaf"]].map(([ar,title,detail,href]) => <Link href={href} key={title} className="group rounded-[28px] border border-[#153e35]/15 bg-white p-7 transition hover:-translate-y-0.5 hover:border-[#164c3e]"><div className="flex items-start justify-between"><span className="arabic text-3xl text-[#a17033]">{ar}</span><span className="grid h-10 w-10 place-items-center rounded-full border border-[#153e35]/15 transition group-hover:bg-[#164c3e] group-hover:text-white">↗</span></div><h3 className="mt-16 text-3xl font-black">{title}</h3><p className="mt-2 text-sm text-[#60736c]">{detail}</p></Link>)}</div></div><div className="mt-20 grid gap-5 md:grid-cols-3">{[["For individuals","A guided form and clear service record."],["For organisations","A practical partner for community programmes."],["For fulfilment partners","Focused assignments and structured proof."]].map(([title,text]) => <article key={title} className="border-t-2 border-[#a17033] pt-5"><h3 className="font-black">{title}</h3><p className="mt-2 text-sm leading-7 text-[#60736c]">{text}</p></article>)}</div><div className="mt-20"><Palette colors={["#153e35","#164c3e","#a17033","#faf8f2"]} labels={["Ummah ink","Amanah green","Warm brass","Community white"]} /></div></section>
       </main>
     </div>
   );
