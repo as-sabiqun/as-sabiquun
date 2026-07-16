@@ -15,8 +15,27 @@ type Profile = { id: string; role: "admin" | "vendor"; display_name: string };
 type Order = { id: string; reference: string; service_type: string; quantity: number; participant_names: string[]; dedication: string | null; total_amount: number; payment_status: string; fulfilment_status: FulfilmentStatus; assigned_vendor_id: string | null; review_note: string | null; created_at: string; offerings: Offering | Offering[] | null };
 type Proof = { id: string; order_id: string; media_type: string; caption: string | null; storage_path: string; url?: string };
 
+function DemoDashboard() {
+  return <main className="min-h-screen bg-[var(--cream)]">
+    <div className="demo-bar">Demo mode · No account or live data</div>
+    <header className="border-b border-[var(--line)] bg-[var(--white)]"><div className="container flex min-h-[80px] items-center justify-between gap-4"><Brand compact /><div className="flex items-center gap-4"><div className="hidden text-right sm:block"><strong className="block text-sm">Demo Admin</strong><span className="text-xs text-[var(--muted)]">Admin workspace</span></div><Link className="btn btn-secondary btn-small" href="/">Exit demo</Link></div></div></header>
+    <div className="container py-10">
+      <div className="flex flex-col justify-between gap-5 md:flex-row md:items-end"><div><p className="eyebrow">Admin workspace</p><h1 className="display mt-3 text-5xl font-semibold text-[var(--teal-dark)]">Operations at a glance.</h1></div><span className="status">Read-only preview</span></div>
+      <div className="my-10 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">{[["Orders", "3"], ["Unassigned", "1"], ["In progress", "1"], ["Completed", "1"]].map(([label, value]) => <div className="card p-5" key={label}><span className="text-xs font-bold uppercase tracking-[.12em] text-[var(--muted)]">{label}</span><strong className="display mt-2 block text-4xl text-[var(--teal-dark)]">{value}</strong></div>)}</div>
+      <div className="grid items-start gap-8 lg:grid-cols-[1.35fr_.65fr]">
+        <section><div className="mb-5 flex items-center justify-between"><h2 className="display text-3xl font-semibold">Orders</h2><span className="text-xs text-[var(--muted)]">Newest first</span></div><div className="grid gap-4">{[
+          ["proof submitted", "ASB-260716-001", "Korban · Overseas cow share", "S$210 · Qty 1", "Assigned to Nur Amanah"],
+          ["in progress", "ASB-260715-004", "Wakaf · Clean water", "S$150 · Qty 1", "Assigned to Rahmah Services"],
+          ["unassigned", "ASB-260715-003", "Wakaf · Quran distribution", "S$80 · Qty 1", "Awaiting vendor"],
+        ].map(([status, reference, title, detail, assignment]) => <article className="card p-5 md:p-6" key={reference}><div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-start"><div><div className="flex flex-wrap items-center gap-2"><span className="status">{status}</span><span className="text-xs font-bold text-[var(--muted)]">{reference}</span></div><h3 className="display mt-4 text-2xl font-semibold">{title}</h3><p className="mt-2 text-sm text-[var(--muted)]">{detail}</p></div><span className="text-sm font-bold text-[var(--teal)]">{assignment}</span></div></article>)}</div></section>
+        <aside className="grid gap-5"><section className="card p-6"><p className="eyebrow">Services</p><h2 className="display mt-3 text-2xl font-semibold">Availability</h2><div className="mt-5 grid gap-3">{["Korban", "Wakaf"].map(service => <div className="flex items-center justify-between border-t border-[var(--line)] pt-3" key={service}><strong>{service}</strong><span className="status">Active</span></div>)}</div></section><section className="card p-6"><p className="eyebrow">Enquiries</p><h2 className="display mt-3 text-2xl font-semibold">2 waiting</h2><p className="mt-3 text-sm leading-6 text-[var(--muted)]">Contact requests will appear here when the live backend is connected.</p></section></aside>
+      </div>
+    </div>
+  </main>;
+}
+
 export default async function DashboardPage() {
-  if (!isSupabaseConfigured) redirect("/login");
+  if (!isSupabaseConfigured) return <DemoDashboard />;
   const supabase = await createServerSupabase();
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) redirect("/login");
