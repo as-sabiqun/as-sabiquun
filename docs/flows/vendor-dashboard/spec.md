@@ -116,4 +116,4 @@ No analytics dependency in this phase. Future events: `vendor_job_viewed`, `vend
 - [x] Declined work is consistently filterable.
 - [x] Demo messaging appears once, and hard-coded “today” wording is removed.
 - [x] Public pages, login, and admin demo retain their current design.
-- [ ] Lint, tests, production build, responsive browser QA, and live Vercel checks pass.
+- [x] Lint, tests, production build, responsive browser QA, and live Vercel checks pass.
