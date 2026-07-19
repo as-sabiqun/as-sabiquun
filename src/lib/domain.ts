@@ -2,6 +2,8 @@ export type ServiceType = "korban" | "wakaf";
 export type UserRole = "admin" | "vendor";
 export type PaymentStatus = "pending" | "paid" | "failed";
 export type FulfilmentStatus = "unassigned" | "assigned" | "in_progress" | "proof_submitted" | "completed";
+export type VendorDemoStatus = "pending" | "active" | "proof_submitted" | "completed" | "declined";
+export type VendorDemoAction = "accept" | "decline" | "submit_proof";
 
 export const demoOfferings = [
   { id: "00000000-0000-0000-0000-000000000001", slug: "korban-overseas", service_type: "korban" as const, title: "Korban Overseas Package", location: "Indonesia", detail: "One cow share", unit_amount: 28000, min_amount: null },
@@ -12,6 +14,13 @@ export const demoOfferings = [
 
 export function money(cents: number | null | undefined) {
   return cents == null ? "—" : new Intl.NumberFormat("en-SG", { style: "currency", currency: "SGD", maximumFractionDigits: 0 }).format(cents / 100);
+}
+
+export function transitionDemoVendorJob(status: VendorDemoStatus, action: VendorDemoAction): VendorDemoStatus {
+  if (status === "pending" && action === "accept") return "active";
+  if (status === "pending" && action === "decline") return "declined";
+  if (status === "active" && action === "submit_proof") return "proof_submitted";
+  throw new Error(`Invalid vendor job transition: ${status} → ${action}`);
 }
 
 export function parseOrder(formData: FormData, offering: (typeof demoOfferings)[number]) {

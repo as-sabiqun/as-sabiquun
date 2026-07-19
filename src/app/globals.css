@@ -265,6 +265,31 @@ input[type="checkbox"], input[type="radio"] { accent-color: var(--teal); }
 .contact-details a, .contact-details p { font-size: .84rem; font-weight: 700; }
 .contact-details p small { display: block; margin-top: 6px; color: var(--teal); font-size: .55rem; letter-spacing: .1em; text-transform: uppercase; }
 
+/* Vendor workspace */
+.vendor-nav-button {
+  display: flex; width: 100%; align-items: center; justify-content: space-between; border: 0; border-radius: 12px;
+  background: transparent; padding: 12px 14px; color: rgba(255,255,255,.62); text-align: left; font-size: .8rem;
+  font-weight: 700; cursor: pointer; transition: background-color .15s ease, color .15s ease;
+}
+.vendor-nav-button:hover, .vendor-nav-button.is-active { background: rgba(255,255,255,.1); color: white; }
+.vendor-nav-button small { display: grid; min-width: 24px; height: 24px; place-items: center; border-radius: 999px; background: rgba(255,255,255,.09); font-size: .62rem; }
+.vendor-job-row {
+  display: block; width: 100%; border: 0; border-bottom: 1px solid var(--line); border-left: 4px solid transparent;
+  background: white; padding: 20px; color: var(--ink); cursor: pointer; transition: background-color .15s ease, border-color .15s ease;
+}
+.vendor-job-row:last-child { border-bottom: 0; }
+.vendor-job-row:hover { background: var(--cream); }
+.vendor-job-row.is-selected { border-left-color: var(--teal); background: var(--teal-soft); }
+.vendor-status {
+  display: inline-flex; align-items: center; border-radius: 999px; padding: 5px 9px; font-size: .58rem;
+  font-weight: 900; letter-spacing: .08em; text-transform: uppercase; white-space: nowrap;
+}
+.vendor-status-pending { background: #f0eadf; color: #66481f; }
+.vendor-status-active { background: var(--teal-soft); color: var(--teal); }
+.vendor-status-proof_submitted { background: #eee3d5; color: #63451f; }
+.vendor-status-completed { background: var(--teal); color: white; }
+.vendor-status-declined { background: #f3e4e0; color: #7b2f26; }
+
 @media (max-width: 980px) {
   .desktop-nav, .desktop-cta { display: none !important; }
   .mobile-menu { display: block; }
