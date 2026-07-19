@@ -1,86 +1,119 @@
-# Flow Spec: Vendor dashboard demo
+# Flow Spec: Premium vendor workspace
 
 ## Goal
 
-Give a fulfilment vendor one clear workspace to review assigned jobs, accept or decline pending work, follow fulfilment details, prepare proof, and report a problem. This phase is a no-auth, in-memory demonstration; persistent actions belong to the later authentication and database phases.
+Give a fulfilment vendor a calm, high-trust workspace where the next required action is visible immediately. The functional demo remains in-memory and no-auth; this pass upgrades hierarchy, density, responsive behaviour, and visual consistency.
 
 ## Reference & rationale
 
-- Reference: Shopify Order detail — web — captured Mobbin artifact `28dca90f-49eb-4b14-b0ae-1ff784035a64`.
-- Visual board: `docs/flows/vendor-dashboard/reference-board.png`.
-- Why: Shopify keeps the order summary, status, actions, metadata, and timeline attached to one operational record.
-- Transferable: scan-first queue, persistent selected-record context, grouped facts, status timeline, and actions beside the affected record.
-- Not copied: Shopify navigation, merchant terminology, colours, commerce controls, customer data, or visual styling.
+- Shopify Order detail flow, web — Mobbin artifact `28dca90f-49eb-4b14-b0ae-1ff784035a64`: record workflow, action placement, facts, and history.
+- Linear task hierarchy, web — Mobbin artifact `cda5f0aa-85ac-4ffc-b14f-bb7837a1bb46`: compact queue, quiet navigation, and scan-friendly metadata.
+- Stripe dashboard restraint, web — Mobbin artifact `48f7345e-6616-4f10-97fb-3115b9d0e2f6`: premium density, flat surfaces, and disciplined emphasis.
+- Wise dashboard hierarchy, web — Mobbin artifact `5f4d82d0-665b-41b4-9e2a-a7525cd52fc1`: confident whitespace and high-signal summaries.
+- Visual board: `docs/flows/vendor-dashboard/premium-reference-board.png`.
+
+Transferable lessons: put work above the fold, keep one persistent record context, use flat sections and dividers, show due information in the queue, and reserve emphasis for the next action.
+
+Deliberately not copied: reference colours, financial charts, merchant terminology, dense global navigation, product-specific controls, or branding.
 
 ## Flow model
 
-**Goal:** understand the next assigned job and move it to the correct next state.
+**Goal:** identify the next assignment and move it safely to its next state.
 
-**Beats:** scan workload → inspect one job → decide or act → record progress → close the handoff.
+**Beats:** orient → scan → inspect → act → document → hand off.
 
-| # | Screen / state | Vendor's job | Entry condition | Exit / next | Project route or component |
+| # | State | Vendor's job | Input | Output | Project component |
 |---|---|---|---|---|---|
-| 1 | Job queue | See pending, active, review, and completed work | Open workspace | Select job or filter | `/vendor-dashboard`, `VendorDashboard` |
-| 2 | Job detail | Understand scope, payout, timing, person, and location | Job selected | Accept, decline, prepare proof, or report | Selected-job panel |
-| 3 | Pending decision | Decide whether to take the work | Pending job selected | Active or declined | Decision card |
-| 4 | Active fulfilment | Follow the required service checklist | Accepted job selected | Choose proof file | Amanah progress rail |
-| 5 | Proof prepared | Confirm the selected file and submit demo proof | Active job + file selected | Awaiting review | Native file input + action |
-| 6 | Reports | Send an operational issue tied to a job | Reports tab | Report confirmation | Reports panel |
+| 1 | Workspace overview | See urgent and active work immediately | Current jobs | Status summary | `VendorDashboard` header and summary strip |
+| 2 | Job queue | Compare jobs by state, date, and location | Filter | Selected job | Queue panel |
+| 3 | Job record | Understand scope, payout, contact, and evidence | Selected job | Clear next action | Record panel |
+| 4 | Decision | Accept or decline pending work | Vendor choice | Active or declined | Record action bar |
+| 5 | Fulfilment | Follow evidence requirements | Active job | Selected proof | Proof section |
+| 6 | Review handoff | Submit proof for review | Proof file | Awaiting review | Amanah trail |
+| 7 | Support | Report an operational issue | Job and message | Open report | Reports workspace |
 
 ## Transitions & branches
 
-- Happy path: queue → job detail → accept → active → choose proof → submit → awaiting review.
-- Decline: pending → declined; the job remains visible so the demo action is understandable.
-- Filter empty: show a direct “No jobs in this view” message and a button back to all jobs.
-- Proof error: native required file validation; no file is sent anywhere in this phase.
-- Report success: add the report to the local report list and clear the form.
-- Returning visitor: demo data resets on refresh; this is stated in the interface.
-- Authentication/loading/server errors: out of scope until the auth and data phases.
+- Happy path: overview → queue → record → accept → proof selection → submit → awaiting review.
+- Decline: pending → declined; the record remains filterable and the fulfilment trail is replaced with a reassignment message.
+- Empty filter: show a single recovery action back to all jobs; do not show a mismatched detail record.
+- Mobile/tablet: queue and record are separate views; selecting a row opens the record and “Back to jobs” returns to the queue.
+- Proof error: native required-file validation; the file stays on the device.
+- Report success: prepend the report, reset the form, and announce success.
+- Returning visitor: demo state resets on refresh; one quiet Demo mode label explains this.
+- Authentication, server loading, and persistent failure states remain out of scope until the backend phase.
 
 ## Gap & mapping
 
-| Decision | Reference pattern | As-Sābiqūn implementation |
+| Decision | Reference lesson | As-Sābiqūn implementation |
 |---|---|---|
-| Keep | Orders list beside selected detail | Compact job queue beside job record |
-| Keep | Grouped order facts | Service, location, schedule, payout, and customer sections |
-| Keep | Timeline/history | Four-stage Amanah progress rail |
-| Drop | Merchant analytics and product controls | Only fulfilment information the vendor needs |
-| Drop | Shopify shell and visual system | Existing As-Sābiqūn palette, type, seal, and controls |
-| Adapt | Fulfil/refund actions | Accept, decline, prepare proof, report problem |
-| Add | Acceptance deadline | Visible response-by panel for pending jobs |
-| Add | Proof checklist | Service-specific photo/video guidance before submission |
-| Add | Reports | Job-linked issue form and local confirmation state |
+| Keep | Shopify list beside selected record | Queue and persistent record at desktop widths |
+| Keep | Linear status/date scanning | Compact rows with status, due date, reference, and location |
+| Keep | Stripe flat operational surfaces | One bordered summary strip and one record surface |
+| Keep | Wise confident whitespace | Breathing room inside the record, not before the work |
+| Drop | Charts and financial overview modules | Counts only; no decorative analytics |
+| Drop | Marketing-scale dashboard hero | Compact Jobs title and response-due line |
+| Adapt | Timeline/history | Horizontal branded Amanah trail below the record header |
+| Adapt | Sidebar navigation | Existing seal and dark-brown rail with quieter controls |
+| Add | Evidence checklist | Service-specific proof guidance and native file input |
+| Add | Mobile list/detail mode | One focused state at a time below desktop |
+
+## Design direction
+
+**Palette:** Azure `#1D737F`, light turquoise `#DDE6E3`, warm white `#F7F7F3`, ink brown `#31231B`, amanah gold `#A27C47`, and white `#FFFFFF`.
+
+**Type:** Bricolage Grotesque only for the workspace and service titles; Inter for navigation, data, labels, actions, and tabular numerals; Noto Naskh Arabic remains available for Arabic content.
+
+**Layout:** a compact operational ledger rather than a card dashboard.
+
+```text
+┌──────── rail ────────┬─ Jobs / response due ─────────────────────┐
+│ Brand                │ status summary strip                       │
+│ Jobs                 ├──────── queue ───────┬──── job record ─────┤
+│ Reports              │ status · due · place │ title · action       │
+│                      │ status · date · place│ Amanah trail         │
+│ Vendor / Demo mode   │ ...                  │ facts · proof · notes│
+└──────────────────────┴──────────────────────┴─────────────────────┘
+```
+
+**Signature:** the Amanah trail becomes a slim gold-and-teal lifecycle line directly under every active record header. It is the single expressive element; the surrounding interface stays quiet.
+
+**Self-critique:** the palette is already distinctive and trusted, so changing it would be cosmetic. The revised direction removes generic oversized cards, pills, shadows, and tiny uppercase labels instead. Global marketing primitives remain unchanged; refinements are scoped to `.vendor-workspace`.
 
 ## UI mapping
 
 | Reference pattern | Project implementation |
 |---|---|
-| Left application navigation | Dark-brown vendor rail using existing `Brand` and palette tokens |
-| Orders table | Responsive queue cards with service, payout, deadline, and status |
-| Order-detail columns | Main job record plus quiet action/sidebar cards |
-| Timeline/history | Teal vertical Amanah rail with completed/current/upcoming states |
-| Action toolbar | Existing `.btn`, `.input`, `.status`, and native form controls |
+| Quiet side navigation | `.vendor-sidebar` using existing `Brand` and palette tokens |
+| Summary dashboard | `.vendor-summary` with divided status buttons |
+| Compact work table | `.vendor-job-row` with due/scheduled metadata |
+| Selected record | `.vendor-record` with flat, divided sections |
+| Timeline/history | horizontal `AmanahRail` under the record header |
+| Primary/secondary actions | existing `.btn` variants, operationally scoped |
+| Responsive master/detail | `detailOpen` state plus CSS display at the `xl` breakpoint |
 
 ## Interaction & motion
 
-- Job selection and filters update immediately in the client demo.
-- Cards and controls use the existing short CSS transitions only.
-- Mobile stacks the queue and detail; navigation becomes a compact top row.
+- Filters and job selection update immediately.
+- Below `xl`, selecting a job opens its record; the back control restores the queue.
+- Hover and active states use colour/border changes only; no decorative card lifting.
 - Existing `prefers-reduced-motion` handling remains authoritative.
+- Keyboard focus remains visible and controls retain at least a 44px target.
 
 ## Instrumentation
 
-No analytics dependency in this phase. Events to add when analytics exists: `vendor_job_viewed`, `vendor_job_accepted`, `vendor_job_declined`, `vendor_proof_submitted`, and `vendor_report_created`.
+No analytics dependency in this phase. Future events: `vendor_job_viewed`, `vendor_job_accepted`, `vendor_job_declined`, `vendor_proof_submitted`, and `vendor_report_created`.
 
 ## Acceptance criteria
 
-- [x] `/vendor-dashboard` opens without authentication while the demo backend is unconfigured.
-- [x] Vendor can filter and select all demo jobs.
-- [x] Pending work can be accepted or declined in-memory.
-- [x] Active work accepts a local proof file and moves to awaiting review.
-- [x] Reports can be created and appear in the local report list.
-- [x] Job detail includes service, payout, timing, contact, location, and evidence guidance.
-- [x] Empty filter, proof guidance, and report confirmation states are handled.
-- [x] Login page links to both admin and vendor demos.
-- [x] Mobile and desktop have no horizontal overflow and retain keyboard focus.
-- [x] Lint, tests, and production build pass.
+- [x] Work queue or selected record is visible above the fold at common laptop sizes.
+- [x] Dashboard uses the official palette and scoped operational styling.
+- [x] Summary counts work as useful filters rather than decorative cards.
+- [x] Queue rows expose status, date/deadline, location, reference, and payout.
+- [x] Amanah trail is visible directly beneath the record header and hidden for declined work.
+- [x] Pending actions, proof selection, reports, and empty states still work.
+- [x] Mobile/tablet list-detail navigation is direct and has no nested 760px queue scroller.
+- [x] Declined work is consistently filterable.
+- [x] Demo messaging appears once, and hard-coded “today” wording is removed.
+- [x] Public pages, login, and admin demo retain their current design.
+- [ ] Lint, tests, production build, responsive browser QA, and live Vercel checks pass.

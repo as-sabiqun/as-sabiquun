@@ -24,7 +24,7 @@ type VendorJob = {
 };
 
 type VendorReport = { id: string; job: string; type: string; message: string; status: "Open" | "Resolved" };
-type JobFilter = "all" | "pending" | "active" | "proof_submitted" | "completed";
+type JobFilter = "all" | VendorDemoStatus;
 
 const initialJobs: VendorJob[] = [
   {
@@ -40,7 +40,7 @@ const initialJobs: VendorJob[] = [
     phone: "+65 8123 4567",
     participant: "Ahmad bin Yusuf",
     notes: "Nameplate requested. Keep the participant name visible in the completion media.",
-    respondBy: "Today, 6:00 PM · 3h 42m left",
+    respondBy: "Respond by 20 July, 18:00 SGT",
     status: "pending",
     proofGuide: ["Nameplate before fulfilment", "One clear completion photo", "One short landscape video"],
   },
@@ -103,37 +103,42 @@ const statusLabels: Record<VendorDemoStatus, string> = {
 };
 
 const filters: { value: JobFilter; label: string }[] = [
-  { value: "all", label: "All jobs" },
+  { value: "all", label: "All" },
   { value: "pending", label: "Pending" },
   { value: "active", label: "In progress" },
-  { value: "proof_submitted", label: "Review" },
+  { value: "proof_submitted", label: "Awaiting review" },
   { value: "completed", label: "Completed" },
+  { value: "declined", label: "Declined" },
 ];
+
+const summaryStatuses = [
+  ["pending", "Response due"],
+  ["active", "In progress"],
+  ["proof_submitted", "Awaiting review"],
+  ["completed", "Completed"],
+] as const;
 
 function StatusBadge({ status }: { status: VendorDemoStatus }) {
   return <span className={`vendor-status vendor-status-${status}`}>{statusLabels[status]}</span>;
 }
 
 function AmanahRail({ status }: { status: VendorDemoStatus }) {
-  const stages = ["Accepted", "Work in progress", "Proof submitted", "Admin verified"];
-  const current = status === "pending" || status === "declined" ? -1 : status === "active" ? 1 : status === "proof_submitted" ? 2 : 3;
+  const stages = ["Accept assignment", "Fulfil service", "Submit proof", status === "completed" ? "Admin verified" : "Admin review"];
+  const current = status === "pending" ? 0 : status === "active" ? 1 : status === "proof_submitted" ? 3 : -1;
 
   return (
-    <div className="mt-6 grid">
+    <ol className="vendor-amanah" aria-label="Amanah fulfilment progress">
       {stages.map((stage, index) => {
-        const complete = current > index || status === "completed";
-        const active = current === index;
+        const complete = index < current || status === "completed";
+        const active = index === current;
         return (
-          <div className="grid grid-cols-[28px_1fr] gap-3" key={stage}>
-            <div className="flex flex-col items-center">
-              <span className={`grid h-7 w-7 place-items-center rounded-full border text-[.65rem] font-black ${complete ? "border-[var(--teal)] bg-[var(--teal)] text-white" : active ? "border-[var(--gold)] bg-[var(--cream)] text-[var(--ink)]" : "border-[var(--line)] bg-white text-[var(--muted)]"}`}>{complete ? "✓" : index + 1}</span>
-              {index < stages.length - 1 && <span className={`h-9 w-px ${complete ? "bg-[var(--teal)]" : "bg-[var(--line)]"}`} />}
-            </div>
-            <div className="pt-1"><strong className={`block text-sm ${active ? "text-[var(--ink)]" : "text-[var(--muted)]"}`}>{stage}</strong>{active && <small className="mt-1 block text-[.68rem] text-[var(--teal)]">Current stage</small>}</div>
-          </div>
+          <li className={`${complete ? "is-complete" : ""} ${active ? "is-current" : ""}`} aria-current={active ? "step" : undefined} key={stage}>
+            <span className="vendor-amanah-marker">{complete ? "✓" : index + 1}</span>
+            <span><strong>{stage}</strong><small>{active ? "Current stage" : complete ? "Complete" : "Upcoming"}</small></span>
+          </li>
         );
       })}
-    </div>
+    </ol>
   );
 }
 
@@ -142,6 +147,7 @@ export function VendorDashboard() {
   const [selectedId, setSelectedId] = useState(initialJobs[0].id);
   const [filter, setFilter] = useState<JobFilter>("all");
   const [section, setSection] = useState<"jobs" | "reports">("jobs");
+  const [detailOpen, setDetailOpen] = useState(false);
   const [proofFile, setProofFile] = useState("");
   const [notice, setNotice] = useState("");
   const [reportCreated, setReportCreated] = useState(false);
@@ -152,6 +158,7 @@ export function VendorDashboard() {
   const visibleJobs = filter === "all" ? jobs : jobs.filter((job) => job.status === filter);
   const selectedJob = jobs.find((job) => job.id === selectedId) || jobs[0];
   const count = (status: VendorDemoStatus) => jobs.filter((job) => job.status === status).length;
+  const openReports = reports.filter((report) => report.status === "Open").length;
 
   function updateJob(action: VendorDemoAction) {
     const nextStatus = transitionDemoVendorJob(selectedJob.status, action);
@@ -178,6 +185,7 @@ export function VendorDashboard() {
 
   function openJob(id: string) {
     setSelectedId(id);
+    setDetailOpen(true);
     setProofFile("");
     setNotice("");
   }
@@ -185,144 +193,177 @@ export function VendorDashboard() {
   function changeFilter(nextFilter: JobFilter) {
     const nextJobs = nextFilter === "all" ? jobs : jobs.filter((job) => job.status === nextFilter);
     setFilter(nextFilter);
-    if (nextJobs.length && !nextJobs.some((job) => job.id === selectedId)) openJob(nextJobs[0].id);
+    setDetailOpen(false);
+    setProofFile("");
+    setNotice("");
+    if (nextJobs.length && !nextJobs.some((job) => job.id === selectedId)) setSelectedId(nextJobs[0].id);
+  }
+
+  function showJobs() {
+    setSection("jobs");
+    setDetailOpen(false);
+  }
+
+  function showReports() {
+    setSection("reports");
+    setReportCreated(false);
   }
 
   return (
-    <main className="min-h-screen bg-[var(--cream)] lg:grid lg:grid-cols-[252px_minmax(0,1fr)]">
-      <aside className="hidden h-screen flex-col bg-[var(--ink)] p-6 text-white lg:sticky lg:top-0 lg:flex">
+    <main className="vendor-workspace min-h-screen lg:grid lg:grid-cols-[232px_minmax(0,1fr)]">
+      <aside className="vendor-sidebar hidden h-screen flex-col p-5 text-white lg:sticky lg:top-0 lg:flex">
         <Brand inverse />
-        <div className="mt-10 rounded-2xl border border-white/10 bg-white/[.05] p-4">
-          <span className="text-[.58rem] font-black uppercase tracking-[.14em] text-white/60">Vendor preview</span>
-          <p className="mt-2 text-xs leading-5 text-white/75">Actions reset when this page refreshes.</p>
+        <div className="mt-11">
+          <span className="vendor-sidebar-label">Workspace</span>
+          <nav className="mt-3 grid gap-1" aria-label="Vendor workspace">
+            <button aria-pressed={section === "jobs"} className={`vendor-nav-button ${section === "jobs" ? "is-active" : ""}`} onClick={showJobs}><span>Jobs</span><small>{jobs.length}</small></button>
+            <button aria-pressed={section === "reports"} className={`vendor-nav-button ${section === "reports" ? "is-active" : ""}`} onClick={showReports}><span>Reports</span><small>{openReports}</small></button>
+          </nav>
         </div>
-        <nav className="mt-9 grid gap-2" aria-label="Vendor workspace">
-          <button aria-pressed={section === "jobs"} className={`vendor-nav-button ${section === "jobs" ? "is-active" : ""}`} onClick={() => setSection("jobs")}><span>Job queue</span><small>{jobs.length}</small></button>
-          <button aria-pressed={section === "reports"} className={`vendor-nav-button ${section === "reports" ? "is-active" : ""}`} onClick={() => setSection("reports")}><span>Reports</span><small>{reports.filter((report) => report.status === "Open").length}</small></button>
-        </nav>
         <div className="mt-auto border-t border-white/10 pt-5">
-          <div className="flex items-center gap-3"><span className="grid h-10 w-10 place-items-center rounded-full bg-[var(--teal)] text-xs font-black">RS</span><span><strong className="block text-sm">Rahmah Services</strong><small className="text-[.65rem] text-white/55">Demo vendor</small></span></div>
-          <div className="mt-5 flex gap-4 text-xs font-bold text-white/65"><Link href="/">Public site</Link><Link href="/login">Log out</Link></div>
+          <div className="flex items-center gap-3">
+            <span className="grid h-9 w-9 place-items-center rounded-full bg-[var(--teal)] text-[.68rem] font-black">RS</span>
+            <span><strong className="block text-sm">Rahmah Services</strong><small className="text-[.68rem] text-white/60">Vendor account</small></span>
+          </div>
+          <p className="mt-4 text-[.68rem] leading-5 text-white/55"><span className="mr-2 inline-block h-1.5 w-1.5 rounded-full bg-[var(--gold)]" />Demo mode · Changes reset on refresh</p>
+          <div className="mt-4 flex gap-4 text-[.72rem] font-bold text-white/65"><Link href="/">Public site</Link><Link href="/login">Log out</Link></div>
         </div>
       </aside>
 
       <section className="min-w-0">
-        <header className="sticky top-0 z-30 flex min-h-[70px] items-center justify-between border-b border-[var(--line)] bg-[rgba(247,247,243,.94)] px-4 backdrop-blur-md lg:hidden">
+        <header className="sticky top-0 z-30 flex min-h-[66px] items-center justify-between border-b border-[var(--line)] bg-[rgba(247,247,243,.95)] px-4 backdrop-blur-md lg:hidden">
           <Brand compact />
           <nav className="flex gap-1" aria-label="Vendor workspace">
-            <button aria-pressed={section === "jobs"} className={`rounded-full px-3 py-2 text-xs font-bold ${section === "jobs" ? "bg-[var(--teal)] text-white" : "text-[var(--muted)]"}`} onClick={() => setSection("jobs")}>Jobs</button>
-            <button aria-pressed={section === "reports"} className={`rounded-full px-3 py-2 text-xs font-bold ${section === "reports" ? "bg-[var(--teal)] text-white" : "text-[var(--muted)]"}`} onClick={() => setSection("reports")}>Reports</button>
+            <button aria-pressed={section === "jobs"} className={`vendor-mobile-nav ${section === "jobs" ? "is-active" : ""}`} onClick={showJobs}>Jobs</button>
+            <button aria-pressed={section === "reports"} className={`vendor-mobile-nav ${section === "reports" ? "is-active" : ""}`} onClick={showReports}>Reports</button>
           </nav>
         </header>
 
-        <div className="border-b border-[var(--line)] bg-white px-5 py-4 md:px-8">
-          <div className="mx-auto flex max-w-[1450px] flex-wrap items-center justify-between gap-3">
-            <p className="text-xs font-bold text-[var(--muted)]"><span className="mr-2 inline-block h-2 w-2 rounded-full bg-[var(--gold)]"></span>No-auth demo workspace</p>
-            <div className="flex items-center gap-3 text-xs text-[var(--muted)]"><span>Sunday, 19 July 2026</span><Link className="font-bold text-[var(--teal)]" href="/login">Switch workspace</Link></div>
-          </div>
-        </div>
+        <div className="mx-auto max-w-[1500px] px-4 py-6 md:px-7 lg:px-8 lg:py-7">
+          <header className="vendor-page-header">
+            <div>
+              <p className="vendor-kicker">{section === "jobs" ? "Vendor workspace" : "Vendor support"}</p>
+              <h1 className="display mt-1 text-[clamp(2.1rem,4vw,3.25rem)] leading-none">{section === "jobs" ? "Jobs" : "Reports"}</h1>
+            </div>
+            <div className="max-w-md lg:text-right">
+              <p className="text-sm font-semibold text-[var(--ink)]">{section === "jobs" ? `${count("pending")} response due` : `${openReports} open report${openReports === 1 ? "" : "s"}`}</p>
+              <p className="mt-1 text-xs leading-5 text-[var(--muted)]">{section === "jobs" ? "Review assignments, fulfil services, and return clear proof." : "Record issues against the right assignment for a faster response."}</p>
+              <span className="vendor-demo-badge mt-3 lg:hidden">Demo mode · resets on refresh</span>
+            </div>
+          </header>
 
-        <div className="mx-auto max-w-[1450px] p-5 md:p-8 lg:p-10">
           {section === "jobs" ? (
             <>
-              <div className="flex flex-col justify-between gap-5 md:flex-row md:items-end">
-                <div><p className="eyebrow">Vendor workspace</p><h1 className="display mt-3 text-[clamp(2.6rem,5vw,4.6rem)] leading-[.94]">Your work,<br /><span className="text-[var(--teal)]">clearly queued.</span></h1></div>
-                <p className="max-w-sm text-sm leading-7 text-[var(--muted)]">Review the next handoff, keep each service on track, and return clear proof to the team.</p>
-              </div>
-
-              <div className="my-8 grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
-                {[["Pending response", count("pending")], ["In progress", count("active")], ["Awaiting review", count("proof_submitted")], ["Completed", count("completed")]].map(([label, value]) => (
-                  <article className="card p-5" key={label}><span className="text-[.63rem] font-black uppercase tracking-[.12em] text-[var(--muted)]">{label}</span><strong className="display mt-3 block text-4xl text-[var(--teal)]">{value}</strong></article>
+              <section className="vendor-summary mt-5" aria-label="Job status summary">
+                {summaryStatuses.map(([status, label]) => (
+                  <button aria-pressed={filter === status} data-status={status} key={status} onClick={() => changeFilter(status)}>
+                    <span>{label}</span><strong>{count(status)}</strong>
+                  </button>
                 ))}
-              </div>
+              </section>
 
-              <div className="grid items-start gap-6 xl:grid-cols-[390px_minmax(0,1fr)]">
-                <section className={`card overflow-hidden ${visibleJobs.length ? "" : "xl:col-span-2"}`}>
-                  <div className="border-b border-[var(--line)] p-5">
-                    <div className="flex items-center justify-between"><h2 className="display text-2xl">Job queue</h2><span className="text-xs text-[var(--muted)]">{visibleJobs.length} shown</span></div>
-                    <div className="mt-4 flex gap-2 overflow-x-auto pb-1">
-                      {filters.map((item) => <button aria-pressed={filter === item.value} className={`shrink-0 rounded-full border px-3 py-2 text-[.68rem] font-bold ${filter === item.value ? "border-[var(--teal)] bg-[var(--teal)] text-white" : "border-[var(--line)] text-[var(--muted)]"}`} key={item.value} onClick={() => changeFilter(item.value)}>{item.label}</button>)}
+              <div className="mt-4 grid items-start gap-4 xl:grid-cols-[360px_minmax(0,1fr)]">
+                <section className={`vendor-panel vendor-queue flex-col ${detailOpen ? "hidden xl:flex" : "flex"} ${visibleJobs.length ? "" : "xl:col-span-2"}`}>
+                  <div className="border-b border-[var(--line)] p-4">
+                    <div className="flex items-center justify-between gap-4"><h2 className="text-base font-semibold">Job queue</h2><span className="text-xs text-[var(--muted)]">{visibleJobs.length} shown</span></div>
+                    <div className="mt-3 flex flex-wrap gap-1.5" aria-label="Filter jobs">
+                      {filters.map((item) => <button aria-pressed={filter === item.value} className="vendor-filter" key={item.value} onClick={() => changeFilter(item.value)}>{item.label}</button>)}
                     </div>
                   </div>
-                  <div className="grid max-h-[760px] overflow-y-auto">
+                  <div className="grid xl:max-h-[calc(100vh-250px)] xl:overflow-y-auto">
                     {visibleJobs.length ? visibleJobs.map((job) => (
                       <button aria-current={selectedId === job.id ? "true" : undefined} className={`vendor-job-row ${selectedId === job.id ? "is-selected" : ""}`} key={job.id} onClick={() => openJob(job.id)}>
-                        <div className="flex items-center justify-between gap-3"><StatusBadge status={job.status} /><span className="text-xs font-black text-[var(--ink)]">{job.payout}</span></div>
-                        <strong className="display mt-4 block text-left text-xl">{job.service}</strong>
-                        <span className="mt-1 block text-left text-xs leading-5 text-[var(--muted)]">{job.summary} · {job.location}</span>
-                        <span className="mt-4 flex items-center justify-between text-[.65rem] font-bold text-[var(--muted)]"><span>{job.reference}</span><span aria-hidden="true">→</span></span>
+                        <span className="flex items-center justify-between gap-3"><StatusBadge status={job.status} /><strong className="vendor-money">{job.payout}</strong></span>
+                        <strong className="mt-3 block text-left text-[.95rem] font-semibold">{job.service}</strong>
+                        <span className="mt-1 block text-left text-xs leading-5 text-[var(--muted)]">{job.status === "pending" && job.respondBy ? job.respondBy : `Scheduled ${job.scheduled}`}</span>
+                        <span className="mt-3 flex items-center justify-between gap-3 text-[.7rem] text-[var(--muted)]"><span className="truncate">{job.location}</span><span className="font-semibold tabular-nums">{job.reference}</span></span>
                       </button>
                     )) : (
-                      <div className="p-8 text-center"><strong className="display block text-2xl">No jobs in this view.</strong><p className="mt-2 text-xs leading-5 text-[var(--muted)]">Choose another status or return to all jobs.</p><button className="btn btn-secondary btn-small mt-5" onClick={() => changeFilter("all")}>View all jobs</button></div>
+                      <div className="p-9 text-center"><strong className="display block text-2xl">No jobs in this view.</strong><p className="mt-2 text-xs leading-5 text-[var(--muted)]">Choose another status to continue.</p><button className="btn btn-secondary btn-small mt-5" onClick={() => changeFilter("all")}>View all jobs</button></div>
                     )}
                   </div>
                 </section>
 
-                {visibleJobs.length > 0 && <section className="grid gap-5">
-                  <article className="card overflow-hidden">
-                    <div className="border-b border-[var(--line)] bg-[var(--teal-soft)] p-6 md:p-8">
-                      <div className="flex flex-wrap items-center justify-between gap-3"><div className="flex items-center gap-3"><StatusBadge status={selectedJob.status} /><span className="text-xs font-bold text-[var(--muted)]">{selectedJob.reference}</span></div><strong className="display text-3xl text-[var(--teal)]">{selectedJob.payout}</strong></div>
-                      <h2 className="display mt-7 text-[clamp(2.1rem,4vw,3.7rem)] leading-[.96]">{selectedJob.service}</h2>
-                      <p className="mt-3 text-sm text-[var(--muted)]">{selectedJob.summary}</p>
-                    </div>
-
-                    <div className="grid gap-8 p-6 md:p-8 2xl:grid-cols-[1fr_290px]">
-                      <div>
-                        {selectedJob.status === "pending" && (
-                          <div className="mb-8 rounded-2xl border border-[var(--gold)]/35 bg-[#f0eadf] p-5">
-                            <span className="text-[.63rem] font-black uppercase tracking-[.12em] text-[var(--muted)]">Response required</span>
-                            <strong className="mt-2 block text-sm">{selectedJob.respondBy}</strong>
-                            <p className="mt-3 text-xs leading-6 text-[var(--muted)]">Accept only if your team can complete the service and evidence checklist.</p>
-                            <div className="mt-5 flex flex-wrap gap-2"><button className="btn btn-small" onClick={() => updateJob("accept")}>Accept job</button><button className="btn btn-secondary btn-small" onClick={() => updateJob("decline")}>Decline</button></div>
-                          </div>
-                        )}
-                        {selectedJob.status === "declined" && <div className="mb-8 rounded-2xl border border-[var(--line)] bg-[var(--cream)] p-5"><strong className="text-sm">Job declined</strong><p className="mt-2 text-xs leading-5 text-[var(--muted)]">The admin can now allocate this work to another vendor.</p></div>}
-                        {notice && <p role="status" className="mb-7 rounded-xl bg-[var(--teal-soft)] p-4 text-sm font-bold text-[var(--teal)]">{notice}</p>}
-
-                        <p className="text-[.63rem] font-black uppercase tracking-[.13em] text-[var(--muted)]">Fulfilment details</p>
-                        <dl className="mt-4 grid gap-px overflow-hidden rounded-2xl border border-[var(--line)] bg-[var(--line)] sm:grid-cols-2">
-                          {[["Location", selectedJob.location], ["Scheduled", selectedJob.scheduled], ["Quantity", selectedJob.quantity], ["Vendor payout", selectedJob.payout]].map(([term, detail]) => <div className="bg-white p-4" key={term}><dt className="text-[.6rem] font-black uppercase tracking-[.1em] text-[var(--muted)]">{term}</dt><dd className="mt-2 text-sm font-bold">{detail}</dd></div>)}
-                        </dl>
-
-                        <div className="mt-8 grid gap-5 md:grid-cols-2">
-                          <section className="rounded-2xl border border-[var(--line)] p-5"><span className="text-[.62rem] font-black uppercase tracking-[.11em] text-[var(--muted)]">Customer contact</span><strong className="mt-3 block text-sm">{selectedJob.customer}</strong><a className="mt-2 inline-block text-sm font-bold text-[var(--teal)]" href={`tel:${selectedJob.phone.replaceAll(" ", "")}`}>{selectedJob.phone}</a></section>
-                          <section className="rounded-2xl border border-[var(--line)] p-5"><span className="text-[.62rem] font-black uppercase tracking-[.11em] text-[var(--muted)]">Participant / dedication</span><strong className="mt-3 block text-sm leading-6">{selectedJob.participant}</strong></section>
+                {visibleJobs.length > 0 && (
+                  <section className={`${detailOpen ? "block" : "hidden"} xl:block`}>
+                    <article className="vendor-record">
+                      <div className="vendor-record-header">
+                        <button className="vendor-back mb-5 xl:hidden" onClick={() => setDetailOpen(false)}>← Back to jobs</button>
+                        <div className="flex flex-wrap items-center justify-between gap-3"><div className="flex items-center gap-3"><StatusBadge status={selectedJob.status} /><span className="text-xs font-semibold text-[var(--muted)] tabular-nums">{selectedJob.reference}</span></div><strong className="vendor-record-payout">{selectedJob.payout}</strong></div>
+                        <div className="mt-5 flex flex-col justify-between gap-5 md:flex-row md:items-end">
+                          <div><h2 className="display text-[clamp(2rem,4vw,3.4rem)] leading-none">{selectedJob.service}</h2><p className="mt-2 text-sm text-[var(--muted)]">{selectedJob.summary} · {selectedJob.location}</p>{selectedJob.status === "pending" && <p className="mt-3 text-xs font-semibold text-[#66481f]">{selectedJob.respondBy}</p>}</div>
+                          {selectedJob.status === "pending" && <div className="flex shrink-0 flex-wrap gap-2"><button className="btn btn-small" onClick={() => updateJob("accept")}>Accept job</button><button className="btn btn-secondary btn-small" onClick={() => updateJob("decline")}>Decline</button></div>}
                         </div>
-                        <section className="mt-5 rounded-2xl border border-[var(--line)] p-5"><span className="text-[.62rem] font-black uppercase tracking-[.11em] text-[var(--muted)]">Service notes</span><p className="mt-3 text-sm leading-7 text-[var(--muted)]">{selectedJob.notes}</p></section>
-
-                        {(selectedJob.status === "active" || selectedJob.status === "proof_submitted" || selectedJob.status === "completed") && (
-                          <section className="mt-8 rounded-2xl border border-dashed border-[var(--teal)] bg-[var(--teal-soft)] p-5 md:p-6">
-                            <div className="flex flex-wrap items-start justify-between gap-3"><div><span className="text-[.62rem] font-black uppercase tracking-[.12em] text-[var(--teal)]">Completion proof</span><h3 className="display mt-2 text-2xl">Prepare the evidence bundle.</h3></div>{selectedJob.status !== "active" && <StatusBadge status={selectedJob.status} />}</div>
-                            <ul className="mt-5 grid gap-2 text-xs leading-5 text-[var(--muted)]">{selectedJob.proofGuide.map((item) => <li className="flex gap-2" key={item}><span className="text-[var(--teal)]">✓</span>{item}</li>)}</ul>
-                            {selectedJob.status === "active" ? <form className="mt-6 grid gap-3" onSubmit={(event) => { event.preventDefault(); updateJob("submit_proof"); }}><label className="label">Photo or short video<input className="input bg-white" type="file" accept="image/jpeg,image/png,image/webp,video/mp4" required onChange={(event) => setProofFile(event.target.files?.[0]?.name || "")} /></label>{proofFile && <p className="text-xs font-bold text-[var(--teal)]">Ready: {proofFile}</p>}<button className="btn btn-small justify-self-start" disabled={!proofFile}>Submit proof for review</button><p className="text-[.65rem] leading-5 text-[var(--muted)]">Demo only: the file stays on this device and is not uploaded.</p></form> : <p className="mt-5 text-xs leading-6 text-[var(--muted)]">{selectedJob.status === "proof_submitted" ? "The As-Sābiqūn admin will verify the evidence before closing this job." : "The evidence has been verified and the job is closed."}</p>}
-                          </section>
-                        )}
                       </div>
 
-                      <aside>
-                        <div className="rounded-2xl border border-[var(--line)] bg-[var(--cream)] p-5"><span className="text-[.62rem] font-black uppercase tracking-[.12em] text-[var(--muted)]">Amanah trail</span><AmanahRail status={selectedJob.status} /></div>
-                        <button className="mt-4 w-full rounded-2xl border border-[var(--line)] bg-white p-4 text-left text-sm font-bold transition hover:border-[var(--gold)]" onClick={() => { setSection("reports"); setReportCreated(false); }}>Report a problem <span className="float-right" aria-hidden="true">→</span></button>
-                      </aside>
-                    </div>
-                  </article>
-                </section>}
+                      {selectedJob.status === "declined" ? (
+                        <div className="vendor-declined"><strong>Assignment declined</strong><span>The admin team can now allocate it to another vendor.</span></div>
+                      ) : (
+                        <div className="border-y border-[var(--line)] px-5 py-5 md:px-6"><span className="vendor-kicker">Amanah trail</span><AmanahRail status={selectedJob.status} /></div>
+                      )}
+                      {notice && <p role="status" className="vendor-notice">{notice}</p>}
+
+                      <section className="vendor-record-section">
+                        <div className="flex items-end justify-between gap-4"><div><p className="vendor-kicker">Assignment</p><h3 className="mt-1 text-lg font-semibold">Fulfilment brief</h3></div><span className="text-xs text-[var(--muted)]">Scheduled {selectedJob.scheduled}</span></div>
+                        <dl className="vendor-facts mt-5">
+                          {[["Location", selectedJob.location], ["Scheduled", selectedJob.scheduled], ["Quantity", selectedJob.quantity], ["Vendor payout", selectedJob.payout]].map(([term, detail]) => <div key={term}><dt>{term}</dt><dd>{detail}</dd></div>)}
+                        </dl>
+                      </section>
+
+                      <div className="grid 2xl:grid-cols-[minmax(0,1fr)_290px]">
+                        <div>
+                          <section className="vendor-record-section">
+                            <p className="vendor-kicker">People</p>
+                            <div className="mt-4 grid gap-px overflow-hidden border border-[var(--line)] bg-[var(--line)] md:grid-cols-2">
+                              <div className="bg-white p-4"><span className="vendor-field-label">Customer contact</span><strong className="mt-2 block text-sm">{selectedJob.customer}</strong><a className="mt-1 inline-block text-sm font-semibold text-[var(--teal)]" href={`tel:${selectedJob.phone.replaceAll(" ", "")}`}>{selectedJob.phone}</a></div>
+                              <div className="bg-white p-4"><span className="vendor-field-label">Participant / dedication</span><strong className="mt-2 block text-sm leading-6">{selectedJob.participant}</strong></div>
+                            </div>
+                          </section>
+                          <section className="vendor-record-section"><p className="vendor-kicker">Service notes</p><p className="mt-3 max-w-3xl text-sm leading-7 text-[var(--muted)]">{selectedJob.notes}</p></section>
+
+                          {(selectedJob.status === "active" || selectedJob.status === "proof_submitted" || selectedJob.status === "completed") && (
+                            <section className="vendor-proof">
+                              <div className="flex flex-wrap items-start justify-between gap-3"><div><p className="vendor-kicker text-[var(--teal)]">Completion proof</p><h3 className="mt-1 text-lg font-semibold">Prepare the evidence bundle</h3></div>{selectedJob.status !== "active" && <StatusBadge status={selectedJob.status} />}</div>
+                              {selectedJob.status === "active" ? (
+                                <form className="mt-5 grid gap-3" onSubmit={(event) => { event.preventDefault(); updateJob("submit_proof"); }}>
+                                  <label className="label">Photo or short video<input className="input bg-white" type="file" accept="image/jpeg,image/png,image/webp,video/mp4" required onChange={(event) => setProofFile(event.target.files?.[0]?.name || "")} /></label>
+                                  {proofFile && <p className="text-xs font-semibold text-[var(--teal)]">Ready: {proofFile}</p>}
+                                  <button className="btn btn-small justify-self-start" disabled={!proofFile}>Submit proof for review</button>
+                                  <p className="text-[.7rem] leading-5 text-[var(--muted)]">The demo keeps this file on your device; nothing is uploaded.</p>
+                                </form>
+                              ) : (
+                                <p className="mt-4 text-xs leading-6 text-[var(--muted)]">{selectedJob.status === "proof_submitted" ? "The admin team will verify the evidence before closing this job." : "The evidence is verified and this job is closed."}</p>
+                              )}
+                            </section>
+                          )}
+                        </div>
+
+                        <aside className="vendor-record-aside">
+                          <p className="vendor-kicker">Evidence required</p>
+                          <ul className="mt-4 grid gap-3 text-xs leading-5 text-[var(--muted)]">{selectedJob.proofGuide.map((item) => <li className="flex gap-2" key={item}><span className="font-bold text-[var(--teal)]">✓</span>{item}</li>)}</ul>
+                          <button className="vendor-report-link" onClick={showReports}>Report a problem <span aria-hidden="true">→</span></button>
+                        </aside>
+                      </div>
+                    </article>
+                  </section>
+                )}
               </div>
             </>
           ) : (
-            <>
-              <div className="flex flex-col justify-between gap-5 md:flex-row md:items-end"><div><p className="eyebrow">Vendor support</p><h1 className="display mt-3 text-[clamp(2.6rem,5vw,4.6rem)] leading-[.94]">Reports and<br /><span className="text-[var(--teal)]">operational issues.</span></h1></div><p className="max-w-sm text-sm leading-7 text-[var(--muted)]">Tie every issue to its job so the admin can respond with the right context.</p></div>
-              <div className="mt-9 grid items-start gap-6 lg:grid-cols-[.85fr_1.15fr]">
-                <form className="card grid gap-5 p-6 md:p-8" onSubmit={createReport}>
-                  <div><span className="status">Demo report</span><h2 className="display mt-3 text-3xl">Report a problem</h2></div>
-                  <label className="label">Related job<select className="input" name="job" defaultValue={selectedJob.reference}>{jobs.map((job) => <option key={job.id} value={job.reference}>{job.reference} · {job.service}</option>)}</select></label>
-                  <label className="label">Issue type<select className="input" name="type"><option>Schedule</option><option>Customer details</option><option>Location or access</option><option>Proof upload</option><option>Other</option></select></label>
-                  <label className="label">What happened?<textarea className="input min-h-36 resize-y" name="message" minLength={10} required placeholder="Explain the issue and what help you need." /></label>
-                  <button className="btn">Create report</button>
-                  {reportCreated && <p role="status" className="rounded-xl bg-[var(--teal-soft)] p-4 text-sm font-bold text-[var(--teal)]">Report created for the admin team.</p>}
-                </form>
-                <section className="card overflow-hidden"><div className="border-b border-[var(--line)] p-6"><div className="flex items-center justify-between"><h2 className="display text-2xl">Your reports</h2><span className="text-xs text-[var(--muted)]">{reports.length} total</span></div></div><div className="grid">{reports.map((report) => <article className="border-b border-[var(--line)] p-6 last:border-0" key={report.id}><div className="flex flex-wrap items-center justify-between gap-3"><div className="flex items-center gap-2"><span className="status">{report.status}</span><strong className="text-xs">{report.job}</strong></div><span className="text-xs font-bold text-[var(--muted)]">{report.type}</span></div><p className="mt-4 text-sm leading-7 text-[var(--muted)]">{report.message}</p></article>)}</div></section>
+            <section className="vendor-panel mt-5 overflow-hidden lg:grid lg:grid-cols-[.8fr_1.2fr]">
+              <form className="grid gap-5 p-5 md:p-7" onSubmit={createReport}>
+                <div><p className="vendor-kicker">New report</p><h2 className="mt-1 text-xl font-semibold">Report a problem</h2></div>
+                <label className="label">Related job<select className="input" name="job" defaultValue={selectedJob.reference}>{jobs.map((job) => <option key={job.id} value={job.reference}>{job.reference} · {job.service}</option>)}</select></label>
+                <label className="label">Issue type<select className="input" name="type"><option>Schedule</option><option>Customer details</option><option>Location or access</option><option>Proof upload</option><option>Other</option></select></label>
+                <label className="label">What happened?<textarea className="input min-h-36 resize-y" name="message" minLength={10} required placeholder="Explain the issue and what help you need." /></label>
+                <button className="btn">Create report</button>
+                {reportCreated && <p role="status" className="vendor-notice m-0">Report created for the admin team.</p>}
+              </form>
+              <div className="border-t border-[var(--line)] lg:border-l lg:border-t-0">
+                <div className="flex items-center justify-between border-b border-[var(--line)] p-5 md:p-7"><h2 className="text-xl font-semibold">Your reports</h2><span className="text-xs text-[var(--muted)]">{reports.length} total</span></div>
+                <div>{reports.map((report) => <article className="border-b border-[var(--line)] p-5 last:border-0 md:p-7" key={report.id}><div className="flex flex-wrap items-center justify-between gap-3"><div className="flex items-center gap-2"><span className={`vendor-report-status ${report.status === "Open" ? "is-open" : ""}`}>{report.status}</span><strong className="text-xs tabular-nums">{report.job}</strong></div><span className="text-xs font-semibold text-[var(--muted)]">{report.type}</span></div><p className="mt-4 text-sm leading-7 text-[var(--muted)]">{report.message}</p></article>)}</div>
               </div>
-            </>
+            </section>
           )}
         </div>
       </section>
