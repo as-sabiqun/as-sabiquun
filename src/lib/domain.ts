@@ -7,7 +7,7 @@ export const demoOfferings = [
   { id: "00000000-0000-0000-0000-000000000001", slug: "korban-overseas", service_type: "korban" as const, title: "Korban Overseas Package", location: "Indonesia", detail: "One cow share", unit_amount: 28000, min_amount: null },
   { id: "00000000-0000-0000-0000-000000000002", slug: "wakaf-quran", service_type: "wakaf" as const, title: "Wakaf Quran Distribution", location: null, detail: "Support Quran distribution through a fulfilment partner.", unit_amount: null, min_amount: 1000 },
   { id: "00000000-0000-0000-0000-000000000003", slug: "wakaf-water", service_type: "wakaf" as const, title: "Wakaf Clean Water Initiative", location: null, detail: "Contribute toward a clean-water demonstration project.", unit_amount: null, min_amount: 2500 },
-  { id: "00000000-0000-0000-0000-000000000004", slug: "wakaf-education", service_type: "wakaf" as const, title: "Wakaf Community Education Fund", location: null, detail: "Support learning resources and community education.", unit_amount: null, min_amount: 5000 },
+  { id: "00000000-0000-0000-0000-000000000004", slug: "food-for-orphans", service_type: "wakaf" as const, title: "Food for Orphans", location: null, detail: "Support a coordinated community food programme.", unit_amount: null, min_amount: 5000 },
 ];
 
 export function money(cents: number | null | undefined) {

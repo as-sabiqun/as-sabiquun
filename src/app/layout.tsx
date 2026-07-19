@@ -20,7 +20,7 @@ export const metadata: Metadata = {
     template: "%s · As-Sābiqūn",
   },
   description:
-    "A modern platform for Islamic services, AI consultancy, and business guidance.",
+    "Islamic services coordinated with clarity, human care, and documented fulfilment.",
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
