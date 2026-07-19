@@ -266,7 +266,7 @@ export function VendorDashboard() {
                       <p className="mt-3 text-sm text-[var(--muted)]">{selectedJob.summary}</p>
                     </div>
 
-                    <div className="grid gap-8 p-6 md:p-8 lg:grid-cols-[1fr_290px]">
+                    <div className="grid gap-8 p-6 md:p-8 2xl:grid-cols-[1fr_290px]">
                       <div>
                         {selectedJob.status === "pending" && (
                           <div className="mb-8 rounded-2xl border border-[var(--gold)]/35 bg-[#f0eadf] p-5">
