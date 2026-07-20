@@ -6,6 +6,7 @@ const mainNav = [
   ["About", "/about"],
   ["How it works", "/#how-it-works"],
   ["Contact", "/contact"],
+  ["Login", "/login"],
 ] as const;
 
 export function DemoBar() {
@@ -51,7 +52,7 @@ export function Header() {
           ))}
         </nav>
         <div className="desktop-cta">
-          <Link className="btn btn-small" href="/services">Explore services <span aria-hidden="true">→</span></Link>
+          <Link className="btn btn-small" href="/services">Choose a service <span aria-hidden="true">→</span></Link>
         </div>
         <details className="mobile-menu">
           <summary aria-label="Open navigation"><span></span><span></span></summary>
@@ -90,7 +91,7 @@ export function Footer() {
               <Link href="/about">About us</Link>
               <Link href="/#how-it-works">How it works</Link>
               <Link href="/contact">Contact</Link>
-              <Link href="/login">Team login</Link>
+              <Link href="/login">Account login</Link>
             </div>
           </div>
           <div>

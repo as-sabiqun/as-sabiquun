@@ -1,63 +1,30 @@
 import type { Metadata } from "next";
-import Link from "next/link";
 import { redirect } from "next/navigation";
-import { assignOrder, logout, updateOffering, updateOrderStatus } from "@/app/actions";
-import { Brand } from "@/components/brand";
-import { ProofUploader } from "@/components/proof-uploader";
-import { money, type FulfilmentStatus } from "@/lib/domain";
-import { createServerSupabase, isSupabaseConfigured } from "@/lib/supabase/server";
+import { CustomerDashboard } from "@/components/customer-dashboard";
+import { arePortalDemosEnabled, createServerSupabase, isAuthConfigured } from "@/lib/supabase/server";
 
-export const metadata: Metadata = { title: "Dashboard" };
+export const metadata: Metadata = {
+  title: "Customer dashboard",
+  robots: { index: false, follow: false },
+};
 export const dynamic = "force-dynamic";
 
-type Offering = { id: string; title: string; service_type: string; active: boolean };
-type Profile = { id: string; role: "admin" | "vendor"; display_name: string };
-type Order = { id: string; reference: string; service_type: string; quantity: number; participant_names: string[]; dedication: string | null; total_amount: number; payment_status: string; fulfilment_status: FulfilmentStatus; assigned_vendor_id: string | null; review_note: string | null; created_at: string; offerings: Offering | Offering[] | null };
-type Proof = { id: string; order_id: string; media_type: string; caption: string | null; storage_path: string; url?: string };
-
-function DemoDashboard() {
-  return <main className="min-h-screen bg-[var(--cream)]">
-    <div className="demo-bar">Demo mode · No account or live data</div>
-    <header className="border-b border-[var(--line)] bg-[var(--white)]"><div className="container flex min-h-[80px] items-center justify-between gap-4"><Brand compact /><div className="flex items-center gap-4"><div className="hidden text-right sm:block"><strong className="block text-sm">Demo Admin</strong><span className="text-xs text-[var(--muted)]">Admin workspace</span></div><Link className="btn btn-secondary btn-small" href="/">Exit demo</Link></div></div></header>
-    <div className="container py-10">
-      <div className="flex flex-col justify-between gap-5 md:flex-row md:items-end"><div><p className="eyebrow">Admin workspace</p><h1 className="display mt-3 text-5xl font-semibold text-[var(--teal-dark)]">Operations at a glance.</h1></div><span className="status">Read-only preview</span></div>
-      <div className="my-10 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">{[["Orders", "3"], ["Unassigned", "1"], ["In progress", "1"], ["Completed", "1"]].map(([label, value]) => <div className="card p-5" key={label}><span className="text-xs font-bold uppercase tracking-[.12em] text-[var(--muted)]">{label}</span><strong className="display mt-2 block text-4xl text-[var(--teal-dark)]">{value}</strong></div>)}</div>
-      <div className="grid items-start gap-8 lg:grid-cols-[1.35fr_.65fr]">
-        <section><div className="mb-5 flex items-center justify-between"><h2 className="display text-3xl font-semibold">Orders</h2><span className="text-xs text-[var(--muted)]">Newest first</span></div><div className="grid gap-4">{[
-          ["proof submitted", "ASB-260716-001", "Korban · Overseas cow share", "S$210 · Qty 1", "Assigned to Nur Amanah"],
-          ["in progress", "ASB-260715-004", "Wakaf · Clean water", "S$150 · Qty 1", "Assigned to Rahmah Services"],
-          ["unassigned", "ASB-260715-003", "Wakaf · Quran distribution", "S$80 · Qty 1", "Awaiting vendor"],
-        ].map(([status, reference, title, detail, assignment]) => <article className="card p-5 md:p-6" key={reference}><div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-start"><div><div className="flex flex-wrap items-center gap-2"><span className="status">{status}</span><span className="text-xs font-bold text-[var(--muted)]">{reference}</span></div><h3 className="display mt-4 text-2xl font-semibold">{title}</h3><p className="mt-2 text-sm text-[var(--muted)]">{detail}</p></div><span className="text-sm font-bold text-[var(--teal)]">{assignment}</span></div></article>)}</div></section>
-        <aside className="grid gap-5"><section className="card p-6"><p className="eyebrow">Services</p><h2 className="display mt-3 text-2xl font-semibold">Availability</h2><div className="mt-5 grid gap-3">{["Korban", "Wakaf"].map(service => <div className="flex items-center justify-between border-t border-[var(--line)] pt-3" key={service}><strong>{service}</strong><span className="status">Active</span></div>)}</div></section><section className="card p-6"><p className="eyebrow">Enquiries</p><h2 className="display mt-3 text-2xl font-semibold">2 waiting</h2><p className="mt-3 text-sm leading-6 text-[var(--muted)]">Contact requests will appear here when the live backend is connected.</p></section></aside>
-      </div>
-    </div>
-  </main>;
-}
-
 export default async function DashboardPage() {
-  if (!isSupabaseConfigured) return <DemoDashboard />;
-  const supabase = await createServerSupabase();
-  const { data: { user } } = await supabase.auth.getUser();
-  if (!user) redirect("/login");
-  const { data: rawProfile } = await supabase.from("profiles").select("id, role, display_name").eq("id", user.id).single();
-  if (!rawProfile) return <main className="p-8">This account has no dashboard role.</main>;
-  const profile = rawProfile as Profile;
-  const [{ data: rawOrders }, { data: rawProofs }, { data: rawOfferings }] = await Promise.all([
-    supabase.from("orders").select("id, reference, service_type, quantity, participant_names, dedication, total_amount, payment_status, fulfilment_status, assigned_vendor_id, review_note, created_at, offerings(id,title,service_type,active)").order("created_at", { ascending: false }),
-    supabase.from("proofs").select("id, order_id, media_type, caption, storage_path").order("created_at"),
-    supabase.from("offerings").select("id,title,service_type,active").order("sort_order"),
-  ]);
-  const orders = (rawOrders || []) as unknown as Order[];
-  const offerings = (rawOfferings || []) as Offering[];
-  const proofs = (rawProofs || []) as Proof[];
-  await Promise.all(proofs.map(async proof => { const { data } = await supabase.storage.from("proofs").createSignedUrl(proof.storage_path, 3600); proof.url = data?.signedUrl; }));
-  const { data: vendors } = profile.role === "admin" ? await supabase.from("profiles").select("id, display_name, role").eq("role", "vendor") : { data: [] };
-  const { data: enquiries } = profile.role === "admin" ? await supabase.from("enquiries").select("id,full_name,email,topic,message,created_at").order("created_at", { ascending: false }).limit(8) : { data: [] };
-  const statusCount = (status: string) => orders.filter(order => order.fulfilment_status === status).length;
+  if (!isAuthConfigured) {
+    if (!arePortalDemosEnabled) redirect("/login?portal=customer");
+    return <CustomerDashboard />;
+  }
 
-  return <main className="min-h-screen bg-[var(--cream)]"><div className="demo-bar">Internal demonstration dashboard</div><header className="border-b border-[var(--line)] bg-[var(--white)]"><div className="container flex min-h-[80px] items-center justify-between gap-4"><Brand compact /><div className="flex items-center gap-4"><div className="hidden text-right sm:block"><strong className="block text-sm">{profile.display_name}</strong><span className="text-xs capitalize text-[var(--muted)]">{profile.role}</span></div><form action={logout}><button className="btn btn-secondary btn-small">Sign out</button></form></div></div></header><div className="container py-10"><div className="flex flex-col justify-between gap-5 md:flex-row md:items-end"><div><p className="eyebrow">{profile.role} workspace</p><h1 className="display mt-3 text-5xl font-semibold text-[var(--teal-dark)]">{profile.role === "admin" ? "Operations at a glance." : "Your assigned work."}</h1></div><Link href="/" className="text-sm font-bold text-[var(--teal)]">View public website ↗</Link></div>
-  <div className="my-10 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">{[["Orders", orders.length], ["Unassigned", statusCount("unassigned")], ["In progress", statusCount("in_progress")], ["Completed", statusCount("completed")]].map(([label,value]) => <div className="card p-5" key={label}><span className="text-xs font-bold uppercase tracking-[.12em] text-[var(--muted)]">{label}</span><strong className="display mt-2 block text-4xl text-[var(--teal-dark)]">{value}</strong></div>)}</div>
-  <section><div className="mb-5 flex items-center justify-between"><h2 className="display text-3xl font-semibold">Orders</h2><span className="text-xs text-[var(--muted)]">Newest first</span></div>{orders.length ? <div className="grid gap-5">{orders.map(order => { const offering = Array.isArray(order.offerings) ? order.offerings[0] : order.offerings; const orderProofs = proofs.filter(p => p.order_id === order.id); return <article className="card p-5 md:p-7" key={order.id}><div className="flex flex-col justify-between gap-4 md:flex-row"><div><div className="flex flex-wrap items-center gap-2"><span className="status">{order.fulfilment_status.replaceAll("_", " ")}</span><span className="text-xs font-bold text-[var(--muted)]">{order.reference}</span></div><h3 className="display mt-3 text-3xl font-semibold">{offering?.title}</h3><p className="mt-2 text-sm text-[var(--muted)]">{money(order.total_amount)} · Qty {order.quantity} · Demo payment {order.payment_status}</p>{order.participant_names?.length > 0 && <p className="mt-3 text-sm"><strong>Participant:</strong> {order.participant_names.join(", ")}</p>}{order.dedication && <p className="mt-3 text-sm"><strong>Dedication:</strong> {order.dedication}</p>}</div><div className="min-w-[260px]">{profile.role === "admin" ? <><form action={assignOrder.bind(null, order.id)} className="grid gap-2"><label className="label">Assigned vendor<select className="input" name="vendor_id" defaultValue={order.assigned_vendor_id || ""} required><option value="" disabled>Select vendor</option>{(vendors || []).map(v => <option value={v.id} key={v.id}>{v.display_name}</option>)}</select></label><button className="btn btn-small">Assign vendor</button></form><form action={updateOrderStatus.bind(null, order.id)} className="mt-3 grid gap-2"><input type="hidden" name="status" value={order.fulfilment_status === "proof_submitted" ? "completed" : "in_progress"} /><input className="input" name="review_note" placeholder="Review note (optional)" /><button className="btn btn-secondary btn-small">{order.fulfilment_status === "proof_submitted" ? "Approve and complete" : "Return to in progress"}</button></form></> : <><form action={updateOrderStatus.bind(null, order.id)}><input type="hidden" name="status" value="in_progress" /><button className="btn btn-secondary btn-small w-full">Mark in progress</button></form><ProofUploader orderId={order.id} userId={profile.id} /></>}</div></div>{order.review_note && <p className="mt-5 rounded-xl bg-amber-50 p-3 text-sm text-amber-900"><strong>Review note:</strong> {order.review_note}</p>}{orderProofs.length > 0 && <div className="mt-6 border-t border-[var(--line)] pt-5"><p className="mb-3 text-xs font-bold uppercase tracking-[.12em] text-[var(--muted)]">Fulfilment proof</p><div className="grid gap-3 sm:grid-cols-2 md:grid-cols-3">{orderProofs.map(proof => <a href={proof.url} target="_blank" rel="noreferrer" key={proof.id} className="rounded-xl border border-[var(--line)] bg-white p-3 text-sm font-bold text-[var(--teal)]">{proof.media_type.startsWith("video") ? "▶ Video" : "↗ Photo"}{proof.caption && <span className="mt-1 block font-normal text-[var(--muted)]">{proof.caption}</span>}</a>)}</div></div>}</article>; })}</div> : <div className="card p-10 text-center"><p className="display text-3xl font-semibold">Nothing assigned yet.</p><p className="mt-2 text-sm text-[var(--muted)]">New demo orders will appear here.</p></div>}</section>
-  {profile.role === "admin" && <><section className="mt-14"><h2 className="display mb-5 text-3xl font-semibold">Service availability</h2><div className="grid gap-3 md:grid-cols-2">{offerings.map(offering => <form action={updateOffering.bind(null, offering.id)} className="card flex items-center justify-between gap-4 p-5" key={offering.id}><div><strong>{offering.title}</strong><span className="mt-1 block text-xs capitalize text-[var(--muted)]">{offering.service_type}</span></div><label className="flex items-center gap-2 text-sm font-bold"><input type="checkbox" name="active" defaultChecked={offering.active} /> Active</label><button className="btn btn-small">Save</button></form>)}</div></section><section className="mt-14"><h2 className="display mb-5 text-3xl font-semibold">Recent enquiries</h2><div className="grid gap-3">{(enquiries || []).length ? (enquiries || []).map(e => <article className="card p-5" key={e.id}><div className="flex flex-wrap justify-between gap-2"><strong>{e.full_name}</strong><span className="status">{e.topic}</span></div><a href={`mailto:${e.email}`} className="mt-2 block text-sm text-[var(--teal)]">{e.email}</a><p className="mt-3 text-sm leading-6 text-[var(--muted)]">{e.message}</p></article>) : <div className="card p-6 text-sm text-[var(--muted)]">No enquiries yet.</div>}</div></section></>}
-  </div></main>;
+  const supabase = await createServerSupabase();
+  const { data: claimsData } = await supabase.auth.getClaims();
+  const userId = claimsData?.claims?.sub;
+  if (!userId) redirect("/login");
+
+  const { data: profile } = await supabase.from("profiles").select("role").eq("id", userId).maybeSingle();
+  if (profile?.role === "admin") redirect("/admin");
+  if (profile?.role === "vendor") redirect("/vendor-dashboard");
+  if (!profile) redirect("/onboarding");
+  if (profile.role !== "customer") redirect("/login?error=wrong-portal");
+
+  return <CustomerDashboard />;
 }

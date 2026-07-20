@@ -8,7 +8,7 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
-    "test": "node --test src/lib/domain.test.ts"
+    "test": "node --test src/lib/domain.test.ts src/lib/admin-demo.test.ts"
   },
   "dependencies": {
     "@supabase/ssr": "^0.12.3",

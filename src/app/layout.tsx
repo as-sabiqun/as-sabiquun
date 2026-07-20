@@ -16,8 +16,8 @@ const arabic = Noto_Naskh_Arabic({
 
 export const metadata: Metadata = {
   title: {
-    default: "As-Sābiqūn Association Consultancy",
-    template: "%s · As-Sābiqūn",
+    default: "As-Sabiqun Association Consultancy",
+    template: "%s - As-Sabiqun",
   },
   description:
     "Islamic services coordinated with clarity, human care, and documented fulfilment.",
@@ -25,7 +25,7 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
-    <html lang="en" className={`${inter.variable} ${display.variable} ${arabic.variable}`}>
+    <html lang="en" className={`${inter.variable} ${display.variable} ${arabic.variable}`} data-scroll-behavior="smooth">
       <body>{children}</body>
     </html>
   );

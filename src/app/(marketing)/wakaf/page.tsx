@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 import { WakafForm } from "@/components/forms";
 
 export const metadata: Metadata = {
@@ -41,7 +42,7 @@ export default function WakafPage() {
                 <span className="numeral">{number}</span>
                 <h3 className="display">{title}</h3>
                 <p>{description}</p>
-                <a href="#contribute">Continue to project form <span aria-hidden="true">↓</span></a>
+                <Link href={`/wakaf/${id}`}>View project <span aria-hidden="true">→</span></Link>
               </article>
             ))}
           </div>

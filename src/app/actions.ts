@@ -3,7 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { parseOrder, type FulfilmentStatus } from "@/lib/domain";
-import { createServerSupabase, createServiceSupabase, isSupabaseConfigured } from "@/lib/supabase/server";
+import { createServerSupabase, createServiceSupabase, isAuthConfigured, isSupabaseConfigured } from "@/lib/supabase/server";
 
 export type ActionState = { error?: string; success?: string };
 
@@ -36,11 +36,31 @@ export async function createOrder(_: ActionState, formData: FormData): Promise<A
 }
 
 export async function completeDemoPayment(token: string) {
-  if (!isSupabaseConfigured) return;
+  const checkoutPath = `/checkout/demo/${encodeURIComponent(token)}`;
+  if (!isSupabaseConfigured) redirect(`${checkoutPath}?error=payment`);
+
   const supabase = createServiceSupabase();
-  const { data, error } = await supabase.from("orders").update({ payment_status: "paid" }).eq("checkout_token", token).eq("payment_status", "pending").select("reference").single();
-  if (error || !data) redirect(`/checkout/demo/${token}?error=payment`);
-  redirect(`/order/success/${data.reference}`);
+  const { data, error } = await supabase
+    .from("orders")
+    .update({ payment_status: "paid" })
+    .eq("checkout_token", token)
+    .eq("payment_provider", "demo")
+    .eq("payment_status", "pending")
+    .select("reference")
+    .maybeSingle();
+
+  if (!error && data) redirect(`/order/success/${encodeURIComponent(data.reference)}?token=${encodeURIComponent(token)}`);
+
+  const { data: completed } = await supabase
+    .from("orders")
+    .select("reference")
+    .eq("checkout_token", token)
+    .eq("payment_provider", "demo")
+    .eq("payment_status", "paid")
+    .maybeSingle();
+
+  if (completed) redirect(`/order/success/${encodeURIComponent(completed.reference)}?token=${encodeURIComponent(token)}`);
+  redirect(`${checkoutPath}?error=payment`);
 }
 
 export async function submitEnquiry(_: ActionState, formData: FormData): Promise<ActionState> {
@@ -69,8 +89,10 @@ export async function login(_: ActionState, formData: FormData): Promise<ActionS
 }
 
 export async function logout() {
-  const supabase = await createServerSupabase();
-  await supabase.auth.signOut();
+  if (isAuthConfigured) {
+    const supabase = await createServerSupabase();
+    await supabase.auth.signOut();
+  }
   redirect("/login");
 }
 

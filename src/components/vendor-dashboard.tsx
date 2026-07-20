@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useState, type FormEvent } from "react";
+import { logout } from "@/app/actions";
 import { Brand } from "@/components/brand";
 import { transitionDemoVendorJob, type VendorDemoAction, type VendorDemoStatus } from "@/lib/domain";
 
@@ -21,6 +22,8 @@ type VendorJob = {
   respondBy?: string;
   status: VendorDemoStatus;
   proofGuide: string[];
+  minimumPhotos: number;
+  videoRequired: boolean;
 };
 
 type VendorReport = { id: string; job: string; type: string; message: string; status: "Open" | "Resolved" };
@@ -43,6 +46,8 @@ const initialJobs: VendorJob[] = [
     respondBy: "Respond by 20 July, 18:00 SGT",
     status: "pending",
     proofGuide: ["Nameplate before fulfilment", "One clear completion photo", "One short landscape video"],
+    minimumPhotos: 2,
+    videoRequired: true,
   },
   {
     id: "job-water",
@@ -59,6 +64,8 @@ const initialJobs: VendorJob[] = [
     notes: "Use the supplied English nameplate and include a wide photo of the completed site.",
     status: "active",
     proofGuide: ["Installed pump with nameplate", "Water-flow test photo", "15–30 second working video"],
+    minimumPhotos: 2,
+    videoRequired: true,
   },
   {
     id: "job-quran",
@@ -75,6 +82,8 @@ const initialJobs: VendorJob[] = [
     notes: "Proof was submitted and is waiting for the As-Sābiqūn team to review.",
     status: "proof_submitted",
     proofGuide: ["Books with dedication card", "Distribution group photo", "Recipient-safe short video"],
+    minimumPhotos: 2,
+    videoRequired: false,
   },
   {
     id: "job-orphans",
@@ -91,6 +100,8 @@ const initialJobs: VendorJob[] = [
     notes: "Completed and verified by the admin team.",
     status: "completed",
     proofGuide: ["Prepared meal packs", "Delivery handoff", "Privacy-safe programme photo"],
+    minimumPhotos: 2,
+    videoRequired: false,
   },
 ];
 
@@ -148,24 +159,25 @@ export function VendorDashboard() {
   const [filter, setFilter] = useState<JobFilter>("all");
   const [section, setSection] = useState<"jobs" | "reports">("jobs");
   const [detailOpen, setDetailOpen] = useState(false);
-  const [proofFile, setProofFile] = useState("");
+  const [proofFiles, setProofFiles] = useState<{ photos: string[]; video: string }>({ photos: [], video: "" });
   const [notice, setNotice] = useState("");
   const [reportCreated, setReportCreated] = useState(false);
   const [reports, setReports] = useState<VendorReport[]>([
-    { id: "report-1", job: "ASB-260728-006", type: "Schedule", message: "Installation moved by one day due to site access.", status: "Resolved" },
+    { id: "report-1", job: "ASB-260728-006", type: "Location or access", message: "The site contact moved installation access to the following morning. Please confirm the revised handover time with the customer.", status: "Open" },
   ]);
 
   const visibleJobs = filter === "all" ? jobs : jobs.filter((job) => job.status === filter);
   const selectedJob = jobs.find((job) => job.id === selectedId) || jobs[0];
   const count = (status: VendorDemoStatus) => jobs.filter((job) => job.status === status).length;
   const openReports = reports.filter((report) => report.status === "Open").length;
+  const proofReady = proofFiles.photos.length >= selectedJob.minimumPhotos && (!selectedJob.videoRequired || Boolean(proofFiles.video));
 
   function updateJob(action: VendorDemoAction) {
     const nextStatus = transitionDemoVendorJob(selectedJob.status, action);
     setJobs((current) => current.map((job) => job.id === selectedJob.id ? { ...job, status: nextStatus } : job));
     setFilter("all");
-    setProofFile("");
-    setNotice(action === "accept" ? "Job accepted and moved to in progress." : action === "decline" ? "Job declined. The admin can reassign it." : "Proof prepared for admin review.");
+    setProofFiles({ photos: [], video: "" });
+    setNotice(action === "accept" ? "Job accepted and moved to fulfilment." : action === "decline" ? "Job declined. The admin can reassign it." : "Evidence bundle submitted. Waiting for admin review.");
   }
 
   function createReport(event: FormEvent<HTMLFormElement>) {
@@ -186,7 +198,7 @@ export function VendorDashboard() {
   function openJob(id: string) {
     setSelectedId(id);
     setDetailOpen(true);
-    setProofFile("");
+    setProofFiles({ photos: [], video: "" });
     setNotice("");
   }
 
@@ -194,7 +206,7 @@ export function VendorDashboard() {
     const nextJobs = nextFilter === "all" ? jobs : jobs.filter((job) => job.status === nextFilter);
     setFilter(nextFilter);
     setDetailOpen(false);
-    setProofFile("");
+    setProofFiles({ photos: [], video: "" });
     setNotice("");
     if (nextJobs.length && !nextJobs.some((job) => job.id === selectedId)) setSelectedId(nextJobs[0].id);
   }
@@ -226,7 +238,7 @@ export function VendorDashboard() {
             <span><strong className="block text-sm">Rahmah Services</strong><small className="text-[.68rem] text-white/60">Vendor account</small></span>
           </div>
           <p className="mt-4 text-[.68rem] leading-5 text-white/55"><span className="mr-2 inline-block h-1.5 w-1.5 rounded-full bg-[var(--gold)]" />Demo mode · Changes reset on refresh</p>
-          <div className="mt-4 flex gap-4 text-[.72rem] font-bold text-white/65"><Link href="/">Public site</Link><Link href="/login">Log out</Link></div>
+          <div className="mt-4 flex items-center gap-4 text-[.72rem] font-bold text-white/65"><Link href="/">Public site</Link><form action={logout}><button className="cursor-pointer border-0 bg-transparent p-0 text-inherit" type="submit">Log out</button></form></div>
         </div>
       </aside>
 
@@ -315,7 +327,14 @@ export function VendorDashboard() {
                           <section className="vendor-record-section">
                             <p className="vendor-kicker">People</p>
                             <div className="mt-4 grid gap-px overflow-hidden border border-[var(--line)] bg-[var(--line)] md:grid-cols-2">
-                              <div className="bg-white p-4"><span className="vendor-field-label">Customer contact</span><strong className="mt-2 block text-sm">{selectedJob.customer}</strong><a className="mt-1 inline-block text-sm font-semibold text-[var(--teal)]" href={`tel:${selectedJob.phone.replaceAll(" ", "")}`}>{selectedJob.phone}</a></div>
+                              <div className="bg-white p-4">
+                                <span className="vendor-field-label">Delivery contact · minimum necessary</span>
+                                {selectedJob.status === "active" ? (
+                                  <><strong className="mt-2 block text-sm">{selectedJob.customer}</strong><a className="mt-1 inline-block text-sm font-semibold text-[var(--teal)]" href={`tel:${selectedJob.phone.replaceAll(" ", "")}`}>{selectedJob.phone}</a><p className="mt-3 text-[.68rem] leading-5 text-[var(--muted)]">Use only to coordinate this assignment. Do not copy, share, or retain these details.</p></>
+                                ) : (
+                                  <p className="mt-2 text-sm leading-6 text-[var(--muted)]">{selectedJob.status === "pending" ? "Available after you accept this job." : "Hidden outside active fulfilment. Create a report if support is needed."}</p>
+                                )}
+                              </div>
                               <div className="bg-white p-4"><span className="vendor-field-label">Participant / dedication</span><strong className="mt-2 block text-sm leading-6">{selectedJob.participant}</strong></div>
                             </div>
                           </section>
@@ -323,16 +342,17 @@ export function VendorDashboard() {
 
                           {(selectedJob.status === "active" || selectedJob.status === "proof_submitted" || selectedJob.status === "completed") && (
                             <section className="vendor-proof">
-                              <div className="flex flex-wrap items-start justify-between gap-3"><div><p className="vendor-kicker text-[var(--teal)]">Completion proof</p><h3 className="mt-1 text-lg font-semibold">Prepare the evidence bundle</h3></div>{selectedJob.status !== "active" && <StatusBadge status={selectedJob.status} />}</div>
+                              <div className="flex flex-wrap items-start justify-between gap-3"><div><p className="vendor-kicker text-[var(--teal)]">Completion proof</p><h3 className="mt-1 text-lg font-semibold">{selectedJob.status === "active" ? "Prepare the evidence bundle" : selectedJob.status === "proof_submitted" ? "Evidence waiting for review" : "Evidence approved"}</h3></div>{selectedJob.status !== "active" && <StatusBadge status={selectedJob.status} />}</div>
                               {selectedJob.status === "active" ? (
-                                <form className="mt-5 grid gap-3" onSubmit={(event) => { event.preventDefault(); updateJob("submit_proof"); }}>
-                                  <label className="label">Photo or short video<input className="input bg-white" type="file" accept="image/jpeg,image/png,image/webp,video/mp4" required onChange={(event) => setProofFile(event.target.files?.[0]?.name || "")} /></label>
-                                  {proofFile && <p className="text-xs font-semibold text-[var(--teal)]">Ready: {proofFile}</p>}
-                                  <button className="btn btn-small justify-self-start" disabled={!proofFile}>Submit proof for review</button>
-                                  <p className="text-[.7rem] leading-5 text-[var(--muted)]">The demo keeps this file on your device; nothing is uploaded.</p>
+                                <form className="mt-5 grid gap-4" key={selectedJob.id} onSubmit={(event) => { event.preventDefault(); if (proofReady) updateJob("submit_proof"); }}>
+                                  <label className="label" htmlFor="evidence-photos">Completion photos <span className="font-normal text-[var(--muted)]">({selectedJob.minimumPhotos} required)</span><input aria-describedby="evidence-progress" className="input bg-white" id="evidence-photos" type="file" accept="image/jpeg,image/png,image/webp" multiple required onChange={(event) => setProofFiles((current) => ({ ...current, photos: Array.from(event.target.files || [], (file) => file.name) }))} /></label>
+                                  <label className="label" htmlFor="evidence-video">Short landscape video <span className="font-normal text-[var(--muted)]">({selectedJob.videoRequired ? "required" : "optional"})</span><input aria-describedby="evidence-progress" className="input bg-white" id="evidence-video" type="file" accept="video/mp4,video/quicktime" required={selectedJob.videoRequired} onChange={(event) => setProofFiles((current) => ({ ...current, video: event.target.files?.[0]?.name || "" }))} /></label>
+                                  <p aria-live="polite" className="text-xs font-semibold text-[var(--teal)]" id="evidence-progress">{proofFiles.photos.length}/{selectedJob.minimumPhotos} photos prepared · {proofFiles.video ? "Video prepared" : selectedJob.videoRequired ? "Video still required" : "Video optional"}</p>
+                                  <button className="btn btn-small justify-self-start" disabled={!proofReady}>Submit evidence bundle</button>
+                                  <p className="text-[.7rem] leading-5 text-[var(--muted)]">One submission sends the full bundle for admin review. In this demo, files stay on your device and are not uploaded.</p>
                                 </form>
                               ) : (
-                                <p className="mt-4 text-xs leading-6 text-[var(--muted)]">{selectedJob.status === "proof_submitted" ? "The admin team will verify the evidence before closing this job." : "The evidence is verified and this job is closed."}</p>
+                                <p className="mt-4 text-xs leading-6 text-[var(--muted)]">{selectedJob.status === "proof_submitted" ? "The full bundle was submitted. The admin team will approve it or request changes before closing this job." : "The admin team verified the evidence bundle. This job is complete."}</p>
                               )}
                             </section>
                           )}
@@ -340,7 +360,9 @@ export function VendorDashboard() {
 
                         <aside className="vendor-record-aside">
                           <p className="vendor-kicker">Evidence required</p>
-                          <ul className="mt-4 grid gap-3 text-xs leading-5 text-[var(--muted)]">{selectedJob.proofGuide.map((item) => <li className="flex gap-2" key={item}><span className="font-bold text-[var(--teal)]">✓</span>{item}</li>)}</ul>
+                          <p className="mt-2 text-[.7rem] font-semibold text-[var(--ink)]">{selectedJob.minimumPhotos} photos · Video {selectedJob.videoRequired ? "required" : "optional"}</p>
+                          <ol className="mt-4 grid gap-3 text-xs leading-5 text-[var(--muted)]">{selectedJob.proofGuide.map((item, index) => <li className="flex gap-2" key={item}><span className="font-bold text-[var(--teal)]">{index + 1}.</span>{item}</li>)}</ol>
+                          <div className="mt-5 border-l-2 border-[var(--gold)] bg-[rgba(162,124,71,.08)] p-3"><strong className="block text-xs text-[var(--ink)]">Protect dignity and consent</strong><p className="mt-1 text-[.7rem] leading-5 text-[var(--muted)]">Focus on the service, nameplate, and result. Do not show identifiable people without permission, and never include children, IDs, or private documents.</p></div>
                           <button className="vendor-report-link" onClick={showReports}>Report a problem <span aria-hidden="true">→</span></button>
                         </aside>
                       </div>

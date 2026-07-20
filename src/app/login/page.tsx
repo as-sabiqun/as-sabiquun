@@ -1,37 +1,17 @@
 import type { Metadata } from "next";
-import Link from "next/link";
 import { redirect } from "next/navigation";
-import { Brand } from "@/components/brand";
-import { LoginForm } from "@/components/auth-form";
-import { createServerSupabase, isSupabaseConfigured } from "@/lib/supabase/server";
+import { AccessGateway } from "@/components/access-gateway";
+import { arePortalDemosEnabled, createServerSupabase, isAuthConfigured } from "@/lib/supabase/server";
 
-export const metadata: Metadata = { title: "Team login" };
+export const metadata: Metadata = { title: "Account access", robots: { index: false, follow: false } };
 export const dynamic = "force-dynamic";
 
-export default async function LoginPage() {
-  if (isSupabaseConfigured) {
-    const { data: { user } } = await (await createServerSupabase()).auth.getUser();
-    if (user) redirect("/dashboard");
+export default async function LoginPage({ searchParams }: { searchParams: Promise<{ portal?: string; error?: string }> }) {
+  const params = await searchParams;
+  if (isAuthConfigured) {
+    const { data } = await (await createServerSupabase()).auth.getClaims();
+    if (data?.claims?.sub) redirect("/dashboard");
   }
 
-  return (
-    <main className="pattern grid min-h-screen place-items-center p-5">
-      <div className="card w-full max-w-md p-7 shadow-[0_28px_80px_rgba(7,63,70,.12)] md:p-9">
-        <Brand />
-        <p className="eyebrow mt-10">Team access</p>
-        <h1 className="display mt-3 text-5xl font-semibold text-[var(--teal-dark)]">Welcome back.</h1>
-        <p className="mb-8 mt-4 text-sm leading-7 text-[var(--muted)]">Admin and vendor accounts use the same secure entrance.</p>
-        {isSupabaseConfigured ? (
-          <LoginForm />
-        ) : (
-          <div className="grid gap-3">
-            <Link className="btn w-full" href="/dashboard">Enter admin demo</Link>
-            <Link className="btn btn-secondary w-full" href="/vendor-dashboard">Enter vendor demo</Link>
-            <p className="mt-1 text-center text-xs leading-5 text-[var(--muted)]">No account required · Demonstration data only</p>
-          </div>
-        )}
-        <Link href="/" className="mt-7 block text-center text-sm font-bold text-[var(--teal)]">← Return to website</Link>
-      </div>
-    </main>
-  );
+  return <AccessGateway configured={isAuthConfigured} demoEnabled={arePortalDemosEnabled} initialRole={params.portal === "customer" ? "customer" : "vendor"} notice={params.error === "wrong-portal" ? "That account does not have access to this workspace. Choose the account type assigned to you." : undefined} />;
 }

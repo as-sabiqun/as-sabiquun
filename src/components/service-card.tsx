@@ -15,7 +15,7 @@ export const services = [
     title: "Wakaf Water Pump",
     arabic: "وقف الماء",
     description: "Contribute towards a clean-water project and follow its journey from order to evidence.",
-    href: "/wakaf#water-pump",
+    href: "/wakaf/water-pump",
   },
   {
     number: "03",
@@ -23,7 +23,7 @@ export const services = [
     title: "Wakaf Quran",
     arabic: "وقف القرآن",
     description: "Support Quran distribution with clear project information and a completion record.",
-    href: "/wakaf#quran",
+    href: "/wakaf/quran",
   },
   {
     number: "04",
@@ -31,7 +31,7 @@ export const services = [
     title: "Food for Orphans",
     arabic: "إطعام الأيتام",
     description: "Support a coordinated food programme with responsible handling and proof after delivery.",
-    href: "/wakaf#food-for-orphans",
+    href: "/wakaf/food-for-orphans",
   },
 ] as const;
 
