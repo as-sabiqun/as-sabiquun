@@ -175,30 +175,47 @@ button, a, summary { -webkit-tap-highlight-color: transparent; }
    should get out of the way of the content.
    ============================================================ */
 
-.catalog-header { background: var(--teal-dark); color: var(--cream); padding: 156px 0 48px; }
-.catalog-header .eyebrow-label { color: var(--gold); font-size: .72rem; font-weight: 800; letter-spacing: .18em; text-transform: uppercase; }
-.catalog-header h1 { margin-top: 12px; font-size: clamp(2rem, 4vw, 3rem); line-height: 1.04; color: var(--cream); }
-.catalog-header p.lede { margin-top: 12px; max-width: 640px; color: color-mix(in srgb, var(--cream) 78%, var(--teal-dark)); font-size: .95rem; line-height: 1.7; }
+.catalog-header { background: var(--teal-dark); color: var(--cream); padding: 128px 0 28px; }
+.catalog-header h1 { font-size: clamp(1.5rem, 2.4vw, 1.9rem); line-height: 1.1; color: var(--cream); }
 
 .page-header { padding: 156px 0 44px; border-bottom: 1.5px solid var(--line); }
 .page-header .eyebrow-label { color: var(--gold); font-size: .72rem; font-weight: 800; letter-spacing: .18em; text-transform: uppercase; }
 .page-header h1 { margin-top: 12px; font-size: clamp(2rem, 4vw, 3.1rem); line-height: 1.04; }
 .page-header p.lede { margin-top: 12px; max-width: 620px; color: var(--muted); font-size: .95rem; line-height: 1.7; }
 
-.catalog-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 18px; }
+.catalog-tabs { display: flex; flex-wrap: wrap; gap: 8px; border-bottom: 1.5px solid var(--line); padding: 16px 0; }
+.catalog-tab {
+  min-height: 36px; border: 1.5px solid transparent; border-radius: 999px; padding: 0 16px;
+  font-size: .82rem; font-weight: 700; color: var(--muted); background: transparent; cursor: pointer;
+  transition: border-color .15s ease, background-color .15s ease, color .15s ease;
+}
+.catalog-tab:hover { color: var(--ink); }
+.catalog-tab.is-active { border-color: var(--teal); background: var(--teal-soft); color: var(--teal-dark); }
+.catalog-count { color: var(--muted); font-size: .78rem; }
+
+.catalog-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 16px; }
 .catalog-card { display: flex; flex-direction: column; overflow: hidden; transition: transform .18s ease; }
 .catalog-card:hover { transform: translateY(-3px); }
-.catalog-card-media { position: relative; display: grid; height: 168px; place-items: center; background: var(--teal-dark); }
-.catalog-card-media svg { width: 56px; height: 56px; fill: none; stroke: var(--cream); stroke-width: 1.6; stroke-linecap: round; stroke-linejoin: round; opacity: .92; }
-.catalog-card-badge { position: absolute; top: 14px; left: 16px; }
-.catalog-card-body { display: flex; flex: 1; flex-direction: column; padding: 20px 22px 22px; }
-.catalog-card-price { margin-top: auto; display: flex; align-items: baseline; justify-content: space-between; gap: 12px; border-top: 1.5px solid var(--line); padding-top: 14px; margin-top: 16px; }
-.catalog-card-price strong { font-size: 1.05rem; }
-.catalog-card-price small { color: var(--muted); font-size: .68rem; font-weight: 700; text-transform: uppercase; letter-spacing: .06em; }
+.catalog-card-media { position: relative; display: grid; height: 132px; place-items: center; background: var(--teal-dark); }
+.catalog-card-media svg { width: 42px; height: 42px; fill: none; stroke: var(--cream); stroke-width: 1.6; stroke-linecap: round; stroke-linejoin: round; opacity: .92; }
+.catalog-card-badge { position: absolute; top: 10px; left: 12px; }
+.catalog-card-body { display: flex; flex: 1; flex-direction: column; padding: 14px 16px 16px; }
+.catalog-card-body h3 { font-size: 1rem; line-height: 1.25; }
+.catalog-card-body p { display: none; }
+.catalog-card-price { margin-top: 10px; display: flex; align-items: baseline; justify-content: space-between; gap: 10px; }
+.catalog-card-price strong { font-size: .92rem; }
+.catalog-card-price small { color: var(--muted); font-size: .62rem; font-weight: 700; text-transform: uppercase; letter-spacing: .05em; }
 
+@media (max-width: 980px) {
+  .catalog-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
 @media (max-width: 760px) {
+  .catalog-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+  .catalog-header { padding-top: 112px; }
+  .page-header { padding-top: 128px; }
+}
+@media (max-width: 480px) {
   .catalog-grid { grid-template-columns: 1fr; }
-  .catalog-header, .page-header { padding-top: 128px; }
 }
 
 /* ============================================================
