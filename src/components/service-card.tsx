@@ -1,3 +1,5 @@
+import Link from "next/link";
+
 export const services = [
   {
     number: "01",
@@ -5,6 +7,8 @@ export const services = [
     title: "Korban",
     description: "Arrange Korban through a guided order, coordinated fulfilment, and documented completion.",
     href: "/korban",
+    price: "S$280",
+    priceLabel: "per share",
   },
   {
     number: "02",
@@ -12,6 +16,8 @@ export const services = [
     title: "Wakaf Water Pump",
     description: "Contribute towards a clean-water project and follow its journey from order to evidence.",
     href: "/wakaf/water-pump",
+    price: "From S$25",
+    priceLabel: "minimum",
   },
   {
     number: "03",
@@ -19,6 +25,8 @@ export const services = [
     title: "Wakaf Quran",
     description: "Support Quran distribution with clear project information and a completion record.",
     href: "/wakaf/quran",
+    price: "From S$10",
+    priceLabel: "minimum",
   },
   {
     number: "04",
@@ -26,5 +34,39 @@ export const services = [
     title: "Food for Orphans",
     description: "Support a coordinated food programme with responsible handling and proof after delivery.",
     href: "/wakaf/food-for-orphans",
+    price: "From S$50",
+    priceLabel: "minimum",
   },
 ] as const;
+
+function ServiceIcon({ type }: { type: (typeof services)[number]["slug"] }) {
+  if (type === "water") {
+    return <svg viewBox="0 0 64 64" aria-hidden="true"><path d="M32 9C25 20 17 29 17 40a15 15 0 0 0 30 0C47 29 39 20 32 9Z" /><path d="M24 42c2 5 6 7 11 7" /></svg>;
+  }
+  if (type === "quran") {
+    return <svg viewBox="0 0 64 64" aria-hidden="true"><path d="M9 17c9-3 17-1 23 5v31c-6-6-14-8-23-5V17Z" /><path d="M55 17c-9-3-17-1-23 5v31c6-6 14-8 23-5V17Z" /><path d="M15 26c5-1 9 0 13 3M49 26c-5-1-9 0-13 3" /></svg>;
+  }
+  if (type === "orphans") {
+    return <svg viewBox="0 0 64 64" aria-hidden="true"><path d="M32 51S12 40 12 24c0-7 5-11 11-11 4 0 7 2 9 6 2-4 5-6 9-6 6 0 11 4 11 11 0 16-20 27-20 27Z" /><path d="M21 37c7-4 15-4 22 0" /></svg>;
+  }
+  return <svg viewBox="0 0 64 64" aria-hidden="true"><path d="M15 42c2-11 9-19 17-19 9 0 16 8 17 19" /><path d="M20 24c-3-1-6-4-7-8 6 0 10 2 13 6M44 24c3-1 6-4 7-8-6 0-10 2-13 6M23 42v7M41 42v7M27 32h.1M37 32h.1" /></svg>;
+}
+
+export function CatalogCard({ service }: { service: (typeof services)[number] }) {
+  return (
+    <Link href={service.href} className="card catalog-card">
+      <div className="catalog-card-media">
+        <span className="catalog-card-badge status">Available</span>
+        <ServiceIcon type={service.slug} />
+      </div>
+      <div className="catalog-card-body">
+        <h3 className="display text-[1.3rem] leading-tight">{service.title}</h3>
+        <p className="mt-2 text-sm leading-6 text-[var(--muted)]">{service.description}</p>
+        <div className="catalog-card-price">
+          <strong>{service.price}</strong>
+          <small>{service.priceLabel}</small>
+        </div>
+      </div>
+    </Link>
+  );
+}

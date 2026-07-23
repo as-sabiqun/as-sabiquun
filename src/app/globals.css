@@ -83,6 +83,18 @@ button, a, summary { -webkit-tap-highlight-color: transparent; }
   box-shadow: 7px 7px 0 rgba(162,124,71,.14);
 }
 .chip { display: inline-flex; align-items: center; gap: 8px; border: 1px solid var(--line); border-radius: 999px; padding: 8px 16px; font-size: .78rem; font-weight: 700; }
+.input {
+  width: 100%; min-height: 50px; border: 1px solid var(--line); border-radius: 10px;
+  background: var(--cream); padding: 12px 14px; color: var(--ink); outline: none;
+  transition: border-color .15s ease, box-shadow .15s ease, background-color .15s ease;
+}
+.input:focus { border-color: var(--teal); background: white; box-shadow: 0 0 0 3px rgba(29,115,127,.1); }
+.label { display: grid; gap: 8px; color: var(--ink); font-size: .82rem; font-weight: 800; }
+.status {
+  display: inline-flex; align-items: center; border: 1px solid rgba(29,115,127,.18); border-radius: 999px;
+  padding: 5px 10px; background: var(--teal-soft); color: var(--teal); font-size: .62rem; font-weight: 900;
+  letter-spacing: .08em; text-transform: uppercase; white-space: nowrap;
+}
 
 /* Official seal: the supplied PNG contains a large transparent canvas. */
 .brand-lockup { display: inline-flex; align-items: center; gap: 11px; flex: none; }
@@ -154,4 +166,66 @@ button, a, summary { -webkit-tap-highlight-color: transparent; }
 
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { scroll-behavior: auto !important; transition: none !important; animation: none !important; }
+}
+
+/* ============================================================
+   CATALOG — compact index-page header + service/cause grids.
+   Deliberately not a hero: title + one line, then straight to the
+   grid. The homepage earns the big emotional treatment; index pages
+   should get out of the way of the content.
+   ============================================================ */
+
+.catalog-header { background: var(--teal-dark); color: var(--cream); padding: 156px 0 48px; }
+.catalog-header .eyebrow-label { color: var(--gold); font-size: .72rem; font-weight: 800; letter-spacing: .18em; text-transform: uppercase; }
+.catalog-header h1 { margin-top: 12px; font-size: clamp(2rem, 4vw, 3rem); line-height: 1.04; color: var(--cream); }
+.catalog-header p.lede { margin-top: 12px; max-width: 640px; color: color-mix(in srgb, var(--cream) 78%, var(--teal-dark)); font-size: .95rem; line-height: 1.7; }
+
+.page-header { padding: 156px 0 44px; border-bottom: 1.5px solid var(--line); }
+.page-header .eyebrow-label { color: var(--gold); font-size: .72rem; font-weight: 800; letter-spacing: .18em; text-transform: uppercase; }
+.page-header h1 { margin-top: 12px; font-size: clamp(2rem, 4vw, 3.1rem); line-height: 1.04; }
+.page-header p.lede { margin-top: 12px; max-width: 620px; color: var(--muted); font-size: .95rem; line-height: 1.7; }
+
+.catalog-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 18px; }
+.catalog-card { display: flex; flex-direction: column; overflow: hidden; transition: transform .18s ease; }
+.catalog-card:hover { transform: translateY(-3px); }
+.catalog-card-media { position: relative; display: grid; height: 168px; place-items: center; background: var(--teal-dark); }
+.catalog-card-media svg { width: 56px; height: 56px; fill: none; stroke: var(--cream); stroke-width: 1.6; stroke-linecap: round; stroke-linejoin: round; opacity: .92; }
+.catalog-card-badge { position: absolute; top: 14px; left: 16px; }
+.catalog-card-body { display: flex; flex: 1; flex-direction: column; padding: 20px 22px 22px; }
+.catalog-card-price { margin-top: auto; display: flex; align-items: baseline; justify-content: space-between; gap: 12px; border-top: 1.5px solid var(--line); padding-top: 14px; margin-top: 16px; }
+.catalog-card-price strong { font-size: 1.05rem; }
+.catalog-card-price small { color: var(--muted); font-size: .68rem; font-weight: 700; text-transform: uppercase; letter-spacing: .06em; }
+
+@media (max-width: 760px) {
+  .catalog-grid { grid-template-columns: 1fr; }
+  .catalog-header, .page-header { padding-top: 128px; }
+}
+
+/* ============================================================
+   BOOKING / CAMPAIGN — Korban detail (booking-flow) and Wakaf
+   project detail (campaign-style) pages.
+   ============================================================ */
+
+.impact-row { display: grid; grid-template-columns: repeat(3, 1fr); border: 1.5px solid var(--line); border-radius: 16px; overflow: hidden; }
+.impact-row > div { padding: 20px 22px; border-right: 1.5px solid var(--line); }
+.impact-row > div:last-child { border-right: 0; }
+.impact-row strong { display: block; font-size: .85rem; }
+.impact-row small { display: block; margin-top: 4px; color: var(--muted); font-size: .74rem; line-height: 1.55; }
+
+.amount-pill {
+  min-height: 46px; border: 1.5px solid var(--line); border-radius: 999px; padding: 0 20px;
+  font-weight: 800; font-size: .88rem; color: var(--ink); background: var(--white); cursor: pointer;
+  transition: border-color .15s ease, background-color .15s ease, color .15s ease;
+}
+.amount-pill.is-active { border-color: var(--teal); background: var(--teal); color: white; }
+.amount-pill:hover:not(.is-active) { border-color: var(--teal); }
+
+.step-list { display: grid; gap: 14px; }
+.step-list li { display: flex; align-items: center; gap: 12px; list-style: none; color: var(--muted); font-size: .85rem; }
+.step-list li span { display: grid; width: 26px; height: 26px; flex: none; place-items: center; border: 1.5px solid var(--line); border-radius: 8px; color: var(--teal); font-size: .68rem; font-weight: 800; }
+
+@media (max-width: 760px) {
+  .impact-row { grid-template-columns: 1fr; }
+  .impact-row > div { border-right: 0; border-bottom: 1.5px solid var(--line); }
+  .impact-row > div:last-child { border-bottom: 0; }
 }
