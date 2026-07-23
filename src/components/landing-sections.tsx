@@ -6,10 +6,11 @@ import { Reveal } from "@/components/landing-reveal";
 import { LandingMobileMenu, ThemeToggle } from "@/components/landing-theme";
 
 const NAV_LINKS = [
-  { label: "Why As-Sabiqun", href: "#why" },
-  { label: "How it works", href: "#how" },
-  { label: "Services", href: "#services" },
-  { label: "FAQ", href: "#faq" },
+  { label: "Services", href: "/services" },
+  { label: "Korban", href: "/korban" },
+  { label: "Wakaf", href: "/wakaf" },
+  { label: "About", href: "/about" },
+  { label: "Contact", href: "/contact" },
 ];
 
 export function SectionEyebrow({ arabic, english }: { arabic: string; english: string }) {
@@ -23,7 +24,7 @@ export function SectionEyebrow({ arabic, english }: { arabic: string; english: s
 }
 
 function KhatimTexture({ color = "var(--gold)", opacity = 0.06 }: { color?: string; opacity?: number }) {
-  const id = `khatim-${color.replace("#", "")}-${Math.round(opacity * 100)}`;
+  const id = `khatim-${color.replace(/[^a-z0-9]/gi, "")}-${Math.round(opacity * 100)}`;
   return (
     <svg aria-hidden="true" className="pointer-events-none absolute inset-0 h-full w-full" style={{ opacity }}>
       <defs>
@@ -42,22 +43,14 @@ function KhatimTexture({ color = "var(--gold)", opacity = 0.06 }: { color?: stri
 export function LandingNav() {
   return (
     <nav className="fixed inset-x-0 top-3 z-50 px-4 lg:px-6">
-      <div
-        className="lp-nav relative mx-auto flex max-w-6xl items-center justify-between gap-2 rounded-full py-2 pl-3 pr-2"
-        style={{
-          backdropFilter: "blur(28px)",
-          WebkitBackdropFilter: "blur(28px)",
-          border: "1px solid rgba(0,0,0,0.08)",
-          boxShadow: "0 8px 28px -16px rgba(var(--lp-gold-rgb),0.3), inset 0 4px 4px 0 rgba(var(--lp-cream-rgb),0.3)",
-        }}
-      >
+      <div className="lp-nav relative mx-auto flex max-w-6xl items-center justify-between gap-2 rounded-full py-2 pl-3 pr-2 shadow-[0_10px_0_-6px_rgba(var(--lp-teal-dark-rgb),0.1)]">
         <Link href="/" className="flex shrink-0 items-center gap-2 transition-transform hover:scale-[1.02]" aria-label="As-Sabiqun home">
           <BrandMark className="h-8 w-8 shrink-0" />
           <span className="lp-display text-[19px] font-semibold tracking-tight" style={{ color: "var(--lp-gold)" }}>As-Sabiqun</span>
         </Link>
         <div className="hidden items-center gap-0.5 md:flex">
           {NAV_LINKS.map((l) => (
-            <a key={l.label} href={l.href} className="whitespace-nowrap rounded-full px-3.5 py-2 text-[13px] font-medium transition-colors hover:bg-black/5" style={{ color: "var(--lp-text)" }}>{l.label}</a>
+            <Link key={l.label} href={l.href} className="whitespace-nowrap rounded-full px-3.5 py-2 text-[13px] font-medium transition-colors hover:bg-black/5" style={{ color: "var(--lp-text)" }}>{l.label}</Link>
           ))}
         </div>
         <div className="flex items-center gap-1.5">
@@ -65,7 +58,7 @@ export function LandingNav() {
           <Link href="/login" className="hidden items-center rounded-full px-4 py-2 text-[13px] font-semibold whitespace-nowrap transition-transform hover:scale-[1.03] sm:inline-flex" style={{ color: "var(--lp-emerald)", border: "1px solid var(--lp-border)" }}>
             Log in
           </Link>
-          <Link href="/services" className="flex items-center gap-1.5 rounded-full py-2 pl-4 pr-3 text-[13px] font-semibold whitespace-nowrap transition-transform hover:scale-[1.03]" style={{ backgroundColor: "var(--lp-emerald)", color: "var(--cream)" }}>
+          <Link href="/services" className="lp-pill flex items-center gap-1.5 rounded-full py-2 pl-4 pr-3 text-[13px] font-semibold whitespace-nowrap transition-transform hover:scale-[1.03]">
             Choose a service
             <ArrowUpRight size={14} strokeWidth={2.5} />
           </Link>
@@ -99,10 +92,10 @@ export function Hero() {
           Choose a service, review its scope, and follow every handoff from your request to the completion record.
         </p>
         <div className="mt-8 flex items-center justify-center">
-          <Link href="/services" className="lp-liquid-glass-plain flex items-center gap-3 rounded-full py-2 pl-6 pr-2 transition-transform hover:scale-105 active:scale-95">
-            <span className="text-[16px] font-semibold" style={{ color: "var(--lp-emerald)" }}>Choose a service</span>
-            <span className="grid h-9 w-9 place-items-center rounded-full" style={{ backgroundColor: "rgba(var(--lp-gold-rgb),0.25)" }}>
-              <ArrowUpRight size={16} style={{ color: "var(--lp-gold)" }} strokeWidth={2.5} />
+          <Link href="/services" className="lp-pill flex items-center gap-3 rounded-full py-2 pl-6 pr-2 transition-transform hover:scale-105 active:scale-95">
+            <span className="text-[16px] font-semibold">Choose a service</span>
+            <span className="grid h-9 w-9 place-items-center rounded-full" style={{ backgroundColor: "rgba(var(--lp-gold-rgb),0.3)" }}>
+              <ArrowUpRight size={16} strokeWidth={2.5} />
             </span>
           </Link>
         </div>
@@ -138,7 +131,7 @@ export function AmanahShowcase() {
             <em className="lp-display font-medium" style={{ color: "var(--lp-gold)" }}>You follow it.</em>
           </h2>
           <p className="mt-6 max-w-md text-[16px] leading-relaxed" style={{ color: "var(--lp-text-muted)" }}>
-            Every service becomes an amanah record — reference, status, and completion evidence kept together from the moment you submit a request to the day it&apos;s fulfilled.
+            Every service becomes an amanah record - reference, status, and completion evidence kept together from the moment you submit a request to the day it&apos;s fulfilled.
           </p>
           <div className="mt-8 flex flex-wrap gap-2.5">
             {["Ordered", "Reviewed", "Assigned", "Documented"].map((s, i) => (
@@ -148,16 +141,16 @@ export function AmanahShowcase() {
             ))}
           </div>
           <div className="mt-9">
-            <Link href="#how" className="inline-flex items-center gap-3 rounded-full py-2 pl-5 pr-2 transition-transform hover:scale-105 active:scale-95" style={{ backgroundColor: "var(--lp-emerald)", color: "var(--cream)" }}>
+            <Link href="/korban" className="lp-pill inline-flex items-center gap-3 rounded-full py-2 pl-5 pr-2 transition-transform hover:scale-105 active:scale-95">
               <span className="text-[15px] font-semibold">See how it works</span>
-              <span className="grid h-9 w-9 place-items-center rounded-full" style={{ backgroundColor: "rgba(var(--lp-gold-rgb),0.25)" }}>
-                <ArrowUpRight size={16} style={{ color: "var(--lp-gold)" }} strokeWidth={2.5} />
+              <span className="grid h-9 w-9 place-items-center rounded-full" style={{ backgroundColor: "rgba(var(--lp-gold-rgb),0.3)" }}>
+                <ArrowUpRight size={16} strokeWidth={2.5} />
               </span>
             </Link>
           </div>
         </Reveal>
-        <Reveal delay={120} className="lp-liquid-glass rounded-[1.6rem] p-6 md:p-7">
-          <div className="flex items-center justify-between border-b pb-5" style={{ borderColor: "rgba(var(--lp-cream-rgb),.12)" }}>
+        <Reveal delay={120} className="lp-panel-dark rounded-[1.6rem] p-6 md:p-7">
+          <div className="flex items-center justify-between border-b pb-5" style={{ borderColor: "rgba(var(--lp-cream-rgb),.14)" }}>
             <div>
               <p className="text-[.68rem] font-black uppercase tracking-[.16em]" style={{ color: "var(--lp-text-muted)" }}>Example amanah record</p>
               <h3 className="lp-display mt-1 text-xl">Wakaf Quran</h3>
@@ -202,7 +195,7 @@ export function StatsBar() {
     { num: "2", label: "Fulfilment partners", sub: "and growing" },
   ];
   return (
-    <section className="relative border-y px-6 py-10 lg:px-10 lg:py-14" style={{ borderColor: "rgba(var(--lp-gold-rgb),0.18)", backgroundColor: "var(--lp-bg-deep)" }}>
+    <section className="relative border-y px-6 py-10 lg:px-10 lg:py-14" style={{ borderColor: "var(--lp-border)", backgroundColor: "var(--lp-bg-deep)" }}>
       <div className="mx-auto grid max-w-6xl grid-cols-2 gap-6 lg:grid-cols-4 lg:gap-10">
         {stats.map((s, i) => (
           <Reveal key={s.label} delay={i * 90} className="text-center lg:text-left">
@@ -235,12 +228,12 @@ export function WhyDifferent() {
         </p>
         <div className="mt-16 grid grid-cols-1 gap-5 md:grid-cols-3">
           {pillars.map((p, i) => (
-            <Reveal key={p.title} delay={i * 110} className="lp-liquid-glass flex min-h-[340px] flex-col rounded-[1.6rem] p-6">
+            <Reveal key={p.title} delay={i * 110} className="lp-panel flex min-h-[340px] flex-col rounded-[1.6rem] p-6">
               <div className="flex items-start justify-between gap-4">
-                <div className="lp-liquid-glass grid h-12 w-12 shrink-0 place-items-center rounded-2xl">{p.icon}</div>
+                <div className="grid h-12 w-12 shrink-0 place-items-center rounded-2xl" style={{ backgroundColor: "var(--lp-gold-soft)", border: "1px solid var(--lp-border)" }}>{p.icon}</div>
                 <div className="flex max-w-[72%] flex-wrap justify-end gap-1.5">
                   {p.tags.map((t) => (
-                    <span key={t} className="lp-liquid-glass whitespace-nowrap rounded-full px-2.5 py-1 text-[10px] font-semibold tracking-wide" style={{ color: "var(--lp-text-muted)" }}>{t}</span>
+                    <span key={t} className="whitespace-nowrap rounded-full px-2.5 py-1 text-[10px] font-semibold tracking-wide" style={{ backgroundColor: "var(--lp-gold-soft)", border: "1px solid var(--lp-border)", color: "var(--lp-text-muted)" }}>{t}</span>
                   ))}
                 </div>
               </div>
@@ -263,7 +256,7 @@ export function HowItWorks() {
     { n: "٣", title: "Keep the record", body: "Your receipt, updates, and available reviewed evidence stay with the order." },
   ];
   return (
-    <section id="how" className="relative border-t px-6 py-24 lg:px-10 lg:py-36" style={{ borderColor: "rgba(var(--lp-gold-rgb),0.15)", backgroundColor: "var(--lp-bg-band)" }}>
+    <section id="how" className="relative border-t px-6 py-24 lg:px-10 lg:py-36" style={{ borderColor: "var(--lp-border)", backgroundColor: "var(--lp-bg-band)" }}>
       <div className="mx-auto max-w-6xl">
         <SectionEyebrow arabic="كَيْف" english="How it works" />
         <h2 className="lp-display max-w-3xl font-medium" style={{ fontSize: "clamp(32px, 4.5vw, 48px)", lineHeight: 1.08 }}>
@@ -275,7 +268,7 @@ export function HowItWorks() {
         </p>
         <div className="relative mt-16 grid grid-cols-1 gap-5 md:grid-cols-3">
           {steps.map((s, i) => (
-            <Reveal key={s.n} delay={i * 120} className="lp-liquid-glass-strong relative rounded-3xl p-7">
+            <Reveal key={s.n} delay={i * 120} className="lp-panel-dark relative rounded-3xl p-7">
               <div className="mb-5 flex items-baseline justify-between">
                 <span className="lp-arabic text-[64px] font-medium leading-none" style={{ color: "rgba(var(--lp-gold-rgb),0.85)" }}>{s.n}</span>
                 {i < steps.length - 1 && <ArrowRight size={18} className="hidden translate-x-[14px] md:block" style={{ color: "rgba(var(--lp-gold-rgb),0.4)" }} />}
@@ -307,7 +300,7 @@ export function WhoItsFor() {
         </h2>
         <div className="mt-14 grid grid-cols-1 gap-5 md:grid-cols-3">
           {groups.map((c, i) => (
-            <Reveal key={c.title} delay={i * 110} className="lp-liquid-glass flex min-h-[230px] flex-col rounded-[1.6rem] p-6">
+            <Reveal key={c.title} delay={i * 110} className="lp-panel flex min-h-[230px] flex-col rounded-[1.6rem] p-6">
               <span className="lp-arabic mb-4 text-[30px] font-medium leading-none" style={{ color: "rgba(var(--lp-gold-rgb),0.6)" }} lang="ar" dir="rtl">{c.ar}</span>
               <div className="flex-1" />
               <h3 className="lp-display mb-2 text-[20px] font-medium">{c.title}</h3>
@@ -315,7 +308,7 @@ export function WhoItsFor() {
             </Reveal>
           ))}
         </div>
-        <Reveal delay={120} className="lp-liquid-glass-strong mt-5 flex flex-col items-start gap-6 rounded-[1.6rem] p-7 lg:flex-row lg:items-center lg:p-9">
+        <Reveal delay={120} className="lp-panel-dark mt-5 flex flex-col items-start gap-6 rounded-[1.6rem] p-7 lg:flex-row lg:items-center lg:p-9">
           <span className="lp-display flex-shrink-0 text-[56px] leading-none" style={{ color: "rgba(var(--lp-gold-rgb),0.5)" }}>&ldquo;</span>
           <div>
             <p className="lp-display text-[18px] leading-snug lg:text-[20px]">
@@ -332,7 +325,7 @@ export function WhoItsFor() {
 
 export function ServicesOutline() {
   return (
-    <section id="services" className="relative border-t px-6 py-24 lg:px-10 lg:py-36" style={{ borderColor: "rgba(var(--lp-gold-rgb),0.15)" }}>
+    <section id="services" className="relative border-t px-6 py-24 lg:px-10 lg:py-36" style={{ borderColor: "var(--lp-border)" }}>
       <div className="mx-auto max-w-6xl">
         <SectionEyebrow arabic="خِدْمَاتُنَا" english="Our services" />
         <h2 className="lp-display max-w-3xl font-medium" style={{ fontSize: "clamp(32px, 4.5vw, 48px)", lineHeight: 1.08 }}>
@@ -345,8 +338,8 @@ export function ServicesOutline() {
         <div className="mt-14 grid grid-cols-1 gap-4 md:grid-cols-2">
           {services.map((service, i) => (
             <Reveal key={service.slug} delay={i * 80}>
-              <Link href={service.href} className="lp-liquid-glass group flex items-center gap-5 rounded-3xl p-6 transition-transform hover:scale-[1.01] active:scale-[0.99]">
-                <div className="grid h-16 w-16 shrink-0 place-items-center rounded-2xl" style={{ backgroundColor: "rgba(var(--lp-gold-rgb),0.18)" }}>
+              <Link href={service.href} className="lp-panel group flex items-center gap-5 rounded-3xl p-6 transition-transform hover:scale-[1.01] active:scale-[0.99]">
+                <div className="grid h-16 w-16 shrink-0 place-items-center rounded-2xl" style={{ backgroundColor: "var(--lp-gold-soft)", border: "1px solid var(--lp-border)" }}>
                   <span className="lp-arabic text-[22px] font-medium leading-none" style={{ color: "var(--lp-gold)" }} lang="ar" dir="rtl">{service.arabic}</span>
                 </div>
                 <div className="min-w-0 flex-1">
@@ -372,7 +365,7 @@ export function FAQ() {
     { q: "What other services are planned?", a: "AI consultancy and business consultancy are on the roadmap alongside Korban and Wakaf, once their service models are ready for a proper journey." },
   ];
   return (
-    <section id="faq" className="relative border-t px-6 py-24 lg:px-10 lg:py-36" style={{ borderColor: "rgba(var(--lp-gold-rgb),0.15)", backgroundColor: "var(--lp-bg-band)" }}>
+    <section id="faq" className="relative border-t px-6 py-24 lg:px-10 lg:py-36" style={{ borderColor: "var(--lp-border)", backgroundColor: "var(--lp-bg-band)" }}>
       <div className="mx-auto max-w-3xl">
         <SectionEyebrow arabic="أَسْئِلَة" english="Common questions" />
         <h2 className="lp-display mb-12 font-medium" style={{ fontSize: "clamp(32px, 4.5vw, 48px)", lineHeight: 1.08 }}>
@@ -380,7 +373,7 @@ export function FAQ() {
         </h2>
         <div className="space-y-3">
           {faqs.map((f, i) => (
-            <Reveal key={f.q} delay={i * 70} as="details" className="lp-liquid-glass group cursor-pointer rounded-2xl p-5">
+            <Reveal key={f.q} delay={i * 70} as="details" className="lp-panel group cursor-pointer rounded-2xl p-5">
               <summary className="flex list-none items-center justify-between gap-4">
                 <h3 className="lp-display text-[16px] font-medium leading-snug lg:text-[17px]">{f.q}</h3>
                 <ChevronDown size={18} className="flex-shrink-0 transition-transform group-open:rotate-180" style={{ color: "var(--lp-gold)" }} />
@@ -396,7 +389,7 @@ export function FAQ() {
 
 export function FinalCTA() {
   return (
-    <section className="relative overflow-hidden border-t px-6 py-28 lg:px-10 lg:py-40" style={{ borderColor: "rgba(var(--lp-gold-rgb),0.15)" }}>
+    <section className="relative overflow-hidden border-t px-6 py-28 lg:px-10 lg:py-40" style={{ borderColor: "var(--lp-border)" }}>
       <div className="pointer-events-none absolute inset-0" aria-hidden="true" style={{ background: "radial-gradient(ellipse 70% 60% at 50% 50%, rgba(var(--lp-gold-rgb),0.15) 0%, transparent 70%)" }} />
       <div className="relative mx-auto max-w-3xl text-center">
         <span className="lp-arabic mb-6 block font-medium leading-none" style={{ fontSize: "clamp(60px, 9vw, 120px)", color: "var(--lp-emph)", textShadow: "0 4px 30px rgba(0,0,0,0.3)" }} lang="ar" dir="rtl">اِبْدَأ</span>
@@ -409,10 +402,10 @@ export function FinalCTA() {
           Choose Korban or a Wakaf project - review the scope, submit your details, and keep the record with you from request to completion.
         </p>
         <div className="mt-10">
-          <Link href="/services" className="lp-liquid-glass-strong inline-flex items-center gap-4 rounded-full py-2 pl-7 pr-2 transition-transform hover:scale-105 active:scale-95">
-            <span className="text-[16px] font-semibold" style={{ color: "var(--lp-text)" }}>Choose a service</span>
-            <span className="grid h-10 w-10 place-items-center rounded-full" style={{ backgroundColor: "rgba(var(--lp-gold-rgb),0.25)" }}>
-              <ArrowUpRight size={18} style={{ color: "var(--lp-gold)" }} strokeWidth={2.5} />
+          <Link href="/services" className="lp-pill inline-flex items-center gap-4 rounded-full py-2 pl-7 pr-2 transition-transform hover:scale-105 active:scale-95">
+            <span className="text-[16px] font-semibold">Choose a service</span>
+            <span className="grid h-10 w-10 place-items-center rounded-full" style={{ backgroundColor: "rgba(var(--lp-gold-rgb),0.3)" }}>
+              <ArrowUpRight size={18} strokeWidth={2.5} />
             </span>
           </Link>
         </div>
@@ -423,7 +416,7 @@ export function FinalCTA() {
 
 export function LandingFooter() {
   return (
-    <footer className="relative border-t px-6 py-14 lg:px-10" style={{ borderColor: "rgba(var(--lp-gold-rgb),0.18)" }}>
+    <footer className="relative border-t px-6 py-14 lg:px-10" style={{ borderColor: "var(--lp-border)" }}>
       <div className="mx-auto flex max-w-6xl flex-col items-start justify-between gap-8 lg:flex-row lg:items-center">
         <Link href="/" className="flex items-center gap-2.5">
           <BrandMark className="h-9 w-9 shrink-0" />
@@ -433,14 +426,12 @@ export function LandingFooter() {
           </div>
         </Link>
         <div className="flex flex-wrap items-center gap-6">
-          <a href="#why" className="text-[12px] font-semibold" style={{ color: "var(--lp-text-muted)" }}>Why</a>
-          <a href="#services" className="text-[12px] font-semibold" style={{ color: "var(--lp-text-muted)" }}>Services</a>
-          <a href="#faq" className="text-[12px] font-semibold" style={{ color: "var(--lp-text-muted)" }}>FAQ</a>
-          <Link href="/about" className="text-[12px] font-semibold" style={{ color: "var(--lp-text-muted)" }}>About</Link>
-          <Link href="/contact" className="text-[12px] font-semibold" style={{ color: "var(--lp-text-muted)" }}>Contact</Link>
+          {NAV_LINKS.map((l) => (
+            <Link key={l.label} href={l.href} className="text-[12px] font-semibold" style={{ color: "var(--lp-text-muted)" }}>{l.label}</Link>
+          ))}
         </div>
       </div>
-      <div className="mx-auto mt-10 flex max-w-6xl flex-col items-start justify-between gap-2 border-t pt-6 text-[11px] sm:flex-row sm:items-center" style={{ borderColor: "rgba(var(--lp-gold-rgb),0.12)", color: "var(--lp-text-muted)" }}>
+      <div className="mx-auto mt-10 flex max-w-6xl flex-col items-start justify-between gap-2 border-t pt-6 text-[11px] sm:flex-row sm:items-center" style={{ borderColor: "var(--lp-border)", color: "var(--lp-text-muted)" }}>
         <span>© 2026 As-Sabiqun Association Consultancy · Preview website</span>
         <span className="lp-arabic" style={{ color: "rgba(var(--lp-gold-rgb),0.6)" }} lang="ar" dir="rtl">الأَمَانَة وَالإِحْسَان</span>
       </div>

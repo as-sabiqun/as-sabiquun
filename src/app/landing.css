@@ -1,7 +1,9 @@
-/* Liquid-glass landing system for the As-Sabiqun homepage. Scoped entirely
-   under .lp-root so it never collides with the shared site-shell classes,
-   but every color is derived from the site's own tokens (--teal, --gold,
-   --cream, --ink) rather than a borrowed palette. */
+/* Landing system for the As-Sabiqun homepage. Scoped under .lp-root so it
+   never collides with the shared site-shell classes. Built on the site's
+   own tokens (--teal, --gold, --cream, --ink) — no borrowed palette.
+
+   Signature motif: solid "stamped record" panels (offset shadow + a gold
+   corner tick, echoing the brand seal) instead of a glass/blur treatment. */
 
 .lp-root {
   --lp-bg: var(--cream);
@@ -16,7 +18,6 @@
   --lp-emph: var(--gold);
   --lp-emerald: var(--teal-dark);
   --lp-emerald-alt: var(--teal);
-  --lp-glass-strong-bg: rgba(var(--lp-teal-dark-rgb), 0.42);
   --lp-gold-rgb: 162, 124, 71;
   --lp-teal-rgb: 29, 115, 127;
   --lp-teal-dark-rgb: 35, 93, 99;
@@ -34,14 +35,13 @@
   --lp-text-muted: color-mix(in srgb, var(--cream) 65%, var(--teal));
   --lp-gold: color-mix(in srgb, var(--gold) 70%, white);
   --lp-emph: color-mix(in srgb, var(--gold) 70%, white);
-  --lp-glass-strong-bg: rgba(var(--lp-teal-dark-rgb), 0.28);
 }
 
 .lp-root .lp-display { font-family: var(--font-display), Georgia, serif; letter-spacing: -0.022em; }
 .lp-root .lp-arabic { font-family: var(--font-arabic), serif; }
 
-.lp-nav { background-color: rgba(var(--lp-cream-rgb), 0.72); }
-.lp-root[data-lp-theme="dark"] .lp-nav { background-color: rgba(var(--lp-teal-rgb), 0.72); }
+/* Solid floating nav — no blur, a crisp bordered bar instead. */
+.lp-nav { background-color: var(--lp-bg-alt); border: 1.5px solid var(--lp-border); }
 
 .lp-hero-canvas {
   background: radial-gradient(ellipse 95% 70% at 50% 35%, var(--cream) 0%, var(--white) 50%, var(--cream-dark) 100%);
@@ -50,59 +50,49 @@
   background: radial-gradient(ellipse 95% 70% at 50% 35%, var(--teal) 0%, var(--teal-dark) 50%, color-mix(in srgb, var(--teal-dark) 80%, black) 100%);
 }
 
-.lp-liquid-glass {
+/* ── Stamped record panel — the signature card treatment ──────────────
+   Solid fill, a firm border, an offset "stacked paper" shadow, and a
+   small gold corner tick that echoes the brand seal. Two variants:
+   light (paper) and dark (emerald, for on-brand emphasis cards). */
+.lp-panel {
+  position: relative;
+  background: var(--lp-bg-alt);
+  border: 1.5px solid var(--lp-border);
+  box-shadow: 7px 7px 0 rgba(var(--lp-teal-dark-rgb), 0.08);
+}
+.lp-panel-dark {
+  position: relative;
   background: var(--lp-emerald);
-  --lp-text: var(--cream);
-  --lp-text-muted: color-mix(in srgb, var(--cream) 65%, var(--teal));
-  border: none;
-  box-shadow:
-    inset 0 4px 4px 0 rgba(var(--lp-cream-rgb), 0.16),
-    inset 0 0 30px -4px rgba(var(--lp-teal-dark-rgb), 0.6);
-  position: relative;
-  overflow: hidden;
+  border: 1.5px solid var(--lp-gold);
+  --lp-text: var(--lp-bg);
+  --lp-text-muted: color-mix(in srgb, var(--lp-bg) 65%, var(--lp-emerald));
+  color: var(--lp-text);
+  box-shadow: 7px 7px 0 rgba(var(--lp-gold-rgb), 0.18);
 }
-.lp-liquid-glass-plain {
-  background: rgba(var(--lp-cream-rgb), 0.10);
-  -webkit-backdrop-filter: blur(14px);
-  backdrop-filter: blur(14px);
-  border: none;
-  box-shadow: inset 0 4px 4px 0 rgba(var(--lp-cream-rgb), 0.22);
-  position: relative;
-  overflow: hidden;
-}
-.lp-liquid-glass::before, .lp-liquid-glass-plain::before {
+.lp-panel::after, .lp-panel-dark::after {
   content: "";
   position: absolute;
-  inset: 0;
-  border-radius: inherit;
-  padding: 1.4px;
-  background: linear-gradient(180deg, rgba(var(--lp-gold-rgb),0.55) 0%, rgba(var(--lp-cream-rgb),0.18) 22%, transparent 42%, transparent 58%, rgba(var(--lp-cream-rgb),0.18) 78%, rgba(var(--lp-gold-rgb),0.55) 100%);
-  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
-  mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
-  -webkit-mask-composite: xor;
-  mask-composite: exclude;
+  top: -1.5px;
+  right: -1.5px;
+  width: 22px;
+  height: 22px;
+  background: var(--lp-gold);
+  clip-path: polygon(100% 0, 0 0, 100% 100%);
   pointer-events: none;
 }
-.lp-liquid-glass-strong {
-  background: var(--lp-glass-strong-bg);
-  border: none;
-  box-shadow: 4px 4px 14px rgba(0,0,0,0.18), inset 0 4px 4px 0 rgba(var(--lp-cream-rgb),0.22);
-  position: relative;
-  overflow: hidden;
+
+/* Solid pill CTAs — filled, not glass. */
+.lp-pill {
+  background: var(--lp-emerald);
+  color: var(--lp-bg-alt);
+  border: 1.5px solid var(--lp-emerald);
 }
-.lp-liquid-glass-strong::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  border-radius: inherit;
-  padding: 1.4px;
-  background: linear-gradient(180deg, rgba(var(--lp-gold-rgb),0.6) 0%, rgba(var(--lp-cream-rgb),0.22) 20%, transparent 40%, transparent 60%, rgba(var(--lp-cream-rgb),0.22) 80%, rgba(var(--lp-gold-rgb),0.6) 100%);
-  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
-  mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
-  -webkit-mask-composite: xor;
-  mask-composite: exclude;
-  pointer-events: none;
+.lp-pill-outline {
+  background: transparent;
+  color: var(--lp-emerald);
+  border: 1.5px solid var(--lp-border);
 }
+.lp-root[data-lp-theme="dark"] .lp-pill-outline { color: var(--lp-text); }
 
 .lp-orb { position: absolute; border-radius: 9999px; filter: blur(8px); animation: lp-orb-drift 18s ease-in-out infinite; }
 .lp-orb-b { animation-duration: 24s; animation-delay: -6s; }

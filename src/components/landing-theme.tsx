@@ -68,15 +68,7 @@ export function LandingMobileMenu({ links }: { links: { label: string; href: str
         {open ? <X size={18} /> : <Menu size={18} />}
       </button>
       {open && (
-        <div
-          className="lp-nav absolute inset-x-0 top-[calc(100%+8px)] z-50 flex flex-col gap-1 rounded-[20px] p-2 md:hidden"
-          style={{
-            backdropFilter: "blur(28px)",
-            WebkitBackdropFilter: "blur(28px)",
-            border: "1px solid rgba(0,0,0,0.08)",
-            boxShadow: "0 8px 28px -16px rgba(var(--lp-gold-rgb),0.3), inset 0 4px 4px 0 rgba(var(--lp-cream-rgb),0.3)",
-          }}
-        >
+        <div className="lp-nav absolute inset-x-0 top-[calc(100%+8px)] z-50 flex flex-col gap-1 rounded-[20px] p-2 shadow-[6px_6px_0_rgba(var(--lp-teal-dark-rgb),0.08)] md:hidden">
           {links.map((l) => (
             <Link
               key={l.label}
