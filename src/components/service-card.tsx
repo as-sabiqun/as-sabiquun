@@ -50,15 +50,15 @@ function ServiceIcon({ type }: { type: (typeof services)[number]["slug"] }) {
 
 export function ServiceCard({ service }: { service: (typeof services)[number] }) {
   return (
-    <article className="service-card">
-      <div className={`service-art service-art-${service.slug}`}>
-        <span className="numeral service-number">{service.number}</span>
+    <article className="card service-tile">
+      <div className="service-tile-art">
+        <span className="numeral service-tile-number">{service.number}</span>
         <ServiceIcon type={service.slug} />
-        <span className="arabic service-arabic" lang="ar" dir="rtl">{service.arabic}</span>
+        <span className="arabic service-tile-arabic" lang="ar" dir="rtl">{service.arabic}</span>
       </div>
-      <div className="service-card-copy">
+      <div className="service-tile-body">
         <div className="flex items-start justify-between gap-4">
-          <h3 className="display text-[1.75rem] leading-none">{service.title}</h3>
+          <h3 className="display text-[1.55rem] leading-tight">{service.title}</h3>
           <span className="status">Available</span>
         </div>
         <p className="mt-4 text-sm leading-7 text-[var(--muted)]">{service.description}</p>
