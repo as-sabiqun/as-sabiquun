@@ -88,7 +88,7 @@ input[type="checkbox"], input[type="radio"] { accent-color: var(--teal); }
   background: var(--white);
   box-shadow: 7px 7px 0 rgba(49,35,27,.05);
 }
-.card::after {
+.card::after, .card-dark::after {
   content: "";
   position: absolute;
   top: -1.5px;
@@ -99,6 +99,18 @@ input[type="checkbox"], input[type="radio"] { accent-color: var(--teal); }
   clip-path: polygon(100% 0, 0 0, 100% 100%);
   pointer-events: none;
 }
+.card-dark {
+  position: relative;
+  border-radius: 22px;
+  background: var(--teal-dark);
+  border: 1.5px solid var(--gold);
+  --muted: color-mix(in srgb, var(--cream) 65%, var(--teal-dark));
+  --lp-text: var(--cream);
+  --lp-text-muted: var(--muted);
+  color: var(--cream);
+  box-shadow: 7px 7px 0 rgba(162,124,71,.14);
+}
+.card-dark .lead { color: var(--muted); }
 .input {
   width: 100%; min-height: 50px; border: 1px solid var(--line); border-radius: 10px;
   background: var(--cream); padding: 12px 14px; color: var(--ink); outline: none;

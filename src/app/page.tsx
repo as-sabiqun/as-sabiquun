@@ -1,12 +1,11 @@
 import "./landing.css";
-import { LandingThemeProvider } from "@/components/landing-theme";
+import { Footer, Header } from "@/components/site-shell";
 import {
   AmanahShowcase,
   FAQ,
   FinalCTA,
   Hero,
   HowItWorks,
-  LandingFooter,
   ServicesOutline,
   StatsBar,
   WhyDifferent,
@@ -15,17 +14,20 @@ import {
 
 export default function LandingPage() {
   return (
-    <LandingThemeProvider>
-      <Hero />
-      <AmanahShowcase />
-      <StatsBar />
-      <WhyDifferent />
-      <HowItWorks />
-      <WhoItsFor />
-      <ServicesOutline />
-      <FAQ />
-      <FinalCTA />
-      <LandingFooter />
-    </LandingThemeProvider>
+    <>
+      <Header />
+      <main>
+        <Hero />
+        <AmanahShowcase />
+        <StatsBar />
+        <WhyDifferent />
+        <HowItWorks />
+        <WhoItsFor />
+        <ServicesOutline />
+        <FAQ />
+        <FinalCTA />
+      </main>
+      <Footer />
+    </>
   );
 }

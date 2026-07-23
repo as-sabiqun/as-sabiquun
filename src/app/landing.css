@@ -1,98 +1,12 @@
-/* Landing system for the As-Sabiqun homepage. Scoped under .lp-root so it
-   never collides with the shared site-shell classes. Built on the site's
-   own tokens (--teal, --gold, --cream, --ink) — no borrowed palette.
-
-   Signature motif: solid "stamped record" panels (offset shadow + a gold
-   corner tick, echoing the brand seal) instead of a glass/blur treatment. */
-
-.lp-root {
-  --lp-bg: var(--cream);
-  --lp-bg-alt: var(--white);
-  --lp-bg-deep: var(--cream-dark);
-  --lp-bg-band: color-mix(in srgb, var(--cream) 55%, var(--cream-dark));
-  --lp-text: var(--ink);
-  --lp-text-muted: var(--muted);
-  --lp-gold: var(--gold);
-  --lp-gold-soft: color-mix(in srgb, var(--gold) 16%, var(--white));
-  --lp-border: var(--line);
-  --lp-emph: var(--gold);
-  --lp-emerald: var(--teal-dark);
-  --lp-emerald-alt: var(--teal);
-  --lp-gold-rgb: 162, 124, 71;
-  --lp-teal-rgb: 29, 115, 127;
-  --lp-teal-dark-rgb: 35, 93, 99;
-  --lp-cream-rgb: 255, 253, 250;
-  font-family: var(--font-inter), Arial, sans-serif;
-  background: var(--lp-bg);
-  color: var(--lp-text);
-}
-.lp-root[data-lp-theme="dark"] {
-  --lp-bg: var(--teal-dark);
-  --lp-bg-alt: var(--teal);
-  --lp-bg-deep: color-mix(in srgb, var(--teal-dark) 80%, black);
-  --lp-bg-band: var(--teal);
-  --lp-text: var(--cream);
-  --lp-text-muted: color-mix(in srgb, var(--cream) 65%, var(--teal));
-  --lp-gold: color-mix(in srgb, var(--gold) 70%, white);
-  --lp-emph: color-mix(in srgb, var(--gold) 70%, white);
-}
-
-.lp-root .lp-display { font-family: var(--font-display), Georgia, serif; letter-spacing: -0.022em; }
-.lp-root .lp-arabic { font-family: var(--font-arabic), serif; }
-
-/* Solid floating nav — no blur, a crisp bordered bar instead. */
-.lp-nav { background-color: var(--lp-bg-alt); border: 1.5px solid var(--lp-border); }
+/* Homepage-only decorative bits (hero canvas gradient, drifting orbs, film
+   grain, scroll-reveal animation). Everything else on the homepage — nav,
+   footer, cards, buttons, type — reuses the site's own shared classes
+   (Header/Footer, .card, .card-dark, .btn, .display, .arabic) so it doesn't
+   drift from the rest of the app. */
 
 .lp-hero-canvas {
   background: radial-gradient(ellipse 95% 70% at 50% 35%, var(--cream) 0%, var(--white) 50%, var(--cream-dark) 100%);
 }
-.lp-root[data-lp-theme="dark"] .lp-hero-canvas {
-  background: radial-gradient(ellipse 95% 70% at 50% 35%, var(--teal) 0%, var(--teal-dark) 50%, color-mix(in srgb, var(--teal-dark) 80%, black) 100%);
-}
-
-/* ── Stamped record panel — the signature card treatment ──────────────
-   Solid fill, a firm border, an offset "stacked paper" shadow, and a
-   small gold corner tick that echoes the brand seal. Two variants:
-   light (paper) and dark (emerald, for on-brand emphasis cards). */
-.lp-panel {
-  position: relative;
-  background: var(--lp-bg-alt);
-  border: 1.5px solid var(--lp-border);
-  box-shadow: 7px 7px 0 rgba(var(--lp-teal-dark-rgb), 0.08);
-}
-.lp-panel-dark {
-  position: relative;
-  background: var(--lp-emerald);
-  border: 1.5px solid var(--lp-gold);
-  --lp-text: var(--lp-bg);
-  --lp-text-muted: color-mix(in srgb, var(--lp-bg) 65%, var(--lp-emerald));
-  color: var(--lp-text);
-  box-shadow: 7px 7px 0 rgba(var(--lp-gold-rgb), 0.18);
-}
-.lp-panel::after, .lp-panel-dark::after {
-  content: "";
-  position: absolute;
-  top: -1.5px;
-  right: -1.5px;
-  width: 22px;
-  height: 22px;
-  background: var(--lp-gold);
-  clip-path: polygon(100% 0, 0 0, 100% 100%);
-  pointer-events: none;
-}
-
-/* Solid pill CTAs — filled, not glass. */
-.lp-pill {
-  background: var(--lp-emerald);
-  color: var(--lp-bg-alt);
-  border: 1.5px solid var(--lp-emerald);
-}
-.lp-pill-outline {
-  background: transparent;
-  color: var(--lp-emerald);
-  border: 1.5px solid var(--lp-border);
-}
-.lp-root[data-lp-theme="dark"] .lp-pill-outline { color: var(--lp-text); }
 
 .lp-orb { position: absolute; border-radius: 9999px; filter: blur(8px); animation: lp-orb-drift 18s ease-in-out infinite; }
 .lp-orb-b { animation-duration: 24s; animation-delay: -6s; }
