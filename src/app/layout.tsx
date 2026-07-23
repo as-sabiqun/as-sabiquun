@@ -1,17 +1,10 @@
 import type { Metadata } from "next";
-import { Cormorant_Garamond, Inter, Noto_Naskh_Arabic } from "next/font/google";
+import { Schibsted_Grotesk } from "next/font/google";
 import "./globals.css";
 
-const inter = Inter({ subsets: ["latin"], variable: "--font-inter" });
-const display = Cormorant_Garamond({
+const grotesk = Schibsted_Grotesk({
   subsets: ["latin"],
-  variable: "--font-display",
-  weight: ["500", "600", "700"],
-});
-const arabic = Noto_Naskh_Arabic({
-  subsets: ["arabic"],
-  variable: "--font-arabic",
-  weight: ["500", "600"],
+  variable: "--font-sans",
 });
 
 export const metadata: Metadata = {
@@ -20,12 +13,12 @@ export const metadata: Metadata = {
     template: "%s - As-Sabiqun",
   },
   description:
-    "Islamic services coordinated with clarity, human care, and documented fulfilment.",
+    "A modern platform for Islamic services, AI consultancy, and business guidance.",
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
-    <html lang="en" className={`${inter.variable} ${display.variable} ${arabic.variable}`} data-scroll-behavior="smooth">
+    <html lang="en" className={grotesk.variable} data-scroll-behavior="smooth">
       <body>{children}</body>
     </html>
   );

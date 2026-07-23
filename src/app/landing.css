@@ -1,8 +1,8 @@
 /* Homepage-only decorative bits (hero canvas gradient, drifting orbs, film
    grain, scroll-reveal animation). Everything else on the homepage — nav,
    footer, cards, buttons, type — reuses the site's own shared classes
-   (Header/Footer, .card, .card-dark, .btn, .display, .arabic) so it doesn't
-   drift from the rest of the app. */
+   (Header/Footer, .card, .card-dark, .btn, .display) so it doesn't drift
+   from the rest of the app. */
 
 .lp-hero-canvas {
   background: radial-gradient(ellipse 95% 70% at 50% 35%, var(--cream) 0%, var(--white) 50%, var(--cream-dark) 100%);

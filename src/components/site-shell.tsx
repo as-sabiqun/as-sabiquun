@@ -21,7 +21,7 @@ function ServicesMenu() {
         {services.map((service) => (
           <Link key={service.slug} href={service.href}>
             <span className="numeral">{service.number}</span>
-            <span><strong>{service.title}</strong><small>{service.arabic}</small></span>
+            <span><strong>{service.title}</strong><small>{service.description}</small></span>
           </Link>
         ))}
       </div>
