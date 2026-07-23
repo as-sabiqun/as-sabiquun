@@ -142,7 +142,8 @@ button, a, summary { -webkit-tap-highlight-color: transparent; }
   .mobile-menu[open] > summary span:first-child { transform: translateY(3.5px) rotate(45deg); }
   .mobile-menu[open] > summary span:last-child { transform: translateY(-3.5px) rotate(-45deg); }
   .mobile-menu nav { position: absolute; top: calc(100% + 10px); right: 0; left: 0; display: grid; border: 1px solid rgba(49,35,27,.08); border-radius: 20px; background: rgba(247,244,236,.85); -webkit-backdrop-filter: blur(22px); backdrop-filter: blur(22px); padding: 12px; box-shadow: 0 25px 45px rgba(49,35,27,.18); }
-  .mobile-menu nav a { border-bottom: 1px solid var(--line); padding: 13px 10px; font-size: .82rem; font-weight: 700; }
+  .mobile-menu nav a, .mobile-menu nav button { border-bottom: 1px solid var(--line); padding: 13px 10px; font-size: .82rem; font-weight: 700; width: 100%; text-align: left; }
+  .mobile-menu nav form { display: contents; }
   .footer-top { grid-template-columns: 1.5fr 1fr 1fr; }
   .footer-top > div:last-child { grid-column: 2 / 4; }
 }
@@ -305,4 +306,31 @@ button, a, summary { -webkit-tap-highlight-color: transparent; }
 @media (max-width: 640px) {
   .modal-overlay { padding: 76px 12px 24px; }
   .modal-panel { padding: 28px 20px 32px; border-radius: 16px; }
+}
+
+/* ============================================================
+   AUTH — Login and signup.
+   ============================================================ */
+
+.auth-shell { display: grid; place-items: center; padding: 56px 20px 80px; min-height: calc(100vh - 64px); }
+.auth-card { width: 100%; max-width: 420px; padding: 40px 36px; }
+.auth-eyebrow { color: var(--gold); font-size: .72rem; font-weight: 800; text-transform: uppercase; letter-spacing: .08em; }
+.auth-title { font-size: clamp(1.5rem, 2.4vw, 1.8rem); margin-top: 8px; }
+.auth-lead { margin-top: 8px; color: var(--muted); font-size: .88rem; line-height: 1.55; }
+
+.auth-form { margin-top: 28px; display: grid; gap: 18px; }
+.auth-error {
+  border: 1px solid color-mix(in srgb, #b3402f 40%, transparent); background: color-mix(in srgb, #b3402f 8%, var(--white));
+  color: #8a3222; border-radius: 10px; padding: 12px 14px; font-size: .82rem; font-weight: 600; line-height: 1.5;
+}
+.auth-message {
+  border: 1px solid color-mix(in srgb, var(--teal) 35%, transparent); background: var(--teal-soft);
+  color: var(--teal-dark); border-radius: 10px; padding: 12px 14px; font-size: .82rem; font-weight: 600; line-height: 1.5;
+}
+.auth-switch { margin-top: 24px; text-align: center; font-size: .84rem; color: var(--muted); }
+.auth-switch a { color: var(--teal-dark); font-weight: 700; }
+.auth-switch a:hover { color: var(--teal); }
+
+@media (max-width: 480px) {
+  .auth-card { padding: 32px 22px; }
 }

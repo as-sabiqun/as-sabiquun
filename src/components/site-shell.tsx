@@ -1,12 +1,13 @@
 import Link from "next/link";
 import { Brand } from "@/components/brand";
 import { services } from "@/components/service-card";
+import { createClient, isSupabaseConfigured } from "@/lib/supabase/server";
+import { logout } from "@/app/actions/auth";
 
 const mainNav = [
   ["About", "/about"],
   ["How it works", "/#how"],
   ["Contact", "/contact"],
-  ["Login", "/login"],
 ] as const;
 
 function ServicesMenu() {
@@ -29,7 +30,36 @@ function ServicesMenu() {
   );
 }
 
-export function Header() {
+function AccountNavItem({ email }: { email: string | null }) {
+  if (!email) {
+    return <Link href="/login" className="nav-link">Login</Link>;
+  }
+  return (
+    <form action={logout} className="flex">
+      <button type="submit" className="nav-link" title={email}>Log out</button>
+    </form>
+  );
+}
+
+function AccountMobileItem({ email }: { email: string | null }) {
+  if (!email) {
+    return <Link href="/login">Login</Link>;
+  }
+  return (
+    <form action={logout}>
+      <button type="submit">Log out ({email})</button>
+    </form>
+  );
+}
+
+export async function Header() {
+  let email: string | null = null;
+  if (isSupabaseConfigured) {
+    const supabase = await createClient();
+    const { data } = await supabase.auth.getUser();
+    email = data.user?.email ?? null;
+  }
+
   return (
     <header className="site-header">
       <div className="container site-nav-shell flex h-16 items-center justify-between gap-5">
@@ -39,6 +69,7 @@ export function Header() {
           {mainNav.map(([label, href]) => (
             <Link key={href} href={href} className="nav-link">{label}</Link>
           ))}
+          <AccountNavItem email={email} />
         </nav>
         <div className="desktop-cta">
           <Link className="btn btn-small" href="/services">Choose a service <span aria-hidden="true">→</span></Link>
@@ -49,6 +80,7 @@ export function Header() {
             <Link href="/services">All services</Link>
             {services.map((service) => <Link key={service.slug} href={service.href}>{service.title}</Link>)}
             {mainNav.map(([label, href]) => <Link key={href} href={href}>{label}</Link>)}
+            <AccountMobileItem email={email} />
           </nav>
         </details>
       </div>
