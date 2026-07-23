@@ -24,7 +24,7 @@ export async function signup(_prevState: SignupState, formData: FormData): Promi
     email,
     password,
     options: {
-      data: { full_name: name },
+      data: { full_name: name, role: "customer" },
       emailRedirectTo: `${origin}/auth/confirm`,
     },
   });

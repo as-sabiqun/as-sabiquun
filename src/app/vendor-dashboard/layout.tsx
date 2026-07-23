@@ -1,5 +1,5 @@
 import { redirect } from "next/navigation";
-import { createClient, isSupabaseConfigured } from "@/lib/supabase/server";
+import { createClient, getUserRole, isSupabaseConfigured } from "@/lib/supabase/server";
 import { VendorSidebar } from "@/components/vendor/vendor-sidebar";
 import { VendorDataProvider } from "@/components/vendor/vendor-data-context";
 
@@ -13,6 +13,9 @@ export default async function VendorDashboardLayout({ children }: { children: Re
     const { data } = await supabase.auth.getUser();
     if (!data.user) {
       redirect("/login?next=/vendor-dashboard");
+    }
+    if (getUserRole(data.user) !== "vendor") {
+      redirect("/");
     }
     signedIn = true;
     vendorEmail = data.user.email ?? vendorEmail;

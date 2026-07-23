@@ -536,3 +536,55 @@ button, a, summary { -webkit-tap-highlight-color: transparent; }
   .vendor-topbar { padding: 14px 18px; }
   .vendor-topbar-search { display: none; }
 }
+
+/* ============================================================
+   ADMIN CONSOLE — reuses most .vendor-* primitives above.
+   ============================================================ */
+
+.admin-banner {
+  display: flex; align-items: center; gap: 14px; border: 1.5px solid color-mix(in srgb, var(--gold) 45%, transparent);
+  background: color-mix(in srgb, var(--gold) 10%, var(--white)); border-radius: 14px; padding: 16px 20px;
+}
+.admin-banner strong { display: block; font-size: .9rem; }
+.admin-banner p { margin-top: 3px; font-size: .8rem; color: var(--muted); }
+
+.admin-contact-facts { display: grid; gap: 10px; }
+.admin-contact-facts div { display: flex; align-items: center; justify-content: space-between; gap: 12px; font-size: .84rem; border-bottom: 1px solid var(--line); padding-bottom: 8px; }
+.admin-contact-facts div:last-child { border-bottom: 0; padding-bottom: 0; }
+.admin-contact-facts dt { color: var(--muted); }
+.admin-contact-facts dd { font-weight: 700; text-align: right; }
+
+.admin-form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
+.admin-password-row { display: flex; gap: 10px; }
+.admin-password-row .input { flex: 1; font-family: var(--font-sans); }
+
+.admin-credentials-card { padding: 22px 26px; border-color: var(--teal); }
+.admin-credentials-row { display: flex; align-items: center; justify-content: space-between; padding: 10px 0; border-top: 1px solid var(--line); font-size: .88rem; }
+.admin-credentials-row strong { font-family: var(--font-sans); color: var(--teal-dark); }
+
+.admin-vendor-table { padding: 8px; }
+.admin-list-row {
+  display: grid; grid-template-columns: auto 1.4fr auto 1fr auto; align-items: center; gap: 18px;
+  padding: 14px 18px; border-bottom: 1px solid var(--line); transition: background-color .15s ease;
+}
+.admin-list-row:last-child { border-bottom: 0; }
+.admin-list-row:hover { background: var(--cream); }
+.admin-list-avatar { width: 38px; height: 38px; font-size: .95rem; }
+.admin-list-main { display: grid; gap: 2px; min-width: 0; }
+.admin-list-main strong { font-size: .88rem; }
+.admin-list-main small { font-size: .76rem; color: var(--muted); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.admin-list-stats { display: grid; gap: 2px; font-size: .74rem; color: var(--muted); text-align: right; }
+
+.admin-vendor-stats { grid-template-columns: repeat(3, 1fr); margin-top: 20px; }
+.admin-inline-stat { border: 1px solid var(--line); border-radius: 12px; padding: 14px 16px; display: grid; gap: 4px; }
+.admin-inline-stat span { font-size: .72rem; font-weight: 700; color: var(--muted); }
+.admin-inline-stat strong { font-size: 1.2rem; color: var(--teal-dark); }
+
+@media (max-width: 860px) {
+  .admin-list-row { grid-template-columns: auto 1fr; }
+  .admin-list-stats, .admin-list-row > .vendor-status, .admin-list-row > .vendor-job-table-view { grid-column: 2; justify-self: start; }
+}
+@media (max-width: 640px) {
+  .admin-form-grid { grid-template-columns: 1fr; }
+  .admin-vendor-stats { grid-template-columns: 1fr; }
+}
