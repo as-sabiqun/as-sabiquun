@@ -4,14 +4,17 @@
    (Header/Footer, .card, .card-dark, .btn, .display) so it doesn't drift
    from the rest of the app. */
 
+/* Starts at the exact same flat --cream the sticky nav sits on, so there's
+   no seam where the header meets the hero. Only drifts toward --white/
+   --cream-dark further down, well past the nav. */
 .lp-hero-canvas {
-  background: radial-gradient(ellipse 95% 70% at 50% 35%, var(--cream) 0%, var(--white) 50%, var(--cream-dark) 100%);
+  background: linear-gradient(180deg, var(--cream) 0%, var(--cream) 18%, var(--white) 55%, var(--cream-dark) 100%);
 }
 
-.lp-orb { position: absolute; border-radius: 9999px; filter: blur(8px); animation: lp-orb-drift 18s ease-in-out infinite; }
-.lp-orb-b { animation-duration: 24s; animation-delay: -6s; }
-.lp-orb-c { animation-duration: 30s; animation-delay: -12s; }
-@keyframes lp-orb-drift { 0%, 100% { transform: translate(0, 0); } 50% { transform: translate(24px, -28px); } }
+/* One deliberate glow behind the headline, not scattered blobs. */
+.lp-hero-glow {
+  background: radial-gradient(circle at 50% 42%, rgba(162,124,71,0.16) 0%, rgba(162,124,71,0.05) 40%, transparent 68%);
+}
 
 .lp-grain {
   opacity: 0.5;
@@ -28,5 +31,4 @@
 }
 @media (prefers-reduced-motion: reduce) {
   .lp-reveal { opacity: 1; filter: none; transform: none; }
-  .lp-orb { animation: none; }
 }

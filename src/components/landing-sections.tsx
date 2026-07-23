@@ -15,17 +15,13 @@ export function SectionEyebrow({ label }: { label: string }) {
 export function Hero() {
   return (
     <section className="lp-hero-canvas relative flex min-h-[calc(100vh-88px)] flex-col overflow-hidden">
-      <div className="pointer-events-none absolute inset-0 z-[2] overflow-hidden" aria-hidden="true">
-        <span className="lp-orb" style={{ left: "12%", top: "20%", width: 340, height: 340, background: "radial-gradient(circle, rgba(162,124,71,0.28) 0%, transparent 70%)" }} />
-        <span className="lp-orb lp-orb-b" style={{ right: "8%", top: "30%", width: 300, height: 300, background: "radial-gradient(circle, rgba(29,115,127,0.18) 0%, transparent 70%)" }} />
-        <span className="lp-orb lp-orb-c" style={{ left: "40%", bottom: "6%", width: 380, height: 380, background: "radial-gradient(circle, rgba(162,124,71,0.2) 0%, transparent 70%)" }} />
-      </div>
+      <div className="lp-hero-glow pointer-events-none absolute inset-0 z-[2]" aria-hidden="true" />
       <div className="lp-grain pointer-events-none absolute inset-0 z-[3]" aria-hidden="true" />
 
       <div className="relative z-10 flex flex-1 flex-col items-center justify-center px-6 text-center">
         <p className="mb-5 text-[11px] font-bold uppercase tracking-[0.26em]" style={{ color: "var(--gold)" }}>Islamic services - Singapore</p>
-        <h1 className="display max-w-3xl" style={{ fontSize: "clamp(42px, 6.8vw, 80px)", lineHeight: .98, color: "var(--teal-dark)" }}>
-          Islamic services, clearly carried through.
+        <h1 className="display max-w-2xl" style={{ fontSize: "clamp(42px, 6.8vw, 80px)", lineHeight: .98, color: "var(--teal-dark)" }}>
+          Islamic services,<br />clearly carried through.
         </h1>
         <p className="mx-auto mt-6 max-w-lg text-[16px] font-medium leading-relaxed lg:text-[17px]" style={{ color: "var(--ink)" }}>
           Choose a service, review its scope, and follow every handoff from your request to the completion record.
