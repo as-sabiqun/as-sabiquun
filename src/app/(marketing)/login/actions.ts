@@ -20,5 +20,6 @@ export async function login(_prevState: AuthState, formData: FormData): Promise<
     return { error: error.message === "Invalid login credentials" ? "That email and password don't match." : error.message };
   }
 
-  redirect("/");
+  const next = String(formData.get("next") ?? "/");
+  redirect(next.startsWith("/") ? next : "/");
 }
