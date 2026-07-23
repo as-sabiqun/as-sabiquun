@@ -374,6 +374,17 @@ button, a, summary { -webkit-tap-highlight-color: transparent; }
 .vendor-sidebar-identity strong { display: block; font-size: .8rem; color: var(--cream); }
 .vendor-sidebar-identity small { display: block; font-size: .7rem; color: color-mix(in srgb, var(--cream) 55%, var(--ink)); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 150px; }
 
+/* Admin console sidebar — teal instead of the vendor portal's ink, so the two are never mistaken at a glance. */
+.admin-sidebar { background: var(--teal-dark); }
+.admin-sidebar .vendor-sidebar-mark { background: var(--cream); color: var(--teal-dark); }
+.admin-sidebar .vendor-sidebar-heading { color: color-mix(in srgb, var(--cream) 55%, var(--teal-dark)); }
+.admin-sidebar .vendor-sidebar-link { color: color-mix(in srgb, var(--cream) 85%, var(--teal-dark)); }
+.admin-sidebar .vendor-sidebar-link:hover { background: color-mix(in srgb, var(--cream) 14%, transparent); color: var(--cream); }
+.admin-sidebar .vendor-sidebar-link.is-active { background: var(--cream); color: var(--teal-dark); }
+.admin-sidebar .vendor-sidebar-profile { border-top-color: color-mix(in srgb, var(--cream) 18%, transparent); }
+.admin-sidebar .vendor-sidebar-avatar { background: var(--gold); color: var(--ink); }
+.admin-sidebar .vendor-sidebar-identity small { color: color-mix(in srgb, var(--cream) 60%, var(--teal-dark)); }
+
 .vendor-main { display: flex; flex-direction: column; min-width: 0; }
 .vendor-topbar { display: flex; align-items: center; justify-content: space-between; gap: 20px; padding: 16px 32px; border-bottom: 1px solid var(--line); background: var(--white); position: sticky; top: 0; z-index: 10; }
 .vendor-topbar-search { display: flex; align-items: center; gap: 10px; flex: 1; max-width: 380px; border: 1px solid var(--line); border-radius: 999px; padding: 9px 16px; background: var(--cream); }

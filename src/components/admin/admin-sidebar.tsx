@@ -30,7 +30,7 @@ export function AdminSidebar({ adminName, adminEmail }: { adminName: string; adm
   const pathname = usePathname();
 
   return (
-    <aside className="vendor-sidebar">
+    <aside className="vendor-sidebar admin-sidebar">
       <div className="vendor-sidebar-brand">
         <span className="vendor-sidebar-mark">AS</span>
         <div>
