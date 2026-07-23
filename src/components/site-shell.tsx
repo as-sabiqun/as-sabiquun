@@ -4,7 +4,7 @@ import { services } from "@/components/service-card";
 
 const mainNav = [
   ["About", "/about"],
-  ["How it works", "/#how-it-works"],
+  ["How it works", "/#how"],
   ["Contact", "/contact"],
   ["Login", "/login"],
 ] as const;
@@ -78,7 +78,7 @@ export function Footer() {
             <p className="footer-heading">As-Sābiqūn</p>
             <div className="footer-links">
               <Link href="/about">About us</Link>
-              <Link href="/#how-it-works">How it works</Link>
+              <Link href="/#how">How it works</Link>
               <Link href="/contact">Contact</Link>
               <Link href="/login">Account login</Link>
             </div>

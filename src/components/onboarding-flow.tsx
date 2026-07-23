@@ -53,7 +53,7 @@ export function OnboardingFlow({ role }: { role: OnboardingRole }) {
 
   return (
     <main className="onboarding-shell min-h-screen bg-[var(--cream)]">
-      <header className="border-b border-[var(--line)] bg-white/80 backdrop-blur-md">
+      <header className="border-b border-[var(--line)] bg-white">
         <div className="mx-auto flex min-h-[74px] max-w-[1180px] items-center justify-between gap-5 px-5 md:px-8">
           <Brand compact />
           <form action={logout}><button className="cursor-pointer border-0 bg-transparent p-0 text-xs font-bold text-[var(--teal)]" type="submit">Save and exit</button></form>

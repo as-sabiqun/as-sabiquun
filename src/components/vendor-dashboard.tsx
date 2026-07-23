@@ -243,7 +243,7 @@ export function VendorDashboard() {
       </aside>
 
       <section className="min-w-0">
-        <header className="sticky top-0 z-30 flex min-h-[66px] items-center justify-between border-b border-[var(--line)] bg-[rgba(247,247,243,.95)] px-4 backdrop-blur-md lg:hidden">
+        <header className="sticky top-0 z-30 flex min-h-[66px] items-center justify-between border-b border-[var(--line)] bg-[var(--cream)] px-4 lg:hidden">
           <Brand compact />
           <nav className="flex gap-1" aria-label="Vendor workspace">
             <button aria-pressed={section === "jobs"} className={`vendor-mobile-nav ${section === "jobs" ? "is-active" : ""}`} onClick={showJobs}>Jobs</button>

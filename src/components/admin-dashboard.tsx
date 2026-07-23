@@ -347,7 +347,7 @@ export function AdminDashboard() {
       </aside>
 
       <section className="min-w-0 pb-24 lg:pb-0">
-        <header className="admin-mobile-header sticky top-0 z-30 flex min-h-[66px] items-center justify-between border-b border-[var(--line)] bg-[rgba(247,247,243,.95)] px-4 backdrop-blur-md lg:hidden">
+        <header className="admin-mobile-header sticky top-0 z-30 flex min-h-[66px] items-center justify-between border-b border-[var(--line)] bg-[var(--cream)] px-4 lg:hidden">
           <Brand compact />
           <span className="text-xs font-bold text-[var(--muted)]">{adminSectionCopy[section].title}</span>
         </header>
