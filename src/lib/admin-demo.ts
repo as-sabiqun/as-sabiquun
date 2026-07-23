@@ -195,9 +195,17 @@ export const adminJobStatusLabels: Record<AdminJobStatus, string> = {
   completed: "Completed",
 };
 
+const PASSWORD_WORDS = [
+  "amber", "coral", "river", "cloud", "maple", "ocean", "sunny", "olive",
+  "tiger", "eagle", "coco", "hazel", "lotus", "pearl", "ruby", "jasmine",
+  "cedar", "willow", "meadow", "harbor",
+];
+
+// Easy to read aloud and re-type by hand: two short words plus a two-digit number, no symbols or mixed case.
 export function generatePassword(): string {
-  const chars = "ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnpqrstuvwxyz23456789";
-  let out = "";
-  for (let i = 0; i < 12; i++) out += chars[Math.floor(Math.random() * chars.length)];
-  return out;
+  const first = PASSWORD_WORDS[Math.floor(Math.random() * PASSWORD_WORDS.length)];
+  let second = PASSWORD_WORDS[Math.floor(Math.random() * PASSWORD_WORDS.length)];
+  while (second === first) second = PASSWORD_WORDS[Math.floor(Math.random() * PASSWORD_WORDS.length)];
+  const digits = Math.floor(Math.random() * 90 + 10);
+  return `${first}${second}${digits}`;
 }
