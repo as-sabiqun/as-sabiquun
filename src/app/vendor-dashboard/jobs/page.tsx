@@ -6,6 +6,15 @@ import { useVendorData } from "@/components/vendor/vendor-data-context";
 import { StatusPill } from "@/components/vendor/status-pill";
 import { formatCountdown, type JobStatus } from "@/lib/vendor-demo";
 
+const actionLabel: Record<JobStatus, string> = {
+  pending: "Review & respond",
+  accepted: "Submit completion",
+  in_progress: "Submit completion",
+  rejected: "View",
+  expired: "View",
+  completed: "View",
+};
+
 const filters: { label: string; statuses: JobStatus[] | null }[] = [
   { label: "All", statuses: null },
   { label: "Awaiting response", statuses: ["pending"] },
@@ -16,7 +25,7 @@ const filters: { label: string; statuses: JobStatus[] | null }[] = [
 ];
 
 export default function VendorJobsPage() {
-  const { jobs, setJobStatus } = useVendorData();
+  const { jobs } = useVendorData();
   const [active, setActive] = useState(filters[0]);
 
   const visible = active.statuses ? jobs.filter((j) => active.statuses!.includes(j.status)) : jobs;
@@ -66,14 +75,9 @@ export default function VendorJobsPage() {
                   )}
                 </div>
 
-                {job.status === "pending" ? (
-                  <div className="vendor-job-table-actions">
-                    <button type="button" className="btn-small btn-accept" onClick={() => setJobStatus(job.id, "accepted")}>Accept</button>
-                    <button type="button" className="btn-small btn-reject" onClick={() => setJobStatus(job.id, "rejected")}>Reject</button>
-                  </div>
-                ) : (
-                  <Link href={`/vendor-dashboard/jobs/${job.id}`} className="vendor-job-table-view">View <span aria-hidden="true">→</span></Link>
-                )}
+                <Link href={`/vendor-dashboard/jobs/${job.id}`} className="vendor-job-table-view">
+                  {actionLabel[job.status]} <span aria-hidden="true">→</span>
+                </Link>
               </div>
             );
           })

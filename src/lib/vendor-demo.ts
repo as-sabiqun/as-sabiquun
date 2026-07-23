@@ -1,5 +1,12 @@
 export type JobStatus = "pending" | "accepted" | "rejected" | "expired" | "in_progress" | "completed";
 
+export interface VendorProof {
+  photoCount: number;
+  videoName: string;
+  notes: string;
+  submittedAt: string;
+}
+
 export interface VendorJob {
   id: string;
   title: string;
@@ -9,13 +16,16 @@ export interface VendorJob {
   price: number;
   postedAt: string;
   respondBy: string;
+  completeBy: string;
   status: JobStatus;
   brief: string;
   checklist: string[];
+  proof?: VendorProof;
 }
 
 const now = Date.now();
 const hours = (n: number) => new Date(now + n * 60 * 60 * 1000).toISOString();
+const days = (n: number) => new Date(now + n * 24 * 60 * 60 * 1000).toISOString();
 const daysAgo = (n: number) => new Date(now - n * 24 * 60 * 60 * 1000).toISOString();
 
 export const initialVendorJobs: VendorJob[] = [
@@ -28,6 +38,7 @@ export const initialVendorJobs: VendorJob[] = [
     price: 1680,
     postedAt: daysAgo(0),
     respondBy: hours(5),
+    completeBy: days(3),
     status: "pending",
     brief: "6 cow shares booked by one household. Names and instructions are attached once accepted. Completion evidence due within 48 hours of fulfilment.",
     checklist: ["Confirm livestock availability", "Schedule fulfilment window", "Assign a documentation team"],
@@ -41,6 +52,7 @@ export const initialVendorJobs: VendorJob[] = [
     price: 650,
     postedAt: daysAgo(0),
     respondBy: hours(2),
+    completeBy: days(5),
     status: "pending",
     brief: "Full hand-pump installation for a community wakaf contribution. Site survey already completed by the local coordinator.",
     checklist: ["Verify parts on hand", "Confirm installation crew", "Book site access with coordinator"],
@@ -54,6 +66,7 @@ export const initialVendorJobs: VendorJob[] = [
     price: 320,
     postedAt: daysAgo(1),
     respondBy: hours(-3),
+    completeBy: days(2),
     status: "expired",
     brief: "Single goat share. Missed the response window — reassigned to another partner.",
     checklist: [],
@@ -67,6 +80,7 @@ export const initialVendorJobs: VendorJob[] = [
     price: 240,
     postedAt: daysAgo(2),
     respondBy: hours(-40),
+    completeBy: days(1),
     status: "accepted",
     brief: "Distribution run of 60 Quran sets across a learning circle network. Delivery split across three sub-sites.",
     checklist: ["Pack distribution sets", "Confirm delivery route", "Collect signed receipts"],
@@ -80,6 +94,7 @@ export const initialVendorJobs: VendorJob[] = [
     price: 500,
     postedAt: daysAgo(3),
     respondBy: hours(-60),
+    completeBy: hours(18),
     status: "in_progress",
     brief: "Full community meal programme, four-week run. Currently on week 2 of 4.",
     checklist: ["Week 2 pack assembly", "Confirm week 3 supplier order", "Upload week 1 proof photos"],
@@ -93,9 +108,11 @@ export const initialVendorJobs: VendorJob[] = [
     price: 1960,
     postedAt: daysAgo(6),
     respondBy: hours(-140),
+    completeBy: daysAgo(2),
     status: "completed",
     brief: "Full cow, 7 shares, single household order. Completed and evidence already reviewed.",
     checklist: ["Fulfilment complete", "Evidence uploaded", "Reviewed by operations"],
+    proof: { photoCount: 5, videoName: "kb-2165-completion.mp4", notes: "All shares fulfilled and documented on site.", submittedAt: daysAgo(3) },
   },
   {
     id: "job-2159",
@@ -106,6 +123,7 @@ export const initialVendorJobs: VendorJob[] = [
     price: 150,
     postedAt: daysAgo(4),
     respondBy: hours(-90),
+    completeBy: daysAgo(1),
     status: "rejected",
     brief: "Routine maintenance visit — declined due to crew availability that week.",
     checklist: [],
@@ -128,6 +146,13 @@ export function formatCountdown(respondBy: string): { label: string; urgent: boo
   const mins = Math.floor((diffMs % (60 * 60 * 1000)) / (60 * 1000));
   const label = hrs > 0 ? `${hrs}h ${mins}m left to respond` : `${mins}m left to respond`;
   return { label, urgent: diffMs < 60 * 60 * 1000, expired: false };
+}
+
+export function formatDueDate(completeBy: string): { label: string; overdue: boolean } {
+  const diffMs = new Date(completeBy).getTime() - Date.now();
+  const formatted = new Date(completeBy).toLocaleDateString(undefined, { day: "numeric", month: "short", hour: "numeric", minute: "2-digit" });
+  if (diffMs <= 0) return { label: `Was due ${formatted}`, overdue: true };
+  return { label: `Due by ${formatted}`, overdue: false };
 }
 
 export const kanbanStatuses: { status: JobStatus; label: string }[] = [

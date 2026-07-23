@@ -51,6 +51,7 @@ button, a, summary { -webkit-tap-highlight-color: transparent; }
 }
 .btn:hover { background: var(--ink); border-color: var(--ink); transform: translateY(-2px); }
 .btn:active { transform: translateY(0); }
+.btn:disabled { background: var(--cream-dark); border-color: var(--cream-dark); color: var(--muted); cursor: not-allowed; transform: none; }
 .btn-secondary { border-color: var(--line); background: transparent; color: var(--ink); }
 .btn-secondary:hover { background: var(--ink); border-color: var(--ink); color: var(--cream); }
 .btn-small { min-height: 42px; padding-inline: 18px; font-size: .78rem; }
@@ -437,15 +438,6 @@ button, a, summary { -webkit-tap-highlight-color: transparent; }
 .vendor-job-table-main small { font-size: .76rem; color: var(--muted); }
 .vendor-job-table-price strong { font-size: .92rem; color: var(--teal-dark); }
 .vendor-job-table-status { display: grid; gap: 6px; justify-items: start; }
-.vendor-job-table-actions { display: flex; gap: 8px; }
-.btn-accept, .btn-reject {
-  border-radius: 999px; padding: 9px 16px; font-weight: 800; font-size: .76rem; cursor: pointer; border: 1.5px solid transparent;
-  transition: transform .15s ease, background-color .15s ease;
-}
-.btn-accept { background: var(--teal); color: white; }
-.btn-accept:hover { background: var(--teal-dark); }
-.btn-reject { background: transparent; border-color: var(--line); color: var(--muted); }
-.btn-reject:hover { border-color: #b3402f; color: #8a3222; }
 .vendor-job-table-view { font-size: .8rem; font-weight: 700; color: var(--teal-dark); white-space: nowrap; }
 .vendor-job-table-view:hover { color: var(--teal); }
 
@@ -454,6 +446,35 @@ button, a, summary { -webkit-tap-highlight-color: transparent; }
 .vendor-checklist { display: grid; gap: 8px; }
 .vendor-checklist li { position: relative; padding-left: 22px; font-size: .84rem; color: var(--muted); line-height: 1.5; }
 .vendor-checklist li::before { content: ""; position: absolute; left: 0; top: 7px; width: 10px; height: 10px; border-radius: 3px; border: 1.5px solid var(--teal); }
+
+.vendor-due-row { margin-top: 20px; padding-top: 16px; border-top: 1px solid var(--line); }
+
+.vendor-terms { margin-top: 20px; }
+.vendor-terms-check {
+  display: flex; align-items: flex-start; gap: 12px; padding: 14px 16px; border: 1.5px solid var(--line);
+  border-radius: 12px; background: var(--cream); cursor: pointer; transition: border-color .15s ease, background-color .15s ease;
+}
+.vendor-terms-check:has(input:checked) { border-color: var(--teal); background: var(--teal-soft); }
+.vendor-terms-check input { margin-top: 3px; width: 16px; height: 16px; accent-color: var(--teal); flex: none; cursor: pointer; }
+.vendor-terms-check span { font-size: .82rem; line-height: 1.55; color: var(--ink); }
+
+.vendor-upload-form { display: grid; gap: 20px; }
+.vendor-upload-label-row { display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px; }
+.vendor-upload-count { font-size: .72rem; font-weight: 800; color: var(--muted); }
+.vendor-upload-count.is-complete { color: var(--teal-dark); }
+.vendor-upload-dropzone {
+  display: flex; align-items: center; gap: 10px; min-height: 50px; border: 1.5px dashed var(--line); border-radius: 10px;
+  padding: 12px 14px; background: var(--cream); color: var(--muted); font-size: .82rem; font-weight: 600; cursor: pointer;
+  transition: border-color .15s ease, color .15s ease;
+}
+.vendor-upload-dropzone:hover { border-color: var(--teal); color: var(--teal-dark); }
+.vendor-upload-dropzone svg { width: 18px; height: 18px; flex: none; fill: none; stroke: currentColor; stroke-width: 1.7; stroke-linecap: round; stroke-linejoin: round; }
+.vendor-upload-filelist { margin-top: 8px; display: grid; gap: 3px; }
+.vendor-upload-filelist li { font-size: .74rem; color: var(--muted); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.vendor-upload-hint { font-size: .74rem; color: var(--muted); text-align: center; }
+
+.vendor-proof-summary { border-top: 1px solid var(--line); padding-top: 20px; }
+.vendor-proof-summary-row { display: flex; align-items: center; justify-content: space-between; font-size: .84rem; font-weight: 700; color: var(--teal-dark); }
 
 .vendor-buy-box { position: sticky; top: 90px; }
 .vendor-price { display: block; font-size: 1.6rem; color: var(--teal-dark); margin-top: 8px; }

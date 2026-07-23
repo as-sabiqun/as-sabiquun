@@ -2,18 +2,22 @@
 
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { use } from "react";
+import { use, useState } from "react";
 import { useVendorData } from "@/components/vendor/vendor-data-context";
 import { StatusPill } from "@/components/vendor/status-pill";
-import { formatCountdown } from "@/lib/vendor-demo";
+import { ProofUploadForm } from "@/components/vendor/proof-upload-form";
+import { formatCountdown, formatDueDate } from "@/lib/vendor-demo";
 
 export default function VendorJobDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = use(params);
   const { jobs, setJobStatus } = useVendorData();
   const job = jobs.find((j) => j.id === id);
+  const [agreed, setAgreed] = useState(false);
   if (!job) notFound();
 
   const countdown = formatCountdown(job.respondBy);
+  const due = formatDueDate(job.completeBy);
+  const isWorking = job.status === "accepted" || job.status === "in_progress";
 
   return (
     <>
@@ -34,14 +38,48 @@ export default function VendorJobDetailPage({ params }: { params: Promise<{ id: 
             <StatusPill status={job.status} />
           </div>
 
-          <p className="mt-6 text-sm leading-6 text-[var(--muted)]">{job.brief}</p>
+          <div className="mt-6">
+            <span className="label mb-2 block">Job detail</span>
+            <p className="text-sm leading-6 text-[var(--muted)]">{job.brief}</p>
+          </div>
 
           {job.checklist.length > 0 && (
             <div className="mt-6">
-              <span className="label mb-2 block">Checklist</span>
+              <span className="label mb-2 block">What you need to do</span>
               <ul className="vendor-checklist">
                 {job.checklist.map((item) => <li key={item}>{item}</li>)}
               </ul>
+            </div>
+          )}
+
+          <div className="vendor-due-row">
+            <span className={`vendor-countdown ${due.overdue ? "is-urgent" : ""}`}>{due.label}</span>
+          </div>
+
+          {job.status === "pending" && (
+            <div className="vendor-terms">
+              <label className="vendor-terms-check">
+                <input type="checkbox" checked={agreed} onChange={(event) => setAgreed(event.target.checked)} />
+                <span>I've read the job brief and instructions above, and I agree to complete this job as described, by the date shown, if I accept it.</span>
+              </label>
+            </div>
+          )}
+
+          {isWorking && (
+            <div className="mt-8">
+              <span className="label mb-3 block">Submit completion</span>
+              <ProofUploadForm jobId={job.id} />
+            </div>
+          )}
+
+          {job.status === "completed" && job.proof && (
+            <div className="mt-8 vendor-proof-summary">
+              <span className="label mb-2 block">Submitted evidence</span>
+              <div className="vendor-proof-summary-row">
+                <span>{job.proof.photoCount} photos · 1 video</span>
+                <span>{new Date(job.proof.submittedAt).toLocaleDateString()}</span>
+              </div>
+              {job.proof.notes && <p className="mt-2 text-sm leading-6 text-[var(--muted)]">{job.proof.notes}</p>}
             </div>
           )}
         </div>
@@ -51,26 +89,27 @@ export default function VendorJobDetailPage({ params }: { params: Promise<{ id: 
           <strong className="numeral vendor-price">S${job.price}</strong>
 
           {job.status === "pending" && (
-            <p className={`vendor-countdown mt-2 ${countdown.urgent ? "is-urgent" : ""}`}>{countdown.label}</p>
+            <>
+              <p className={`vendor-countdown mt-2 ${countdown.urgent ? "is-urgent" : ""}`}>{countdown.label}</p>
+              <div className="mt-6 grid gap-3">
+                <button type="button" className="btn" disabled={!agreed} onClick={() => setJobStatus(job.id, "accepted")}>Accept job</button>
+                <button type="button" className="btn-secondary btn" onClick={() => setJobStatus(job.id, "rejected")}>Reject job</button>
+              </div>
+              {!agreed && <p className="vendor-upload-hint">Agree to the terms on the left to accept.</p>}
+            </>
           )}
 
-          <div className="mt-6 grid gap-3">
-            {job.status === "pending" && (
-              <>
-                <button type="button" className="btn" onClick={() => setJobStatus(job.id, "accepted")}>Accept job</button>
-                <button type="button" className="btn-secondary btn" onClick={() => setJobStatus(job.id, "rejected")}>Reject job</button>
-              </>
-            )}
-            {job.status === "accepted" && (
-              <button type="button" className="btn" onClick={() => setJobStatus(job.id, "in_progress")}>Mark as in progress</button>
-            )}
-            {job.status === "in_progress" && (
-              <button type="button" className="btn" onClick={() => setJobStatus(job.id, "completed")}>Mark as completed</button>
-            )}
-            {(job.status === "completed" || job.status === "rejected" || job.status === "expired") && (
+          {isWorking && (
+            <div className="mt-6 grid gap-3">
+              <p className="vendor-empty">Submit your completion evidence on the left to close this job out.</p>
+            </div>
+          )}
+
+          {(job.status === "completed" || job.status === "rejected" || job.status === "expired") && (
+            <div className="mt-6 grid gap-3">
               <p className="vendor-empty">No further action needed on this job.</p>
-            )}
-          </div>
+            </div>
+          )}
 
           <Link href="/vendor-dashboard/reports" className="vendor-report-link">Can't complete this? Report an issue <span aria-hidden="true">→</span></Link>
         </div>

@@ -6,12 +6,14 @@ import {
   initialVendorReports,
   type JobStatus,
   type VendorJob,
+  type VendorProof,
   type VendorReport,
 } from "@/lib/vendor-demo";
 
 interface VendorDataValue {
   jobs: VendorJob[];
   setJobStatus: (id: string, status: JobStatus) => void;
+  submitProof: (id: string, proof: VendorProof) => void;
   reports: VendorReport[];
   addReport: (report: Omit<VendorReport, "id" | "submittedAt" | "status">) => void;
 }
@@ -26,6 +28,8 @@ export function VendorDataProvider({ children }: { children: React.ReactNode }) 
     () => ({
       jobs,
       setJobStatus: (id, status) => setJobs((current) => current.map((job) => (job.id === id ? { ...job, status } : job))),
+      submitProof: (id, proof) =>
+        setJobs((current) => current.map((job) => (job.id === id ? { ...job, status: "completed", proof } : job))),
       reports,
       addReport: (report) =>
         setReports((current) => [
