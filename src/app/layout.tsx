@@ -1,12 +1,12 @@
 import type { Metadata } from "next";
-import { Bricolage_Grotesque, Inter, Noto_Naskh_Arabic } from "next/font/google";
+import { Cormorant_Garamond, Inter, Noto_Naskh_Arabic } from "next/font/google";
 import "./globals.css";
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-inter" });
-const display = Bricolage_Grotesque({
+const display = Cormorant_Garamond({
   subsets: ["latin"],
   variable: "--font-display",
-  weight: ["600", "700", "800"],
+  weight: ["500", "600", "700"],
 });
 const arabic = Noto_Naskh_Arabic({
   subsets: ["arabic"],

@@ -9,17 +9,6 @@ const mainNav = [
   ["Login", "/login"],
 ] as const;
 
-export function DemoBar() {
-  return (
-    <div className="demo-bar">
-      <div className="container flex items-center justify-center gap-5 sm:justify-between">
-        <span>Website preview · Services and payments are not yet live</span>
-        <a className="hidden sm:inline" href="tel:+6589933786">+65 8993 3786</a>
-      </div>
-    </div>
-  );
-}
-
 function ServicesMenu() {
   return (
     <details className="services-menu">
@@ -43,8 +32,8 @@ function ServicesMenu() {
 export function Header() {
   return (
     <header className="site-header">
-      <div className="container flex h-[78px] items-center justify-between gap-5">
-        <Brand />
+      <div className="container site-nav-shell flex h-16 items-center justify-between gap-5">
+        <Brand compact />
         <nav className="desktop-nav flex items-center gap-1 text-sm font-semibold" aria-label="Main navigation">
           <ServicesMenu />
           {mainNav.map(([label, href]) => (
