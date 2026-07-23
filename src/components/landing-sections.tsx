@@ -20,7 +20,7 @@ export function Hero() {
 
       <div className="relative z-10 flex flex-1 flex-col items-center justify-center px-6 text-center">
         <p className="mb-5 text-[11px] font-bold uppercase tracking-[0.26em]" style={{ color: "var(--gold)" }}>Islamic services - Singapore</p>
-        <h1 className="display max-w-2xl" style={{ fontSize: "clamp(42px, 6.8vw, 80px)", lineHeight: .98, color: "var(--teal-dark)" }}>
+        <h1 className="display max-w-[1100px]" style={{ fontSize: "clamp(38px, 5.6vw, 72px)", lineHeight: 1.02, color: "var(--teal-dark)" }}>
           Islamic services,<br />clearly carried through.
         </h1>
         <p className="mx-auto mt-6 max-w-lg text-[16px] font-medium leading-relaxed lg:text-[17px]" style={{ color: "var(--ink)" }}>
