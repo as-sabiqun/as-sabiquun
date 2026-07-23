@@ -1,4 +1,5 @@
 import { createServerClient } from "@supabase/ssr";
+import type { SupabaseClient } from "@supabase/supabase-js";
 import { cookies } from "next/headers";
 
 export const isSupabaseConfigured = Boolean(
@@ -9,9 +10,23 @@ export const isSupabaseAdminConfigured = Boolean(isSupabaseConfigured && process
 
 export type UserRole = "customer" | "vendor" | "admin";
 
-export function getUserRole(user: { user_metadata?: Record<string, unknown> } | null | undefined): UserRole | null {
-  const role = user?.user_metadata?.role;
-  return role === "customer" || role === "vendor" || role === "admin" ? role : null;
+export interface Profile {
+  id: string;
+  display_name: string;
+  role: UserRole;
+  phone: string | null;
+  vendor_type: string | null;
+  services: string[];
+  status: "active" | "suspended";
+  created_at: string;
+}
+
+// role lives in the `profiles` table, never in user_metadata — an
+// authenticated user can edit their own user_metadata from the client SDK,
+// so it must never be trusted for authorization.
+export async function getProfile(supabase: SupabaseClient, userId: string): Promise<Profile | null> {
+  const { data } = await supabase.from("profiles").select("*").eq("id", userId).maybeSingle();
+  return data as Profile | null;
 }
 
 export async function createClient() {

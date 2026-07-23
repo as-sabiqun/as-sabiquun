@@ -1,6 +1,9 @@
 "use client";
 
-import { useState, type FormEvent } from "react";
+import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
+import { useActionState } from "react";
+import { submitWakafContribution } from "@/app/(marketing)/wakaf/actions";
 
 export const wakafProjects = {
   "water-pump": {
@@ -40,16 +43,49 @@ export const wakafProjects = {
 
 export type WakafProjectSlug = keyof typeof wakafProjects;
 
-export function WakafProjectContent({ project }: { project: (typeof wakafProjects)[WakafProjectSlug] }) {
+const draftKey = (slug: string) => `wakaf-draft-${slug}`;
+
+interface Draft {
+  amount: number;
+  dedication: string;
+  customerName: string;
+  customerPhone: string;
+}
+
+export function WakafProjectContent({ projectId, project }: { projectId: WakafProjectSlug; project: (typeof wakafProjects)[WakafProjectSlug] }) {
+  const router = useRouter();
   const presets = [25, 50, 100, 250].filter((v) => v >= project.minimum);
   const [amount, setAmount] = useState(presets[0] ?? project.minimum);
-  const [submitted, setSubmitted] = useState(false);
+  const [dedication, setDedication] = useState("");
+  const [customerName, setCustomerName] = useState("");
+  const [customerPhone, setCustomerPhone] = useState("");
   const [tab, setTab] = useState<"details" | "impact">("details");
+  const [state, action, pending] = useActionState(submitWakafContribution, undefined);
 
-  function submit(event: FormEvent<HTMLFormElement>) {
-    event.preventDefault();
-    setSubmitted(true);
-  }
+  useEffect(() => {
+    const raw = sessionStorage.getItem(draftKey(projectId));
+    if (!raw) return;
+    sessionStorage.removeItem(draftKey(projectId));
+    try {
+      const draft = JSON.parse(raw) as Draft;
+      setAmount(draft.amount);
+      setDedication(draft.dedication);
+      setCustomerName(draft.customerName);
+      setCustomerPhone(draft.customerPhone);
+    } catch {
+      // ignore malformed draft
+    }
+  }, [projectId]);
+
+  useEffect(() => {
+    if (state && !state.ok && "requiresLogin" in state && state.requiresLogin) {
+      const draft: Draft = { amount, dedication, customerName, customerPhone };
+      sessionStorage.setItem(draftKey(projectId), JSON.stringify(draft));
+      router.push(`/login?next=/wakaf/${projectId}`);
+    }
+  }, [state]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  const submittedReference = state?.ok ? state.reference : null;
 
   return (
     <div className="product-layout">
@@ -66,15 +102,17 @@ export function WakafProjectContent({ project }: { project: (typeof wakafProject
         </div>
         <p className="product-lead">{project.lead}</p>
 
-        {submitted ? (
+        {submittedReference ? (
           <div className="card mt-6 p-6 text-center">
-            <p className="text-xs font-bold uppercase tracking-wide" style={{ color: "var(--gold)" }}>Preview submitted</p>
-            <h2 className="display mt-2 text-xl">Your contribution has been recorded.</h2>
-            <p className="mt-2 text-sm leading-6 text-[var(--muted)]">In production this becomes an amanah record you can follow through review, fulfilment, and proof. No live contribution was made.</p>
-            <button type="button" className="btn mt-5" onClick={() => setSubmitted(false)}>Start another preview</button>
+            <p className="text-xs font-bold uppercase tracking-wide" style={{ color: "var(--gold)" }}>Contribution recorded</p>
+            <h2 className="display mt-2 text-xl">{submittedReference}</h2>
+            <p className="mt-2 text-sm leading-6 text-[var(--muted)]">Your contribution is on record and will be offered to our fulfilment partners shortly. No payment has been taken yet.</p>
           </div>
         ) : (
-          <form className="mt-6 grid gap-5" onSubmit={submit}>
+          <form className="mt-6 grid gap-5" action={action}>
+            {state && !state.ok && "error" in state && <p className="auth-error">{state.error}</p>}
+            <input type="hidden" name="projectId" value={projectId} />
+
             <div>
               <span className="label mb-2 block">Contribution</span>
               <div className="flex flex-wrap gap-2">
@@ -83,21 +121,27 @@ export function WakafProjectContent({ project }: { project: (typeof wakafProject
                 ))}
               </div>
               <label className="label mt-3">Custom amount (SGD)
-                <input className="input" type="number" min={project.minimum} value={amount} onChange={(event) => setAmount(Number(event.target.value))} required />
+                <input className="input" type="number" name="amount" min={project.minimum} value={amount} onChange={(event) => setAmount(Number(event.target.value))} required />
               </label>
             </div>
 
-            <label className="label">Dedication <span className="font-normal text-[var(--muted)]">Optional</span><input className="input" placeholder="In honour or memory of..." /></label>
-            <label className="label">Your name<input className="input" required placeholder="Your full name" /></label>
-            <label className="label">Email<input className="input" type="email" required placeholder="you@example.com" /></label>
+            <label className="label">Dedication <span className="font-normal text-[var(--muted)]">Optional</span>
+              <input className="input" name="dedication" placeholder="In honour or memory of..." value={dedication} onChange={(event) => setDedication(event.target.value)} />
+            </label>
+            <label className="label">Your name
+              <input className="input" name="customerName" required placeholder="Your full name" value={customerName} onChange={(event) => setCustomerName(event.target.value)} />
+            </label>
+            <label className="label">Phone
+              <input className="input" name="customerPhone" required placeholder="+65 8123 4567" value={customerPhone} onChange={(event) => setCustomerPhone(event.target.value)} />
+            </label>
 
             <div className="buy-box-total">
               <span className="text-sm font-bold">Total</span>
               <strong className="numeral">S${amount}</strong>
             </div>
 
-            <button type="submit" className="btn">Continue <span aria-hidden="true">→</span></button>
-            <p className="text-xs leading-5 text-[var(--muted)]">Working preview - no payment is taken.</p>
+            <button type="submit" className="btn" disabled={pending}>{pending ? "Submitting…" : "Continue"} <span aria-hidden="true">→</span></button>
+            <p className="text-xs leading-5 text-[var(--muted)]">Working preview - no payment is taken. You'll be asked to log in if you aren't already.</p>
           </form>
         )}
 

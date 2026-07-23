@@ -24,7 +24,10 @@ export async function signup(_prevState: SignupState, formData: FormData): Promi
     email,
     password,
     options: {
-      data: { full_name: name, role: "customer" },
+      // role is never read from here — the on_auth_user_created DB trigger
+      // always creates the profiles row as role='customer' regardless of
+      // metadata, since the anon key is public.
+      data: { full_name: name },
       emailRedirectTo: `${origin}/auth/confirm`,
     },
   });

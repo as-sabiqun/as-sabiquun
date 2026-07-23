@@ -1,4 +1,4 @@
-import { createClient, isSupabaseConfigured } from "@/lib/supabase/server";
+import { createClient, getProfile, isSupabaseConfigured } from "@/lib/supabase/server";
 import { logout } from "@/app/actions/auth";
 
 export default async function AdminProfilePage() {
@@ -12,7 +12,8 @@ export default async function AdminProfilePage() {
     if (data.user) {
       signedIn = true;
       email = data.user.email ?? email;
-      name = (data.user.user_metadata?.full_name as string | undefined) ?? email.split("@")[0];
+      const profile = await getProfile(supabase, data.user.id);
+      name = profile?.display_name || email.split("@")[0];
     }
   }
 

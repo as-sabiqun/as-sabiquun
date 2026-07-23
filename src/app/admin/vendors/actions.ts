@@ -31,15 +31,31 @@ export async function createVendorAccount(_prevState: CreateVendorState, formDat
   }
 
   const supabase = createAdminClient();
-  const { error } = await supabase.auth.admin.createUser({
+
+  // Note: full_name here only seeds the auth user's metadata for reference —
+  // the on_auth_user_created trigger always creates the profiles row as
+  // role='customer' regardless of what's in metadata, since the anon key is
+  // public and a signup call could be made directly against Supabase's API
+  // with arbitrary metadata. The explicit UPDATE below (service-role only)
+  // is what actually grants vendor access.
+  const { data: created, error: createError } = await supabase.auth.admin.createUser({
     email,
     password,
     email_confirm: true,
-    user_metadata: { full_name: name, phone, role: "vendor", vendor_type: vendorType, services },
+    user_metadata: { full_name: name },
   });
 
-  if (error) {
-    return { ok: false, error: error.message };
+  if (createError) {
+    return { ok: false, error: createError.message };
+  }
+
+  const { error: promoteError } = await supabase
+    .from("profiles")
+    .update({ role: "vendor", display_name: name, phone, vendor_type: vendorType, services })
+    .eq("id", created.user.id);
+
+  if (promoteError) {
+    return { ok: false, error: promoteError.message };
   }
 
   return { ok: true, email, password, live: true };

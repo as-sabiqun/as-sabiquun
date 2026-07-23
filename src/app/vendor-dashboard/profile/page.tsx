@@ -1,9 +1,12 @@
-import { createClient, isSupabaseConfigured } from "@/lib/supabase/server";
+import { createClient, getProfile, isSupabaseConfigured } from "@/lib/supabase/server";
 import { logout } from "@/app/actions/auth";
 
 export default async function VendorProfilePage() {
   let email = "vendor@preview.local";
   let name = "Demo Vendor";
+  let phone = "";
+  let vendorType = "";
+  let services: string[] = [];
   let signedIn = false;
 
   if (isSupabaseConfigured) {
@@ -12,7 +15,11 @@ export default async function VendorProfilePage() {
     if (data.user) {
       signedIn = true;
       email = data.user.email ?? email;
-      name = (data.user.user_metadata?.full_name as string | undefined) ?? email.split("@")[0];
+      const profile = await getProfile(supabase, data.user.id);
+      name = profile?.display_name || email.split("@")[0];
+      phone = profile?.phone ?? "";
+      vendorType = profile?.vendor_type ?? "";
+      services = profile?.services ?? [];
     }
   }
 
@@ -36,7 +43,9 @@ export default async function VendorProfilePage() {
         </div>
 
         <dl className="vendor-profile-facts">
-          <div><dt>Role</dt><dd>Fulfilment vendor</dd></div>
+          <div><dt>Role</dt><dd>{vendorType || "Fulfilment vendor"}</dd></div>
+          {phone && <div><dt>Phone</dt><dd>{phone}</dd></div>}
+          {services.length > 0 && <div><dt>Services</dt><dd>{services.join(", ")}</dd></div>}
           <div><dt>Portal access</dt><dd>{signedIn ? "Signed in" : "Preview mode"}</dd></div>
         </dl>
 

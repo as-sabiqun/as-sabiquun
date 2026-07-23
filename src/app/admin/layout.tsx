@@ -1,5 +1,5 @@
 import { redirect } from "next/navigation";
-import { createClient, getUserRole, isSupabaseConfigured } from "@/lib/supabase/server";
+import { createClient, getProfile, isSupabaseConfigured } from "@/lib/supabase/server";
 import { AdminSidebar } from "@/components/admin/admin-sidebar";
 import { AdminDataProvider } from "@/components/admin/admin-data-context";
 
@@ -14,12 +14,13 @@ export default async function AdminLayout({ children }: { children: React.ReactN
     if (!data.user) {
       redirect("/login?next=/admin");
     }
-    if (getUserRole(data.user) !== "admin") {
+    const profile = await getProfile(supabase, data.user.id);
+    if (profile?.role !== "admin") {
       redirect("/");
     }
     signedIn = true;
     adminEmail = data.user.email ?? adminEmail;
-    adminName = (data.user.user_metadata?.full_name as string | undefined) ?? adminEmail.split("@")[0];
+    adminName = profile.display_name || adminEmail.split("@")[0];
   }
 
   return (

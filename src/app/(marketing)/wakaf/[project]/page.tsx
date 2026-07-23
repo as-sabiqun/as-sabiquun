@@ -20,7 +20,7 @@ export default function WakafProjectPage({ params }: { params: Promise<{ project
         </nav>
 
         <div className="mt-6">
-          <WakafProjectContent project={project} />
+          <WakafProjectContent projectId={slug as WakafProjectSlug} project={project} />
         </div>
       </div>
     </section>

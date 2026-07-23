@@ -1,5 +1,5 @@
 import { redirect } from "next/navigation";
-import { createClient, getUserRole, isSupabaseConfigured } from "@/lib/supabase/server";
+import { createClient, getProfile, isSupabaseConfigured } from "@/lib/supabase/server";
 import { VendorSidebar } from "@/components/vendor/vendor-sidebar";
 import { VendorDataProvider } from "@/components/vendor/vendor-data-context";
 
@@ -14,12 +14,13 @@ export default async function VendorDashboardLayout({ children }: { children: Re
     if (!data.user) {
       redirect("/login?next=/vendor-dashboard");
     }
-    if (getUserRole(data.user) !== "vendor") {
+    const profile = await getProfile(supabase, data.user.id);
+    if (profile?.role !== "vendor") {
       redirect("/");
     }
     signedIn = true;
     vendorEmail = data.user.email ?? vendorEmail;
-    vendorName = (data.user.user_metadata?.full_name as string | undefined) ?? vendorEmail.split("@")[0];
+    vendorName = profile.display_name || vendorEmail.split("@")[0];
   }
 
   return (

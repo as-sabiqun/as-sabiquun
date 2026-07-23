@@ -9,7 +9,7 @@ export default async function WakafProjectModal({ params }: { params: Promise<{ 
 
   return (
     <Modal>
-      <WakafProjectContent project={project} />
+      <WakafProjectContent projectId={slug as WakafProjectSlug} project={project} />
     </Modal>
   );
 }

@@ -1,6 +1,9 @@
 "use client";
 
-import { useState, type FormEvent } from "react";
+import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
+import { useActionState } from "react";
+import { submitKorbanOrder } from "@/app/(marketing)/korban/actions";
 
 const packages = [
   { id: "share", label: "1 cow share", price: 280 },
@@ -17,15 +20,52 @@ const details = {
   ],
 };
 
+const DRAFT_KEY = "korban-draft";
+
+interface Draft {
+  packageId: string;
+  quantity: number;
+  names: string[];
+  customerName: string;
+  customerPhone: string;
+}
+
 export function KorbanContent() {
+  const router = useRouter();
   const [packageId, setPackageId] = useState(packages[0].id);
   const [quantity, setQuantity] = useState(1);
   const [names, setNames] = useState<string[]>([""]);
-  const [submitted, setSubmitted] = useState(false);
+  const [customerName, setCustomerName] = useState("");
+  const [customerPhone, setCustomerPhone] = useState("");
   const [tab, setTab] = useState<"details" | "faq">("details");
+  const [state, action, pending] = useActionState(submitKorbanOrder, undefined);
 
   const selected = packages.find((p) => p.id === packageId) ?? packages[0];
   const total = selected.price * quantity;
+
+  useEffect(() => {
+    const raw = sessionStorage.getItem(DRAFT_KEY);
+    if (!raw) return;
+    sessionStorage.removeItem(DRAFT_KEY);
+    try {
+      const draft = JSON.parse(raw) as Draft;
+      setPackageId(draft.packageId);
+      setQuantity(draft.quantity);
+      setNames(draft.names);
+      setCustomerName(draft.customerName);
+      setCustomerPhone(draft.customerPhone);
+    } catch {
+      // ignore malformed draft
+    }
+  }, []);
+
+  useEffect(() => {
+    if (state && !state.ok && "requiresLogin" in state && state.requiresLogin) {
+      const draft: Draft = { packageId, quantity, names, customerName, customerPhone };
+      sessionStorage.setItem(DRAFT_KEY, JSON.stringify(draft));
+      router.push("/login?next=/korban");
+    }
+  }, [state]); // eslint-disable-line react-hooks/exhaustive-deps
 
   function updateQuantity(next: number) {
     const bounded = Math.max(1, Math.min(7, next));
@@ -33,10 +73,7 @@ export function KorbanContent() {
     setNames((current) => Array.from({ length: bounded }, (_, i) => current[i] ?? ""));
   }
 
-  function submit(event: FormEvent<HTMLFormElement>) {
-    event.preventDefault();
-    setSubmitted(true);
-  }
+  const submittedReference = state?.ok ? state.reference : null;
 
   return (
     <div className="product-layout">
@@ -53,15 +90,18 @@ export function KorbanContent() {
         </div>
         <p className="product-lead">{details.description}</p>
 
-        {submitted ? (
+        {submittedReference ? (
           <div className="card mt-6 p-6 text-center">
-            <p className="text-xs font-bold uppercase tracking-wide" style={{ color: "var(--gold)" }}>Preview submitted</p>
-            <h2 className="display mt-2 text-xl">Your request has been recorded.</h2>
-            <p className="mt-2 text-sm leading-6 text-[var(--muted)]">In production this becomes an amanah record you can follow through review, fulfilment, and proof. No live order was created.</p>
-            <button type="button" className="btn mt-5" onClick={() => setSubmitted(false)}>Start another preview</button>
+            <p className="text-xs font-bold uppercase tracking-wide" style={{ color: "var(--gold)" }}>Order recorded</p>
+            <h2 className="display mt-2 text-xl">{submittedReference}</h2>
+            <p className="mt-2 text-sm leading-6 text-[var(--muted)]">Your Korban order is on record and will be offered to our fulfilment partners shortly. No payment has been taken yet.</p>
           </div>
         ) : (
-          <form className="mt-6 grid gap-5" onSubmit={submit}>
+          <form className="mt-6 grid gap-5" action={action}>
+            {state && !state.ok && "error" in state && <p className="auth-error">{state.error}</p>}
+            <input type="hidden" name="packageId" value={packageId} />
+            <input type="hidden" name="quantity" value={quantity} />
+
             <div>
               <span className="label mb-2 block">Package</span>
               <div className="option-row">
@@ -94,6 +134,7 @@ export function KorbanContent() {
                   <input
                     key={i}
                     className="input"
+                    name="participantName"
                     required
                     placeholder={`Participant ${i + 1} name`}
                     value={name}
@@ -103,16 +144,20 @@ export function KorbanContent() {
               </div>
             </div>
 
-            <label className="label">Your name<input className="input" required placeholder="Your full name" /></label>
-            <label className="label">Email<input className="input" type="email" required placeholder="you@example.com" /></label>
+            <label className="label">Your name
+              <input className="input" name="customerName" required placeholder="Your full name" value={customerName} onChange={(event) => setCustomerName(event.target.value)} />
+            </label>
+            <label className="label">Phone
+              <input className="input" name="customerPhone" required placeholder="+65 8123 4567" value={customerPhone} onChange={(event) => setCustomerPhone(event.target.value)} />
+            </label>
 
             <div className="buy-box-total">
               <span className="text-sm font-bold">Total</span>
               <strong className="numeral">S${total}</strong>
             </div>
 
-            <button type="submit" className="btn">Continue <span aria-hidden="true">→</span></button>
-            <p className="text-xs leading-5 text-[var(--muted)]">Working preview - no payment is taken.</p>
+            <button type="submit" className="btn" disabled={pending}>{pending ? "Submitting…" : "Continue"} <span aria-hidden="true">→</span></button>
+            <p className="text-xs leading-5 text-[var(--muted)]">Working preview - no payment is taken. You'll be asked to log in if you aren't already.</p>
           </form>
         )}
 
