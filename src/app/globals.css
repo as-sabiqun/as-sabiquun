@@ -89,12 +89,14 @@ button, a, summary { -webkit-tap-highlight-color: transparent; }
 .brand-seal { position: relative; display: inline-block; flex: none; overflow: hidden; }
 .brand-seal-image { position: absolute; top: -75%; left: -75%; width: 250%; height: 250%; max-width: none; object-fit: contain; }
 
-.site-header { position: sticky; top: 0; z-index: 50; padding: 12px 0; background: transparent; }
+.site-header { position: fixed; top: 12px; inset-inline: 0; z-index: 50; padding: 0 16px; background: transparent; }
 .site-header .container { position: relative; }
 .site-header .btn { border-radius: 999px; }
 .site-nav-shell {
-  border: 1.5px solid var(--line); border-radius: 999px; padding: 0 9px 0 12px;
-  background: var(--cream); box-shadow: 5px 5px 0 rgba(49,35,27,.05);
+  border: 1px solid rgba(49,35,27,.08); border-radius: 999px; padding: 0 9px 0 12px;
+  background: rgba(247,244,236,.72);
+  -webkit-backdrop-filter: blur(22px); backdrop-filter: blur(22px);
+  box-shadow: 0 8px 28px -16px rgba(49,35,27,.35), inset 0 1px 0 rgba(255,255,255,.5);
 }
 .nav-link, .services-menu > summary { display: flex; min-height: 42px; cursor: pointer; list-style: none; align-items: center; gap: 6px; border-radius: 999px; padding: 0 14px; color: var(--muted); transition: background-color .15s ease, color .15s ease; }
 .services-menu > summary::-webkit-details-marker, .mobile-menu > summary::-webkit-details-marker { display: none; }
@@ -127,7 +129,7 @@ button, a, summary { -webkit-tap-highlight-color: transparent; }
   .mobile-menu > summary span { display: block; width: 16px; height: 1px; background: var(--ink); transition: transform .15s ease; }
   .mobile-menu[open] > summary span:first-child { transform: translateY(3.5px) rotate(45deg); }
   .mobile-menu[open] > summary span:last-child { transform: translateY(-3.5px) rotate(-45deg); }
-  .mobile-menu nav { position: absolute; top: calc(100% - 2px); right: 0; left: 0; display: grid; border: 1px solid var(--line); border-radius: 0 0 18px 18px; background: var(--cream); padding: 12px; box-shadow: 0 25px 45px rgba(49,35,27,.13); }
+  .mobile-menu nav { position: absolute; top: calc(100% + 10px); right: 0; left: 0; display: grid; border: 1px solid rgba(49,35,27,.08); border-radius: 20px; background: rgba(247,244,236,.85); -webkit-backdrop-filter: blur(22px); backdrop-filter: blur(22px); padding: 12px; box-shadow: 0 25px 45px rgba(49,35,27,.18); }
   .mobile-menu nav a { border-bottom: 1px solid var(--line); padding: 13px 10px; font-size: .82rem; font-weight: 700; }
   .footer-top { grid-template-columns: 1.5fr 1fr 1fr; }
   .footer-top > div:last-child { grid-column: 2 / 4; }

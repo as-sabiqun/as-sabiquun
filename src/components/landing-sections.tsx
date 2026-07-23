@@ -14,7 +14,7 @@ export function SectionEyebrow({ label }: { label: string }) {
 
 export function Hero() {
   return (
-    <section className="lp-hero-canvas relative flex min-h-[calc(100vh-88px)] flex-col overflow-hidden">
+    <section className="lp-hero-canvas relative flex min-h-screen flex-col overflow-hidden pt-24">
       <div className="lp-hero-glow pointer-events-none absolute inset-0 z-[2]" aria-hidden="true" />
       <div className="lp-grain pointer-events-none absolute inset-0 z-[3]" aria-hidden="true" />
 
