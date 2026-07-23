@@ -271,3 +271,38 @@ button, a, summary { -webkit-tap-highlight-color: transparent; }
 @media (max-width: 480px) {
   .option-row { grid-template-columns: 1fr 1fr; }
 }
+
+/* ============================================================
+   SERVICE MODAL — Korban / Wakaf product detail, intercepted
+   from /services and shown as an overlay instead of navigating.
+   ============================================================ */
+
+.modal-overlay {
+  position: fixed; inset: 0; z-index: 60; display: flex; align-items: flex-start; justify-content: center;
+  padding: 96px 20px 40px; overflow-y: auto;
+  background: color-mix(in srgb, var(--ink) 55%, transparent);
+  animation: modal-fade .18s ease;
+}
+.modal-panel {
+  position: relative; width: 100%; max-width: 980px; background: var(--cream);
+  border-radius: 20px; border: 1.5px solid var(--line); box-shadow: 0 30px 60px -20px rgba(0, 0, 0, .45);
+  padding: 40px 44px 48px; animation: modal-rise .22s cubic-bezier(.2, .8, .2, 1);
+}
+.modal-close {
+  position: absolute; top: 18px; right: 18px; display: grid; place-items: center; width: 36px; height: 36px;
+  border-radius: 999px; border: 1.5px solid var(--line); background: var(--white); color: var(--ink);
+  font-size: .85rem; cursor: pointer; transition: border-color .15s ease, background-color .15s ease;
+}
+.modal-close:hover { border-color: var(--teal); background: var(--teal-soft); }
+
+@keyframes modal-fade { from { opacity: 0; } to { opacity: 1; } }
+@keyframes modal-rise { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: translateY(0); } }
+
+@media (prefers-reduced-motion: reduce) {
+  .modal-overlay, .modal-panel { animation: none; }
+}
+
+@media (max-width: 640px) {
+  .modal-overlay { padding: 76px 12px 24px; }
+  .modal-panel { padding: 28px 20px 32px; border-radius: 16px; }
+}
