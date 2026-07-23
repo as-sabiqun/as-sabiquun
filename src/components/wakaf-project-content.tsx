@@ -85,8 +85,6 @@ export function WakafProjectContent({ projectId, project }: { projectId: WakafPr
     }
   }, [state]); // eslint-disable-line react-hooks/exhaustive-deps
 
-  const submittedReference = state?.ok ? state.reference : null;
-
   return (
     <div className="product-layout">
       <div className="product-media">
@@ -102,15 +100,8 @@ export function WakafProjectContent({ projectId, project }: { projectId: WakafPr
         </div>
         <p className="product-lead">{project.lead}</p>
 
-        {submittedReference ? (
-          <div className="card mt-6 p-6 text-center">
-            <p className="text-xs font-bold uppercase tracking-wide" style={{ color: "var(--gold)" }}>Contribution recorded</p>
-            <h2 className="display mt-2 text-xl">{submittedReference}</h2>
-            <p className="mt-2 text-sm leading-6 text-[var(--muted)]">Your contribution is on record and will be offered to our fulfilment partners shortly. No payment has been taken yet.</p>
-          </div>
-        ) : (
-          <form className="mt-6 grid gap-5" action={action}>
-            {state && !state.ok && "error" in state && <p className="auth-error">{state.error}</p>}
+        <form className="mt-6 grid gap-5" action={action}>
+            {state && "error" in state && <p className="auth-error">{state.error}</p>}
             <input type="hidden" name="projectId" value={projectId} />
 
             <div>
@@ -142,8 +133,7 @@ export function WakafProjectContent({ projectId, project }: { projectId: WakafPr
 
             <button type="submit" className="btn" disabled={pending}>{pending ? "Submitting…" : "Continue"} <span aria-hidden="true">→</span></button>
             <p className="text-xs leading-5 text-[var(--muted)]">Working preview - no payment is taken. You'll be asked to log in if you aren't already.</p>
-          </form>
-        )}
+        </form>
 
         <div className="detail-tabs">
           <button type="button" className={tab === "details" ? "is-active" : ""} onClick={() => setTab("details")}>Details</button>

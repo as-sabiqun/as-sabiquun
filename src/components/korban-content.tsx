@@ -73,8 +73,6 @@ export function KorbanContent() {
     setNames((current) => Array.from({ length: bounded }, (_, i) => current[i] ?? ""));
   }
 
-  const submittedReference = state?.ok ? state.reference : null;
-
   return (
     <div className="product-layout">
       <div className="product-media">
@@ -90,15 +88,8 @@ export function KorbanContent() {
         </div>
         <p className="product-lead">{details.description}</p>
 
-        {submittedReference ? (
-          <div className="card mt-6 p-6 text-center">
-            <p className="text-xs font-bold uppercase tracking-wide" style={{ color: "var(--gold)" }}>Order recorded</p>
-            <h2 className="display mt-2 text-xl">{submittedReference}</h2>
-            <p className="mt-2 text-sm leading-6 text-[var(--muted)]">Your Korban order is on record and will be offered to our fulfilment partners shortly. No payment has been taken yet.</p>
-          </div>
-        ) : (
-          <form className="mt-6 grid gap-5" action={action}>
-            {state && !state.ok && "error" in state && <p className="auth-error">{state.error}</p>}
+        <form className="mt-6 grid gap-5" action={action}>
+            {state && "error" in state && <p className="auth-error">{state.error}</p>}
             <input type="hidden" name="packageId" value={packageId} />
             <input type="hidden" name="quantity" value={quantity} />
 
@@ -158,8 +149,7 @@ export function KorbanContent() {
 
             <button type="submit" className="btn" disabled={pending}>{pending ? "Submitting…" : "Continue"} <span aria-hidden="true">→</span></button>
             <p className="text-xs leading-5 text-[var(--muted)]">Working preview - no payment is taken. You'll be asked to log in if you aren't already.</p>
-          </form>
-        )}
+        </form>
 
         <div className="detail-tabs">
           <button type="button" className={tab === "details" ? "is-active" : ""} onClick={() => setTab("details")}>Details</button>

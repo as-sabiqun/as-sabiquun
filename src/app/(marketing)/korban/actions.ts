@@ -1,5 +1,6 @@
 "use server";
 
+import { redirect } from "next/navigation";
 import { createClient, isSupabaseConfigured } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 
@@ -7,7 +8,6 @@ const PACKAGE_SLUGS = { share: "korban-share", goat: "korban-goat", cow: "korban
 type PackageId = keyof typeof PACKAGE_SLUGS;
 
 export type SubmitKorbanState =
-  | { ok: true; reference: string }
   | { ok: false; requiresLogin: true }
   | { ok: false; error: string }
   | undefined;
@@ -95,5 +95,5 @@ export async function submitKorbanOrder(_prevState: SubmitKorbanState, formData:
     return { ok: false, error: "Something went wrong creating your order. Please try again." };
   }
 
-  return { ok: true, reference: order.reference };
+  redirect(`/dashboard/orders/${order.reference}`);
 }

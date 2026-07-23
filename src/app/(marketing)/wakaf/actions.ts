@@ -1,7 +1,9 @@
 "use server";
 
+import { redirect } from "next/navigation";
 import { createClient, isSupabaseConfigured } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
+import { formatCents } from "@/lib/orders";
 
 const PROJECT_MAP = {
   "water-pump": { slug: "wakaf-water-pump", category: "water" },
@@ -11,7 +13,6 @@ const PROJECT_MAP = {
 type ProjectId = keyof typeof PROJECT_MAP;
 
 export type SubmitWakafState =
-  | { ok: true; reference: string }
   | { ok: false; requiresLogin: true }
   | { ok: false; error: string }
   | undefined;
@@ -24,7 +25,7 @@ function reference() {
 
 export async function submitWakafContribution(_prevState: SubmitWakafState, formData: FormData): Promise<SubmitWakafState> {
   const projectId = String(formData.get("projectId") ?? "") as ProjectId;
-  const amount = Number(formData.get("amount") ?? 0);
+  const amountDollars = Number(formData.get("amount") ?? 0);
   const dedication = String(formData.get("dedication") ?? "").trim() || null;
   const customerName = String(formData.get("customerName") ?? "").trim();
   const customerPhone = String(formData.get("customerPhone") ?? "").trim();
@@ -33,7 +34,7 @@ export async function submitWakafContribution(_prevState: SubmitWakafState, form
   if (!project) {
     return { ok: false, error: "Choose a project." };
   }
-  if (!Number.isFinite(amount) || amount <= 0) {
+  if (!Number.isFinite(amountDollars) || amountDollars <= 0) {
     return { ok: false, error: "Enter a valid contribution amount." };
   }
   if (!customerName || !customerPhone) {
@@ -63,9 +64,10 @@ export async function submitWakafContribution(_prevState: SubmitWakafState, form
     return { ok: false, error: "That project isn't available right now." };
   }
 
-  const totalAmount = Math.round(amount);
+  // Money is stored in cents; the form collects a plain dollar amount.
+  const totalAmount = Math.round(amountDollars * 100);
   if (totalAmount < offering.min_amount) {
-    return { ok: false, error: `Contribution must be at least S$${offering.min_amount}.` };
+    return { ok: false, error: `Contribution must be at least ${formatCents(offering.min_amount)}.` };
   }
 
   const { data: settings } = await admin.from("platform_settings").select("commission_rate").single();
@@ -98,5 +100,5 @@ export async function submitWakafContribution(_prevState: SubmitWakafState, form
     return { ok: false, error: "Something went wrong creating your order. Please try again." };
   }
 
-  return { ok: true, reference: order.reference };
+  redirect(`/dashboard/orders/${order.reference}`);
 }

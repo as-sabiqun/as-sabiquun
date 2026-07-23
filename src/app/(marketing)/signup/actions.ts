@@ -37,7 +37,7 @@ export async function signup(_prevState: SignupState, formData: FormData): Promi
   }
 
   if (data.session) {
-    redirect("/");
+    redirect("/dashboard");
   }
 
   return { message: "Check your email to confirm your account before signing in." };

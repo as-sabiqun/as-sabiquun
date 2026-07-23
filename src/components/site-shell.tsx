@@ -1,8 +1,14 @@
 import Link from "next/link";
 import { Brand } from "@/components/brand";
 import { services } from "@/components/service-card";
-import { createClient, isSupabaseConfigured } from "@/lib/supabase/server";
+import { createClient, getProfile, isSupabaseConfigured, type UserRole } from "@/lib/supabase/server";
 import { logout } from "@/app/actions/auth";
+
+const HOME_FOR_ROLE: Record<UserRole, { href: string; label: string }> = {
+  customer: { href: "/dashboard", label: "My orders" },
+  vendor: { href: "/vendor-dashboard", label: "Vendor dashboard" },
+  admin: { href: "/admin", label: "Admin console" },
+};
 
 const mainNav = [
   ["About", "/about"],
@@ -30,34 +36,45 @@ function ServicesMenu() {
   );
 }
 
-function AccountNavItem({ email }: { email: string | null }) {
+function AccountNavItem({ email, home }: { email: string | null; home: { href: string; label: string } | null }) {
   if (!email) {
     return <Link href="/login" className="nav-link">Login</Link>;
   }
   return (
-    <form action={logout} className="flex">
-      <button type="submit" className="nav-link" title={email}>Log out</button>
-    </form>
+    <>
+      {home && <Link href={home.href} className="nav-link">{home.label}</Link>}
+      <form action={logout} className="flex">
+        <button type="submit" className="nav-link" title={email}>Log out</button>
+      </form>
+    </>
   );
 }
 
-function AccountMobileItem({ email }: { email: string | null }) {
+function AccountMobileItem({ email, home }: { email: string | null; home: { href: string; label: string } | null }) {
   if (!email) {
     return <Link href="/login">Login</Link>;
   }
   return (
-    <form action={logout}>
-      <button type="submit">Log out ({email})</button>
-    </form>
+    <>
+      {home && <Link href={home.href}>{home.label}</Link>}
+      <form action={logout}>
+        <button type="submit">Log out ({email})</button>
+      </form>
+    </>
   );
 }
 
 export async function Header() {
   let email: string | null = null;
+  let home: { href: string; label: string } | null = null;
   if (isSupabaseConfigured) {
     const supabase = await createClient();
     const { data } = await supabase.auth.getUser();
     email = data.user?.email ?? null;
+    if (data.user) {
+      const profile = await getProfile(supabase, data.user.id);
+      if (profile) home = HOME_FOR_ROLE[profile.role];
+    }
   }
 
   return (
@@ -69,7 +86,7 @@ export async function Header() {
           {mainNav.map(([label, href]) => (
             <Link key={href} href={href} className="nav-link">{label}</Link>
           ))}
-          <AccountNavItem email={email} />
+          <AccountNavItem email={email} home={home} />
         </nav>
         <div className="desktop-cta">
           <Link className="btn btn-small" href="/services">Choose a service <span aria-hidden="true">→</span></Link>
@@ -80,7 +97,7 @@ export async function Header() {
             <Link href="/services">All services</Link>
             {services.map((service) => <Link key={service.slug} href={service.href}>{service.title}</Link>)}
             {mainNav.map(([label, href]) => <Link key={href} href={href}>{label}</Link>)}
-            <AccountMobileItem email={email} />
+            <AccountMobileItem email={email} home={home} />
           </nav>
         </details>
       </div>

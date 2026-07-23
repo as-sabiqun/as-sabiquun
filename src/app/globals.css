@@ -609,3 +609,32 @@ button, a, summary { -webkit-tap-highlight-color: transparent; }
   .admin-form-grid { grid-template-columns: 1fr; }
   .admin-vendor-stats { grid-template-columns: 1fr; }
 }
+
+/* ============================================================
+   CUSTOMER ORDER TRACKER — /dashboard/orders/[reference]
+   ============================================================ */
+
+.order-tracker { display: flex; align-items: flex-start; }
+.order-tracker-step {
+  position: relative; flex: 1; display: flex; flex-direction: column; align-items: center; text-align: center; gap: 10px;
+}
+.order-tracker-step::before {
+  content: ""; position: absolute; top: 7px; left: -50%; width: 100%; height: 2px; background: var(--line); z-index: 0;
+}
+.order-tracker-step:first-child::before { display: none; }
+.order-tracker-step.is-done::before { background: var(--teal); }
+.order-tracker-dot {
+  position: relative; z-index: 1; display: block; width: 16px; height: 16px; border-radius: 999px;
+  background: var(--white); border: 2px solid var(--line);
+}
+.order-tracker-step.is-done .order-tracker-dot { background: var(--teal); border-color: var(--teal); }
+.order-tracker-step.is-current .order-tracker-dot { border-color: var(--gold); box-shadow: 0 0 0 4px color-mix(in srgb, var(--gold) 20%, transparent); }
+.order-tracker-label { font-size: .74rem; font-weight: 700; color: var(--muted); max-width: 110px; }
+.order-tracker-step.is-done .order-tracker-label, .order-tracker-step.is-current .order-tracker-label { color: var(--ink); }
+
+@media (max-width: 640px) {
+  .order-tracker { flex-direction: column; align-items: flex-start; gap: 18px; }
+  .order-tracker-step { flex-direction: row; text-align: left; width: 100%; }
+  .order-tracker-step::before { top: -18px; left: 7px; width: 2px; height: 18px; }
+  .order-tracker-label { max-width: none; }
+}
