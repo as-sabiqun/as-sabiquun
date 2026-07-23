@@ -16,11 +16,35 @@ export interface AdminJob {
   assignedVendorId?: string;
 }
 
+export const vendorTypes = [
+  "Korban fulfilment partner",
+  "Wakaf water & infrastructure",
+  "Wakaf distribution (Quran / food)",
+  "General / multi-service vendor",
+] as const;
+
+export type VendorType = (typeof vendorTypes)[number];
+
+export const vendorServiceOptions = [
+  { slug: "korban", title: "Korban" },
+  { slug: "water", title: "Wakaf Water Pump" },
+  { slug: "quran", title: "Wakaf Quran" },
+  { slug: "orphans", title: "Food for Orphans" },
+] as const;
+
+export type VendorServiceSlug = (typeof vendorServiceOptions)[number]["slug"];
+
+export function serviceSlugsForCategory(category: AdminJob["category"]): VendorServiceSlug[] {
+  return category === "Korban" ? ["korban"] : ["water", "quran", "orphans"];
+}
+
 export interface AdminVendor {
   id: string;
   name: string;
   email: string;
   phone: string;
+  type: VendorType;
+  services: VendorServiceSlug[];
   status: "active" | "suspended";
   joinedAt: string;
   jobsCompleted: number;
@@ -110,6 +134,8 @@ export const initialAdminVendors: AdminVendor[] = [
     name: "Amanah Fulfilment Partners",
     email: "ops@amanahpartners.example",
     phone: "+65 6221 0043",
+    type: "Korban fulfilment partner",
+    services: ["korban"],
     status: "active",
     joinedAt: daysAgo(120),
     jobsCompleted: 34,
@@ -121,6 +147,8 @@ export const initialAdminVendors: AdminVendor[] = [
     name: "Barakah Regional Services",
     email: "team@barakahservices.example",
     phone: "+65 6778 9012",
+    type: "General / multi-service vendor",
+    services: ["korban", "water", "quran", "orphans"],
     status: "active",
     joinedAt: daysAgo(200),
     jobsCompleted: 61,
@@ -132,6 +160,8 @@ export const initialAdminVendors: AdminVendor[] = [
     name: "Nur Community Logistics",
     email: "hello@nurlogistics.example",
     phone: "+65 6543 8890",
+    type: "Wakaf distribution (Quran / food)",
+    services: ["quran", "orphans"],
     status: "suspended",
     joinedAt: daysAgo(340),
     jobsCompleted: 12,

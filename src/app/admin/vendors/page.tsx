@@ -3,30 +3,45 @@
 import Link from "next/link";
 import { useActionState, useEffect, useState } from "react";
 import { useAdminData } from "@/components/admin/admin-data-context";
-import { generatePassword } from "@/lib/admin-demo";
+import { generatePassword, vendorServiceOptions, vendorTypes, type VendorServiceSlug, type VendorType } from "@/lib/admin-demo";
 import { createVendorAccount } from "./actions";
 
 export default function AdminVendorsPage() {
   const { vendors, addVendor } = useAdminData();
   const [open, setOpen] = useState(false);
   const [password, setPassword] = useState(generatePassword());
+  const [vendorType, setVendorType] = useState<VendorType>(vendorTypes[0]);
+  const [services, setServices] = useState<VendorServiceSlug[]>([]);
   const [lastName, setLastName] = useState("");
   const [lastPhone, setLastPhone] = useState("");
+  const [lastType, setLastType] = useState<VendorType>(vendorTypes[0]);
+  const [lastServices, setLastServices] = useState<VendorServiceSlug[]>([]);
   const [state, action, pending] = useActionState(createVendorAccount, undefined);
 
   useEffect(() => {
     if (state?.ok) {
-      addVendor({ name: lastName || state.email.split("@")[0], email: state.email, phone: lastPhone });
+      addVendor({ name: lastName || state.email.split("@")[0], email: state.email, phone: lastPhone, type: lastType, services: lastServices });
       setOpen(false);
+      setServices([]);
     }
     // Only run when a new submission result arrives.
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [state]);
 
+  function toggleService(slug: VendorServiceSlug) {
+    setServices((current) => (current.includes(slug) ? current.filter((s) => s !== slug) : [...current, slug]));
+  }
+
   function handleSubmit(formData: FormData) {
     setLastName(String(formData.get("name") ?? ""));
     setLastPhone(String(formData.get("phone") ?? ""));
+    setLastType(vendorType);
+    setLastServices(services);
     action(formData);
+  }
+
+  function serviceTitles(slugs: VendorServiceSlug[]) {
+    return slugs.map((slug) => vendorServiceOptions.find((o) => o.slug === slug)?.title ?? slug).join(", ");
   }
 
   return (
@@ -68,6 +83,30 @@ export default function AdminVendorsPage() {
               </div>
             </label>
 
+            <label className="label">Vendor type
+              <select className="input" name="vendorType" value={vendorType} onChange={(event) => setVendorType(event.target.value as VendorType)}>
+                {vendorTypes.map((type) => <option key={type} value={type}>{type}</option>)}
+              </select>
+            </label>
+
+            <div>
+              <span className="label mb-2 block">Services this vendor can fulfil</span>
+              <div className="admin-checkbox-group">
+                {vendorServiceOptions.map((option) => (
+                  <label key={option.slug} className={`admin-checkbox-pill ${services.includes(option.slug) ? "is-active" : ""}`}>
+                    <input
+                      type="checkbox"
+                      name="services"
+                      value={option.slug}
+                      checked={services.includes(option.slug)}
+                      onChange={() => toggleService(option.slug)}
+                    />
+                    {option.title}
+                  </label>
+                ))}
+              </div>
+            </div>
+
             <button type="submit" className="btn" disabled={pending}>{pending ? "Creating…" : "Create vendor account"}</button>
           </form>
         </div>
@@ -92,7 +131,7 @@ export default function AdminVendorsPage() {
             <span className="vendor-sidebar-avatar admin-list-avatar">{vendor.name.charAt(0)}</span>
             <div className="admin-list-main">
               <strong>{vendor.name}</strong>
-              <small>{vendor.email} · {vendor.phone || "No phone on file"}</small>
+              <small>{vendor.type} · {serviceTitles(vendor.services) || "No services set"}</small>
             </div>
             <span className={`vendor-status ${vendor.status === "active" ? "vendor-status-accepted" : "vendor-status-rejected"}`}>
               {vendor.status === "active" ? "Active" : "Suspended"}

@@ -558,6 +558,16 @@ button, a, summary { -webkit-tap-highlight-color: transparent; }
 .admin-password-row { display: flex; gap: 10px; }
 .admin-password-row .input { flex: 1; font-family: var(--font-sans); }
 
+.admin-checkbox-group { display: flex; flex-wrap: wrap; gap: 8px; }
+.admin-checkbox-pill {
+  display: inline-flex; align-items: center; gap: 7px; min-height: 40px; padding: 0 16px;
+  border: 1.5px solid var(--line); border-radius: 999px; font-size: .8rem; font-weight: 700; color: var(--muted);
+  cursor: pointer; background: var(--white); transition: border-color .15s ease, background-color .15s ease, color .15s ease;
+}
+.admin-checkbox-pill input { accent-color: var(--teal); width: 15px; height: 15px; }
+.admin-checkbox-pill.is-active { border-color: var(--teal); background: var(--teal-soft); color: var(--teal-dark); }
+.admin-checkbox-pill.is-static { cursor: default; }
+
 .admin-credentials-card { padding: 22px 26px; border-color: var(--teal); }
 .admin-credentials-row { display: flex; align-items: center; justify-content: space-between; padding: 10px 0; border-top: 1px solid var(--line); font-size: .88rem; }
 .admin-credentials-row strong { font-family: var(--font-sans); color: var(--teal-dark); }

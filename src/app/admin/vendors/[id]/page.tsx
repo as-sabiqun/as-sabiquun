@@ -4,7 +4,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { use } from "react";
 import { useAdminData } from "@/components/admin/admin-data-context";
-import { adminJobStatusLabels } from "@/lib/admin-demo";
+import { adminJobStatusLabels, vendorServiceOptions } from "@/lib/admin-demo";
 
 export default function AdminVendorDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = use(params);
@@ -27,7 +27,7 @@ export default function AdminVendorDetailPage({ params }: { params: Promise<{ id
           <div className="vendor-detail-head">
             <div>
               <h1 className="display vendor-page-title">{vendor.name}</h1>
-              <p className="vendor-page-lead">Vendor since {new Date(vendor.joinedAt).toLocaleDateString()}</p>
+              <p className="vendor-page-lead">{vendor.type} · Vendor since {new Date(vendor.joinedAt).toLocaleDateString()}</p>
             </div>
             <span className={`vendor-status ${vendor.status === "active" ? "vendor-status-accepted" : "vendor-status-rejected"}`}>
               {vendor.status === "active" ? "Active" : "Suspended"}
@@ -72,6 +72,15 @@ export default function AdminVendorDetailPage({ params }: { params: Promise<{ id
             <div><dt>Phone</dt><dd>{vendor.phone || "—"}</dd></div>
             <div><dt>Vendor ID</dt><dd>{vendor.id}</dd></div>
           </dl>
+
+          <span className="vendor-eyebrow mt-6 block">Services</span>
+          <div className="admin-checkbox-group mt-3">
+            {vendorServiceOptions.map((option) => (
+              <span key={option.slug} className={`admin-checkbox-pill is-static ${vendor.services.includes(option.slug) ? "is-active" : ""}`}>
+                {option.title}
+              </span>
+            ))}
+          </div>
         </div>
       </div>
     </>

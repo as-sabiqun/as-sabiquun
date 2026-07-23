@@ -4,16 +4,18 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { use, useState } from "react";
 import { useAdminData } from "@/components/admin/admin-data-context";
-import { adminJobStatusLabels } from "@/lib/admin-demo";
+import { adminJobStatusLabels, serviceSlugsForCategory } from "@/lib/admin-demo";
 
 export default function AdminJobDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = use(params);
   const { jobs, vendors, assignJob } = useAdminData();
   const job = jobs.find((j) => j.id === id);
-  const activeVendors = vendors.filter((v) => v.status === "active");
-  const [vendorId, setVendorId] = useState(activeVendors[0]?.id ?? "");
+  const [vendorId, setVendorId] = useState("");
   if (!job) notFound();
 
+  const requiredServices = serviceSlugsForCategory(job.category);
+  const capableVendors = vendors.filter((v) => v.status === "active" && v.services.some((s) => requiredServices.includes(s)));
+  const selectedVendorId = vendorId || capableVendors[0]?.id || "";
   const assignedVendor = vendors.find((v) => v.id === job.assignedVendorId);
 
   return (
@@ -62,12 +64,18 @@ export default function AdminJobDetailPage({ params }: { params: Promise<{ id: s
           {job.status === "pending" && (
             <div className="mt-6 grid gap-3">
               <span className="label">Assign to vendor</span>
-              <select className="input" value={vendorId} onChange={(event) => setVendorId(event.target.value)}>
-                {activeVendors.map((v) => <option key={v.id} value={v.id}>{v.name}</option>)}
-              </select>
-              <button type="button" className="btn" disabled={!vendorId} onClick={() => assignJob(job.id, vendorId)}>
-                Assign job <span aria-hidden="true">→</span>
-              </button>
+              {capableVendors.length === 0 ? (
+                <p className="vendor-empty">No active vendor offers this service yet. Add one from the Vendors page.</p>
+              ) : (
+                <>
+                  <select className="input" value={selectedVendorId} onChange={(event) => setVendorId(event.target.value)}>
+                    {capableVendors.map((v) => <option key={v.id} value={v.id}>{v.name}</option>)}
+                  </select>
+                  <button type="button" className="btn" disabled={!selectedVendorId} onClick={() => assignJob(job.id, selectedVendorId)}>
+                    Assign job <span aria-hidden="true">→</span>
+                  </button>
+                </>
+              )}
             </div>
           )}
 
