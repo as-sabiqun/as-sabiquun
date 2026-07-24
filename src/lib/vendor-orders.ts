@@ -6,6 +6,7 @@ export const vendorOrderStatusLabel: Record<OrderStatus, string> = {
   assigned: "Accepted",
   in_progress: "In progress",
   proof_submitted: "Submitted — under review",
+  revision_required: "Changes requested — resubmit",
   completed: "Completed",
   expired_unclaimed: "Expired",
   cancelled: "Cancelled",
@@ -15,6 +16,7 @@ export function vendorStatusPillVariant(status: OrderStatus): string {
   if (status === "completed" || status === "proof_submitted") return "completed";
   if (status === "assigned" || status === "in_progress") return "accepted";
   if (status === "broadcasting") return "pending";
+  if (status === "revision_required") return "rejected";
   return "rejected";
 }
 

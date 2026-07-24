@@ -15,7 +15,7 @@ export default async function VendorJobDetailPage({ params }: { params: Promise<
   const { data: order } = await supabase
     .from("orders")
     .select(
-      "id, reference, service_type, category_slug, quantity, participant_names, dedication, total_amount, status, created_at, customer_name, customer_phone, offerings(title)"
+      "id, reference, service_type, category_slug, quantity, participant_names, dedication, total_amount, status, created_at, customer_name, customer_phone, admin_verification_notes, offerings(title)"
     )
     .eq("id", id)
     .maybeSingle();
@@ -32,12 +32,12 @@ export default async function VendorJobDetailPage({ params }: { params: Promise<
   const isOffer = offer?.status === "offered" && order.status === "broadcasting";
 
   let proofs: ProofRow[] = [];
-  if (order.status === "proof_submitted" || order.status === "completed") {
-    const { data } = await supabase.from("proofs").select("id, storage_path, media_type").eq("order_id", id);
+  if (order.status === "proof_submitted" || order.status === "completed" || order.status === "revision_required") {
+    const { data } = await supabase.from("proofs").select("id, storage_path, media_type, category").eq("order_id", id);
     proofs = await Promise.all(
       (data ?? []).map(async (p) => {
         const { data: signed } = await supabase.storage.from("proofs").createSignedUrl(p.storage_path, 3600);
-        return { id: p.id, media_type: p.media_type, url: signed?.signedUrl ?? null };
+        return { id: p.id, media_type: p.media_type, category: p.category, url: signed?.signedUrl ?? null };
       })
     );
   }

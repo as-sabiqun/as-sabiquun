@@ -34,9 +34,25 @@ export async function markInProgressAction(orderId: string): Promise<{ ok: boole
   return { ok: Boolean(data) };
 }
 
-export async function submitProofAction(orderId: string, paths: string[], notes: string): Promise<{ ok: boolean; error?: string }> {
+export async function submitProofAction(
+  orderId: string,
+  items: { path: string; category: string }[],
+  notes: string,
+  location: { country: string; state: string; village: string; address: string; lat: number | null; lng: number | null; mapsLink: string }
+): Promise<{ ok: boolean; error?: string }> {
   const supabase = await createClient();
-  const { data, error } = await supabase.rpc("submit_proof", { p_order_id: orderId, p_paths: paths, p_notes: notes || null });
+  const { data, error } = await supabase.rpc("submit_proof", {
+    p_order_id: orderId,
+    p_items: items,
+    p_notes: notes || null,
+    p_project_country: location.country || null,
+    p_project_state: location.state || null,
+    p_project_village: location.village || null,
+    p_project_address: location.address || null,
+    p_project_lat: location.lat,
+    p_project_lng: location.lng,
+    p_project_maps_link: location.mapsLink || null,
+  });
   if (error) return { ok: false, error: error.message };
   revalidatePath(`/vendor-dashboard/jobs/${orderId}`);
   revalidatePath("/vendor-dashboard/board");

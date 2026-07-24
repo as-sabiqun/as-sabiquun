@@ -1,6 +1,6 @@
 export type OrderStatus =
   | "submitted" | "broadcasting" | "assigned" | "in_progress"
-  | "proof_submitted" | "completed" | "expired_unclaimed" | "cancelled";
+  | "proof_submitted" | "revision_required" | "completed" | "expired_unclaimed" | "cancelled";
 
 export interface OrderRow {
   id: string;
@@ -19,7 +19,7 @@ export interface OrderRow {
 export const orderSteps = [
   { key: "received", label: "Order received", statuses: ["submitted", "broadcasting"] as OrderStatus[] },
   { key: "assigned", label: "Assigned to a partner", statuses: ["assigned"] as OrderStatus[] },
-  { key: "in_progress", label: "In progress", statuses: ["in_progress", "proof_submitted"] as OrderStatus[] },
+  { key: "in_progress", label: "In progress", statuses: ["in_progress", "proof_submitted", "revision_required"] as OrderStatus[] },
   { key: "completed", label: "Completed", statuses: ["completed"] as OrderStatus[] },
 ];
 
@@ -34,6 +34,7 @@ export const orderStatusCopy: Record<OrderStatus, string> = {
   assigned: "Assigned to a partner",
   in_progress: "In progress",
   proof_submitted: "Evidence under review",
+  revision_required: "In progress",
   completed: "Completed",
   expired_unclaimed: "Still finding a partner",
   cancelled: "Cancelled",

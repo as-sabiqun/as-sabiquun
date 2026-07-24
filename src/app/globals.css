@@ -483,6 +483,11 @@ button, a, summary { -webkit-tap-highlight-color: transparent; }
 .vendor-upload-filelist { margin-top: 8px; display: grid; gap: 3px; }
 .vendor-upload-filelist li { font-size: .74rem; color: var(--muted); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .vendor-upload-hint { font-size: .74rem; color: var(--muted); text-align: center; }
+.vendor-upload-category-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 12px; }
+
+@media (max-width: 640px) {
+  .vendor-upload-category-grid { grid-template-columns: 1fr 1fr; }
+}
 
 .vendor-proof-summary { border-top: 1px solid var(--line); padding-top: 20px; }
 .vendor-proof-summary-row { display: flex; align-items: center; justify-content: space-between; font-size: .84rem; font-weight: 700; color: var(--teal-dark); }

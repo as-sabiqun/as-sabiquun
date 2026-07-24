@@ -11,13 +11,20 @@ import { claimJobAction, declineJobAction, markInProgressAction } from "@/app/ve
 export interface VendorOrderDetail extends OrderRow {
   customer_name?: string;
   customer_phone?: string;
+  admin_verification_notes?: string | null;
 }
 
 export interface ProofRow {
   id: string;
   media_type: string;
+  category: string | null;
   url: string | null;
 }
+
+const CATEGORY_LABEL: Record<string, string> = {
+  before_photo: "Before", during_photo: "During", after_photo: "After",
+  before_video: "Before (video)", during_video: "During (video)", after_video: "After (video)", dua_video: "Du'a video",
+};
 
 export function JobDetailReal({
   order,
@@ -38,6 +45,8 @@ export function JobDetailReal({
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [declined, setDeclined] = useState(false);
+
+  const needsWork = order.status === "in_progress" || order.status === "revision_required";
 
   function accept() {
     setBusy(true);
@@ -98,10 +107,14 @@ export function JobDetailReal({
               <h1 className="display vendor-page-title mt-2">{orderTitle(order)}</h1>
               <p className="vendor-page-lead">{order.reference}</p>
             </div>
-            <span className={`vendor-status vendor-status-${isOffer ? "pending" : order.status === "completed" ? "completed" : "accepted"}`}>
+            <span className={`vendor-status vendor-status-${isOffer ? "pending" : order.status === "completed" ? "completed" : order.status === "revision_required" ? "rejected" : "accepted"}`}>
               {isOffer ? "Awaiting response" : vendorOrderStatusLabel[order.status]}
             </span>
           </div>
+
+          {order.status === "revision_required" && order.admin_verification_notes && (
+            <p className="auth-error mt-6">Operations requested changes: {order.admin_verification_notes}</p>
+          )}
 
           {order.participant_names?.length > 0 && (
             <div className="mt-6">
@@ -132,14 +145,14 @@ export function JobDetailReal({
             </div>
           )}
 
-          {order.status === "in_progress" && (
+          {needsWork && (
             <div className="mt-8">
               <span className="label mb-3 block">Submit completion</span>
               <ProofUploadFormReal orderId={order.id} vendorId={vendorId} />
             </div>
           )}
 
-          {(order.status === "proof_submitted" || order.status === "completed") && (
+          {(order.status === "proof_submitted" || order.status === "completed" || order.status === "revision_required") && (
             <div className="mt-8 vendor-proof-summary">
               <span className="label mb-2 block">Submitted evidence</span>
               {proofs.length === 0 ? (
@@ -148,7 +161,7 @@ export function JobDetailReal({
                 <div className="admin-proof-grid">
                   {proofs.map((proof) => (
                     <a key={proof.id} href={proof.url ?? undefined} target="_blank" rel="noreferrer" className="admin-proof-tile">
-                      {proof.media_type === "video" ? "🎥 Video" : "🖼️ Photo"}
+                      {proof.media_type === "video" ? "🎥" : "🖼️"} {proof.category ? CATEGORY_LABEL[proof.category] ?? proof.category : ""}
                     </a>
                   ))}
                 </div>
@@ -183,6 +196,7 @@ export function JobDetailReal({
           )}
 
           {order.status === "in_progress" && <p className="vendor-empty mt-6">Submit your completion evidence on the left to close this job out.</p>}
+          {order.status === "revision_required" && <p className="vendor-empty mt-6">Resubmit your completion evidence on the left.</p>}
           {order.status === "proof_submitted" && <p className="vendor-empty mt-6">Submitted — awaiting review from operations.</p>}
           {order.status === "completed" && <p className="vendor-empty mt-6">Completed. No further action needed.</p>}
 

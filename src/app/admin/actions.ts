@@ -17,9 +17,9 @@ export async function broadcastOrderAction(orderId: string): Promise<{ ok: boole
   return { ok: true, offered: data as number };
 }
 
-export async function completeOrderAction(orderId: string): Promise<{ ok: boolean; error?: string }> {
+export async function reviewProofAction(orderId: string, approved: boolean, notes: string): Promise<{ ok: boolean; error?: string }> {
   const supabase = await createClient();
-  const { data, error } = await supabase.rpc("complete_order", { p_order_id: orderId });
+  const { data, error } = await supabase.rpc("review_proof", { p_order_id: orderId, p_approved: approved, p_notes: notes || null });
   if (error) return { ok: false, error: error.message };
   revalidatePath("/admin");
   revalidatePath(`/admin/jobs/${orderId}`);

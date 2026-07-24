@@ -5,42 +5,87 @@ import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import { submitProofAction } from "@/app/vendor-dashboard/actions";
 
-const REQUIRED_PHOTOS = 5;
+const PHOTO_CATEGORIES = [
+  { key: "before_photo", label: "Before — photos", min: 3 },
+  { key: "during_photo", label: "During — photos", min: 3 },
+  { key: "after_photo", label: "After — photos", min: 3 },
+] as const;
+
+const VIDEO_CATEGORIES = [
+  { key: "before_video", label: "Before — video", min: 1 },
+  { key: "during_video", label: "During — video", min: 1 },
+  { key: "after_video", label: "After — video", min: 1 },
+  { key: "dua_video", label: "Du'a video", min: 1 },
+] as const;
+
+type CategoryKey = (typeof PHOTO_CATEGORIES)[number]["key"] | (typeof VIDEO_CATEGORIES)[number]["key"];
 
 export function ProofUploadFormReal({ orderId, vendorId }: { orderId: string; vendorId: string }) {
   const router = useRouter();
-  const [photos, setPhotos] = useState<File[]>([]);
-  const [video, setVideo] = useState<File | null>(null);
+  const [files, setFiles] = useState<Record<CategoryKey, File[]>>({
+    before_photo: [], during_photo: [], after_photo: [],
+    before_video: [], during_video: [], after_video: [], dua_video: [],
+  });
   const [notes, setNotes] = useState("");
+  const [country, setCountry] = useState("");
+  const [stateProvince, setStateProvince] = useState("");
+  const [village, setVillage] = useState("");
+  const [address, setAddress] = useState("");
+  const [lat, setLat] = useState("");
+  const [lng, setLng] = useState("");
+  const [mapsLink, setMapsLink] = useState("");
+  const [locating, setLocating] = useState(false);
   const [uploading, setUploading] = useState(false);
   const [progress, setProgress] = useState("");
   const [error, setError] = useState<string | null>(null);
 
-  const photosReady = photos.length >= REQUIRED_PHOTOS;
-  const canSubmit = photosReady && Boolean(video) && !uploading;
+  const allCategories = [...PHOTO_CATEGORIES, ...VIDEO_CATEGORIES];
+  const missing = allCategories.filter((c) => files[c.key].length < c.min);
+  const canSubmit = missing.length === 0 && !uploading && country.trim() && village.trim();
+
+  function setCategoryFiles(key: CategoryKey, list: FileList | null) {
+    setFiles((current) => ({ ...current, [key]: Array.from(list ?? []) }));
+  }
+
+  function useMyLocation() {
+    if (!navigator.geolocation) return;
+    setLocating(true);
+    navigator.geolocation.getCurrentPosition(
+      (pos) => {
+        setLat(pos.coords.latitude.toFixed(6));
+        setLng(pos.coords.longitude.toFixed(6));
+        setMapsLink(`https://maps.google.com/?q=${pos.coords.latitude},${pos.coords.longitude}`);
+        setLocating(false);
+      },
+      () => setLocating(false)
+    );
+  }
 
   async function submit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
-    if (!photosReady || !video) return;
+    if (!canSubmit) return;
     setUploading(true);
     setError(null);
 
     try {
       const supabase = createClient();
-      const paths: string[] = [];
-      const files = [...photos, video];
+      const items: { path: string; category: CategoryKey }[] = [];
+      const allFiles = allCategories.flatMap((c) => files[c.key].map((file) => ({ file, category: c.key })));
 
-      for (let i = 0; i < files.length; i++) {
-        const file = files[i];
-        setProgress(`Uploading ${i + 1} of ${files.length}…`);
-        const path = `${vendorId}/${orderId}/${Date.now()}-${file.name}`;
+      for (let i = 0; i < allFiles.length; i++) {
+        const { file, category } = allFiles[i];
+        setProgress(`Uploading ${i + 1} of ${allFiles.length}…`);
+        const path = `${vendorId}/${orderId}/${category}-${Date.now()}-${file.name}`;
         const { error: uploadError } = await supabase.storage.from("proofs").upload(path, file);
         if (uploadError) throw new Error(uploadError.message);
-        paths.push(path);
+        items.push({ path, category });
       }
 
       setProgress("Recording completion…");
-      const res = await submitProofAction(orderId, paths, notes);
+      const res = await submitProofAction(orderId, items, notes, {
+        country, state: stateProvince, village, address,
+        lat: lat ? Number(lat) : null, lng: lng ? Number(lng) : null, mapsLink,
+      });
       if (!res.ok) throw new Error(res.error ?? "Couldn't submit completion.");
 
       router.refresh();
@@ -57,47 +102,76 @@ export function ProofUploadFormReal({ orderId, vendorId }: { orderId: string; ve
       {error && <p className="auth-error">{error}</p>}
 
       <div>
-        <div className="vendor-upload-label-row">
-          <span className="label">Completion photos</span>
-          <span className={`vendor-upload-count ${photosReady ? "is-complete" : ""}`}>{photos.length} of {REQUIRED_PHOTOS} minimum</span>
+        <span className="label mb-2 block">Completion photos <span className="font-normal text-[var(--muted)]">3 before, 3 during, 3 after — 9 total</span></span>
+        <div className="vendor-upload-category-grid">
+          {PHOTO_CATEGORIES.map((c) => (
+            <div key={c.key}>
+              <div className="vendor-upload-label-row">
+                <span className="text-xs font-bold">{c.label}</span>
+                <span className={`vendor-upload-count ${files[c.key].length >= c.min ? "is-complete" : ""}`}>{files[c.key].length} of {c.min}</span>
+              </div>
+              <label className="vendor-upload-dropzone">
+                <input type="file" accept="image/*" multiple className="sr-only" disabled={uploading} onChange={(e) => setCategoryFiles(c.key, e.target.files)} />
+                <UploadIcon />
+                {files[c.key].length === 0 ? `Choose ${c.min}+ photos` : `${files[c.key].length} selected`}
+              </label>
+            </div>
+          ))}
         </div>
-        <label className="vendor-upload-dropzone">
-          <input
-            type="file"
-            accept="image/*"
-            multiple
-            className="sr-only"
-            disabled={uploading}
-            onChange={(event) => setPhotos(Array.from(event.target.files ?? []))}
-          />
-          <UploadIcon />
-          {photos.length === 0 ? "Choose at least 5 photos" : `${photos.length} photo${photos.length === 1 ? "" : "s"} selected`}
-        </label>
-        {photos.length > 0 && (
-          <ul className="vendor-upload-filelist">
-            {photos.map((file, i) => <li key={`${file.name}-${i}`}>{file.name}</li>)}
-          </ul>
-        )}
+      </div>
+
+      <div>
+        <span className="label mb-2 block">Completion videos <span className="font-normal text-[var(--muted)]">Before, during, after, and du'a — 4 total</span></span>
+        <div className="vendor-upload-category-grid">
+          {VIDEO_CATEGORIES.map((c) => (
+            <div key={c.key}>
+              <div className="vendor-upload-label-row">
+                <span className="text-xs font-bold">{c.label}</span>
+                <span className={`vendor-upload-count ${files[c.key].length >= c.min ? "is-complete" : ""}`}>{files[c.key].length ? "1 of 1" : "0 of 1"}</span>
+              </div>
+              <label className="vendor-upload-dropzone">
+                <input type="file" accept="video/*" className="sr-only" disabled={uploading} onChange={(e) => setCategoryFiles(c.key, e.target.files)} />
+                <UploadIcon />
+                {files[c.key][0]?.name ?? "Choose video"}
+              </label>
+            </div>
+          ))}
+        </div>
       </div>
 
       <div>
         <div className="vendor-upload-label-row">
-          <span className="label">Completion video</span>
-          <span className={`vendor-upload-count ${video ? "is-complete" : ""}`}>{video ? "1 of 1" : "0 of 1"}</span>
+          <span className="label">Project location <span className="font-normal text-[var(--muted)]">Required</span></span>
+          <button type="button" className="btn-secondary btn btn-small" disabled={locating} onClick={useMyLocation}>
+            {locating ? "Locating…" : "Use my location"}
+          </button>
         </div>
-        <label className="vendor-upload-dropzone">
-          <input type="file" accept="video/*" className="sr-only" disabled={uploading} onChange={(event) => setVideo(event.target.files?.[0] ?? null)} />
-          <UploadIcon />
-          {video ? video.name : "Choose 1 video"}
-        </label>
+        <div className="admin-form-grid">
+          <label className="label">Country
+            <input className="input" required value={country} onChange={(e) => setCountry(e.target.value)} disabled={uploading} />
+          </label>
+          <label className="label">State / province
+            <input className="input" value={stateProvince} onChange={(e) => setStateProvince(e.target.value)} disabled={uploading} />
+          </label>
+        </div>
+        <div className="admin-form-grid mt-4">
+          <label className="label">Village / locality
+            <input className="input" required value={village} onChange={(e) => setVillage(e.target.value)} disabled={uploading} />
+          </label>
+          <label className="label">Exact address <span className="font-normal text-[var(--muted)]">Optional</span>
+            <input className="input" value={address} onChange={(e) => setAddress(e.target.value)} disabled={uploading} />
+          </label>
+        </div>
+        {lat && lng && <p className="vendor-upload-hint mt-2">GPS: {lat}, {lng}</p>}
       </div>
 
-      <label className="label">Notes for the operations team <span className="font-normal text-[var(--muted)]">Optional</span>
-        <textarea className="input vendor-textarea" rows={3} placeholder="Anything worth flagging about the fulfilment?" value={notes} onChange={(event) => setNotes(event.target.value)} disabled={uploading} />
+      <label className="label">Vendor remarks <span className="font-normal text-[var(--muted)]">Weather, challenges, anything worth noting</span>
+        <textarea className="input vendor-textarea" rows={3} value={notes} onChange={(e) => setNotes(e.target.value)} disabled={uploading} />
       </label>
 
       <button type="submit" className="btn" disabled={!canSubmit}>{uploading ? progress || "Submitting…" : "Submit completion"} <span aria-hidden="true">→</span></button>
-      {!photosReady || !video ? <p className="vendor-upload-hint">Add at least {REQUIRED_PHOTOS} photos and 1 video to submit.</p> : null}
+      {missing.length > 0 && <p className="vendor-upload-hint">Still need: {missing.map((m) => m.label).join(", ")}.</p>}
+      {missing.length === 0 && (!country.trim() || !village.trim()) && <p className="vendor-upload-hint">Country and village are required.</p>}
     </form>
   );
 }
