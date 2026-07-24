@@ -1,65 +1,25 @@
-"use client";
+import { createClient, isSupabaseConfigured } from "@/lib/supabase/server";
+import { ReportsDemo } from "@/components/admin/reports-demo";
+import { ReportsReal, type ReportRow } from "@/components/admin/reports-real";
 
-import { useAdminData } from "@/components/admin/admin-data-context";
+export default async function AdminReportsPage() {
+  if (!isSupabaseConfigured) return <ReportsDemo />;
 
-export default function AdminReportsPage() {
-  const { reports, resolveReport } = useAdminData();
-  const open = reports.filter((r) => r.status === "open");
-  const resolved = reports.filter((r) => r.status === "resolved");
+  const supabase = await createClient();
+  const { data } = await supabase
+    .from("vendor_reports")
+    .select("id, subject, message, status, created_at, vendor:profiles!vendor_reports_vendor_id_fkey(display_name), orders(reference)")
+    .order("created_at", { ascending: false });
 
-  return (
-    <>
-      <div className="vendor-page-head">
-        <div>
-          <p className="vendor-eyebrow">Support</p>
-          <h1 className="display vendor-page-title">Reports</h1>
-          <p className="vendor-page-lead">Issues vendors have flagged from their dashboard.</p>
-        </div>
-      </div>
+  const reports: ReportRow[] = (data ?? []).map((r) => ({
+    id: r.id,
+    subject: r.subject,
+    message: r.message,
+    status: r.status,
+    created_at: r.created_at,
+    vendor_name: (r.vendor as unknown as { display_name: string } | null)?.display_name ?? "Unknown vendor",
+    order_reference: (r.orders as unknown as { reference: string } | null)?.reference ?? null,
+  }));
 
-      <div className="card vendor-panel">
-        <div className="vendor-panel-head">
-          <h2 className="display text-lg">Open ({open.length})</h2>
-        </div>
-        {open.length === 0 ? (
-          <p className="vendor-empty">Nothing open right now.</p>
-        ) : (
-          <div className="vendor-report-list">
-            {open.map((report) => (
-              <div key={report.id} className="vendor-report-item">
-                <div className="vendor-report-item-head">
-                  <strong>{report.subject}</strong>
-                  <button type="button" className="btn-secondary btn btn-small" onClick={() => resolveReport(report.id)}>Mark resolved</button>
-                </div>
-                <small>{report.jobReference || "Not job-specific"} · {new Date(report.submittedAt).toLocaleDateString()}</small>
-                <p>{report.message}</p>
-              </div>
-            ))}
-          </div>
-        )}
-      </div>
-
-      <div className="card vendor-panel">
-        <div className="vendor-panel-head">
-          <h2 className="display text-lg">Resolved ({resolved.length})</h2>
-        </div>
-        {resolved.length === 0 ? (
-          <p className="vendor-empty">No resolved reports yet.</p>
-        ) : (
-          <div className="vendor-report-list">
-            {resolved.map((report) => (
-              <div key={report.id} className="vendor-report-item">
-                <div className="vendor-report-item-head">
-                  <strong>{report.subject}</strong>
-                  <span className="vendor-status vendor-status-completed">Resolved</span>
-                </div>
-                <small>{report.jobReference || "Not job-specific"} · {new Date(report.submittedAt).toLocaleDateString()}</small>
-                <p>{report.message}</p>
-              </div>
-            ))}
-          </div>
-        )}
-      </div>
-    </>
-  );
+  return <ReportsReal reports={reports} />;
 }

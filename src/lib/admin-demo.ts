@@ -25,11 +25,21 @@ export const vendorTypes = [
 
 export type VendorType = (typeof vendorTypes)[number];
 
+// The first four drive real job matching (broadcast_order matches vendor
+// services against an order's category_slug — see migration 001). The rest
+// are Irfan's wider vendor taxonomy for services not yet sold on the site;
+// they're informational on the vendor profile only, until a matching
+// offering exists for them.
 export const vendorServiceOptions = [
   { slug: "korban", title: "Korban" },
   { slug: "water", title: "Wakaf Water Pump" },
   { slug: "quran", title: "Wakaf Quran" },
   { slug: "orphans", title: "Food for Orphans" },
+  { slug: "tahfiz", title: "Tahfiz Sponsorship" },
+  { slug: "aqiqah", title: "Aqiqah" },
+  { slug: "digital_products", title: "Digital Products" },
+  { slug: "marketing", title: "Marketing" },
+  { slug: "logistics", title: "Logistics" },
 ] as const;
 
 export type VendorServiceSlug = (typeof vendorServiceOptions)[number]["slug"];

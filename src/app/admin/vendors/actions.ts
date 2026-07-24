@@ -10,11 +10,22 @@ export type CreateVendorState =
 
 export async function createVendorAccount(_prevState: CreateVendorState, formData: FormData): Promise<CreateVendorState> {
   const name = String(formData.get("name") ?? "").trim();
+  const contactPerson = String(formData.get("contactPerson") ?? "").trim();
   const email = String(formData.get("email") ?? "").trim();
   const phone = String(formData.get("phone") ?? "").trim();
+  const whatsapp = String(formData.get("whatsapp") ?? "").trim() || null;
+  const country = String(formData.get("country") ?? "").trim() || null;
+  const cityAddress = String(formData.get("cityAddress") ?? "").trim() || null;
   const password = String(formData.get("password") ?? "");
   const vendorType = String(formData.get("vendorType") ?? "").trim();
   const services = formData.getAll("services").map(String);
+
+  const currency = String(formData.get("currency") ?? "SGD").trim() || "SGD";
+  const bankName = String(formData.get("bankName") ?? "").trim() || null;
+  const bankAccountName = String(formData.get("bankAccountName") ?? "").trim() || null;
+  const bankAccountNumber = String(formData.get("bankAccountNumber") ?? "").trim() || null;
+  const swiftCode = String(formData.get("swiftCode") ?? "").trim() || null;
+  const notes = String(formData.get("notes") ?? "").trim() || null;
 
   if (!name || !email || !phone || !password) {
     return { ok: false, error: "Fill in name, email, phone, and password." };
@@ -51,7 +62,23 @@ export async function createVendorAccount(_prevState: CreateVendorState, formDat
 
   const { error: promoteError } = await supabase
     .from("profiles")
-    .update({ role: "vendor", display_name: name, phone, vendor_type: vendorType, services })
+    .update({
+      role: "vendor",
+      display_name: name,
+      contact_person: contactPerson || null,
+      phone,
+      whatsapp,
+      country,
+      city_address: cityAddress,
+      vendor_type: vendorType,
+      services,
+      currency,
+      bank_name: bankName,
+      bank_account_name: bankAccountName,
+      bank_account_number: bankAccountNumber,
+      swift_code: swiftCode,
+      notes,
+    })
     .eq("id", created.user.id);
 
   if (promoteError) {

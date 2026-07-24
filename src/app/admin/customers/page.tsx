@@ -1,61 +1,41 @@
-"use client";
+import { createClient, isSupabaseConfigured } from "@/lib/supabase/server";
+import { createAdminClient } from "@/lib/supabase/admin";
+import { CustomersListDemo } from "@/components/admin/customers-list-demo";
+import { CustomersListReal, type CustomerRow } from "@/components/admin/customers-list-real";
 
-import Link from "next/link";
-import { useState } from "react";
-import { useAdminData } from "@/components/admin/admin-data-context";
-import { customerStateLabels, type AdminCustomer } from "@/lib/admin-demo";
+export default async function AdminCustomersPage() {
+  if (!isSupabaseConfigured) return <CustomersListDemo />;
 
-const tabs: { label: string; state: AdminCustomer["state"] | null }[] = [
-  { label: "All", state: null },
-  { label: "Verified", state: "verified" },
-  { label: "Pending confirmation", state: "pending" },
-  { label: "Suspended", state: "suspended" },
-];
+  const supabase = await createClient();
+  const { data: profiles } = await supabase
+    .from("profiles")
+    .select("id, display_name, phone, status")
+    .eq("role", "customer")
+    .order("created_at", { ascending: false });
 
-export default function AdminCustomersPage() {
-  const { customers } = useAdminData();
-  const [active, setActive] = useState(tabs[0]);
+  const admin = createAdminClient();
+  const { data: authList } = await admin.auth.admin.listUsers({ perPage: 1000 });
+  const authById = new Map(authList.users.map((u) => [u.id, u]));
 
-  const visible = active.state ? customers.filter((c) => c.state === active.state) : customers;
+  const ids = (profiles ?? []).map((p) => p.id);
+  const { data: orders } = ids.length
+    ? await supabase.from("orders").select("customer_id, total_amount").in("customer_id", ids)
+    : { data: [] };
 
-  return (
-    <>
-      <div className="vendor-page-head">
-        <div>
-          <p className="vendor-eyebrow">Accounts</p>
-          <h1 className="display vendor-page-title">Customers</h1>
-          <p className="vendor-page-lead">Everyone who has signed up through the public site.</p>
-        </div>
-      </div>
+  const customers: CustomerRow[] = (profiles ?? []).map((p) => {
+    const authUser = authById.get(p.id);
+    const customerOrders = (orders ?? []).filter((o) => o.customer_id === p.id);
+    return {
+      id: p.id,
+      display_name: p.display_name,
+      email: authUser?.email ?? "—",
+      phone: p.phone,
+      verified: Boolean(authUser?.email_confirmed_at),
+      status: p.status,
+      ordersCount: customerOrders.length,
+      lifetimeSpendCents: customerOrders.reduce((sum, o) => sum + o.total_amount, 0),
+    };
+  });
 
-      <div className="vendor-filter-tabs">
-        {tabs.map((tab) => (
-          <button key={tab.label} type="button" className={`catalog-tab ${active.label === tab.label ? "is-active" : ""}`} onClick={() => setActive(tab)}>
-            {tab.label}
-          </button>
-        ))}
-        <span className="catalog-count ml-auto self-center">{visible.length} customer{visible.length === 1 ? "" : "s"}</span>
-      </div>
-
-      <div className="card vendor-job-table admin-vendor-table">
-        {visible.map((customer) => (
-          <Link key={customer.id} href={`/admin/customers/${customer.id}`} className="admin-list-row">
-            <span className="vendor-sidebar-avatar admin-list-avatar">{customer.name.charAt(0)}</span>
-            <div className="admin-list-main">
-              <strong>{customer.name}</strong>
-              <small>{customer.email} · {customer.phone}</small>
-            </div>
-            <span className={`vendor-status ${customer.state === "verified" ? "vendor-status-accepted" : customer.state === "pending" ? "vendor-status-pending" : "vendor-status-rejected"}`}>
-              {customerStateLabels[customer.state]}
-            </span>
-            <div className="admin-list-stats">
-              <span>{customer.ordersCount} order{customer.ordersCount === 1 ? "" : "s"}</span>
-              <span>S${customer.lifetimeSpend.toLocaleString()} lifetime</span>
-            </div>
-            <span className="vendor-job-table-view">View <span aria-hidden="true">→</span></span>
-          </Link>
-        ))}
-      </div>
-    </>
-  );
+  return <CustomersListReal customers={customers} />;
 }

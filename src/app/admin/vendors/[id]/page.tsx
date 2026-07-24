@@ -1,88 +1,57 @@
-"use client";
-
-import Link from "next/link";
 import { notFound } from "next/navigation";
-import { use } from "react";
-import { useAdminData } from "@/components/admin/admin-data-context";
-import { adminJobStatusLabels, vendorServiceOptions } from "@/lib/admin-demo";
+import { createClient, isSupabaseConfigured } from "@/lib/supabase/server";
+import { createAdminClient } from "@/lib/supabase/admin";
+import { VendorDetailDemo } from "@/components/admin/vendor-detail-demo";
+import { VendorDetailReal, type VendorDetail, type VendorPaymentRow } from "@/components/admin/vendor-detail-real";
+import type { OrderRow } from "@/lib/orders";
 
-export default function AdminVendorDetailPage({ params }: { params: Promise<{ id: string }> }) {
-  const { id } = use(params);
-  const { vendors, jobs } = useAdminData();
-  const vendor = vendors.find((v) => v.id === id);
-  if (!vendor) notFound();
+export default async function AdminVendorDetailPage({ params }: { params: Promise<{ id: string }> }) {
+  const { id } = await params;
 
-  const vendorJobs = jobs.filter((j) => j.assignedVendorId === vendor.id);
+  if (!isSupabaseConfigured) return <VendorDetailDemo id={id} />;
 
-  return (
-    <>
-      <nav className="breadcrumb">
-        <Link href="/admin/vendors">Vendors</Link>
-        <span aria-hidden="true">/</span>
-        <span>{vendor.name}</span>
-      </nav>
+  const supabase = await createClient();
+  const { data: profile } = await supabase
+    .from("profiles")
+    .select(
+      "id, display_name, contact_person, phone, whatsapp, country, city_address, vendor_type, services, status, currency, bank_name, bank_account_name, bank_account_number, swift_code, rating, notes, created_at"
+    )
+    .eq("id", id)
+    .eq("role", "vendor")
+    .maybeSingle();
 
-      <div className="vendor-detail-layout mt-6">
-        <div className="card vendor-panel">
-          <div className="vendor-detail-head">
-            <div>
-              <h1 className="display vendor-page-title">{vendor.name}</h1>
-              <p className="vendor-page-lead">{vendor.type} · Vendor since {new Date(vendor.joinedAt).toLocaleDateString()}</p>
-            </div>
-            <span className={`vendor-status ${vendor.status === "active" ? "vendor-status-accepted" : "vendor-status-rejected"}`}>
-              {vendor.status === "active" ? "Active" : "Suspended"}
-            </span>
-          </div>
+  if (!profile) notFound();
 
-          <div className="vendor-stat-grid admin-vendor-stats">
-            <div className="admin-inline-stat"><span>Jobs completed</span><strong className="numeral">{vendor.jobsCompleted}</strong></div>
-            <div className="admin-inline-stat"><span>Active jobs</span><strong className="numeral">{vendor.jobsActive}</strong></div>
-            <div className="admin-inline-stat"><span>Rating</span><strong className="numeral">{vendor.rating > 0 ? vendor.rating.toFixed(1) : "—"}</strong></div>
-          </div>
+  const admin = createAdminClient();
+  const { data: authUser } = await admin.auth.admin.getUserById(id);
 
-          <div className="mt-8">
-            <span className="label mb-3 block">Job history</span>
-            {vendorJobs.length === 0 ? (
-              <p className="vendor-empty">No jobs assigned yet.</p>
-            ) : (
-              <div className="vendor-job-list">
-                {vendorJobs.map((job) => (
-                  <Link key={job.id} href={`/admin/jobs/${job.id}`} className="vendor-job-row">
-                    <div>
-                      <strong>{job.title}</strong>
-                      <small>{job.reference}</small>
-                    </div>
-                    <div className="vendor-job-row-meta">
-                      <span className={`vendor-status ${job.status === "assigned" ? "vendor-status-accepted" : "vendor-status-completed"}`}>
-                        {adminJobStatusLabels[job.status]}
-                      </span>
-                      <strong className="numeral">S${job.price}</strong>
-                    </div>
-                  </Link>
-                ))}
-              </div>
-            )}
-          </div>
-        </div>
+  const { data: orders } = await supabase
+    .from("orders")
+    .select("id, reference, service_type, category_slug, quantity, participant_names, dedication, total_amount, vendor_payout_amount, status, created_at, offerings(title)")
+    .eq("assigned_vendor_id", id)
+    .order("created_at", { ascending: false });
 
-        <div className="card vendor-panel">
-          <span className="vendor-eyebrow">Contact details</span>
-          <dl className="admin-contact-facts mt-3">
-            <div><dt>Email</dt><dd>{vendor.email}</dd></div>
-            <div><dt>Phone</dt><dd>{vendor.phone || "—"}</dd></div>
-            <div><dt>Vendor ID</dt><dd>{vendor.id}</dd></div>
-          </dl>
+  const { data: paymentsData } = await supabase
+    .from("vendor_payments")
+    .select("id, amount, payment_date, method, reference, orders(reference)")
+    .eq("vendor_id", id)
+    .order("payment_date", { ascending: false });
 
-          <span className="vendor-eyebrow mt-6 block">Services</span>
-          <div className="admin-checkbox-group mt-3">
-            {vendorServiceOptions.map((option) => (
-              <span key={option.slug} className={`admin-checkbox-pill is-static ${vendor.services.includes(option.slug) ? "is-active" : ""}`}>
-                {option.title}
-              </span>
-            ))}
-          </div>
-        </div>
-      </div>
-    </>
-  );
+  const payments: VendorPaymentRow[] = (paymentsData ?? []).map((p) => ({
+    id: p.id,
+    amount: p.amount,
+    payment_date: p.payment_date,
+    method: p.method,
+    reference: p.reference,
+    order_reference: (p.orders as unknown as { reference: string } | null)?.reference ?? null,
+  }));
+
+  const ordersList = (orders ?? []) as unknown as (OrderRow & { vendor_payout_amount: number })[];
+  const totalPayable = ordersList
+    .filter((o) => ["assigned", "in_progress", "proof_submitted", "completed"].includes(o.status))
+    .reduce((sum, o) => sum + o.vendor_payout_amount, 0);
+
+  const vendor: VendorDetail = { ...profile, email: authUser.user?.email ?? "—" };
+
+  return <VendorDetailReal vendor={vendor} orders={ordersList} payments={payments} totalPayable={totalPayable} />;
 }
