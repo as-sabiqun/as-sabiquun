@@ -605,6 +605,14 @@ button, a, summary { -webkit-tap-highlight-color: transparent; }
 .admin-contact-facts div:last-child { border-bottom: 0; padding-bottom: 0; }
 .admin-contact-facts dt { color: var(--muted); }
 .admin-contact-facts dd { font-weight: 700; text-align: right; }
+.admin-contact-facts .admin-copy-fact { position: relative; display: grid; grid-template-columns: 90px minmax(0, 1fr) 32px; align-items: center; gap: 12px; }
+.admin-copy-fact dd { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.admin-copy-button { width: 32px; height: 32px; display: grid; place-items: center; color: var(--muted); background: transparent; border: 1px solid transparent; border-radius: 8px; cursor: pointer; }
+.admin-copy-button:hover { color: var(--teal-dark); background: var(--teal-soft); }
+.admin-copy-button:focus-visible { outline: 2px solid var(--teal); outline-offset: 2px; }
+.admin-copy-button.is-copied { color: var(--teal-dark); background: var(--teal-soft); }
+.admin-copy-button svg { width: 16px; fill: none; stroke: currentColor; stroke-linecap: round; stroke-linejoin: round; stroke-width: 1.8; }
+.admin-copy-button span { position: absolute; right: 38px; padding: 4px 7px; color: var(--cream); background: var(--ink); border-radius: 6px; font-size: .58rem; font-weight: 700; }
 
 .admin-form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
 .admin-password-row { display: flex; gap: 10px; }

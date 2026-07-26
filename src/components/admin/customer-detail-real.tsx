@@ -27,7 +27,23 @@ export interface CustomerOrderRow extends OrderRow {
 export function CustomerDetailReal({ customer, orders }: { customer: CustomerDetail; orders: CustomerOrderRow[] }) {
   const [pending, startTransition] = useTransition();
   const [error, setError] = useState<string | null>(null);
+  const [copied, setCopied] = useState<string | null>(null);
   const lifetimeSpend = orders.filter((order) => ["paid", "partially_refunded"].includes(order.payment_status)).reduce((sum, order) => sum + order.total_amount, 0);
+  const contactDetails = [
+    { key: "email", label: "Email", value: customer.email },
+    { key: "phone", label: "Phone", value: customer.phone },
+    { key: "id", label: "Customer ID", value: customer.id },
+  ];
+
+  async function copyContact(key: string, value: string) {
+    try {
+      await navigator.clipboard.writeText(value);
+      setCopied(key);
+      window.setTimeout(() => setCopied((current) => current === key ? null : current), 1600);
+    } catch {
+      setError("This contact detail could not be copied.");
+    }
+  }
 
   function toggleStatus() {
     setError(null);
@@ -92,9 +108,22 @@ export function CustomerDetailReal({ customer, orders }: { customer: CustomerDet
         <div className="card vendor-panel">
           <span className="vendor-eyebrow">Contact details</span>
           <dl className="admin-contact-facts mt-3">
-            <div><dt>Email</dt><dd>{customer.email}</dd></div>
-            <div><dt>Phone</dt><dd>{customer.phone ?? "—"}</dd></div>
-            <div><dt>Customer ID</dt><dd>{customer.id}</dd></div>
+            {contactDetails.map((detail) => (
+              <div className="admin-copy-fact" key={detail.key}>
+                <dt>{detail.label}</dt>
+                <dd title={detail.value ?? undefined}>{detail.value ?? "—"}</dd>
+                {detail.value && (
+                  <button type="button" className={`admin-copy-button ${copied === detail.key ? "is-copied" : ""}`} onClick={() => copyContact(detail.key, detail.value!)} aria-label={`${copied === detail.key ? "Copied" : "Copy"} ${detail.label.toLowerCase()}`}>
+                    {copied === detail.key ? (
+                      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12 4 4L19 6" /></svg>
+                    ) : (
+                      <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="8" y="8" width="11" height="11" rx="2" /><path d="M16 8V6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h2" /></svg>
+                    )}
+                    {copied === detail.key && <span role="status">Copied</span>}
+                  </button>
+                )}
+              </div>
+            ))}
           </dl>
         </div>
       </div>
