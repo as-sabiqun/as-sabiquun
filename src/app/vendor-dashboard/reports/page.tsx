@@ -1,16 +1,16 @@
-import { createClient } from "@/lib/supabase/server";
+import { createClient, getCurrentUser } from "@/lib/supabase/server";
 import { ReportsReal } from "@/components/vendor/reports-real";
 
 export default async function VendorReportsPage() {
   const supabase = await createClient();
-  const { data: userData } = await supabase.auth.getUser();
-  if (!userData.user) return <ReportsReal vendorId="" reports={[]} jobOptions={[]} />;
+  const user = await getCurrentUser(supabase);
+  if (!user) return <ReportsReal vendorId="" reports={[]} jobOptions={[]} />;
 
   const [{ data: reports, error: reportsError }, { data: orders, error: ordersError }] = await Promise.all([
     supabase
       .from("vendor_reports")
       .select("id, order_id, subject, message, status, created_at, resolved_at, resolution_notes")
-      .eq("vendor_id", userData.user.id)
+      .eq("vendor_id", user.id)
       .order("created_at", { ascending: false }),
     supabase
       .from("vendor_assigned_orders")
@@ -37,5 +37,5 @@ export default async function VendorReportsPage() {
     title: o.offering_title ?? "Order",
   }));
 
-  return <ReportsReal vendorId={userData.user.id} reports={reportRows} jobOptions={jobOptions} />;
+  return <ReportsReal vendorId={user.id} reports={reportRows} jobOptions={jobOptions} />;
 }

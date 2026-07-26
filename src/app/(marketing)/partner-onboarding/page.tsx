@@ -1,13 +1,13 @@
 import { redirect } from "next/navigation";
 import { sessionUsesAuthMethod } from "@/lib/auth";
-import { createClient, getProfile } from "@/lib/supabase/server";
+import { createClient, getCurrentUser, getProfile } from "@/lib/supabase/server";
 import { PartnerOnboardingForm } from "./form";
 
 export default async function PartnerOnboardingPage() {
   const supabase = await createClient();
-  const { data: authData } = await supabase.auth.getUser();
-  if (!authData.user) redirect("/partner-login?error=Open the secure invitation link before onboarding.");
-  const profile = await getProfile(supabase, authData.user.id);
+  const user = await getCurrentUser(supabase);
+  if (!user) redirect("/partner-login?error=Open the secure invitation link before onboarding.");
+  const profile = await getProfile(supabase, user.id);
   if (await sessionUsesAuthMethod(supabase, "oauth") || profile?.role !== "vendor" || profile.vendor_onboarding_status !== "invited") {
     redirect(profile?.vendor_onboarding_status === "approved" ? "/vendor-dashboard" : "/partner-login?message=This partner account is already awaiting review.");
   }

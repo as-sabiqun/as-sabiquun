@@ -1,12 +1,12 @@
-import { createClient, getProfile } from "@/lib/supabase/server";
+import { createClient, getCurrentUser, getProfile } from "@/lib/supabase/server";
 import { logout } from "@/app/actions/auth";
 import { isAdminMfaBypassActive } from "@/lib/auth-policy";
 
 export default async function AdminProfilePage() {
   const supabase = await createClient();
-  const { data } = await supabase.auth.getUser();
-  const email = data.user?.email ?? "Administrator";
-  const profile = data.user ? await getProfile(supabase, data.user.id) : null;
+  const user = await getCurrentUser(supabase);
+  const email = user?.email ?? "Administrator";
+  const profile = user ? await getProfile(supabase, user.id) : null;
   const name = profile?.display_name || email.split("@")[0];
   const mfaBypassed = isAdminMfaBypassActive();
 

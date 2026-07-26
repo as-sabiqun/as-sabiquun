@@ -23,7 +23,7 @@ export async function updateSession(request: NextRequest) {
 
   // Refreshes the session cookie if it's expired — required for Server Components,
   // which cannot write cookies themselves.
-  await supabase.auth.getUser();
+  await supabase.auth.getClaims();
 
   return response;
 }

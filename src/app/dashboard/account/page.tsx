@@ -1,7 +1,7 @@
 import { CheckCircle2, Mail, MessageCircle, UserRound } from "lucide-react";
 import { redirect } from "next/navigation";
 import { safeRedirectPath } from "@/lib/auth-redirect";
-import { createClient } from "@/lib/supabase/server";
+import { createClient, getCurrentUser } from "@/lib/supabase/server";
 import { TelegramLinkCard } from "./telegram-link-card";
 import styles from "../dashboard.module.css";
 
@@ -14,11 +14,11 @@ interface AccountProfile {
 
 export default async function CustomerAccountPage({ searchParams }: PageProps<"/dashboard/account">) {
   const supabase = await createClient();
-  const { data: userData } = await supabase.auth.getUser();
+  const user = (await getCurrentUser(supabase))!;
   const { data, error } = await supabase
     .from("profiles")
     .select("display_name, phone, telegram_username, telegram_linked_at")
-    .eq("id", userData.user!.id)
+    .eq("id", user.id)
     .single();
   if (error) throw new Error("Account details could not be loaded.");
   const profile = data as AccountProfile | null;
@@ -34,7 +34,7 @@ export default async function CustomerAccountPage({ searchParams }: PageProps<"/
         <section className={styles.accountPanel}>
           <header><span><UserRound aria-hidden="true" /></span><div><p>Personal details</p><h2>{profile?.display_name || "Customer"}</h2></div></header>
           <dl className={styles.accountFacts}>
-            <div><dt><Mail aria-hidden="true" /> Google email</dt><dd>{userData.user?.email}</dd></div>
+            <div><dt><Mail aria-hidden="true" /> Google email</dt><dd>{user.email}</dd></div>
             <div><dt>Phone</dt><dd>{profile?.phone || "Not provided"}</dd></div>
           </dl>
           <p className={styles.accountNote}>Customer access is protected by your verified Google account.</p>

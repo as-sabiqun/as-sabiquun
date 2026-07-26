@@ -1,11 +1,11 @@
-import { createClient, getProfile } from "@/lib/supabase/server";
+import { createClient, getCurrentUser, getProfile } from "@/lib/supabase/server";
 import { logout } from "@/app/actions/auth";
 
 export default async function VendorProfilePage() {
   const supabase = await createClient();
-  const { data } = await supabase.auth.getUser();
-  const email = data.user?.email ?? "Vendor";
-  const profile = data.user ? await getProfile(supabase, data.user.id) : null;
+  const user = await getCurrentUser(supabase);
+  const email = user?.email ?? "Vendor";
+  const profile = user ? await getProfile(supabase, user.id) : null;
   const name = profile?.display_name || email.split("@")[0];
   const phone = profile?.phone ?? "";
   const vendorType = profile?.vendor_type ?? "";

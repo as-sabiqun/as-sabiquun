@@ -50,11 +50,13 @@ export default async function AdminJobDetailPage({ params }: { params: Promise<{
     order.admin_verified_by ? supabase.from("profiles").select("display_name").eq("id", order.admin_verified_by).maybeSingle() : Promise.resolve({ data: null }),
   ]);
 
-  const signedProofs = await Promise.all((proofsResult.data ?? []).map(async (proof) => {
-    const { data: signed, error } = await supabase.storage.from("proofs").createSignedUrl(proof.storage_path, 3600);
-    return { proof: { ...proof, url: signed?.signedUrl ?? null } as ProofRow, error };
-  }));
-  const proofs = signedProofs.map(({ proof }) => proof);
+  const { data: signedProofUrls, error: signedProofsError } = await supabase.storage
+    .from("proofs")
+    .createSignedUrls((proofsResult.data ?? []).map((proof) => proof.storage_path), 3600);
+  const proofs = (proofsResult.data ?? []).map((proof, index) => ({
+    ...proof,
+    url: signedProofUrls?.[index]?.signedUrl ?? null,
+  })) as ProofRow[];
 
   const detail: AdminOrderDetail = {
     ...order,
@@ -63,7 +65,7 @@ export default async function AdminJobDetailPage({ params }: { params: Promise<{
   } as unknown as AdminOrderDetail;
   const warnings = [offersResult, submissionsResult, proofsResult, notificationsResult, reportsResult, transactionsResult, paymentsResult, eventsResult]
     .flatMap((result) => result.error ? [result.error.message] : [])
-    .concat(signedProofs.flatMap(({ error }) => error ? [error.message] : []));
+    .concat(signedProofsError ? [signedProofsError.message] : []);
 
   return (
     <JobDetailReal

@@ -4,7 +4,7 @@ import { redirect } from "next/navigation";
 import { buildJourneySeries, boardKeyForFulfilment, customerBoardColumns, customerStepIndex, isImpactOrder, type CustomerBoardKey } from "@/lib/customer-dashboard";
 import { type DeliveryStatus, type FulfilmentStatus, type PaymentStatus, type SettlementStatus } from "@/lib/order-lifecycle";
 import { customerOrderStatus, formatCents, orderTitle, type OrderRow } from "@/lib/orders";
-import { createClient, getProfile } from "@/lib/supabase/server";
+import { createClient, getCurrentUser, getProfile } from "@/lib/supabase/server";
 import { ImpactChart } from "./impact-chart";
 import styles from "./dashboard.module.css";
 
@@ -29,11 +29,11 @@ const categoryLabels: Record<string, string> = {
 
 export default async function DashboardPage() {
   const supabase = await createClient();
-  const { data: userData } = await supabase.auth.getUser();
-  if (!userData.user) redirect("/login?next=/dashboard");
+  const user = await getCurrentUser(supabase);
+  if (!user) redirect("/login?next=/dashboard");
 
   const [profile, orderResult] = await Promise.all([
-    getProfile(supabase, userData.user.id),
+    getProfile(supabase, user.id),
     supabase
       .from("customer_orders")
       .select("id, reference, service_type, category_slug, quantity, participant_names, dedication, total_amount, payment_status, fulfilment_status, delivery_status, settlement_status, status, created_at, admin_verified_at, completed_at, project_country, offering_title, payment_confirmed_at, is_test")
@@ -56,7 +56,7 @@ export default async function DashboardPage() {
   const countries = new Set(impactRows.map((order) => order.project_country).filter(Boolean));
   const committedValue = impactRows.reduce((sum, order) => sum + order.total_amount, 0);
   const completionPercent = impactRows.length === 0 ? 0 : Math.round((completedCount / impactRows.length) * 100);
-  const firstName = (profile?.display_name || userData.user.email?.split("@")[0] || "there").split(" ")[0];
+  const firstName = (profile?.display_name || user.email?.split("@")[0] || "there").split(" ")[0];
   const journey = buildJourneySeries(impactRows, new Date(), 8);
   const categoryCounts = Object.entries(categoryLabels)
     .map(([key, label]) => ({ key, label, count: impactRows.filter((order) => order.category_slug === key).length }))

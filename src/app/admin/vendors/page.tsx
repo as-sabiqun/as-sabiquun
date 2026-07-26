@@ -3,17 +3,18 @@ import { VendorsListReal, type VendorRow } from "@/components/admin/vendors-list
 
 export default async function AdminVendorsPage() {
   const supabase = await createClient();
-  const { data: profiles, error: profilesError } = await supabase
-    .from("profiles")
-    .select("id, display_name, phone, vendor_type, services, status, vendor_onboarding_status")
-    .eq("role", "vendor")
-    .order("created_at", { ascending: false });
-
-  const vendorIds = (profiles ?? []).map((p) => p.id);
+  const [{ data: profiles, error: profilesError }, { data: orders, error: ordersError }] = await Promise.all([
+    supabase
+      .from("profiles")
+      .select("id, display_name, phone, vendor_type, services, status, vendor_onboarding_status")
+      .eq("role", "vendor")
+      .order("created_at", { ascending: false }),
+    supabase
+      .from("orders")
+      .select("assigned_vendor_id, fulfilment_status, delivery_status")
+      .not("assigned_vendor_id", "is", null),
+  ]);
   if (profilesError) throw new Error("Partners could not be loaded.");
-  const { data: orders, error: ordersError } = vendorIds.length
-    ? await supabase.from("orders").select("assigned_vendor_id, fulfilment_status, delivery_status").in("assigned_vendor_id", vendorIds)
-    : { data: [], error: null };
   if (ordersError) throw new Error("Partner jobs could not be loaded.");
 
   const vendors: VendorRow[] = (profiles ?? []).map((p) => {

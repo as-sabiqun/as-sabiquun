@@ -9,33 +9,32 @@ export default async function AdminVendorDetailPage({ params }: { params: Promis
 
   const supabase = await createClient();
   if (!(await getAal2Admin(supabase))) redirect("/admin/sign-in");
-  const { data: profile } = await supabase
-    .from("profiles")
-    .select(
-      "id, display_name, contact_person, phone, whatsapp, country, city_address, vendor_type, services, status, vendor_onboarding_status, currency, bank_name, bank_account_name, bank_account_number, swift_code, rating, notes, created_at"
-    )
-    .eq("id", id)
-    .eq("role", "vendor")
-    .maybeSingle();
+  const admin = createAdminClient();
+  const [{ data: profile }, { data: authUser }, { data: orders }, { data: paymentsData }] = await Promise.all([
+    supabase
+      .from("profiles")
+      .select(
+        "id, display_name, contact_person, phone, whatsapp, country, city_address, vendor_type, services, status, vendor_onboarding_status, currency, bank_name, bank_account_name, bank_account_number, swift_code, rating, notes, created_at"
+      )
+      .eq("id", id)
+      .eq("role", "vendor")
+      .maybeSingle(),
+    admin.auth.admin.getUserById(id),
+    supabase
+      .from("orders")
+      .select(
+        "id, reference, service_type, category_slug, quantity, participant_names, dedication, total_amount, vendor_payout_amount, offering_title, status, payment_status, fulfilment_status, delivery_status, settlement_status, created_at, accepted_at, completed_at, completion_deadline, offerings(title)"
+      )
+      .eq("assigned_vendor_id", id)
+      .order("created_at", { ascending: false }),
+    supabase
+      .from("vendor_payments")
+      .select("id, order_id, amount, payment_date, method, reference, orders(reference)")
+      .eq("vendor_id", id)
+      .order("payment_date", { ascending: false }),
+  ]);
 
   if (!profile) notFound();
-
-  const admin = createAdminClient();
-  const { data: authUser } = await admin.auth.admin.getUserById(id);
-
-  const { data: orders } = await supabase
-    .from("orders")
-    .select(
-      "id, reference, service_type, category_slug, quantity, participant_names, dedication, total_amount, vendor_payout_amount, offering_title, status, payment_status, fulfilment_status, delivery_status, settlement_status, created_at, accepted_at, completed_at, completion_deadline, offerings(title)"
-    )
-    .eq("assigned_vendor_id", id)
-    .order("created_at", { ascending: false });
-
-  const { data: paymentsData } = await supabase
-    .from("vendor_payments")
-    .select("id, order_id, amount, payment_date, method, reference, orders(reference)")
-    .eq("vendor_id", id)
-    .order("payment_date", { ascending: false });
 
   const payments: VendorPaymentRow[] = (paymentsData ?? []).map((p) => ({
     id: p.id,

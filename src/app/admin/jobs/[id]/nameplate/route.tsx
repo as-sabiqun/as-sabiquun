@@ -4,7 +4,7 @@ import { join } from "node:path";
 import { ImageResponse } from "next/og";
 import { NextResponse } from "next/server";
 import { getAal2Admin, isGoogleCustomer } from "@/lib/auth";
-import { createClient, getProfile } from "@/lib/supabase/server";
+import { createClient, getCurrentUser, getProfile } from "@/lib/supabase/server";
 import { countryNameToIso2, flagUrl } from "@/lib/nameplate/country-codes";
 
 // Auto-generates the branded nameplate graphic for a completed job, matching
@@ -70,9 +70,9 @@ export async function GET(_req: Request, { params }: { params: Promise<{ id: str
   const { id } = await params;
   const supabase = await createClient();
   const admin = await getAal2Admin(supabase);
-  const { data: authData } = await supabase.auth.getUser();
-  const profile = authData.user ? await getProfile(supabase, authData.user.id) : null;
-  const customer = authData.user && await isGoogleCustomer(supabase, authData.user, profile);
+  const user = admin?.user ?? await getCurrentUser(supabase);
+  const profile = admin?.profile ?? (user ? await getProfile(supabase, user.id) : null);
+  const customer = user && await isGoogleCustomer(supabase, user, profile);
   if (!admin && !customer) {
     return NextResponse.json({ error: "A verified administrator or owning customer session is required" }, { status: 403 });
   }

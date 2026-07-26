@@ -9,23 +9,23 @@ export default async function AdminCustomerDetailPage({ params }: { params: Prom
 
   const supabase = await createClient();
   if (!(await getAal2Admin(supabase))) redirect("/admin/sign-in");
-  const { data: profile } = await supabase
-    .from("profiles")
-    .select("id, display_name, phone, status, created_at")
-    .eq("id", id)
-    .eq("role", "customer")
-    .maybeSingle();
+  const admin = createAdminClient();
+  const [{ data: profile }, { data: authUser }, { data: orders }] = await Promise.all([
+    supabase
+      .from("profiles")
+      .select("id, display_name, phone, status, created_at")
+      .eq("id", id)
+      .eq("role", "customer")
+      .maybeSingle(),
+    admin.auth.admin.getUserById(id),
+    supabase
+      .from("orders")
+      .select("id, reference, service_type, category_slug, quantity, participant_names, dedication, total_amount, offering_title, status, payment_status, fulfilment_status, delivery_status, settlement_status, created_at, offerings(title)")
+      .eq("customer_id", id)
+      .order("created_at", { ascending: false }),
+  ]);
 
   if (!profile) notFound();
-
-  const admin = createAdminClient();
-  const { data: authUser } = await admin.auth.admin.getUserById(id);
-
-  const { data: orders } = await supabase
-    .from("orders")
-    .select("id, reference, service_type, category_slug, quantity, participant_names, dedication, total_amount, offering_title, status, payment_status, fulfilment_status, delivery_status, settlement_status, created_at, offerings(title)")
-    .eq("customer_id", id)
-    .order("created_at", { ascending: false });
 
   const customer: CustomerDetail = {
     ...profile,

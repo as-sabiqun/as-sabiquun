@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { createClient } from "@/lib/supabase/server";
+import { createClient, getCurrentUser } from "@/lib/supabase/server";
 import { formatCents } from "@/lib/orders";
 
 interface EarningsOrder {
@@ -20,8 +20,7 @@ interface PaymentRow {
 
 export default async function VendorEarningsPage() {
   const supabase = await createClient();
-  const { data: userData } = await supabase.auth.getUser();
-  const vendorId = userData.user!.id;
+  const vendorId = (await getCurrentUser(supabase))!.id;
   const [{ data: orderData, error: orderError }, { data: paymentData, error: paymentError }] = await Promise.all([
     supabase
       .from("vendor_assigned_orders")

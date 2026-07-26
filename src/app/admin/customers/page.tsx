@@ -7,22 +7,23 @@ import { CustomersListReal, type CustomerRow } from "@/components/admin/customer
 export default async function AdminCustomersPage() {
   const supabase = await createClient();
   if (!(await getAal2Admin(supabase))) redirect("/admin/sign-in");
-  const { data: profiles, error: profilesError } = await supabase
-    .from("profiles")
-    .select("id, display_name, phone, status")
-    .eq("role", "customer")
-    .order("created_at", { ascending: false });
-  if (profilesError) throw new Error("Customers could not be loaded.");
-
   const admin = createAdminClient();
-  const { data: authList, error: authError } = await admin.auth.admin.listUsers({ perPage: 1000 });
+  const [
+    { data: profiles, error: profilesError },
+    { data: authList, error: authError },
+    { data: orders, error: ordersError },
+  ] = await Promise.all([
+    supabase
+      .from("profiles")
+      .select("id, display_name, phone, status")
+      .eq("role", "customer")
+      .order("created_at", { ascending: false }),
+    admin.auth.admin.listUsers({ perPage: 1000 }),
+    supabase.from("orders").select("customer_id, total_amount, payment_status"),
+  ]);
+  if (profilesError) throw new Error("Customers could not be loaded.");
   if (authError) throw new Error("Customer identities could not be loaded.");
   const authById = new Map(authList.users.map((u) => [u.id, u]));
-
-  const ids = (profiles ?? []).map((p) => p.id);
-  const { data: orders, error: ordersError } = ids.length
-    ? await supabase.from("orders").select("customer_id, total_amount, payment_status").in("customer_id", ids)
-    : { data: [], error: null };
   if (ordersError) throw new Error("Customer orders could not be loaded.");
 
   const customers: CustomerRow[] = (profiles ?? []).map((p) => {

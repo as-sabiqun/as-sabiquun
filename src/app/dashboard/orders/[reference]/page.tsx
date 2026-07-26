@@ -4,7 +4,7 @@ import { notFound, redirect } from "next/navigation";
 import { Check, CircleDollarSign, Download, ExternalLink, FileBadge2, ImageIcon, MapPin, MessageCircle, Video } from "lucide-react";
 import { deriveOrderMilestone, isPaid, type DeliveryStatus, type FulfilmentStatus, type PaymentStatus, type SettlementStatus } from "@/lib/order-lifecycle";
 import { formatCents, orderTitle, type OrderRow } from "@/lib/orders";
-import { createClient, getProfile } from "@/lib/supabase/server";
+import { createClient, getCurrentUser, getProfile } from "@/lib/supabase/server";
 import { isGoogleCustomer } from "@/lib/auth";
 import styles from "../../dashboard.module.css";
 
@@ -108,11 +108,11 @@ export default async function OrderDetailPage({ params, searchParams }: PageProp
   const { reference } = await params;
   const paymentQuery = (await searchParams).payment;
   const supabase = await createClient();
-  const { data: userData } = await supabase.auth.getUser();
-  if (!userData.user) redirect(`/login?next=/dashboard/orders/${encodeURIComponent(reference)}`);
+  const user = await getCurrentUser(supabase);
+  if (!user) redirect(`/login?next=/dashboard/orders/${encodeURIComponent(reference)}`);
 
-  const profile = await getProfile(supabase, userData.user.id);
-  if (!await isGoogleCustomer(supabase, userData.user, profile)) {
+  const profile = await getProfile(supabase, user.id);
+  if (!await isGoogleCustomer(supabase, user, profile)) {
     redirect(profile?.status === "suspended" ? "/login?error=This account is suspended." : "/");
   }
 

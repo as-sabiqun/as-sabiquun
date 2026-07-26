@@ -1,6 +1,7 @@
 import { createServerClient } from "@supabase/ssr";
 import type { SupabaseClient } from "@supabase/supabase-js";
 import { cookies } from "next/headers";
+import { cache } from "react";
 
 export const isSupabaseConfigured = Boolean(
   process.env.NEXT_PUBLIC_SUPABASE_URL && process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY
@@ -38,12 +39,17 @@ export interface Profile {
 // role lives in the `profiles` table, never in user_metadata — an
 // authenticated user can edit their own user_metadata from the client SDK,
 // so it must never be trusted for authorization.
-export async function getProfile(supabase: SupabaseClient, userId: string): Promise<Profile | null> {
+export const getProfile = cache(async (supabase: SupabaseClient, userId: string): Promise<Profile | null> => {
   const { data } = await supabase.from("profiles").select("*").eq("id", userId).maybeSingle();
   return data as Profile | null;
-}
+});
 
-export async function createClient() {
+export const getCurrentUser = cache(async (supabase: SupabaseClient) => {
+  const { data } = await supabase.auth.getUser();
+  return data.user;
+});
+
+export const createClient = cache(async () => {
   const cookieStore = await cookies();
 
   return createServerClient(
@@ -65,4 +71,4 @@ export async function createClient() {
       },
     }
   );
-}
+});

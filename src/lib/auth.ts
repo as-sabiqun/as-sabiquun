@@ -1,23 +1,22 @@
 import "server-only";
 
 import type { SupabaseClient, User } from "@supabase/supabase-js";
+import { cache } from "react";
 import { isAdminMfaBypassActive } from "@/lib/auth-policy";
-import { getProfile, type Profile } from "@/lib/supabase/server";
+import { getCurrentUser, getProfile, type Profile } from "@/lib/supabase/server";
 
 export type AdminMfaState = "verified" | "challenge" | "enroll" | "error";
 
-export async function sessionUsesAuthMethod(supabase: SupabaseClient, method: string) {
+export const sessionUsesAuthMethod = cache(async (supabase: SupabaseClient, method: string) => {
   const { data, error } = await supabase.auth.mfa.getAuthenticatorAssuranceLevel();
   if (error || !data) return false;
   return data.currentAuthenticationMethods.some((entry) =>
     (typeof entry === "string" ? entry : entry.method) === method
   );
-}
+});
 
-export async function getActiveAdmin(supabase: SupabaseClient): Promise<{ user: User; profile: Profile } | null> {
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+export const getActiveAdmin = cache(async (supabase: SupabaseClient): Promise<{ user: User; profile: Profile } | null> => {
+  const user = await getCurrentUser(supabase);
   if (!user) return null;
 
   const profile = await getProfile(supabase, user.id);
@@ -26,21 +25,21 @@ export async function getActiveAdmin(supabase: SupabaseClient): Promise<{ user: 
     && await sessionUsesAuthMethod(supabase, "password")
     ? { user, profile }
     : null;
-}
+});
 
-export async function getAdminMfaState(supabase: SupabaseClient): Promise<AdminMfaState> {
+export const getAdminMfaState = cache(async (supabase: SupabaseClient): Promise<AdminMfaState> => {
   if (isAdminMfaBypassActive()) return "verified";
   const { data, error } = await supabase.auth.mfa.getAuthenticatorAssuranceLevel();
   if (error || !data) return "error";
   if (data.currentLevel === "aal2") return "verified";
   return data.nextLevel === "aal2" ? "challenge" : "enroll";
-}
+});
 
-export async function getAal2Admin(supabase: SupabaseClient) {
+export const getAal2Admin = cache(async (supabase: SupabaseClient) => {
   const admin = await getActiveAdmin(supabase);
   if (!admin || (await getAdminMfaState(supabase)) !== "verified") return null;
   return admin;
-}
+});
 
 export function isApprovedVendor(profile: Profile | null): profile is Profile {
   return Boolean(profile && profile.role === "vendor" && profile.status === "active" && profile.vendor_onboarding_status === "approved");

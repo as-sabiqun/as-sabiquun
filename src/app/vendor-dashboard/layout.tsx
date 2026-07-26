@@ -1,6 +1,6 @@
 import { redirect } from "next/navigation";
 import { isApprovedVendor, sessionUsesAuthMethod, vendorAccessMessage } from "@/lib/auth";
-import { createClient, getProfile, isSupabaseConfigured } from "@/lib/supabase/server";
+import { createClient, getCurrentUser, getProfile, isSupabaseConfigured } from "@/lib/supabase/server";
 import { VendorSidebar } from "@/components/vendor/vendor-sidebar";
 
 export const metadata = { robots: { index: false, follow: false } };
@@ -9,15 +9,15 @@ export default async function VendorDashboardLayout({ children }: { children: Re
   if (!isSupabaseConfigured) redirect("/partner-login?error=Partner access is not configured on this deployment.");
 
   const supabase = await createClient();
-  const { data } = await supabase.auth.getUser();
-  if (!data.user) {
+  const user = await getCurrentUser(supabase);
+  if (!user) {
     redirect("/partner-login?next=/vendor-dashboard");
   }
-  const profile = await getProfile(supabase, data.user.id);
+  const profile = await getProfile(supabase, user.id);
   if (!isApprovedVendor(profile) || !await sessionUsesAuthMethod(supabase, "password")) {
     redirect(`/partner-login?error=${encodeURIComponent(vendorAccessMessage(profile))}`);
   }
-  const vendorEmail = data.user.email ?? "Vendor";
+  const vendorEmail = user.email ?? "Vendor";
   const vendorName = profile.display_name || vendorEmail.split("@")[0];
 
   return (

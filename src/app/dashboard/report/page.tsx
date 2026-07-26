@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { ArrowLeft, MessageSquareWarning, Phone } from "lucide-react";
-import { createClient } from "@/lib/supabase/server";
+import { createClient, getCurrentUser } from "@/lib/supabase/server";
 import { orderTitle, type OrderRow } from "@/lib/orders";
 import { ReportForm, type ReportOrderOption } from "./report-form";
 import styles from "../dashboard.module.css";
@@ -17,8 +17,7 @@ interface CustomerReportRow {
 export default async function CustomerReportPage({ searchParams }: { searchParams: Promise<{ order?: string }> }) {
   const { order: requestedOrderId } = await searchParams;
   const supabase = await createClient();
-  const { data: userData } = await supabase.auth.getUser();
-  const userId = userData.user?.id ?? "";
+  const userId = (await getCurrentUser(supabase))?.id ?? "";
   const [{ data: orders, error: ordersError }, { data: reports, error: reportsError }] = await Promise.all([
     supabase
       .from("customer_orders")

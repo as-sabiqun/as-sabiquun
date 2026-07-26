@@ -3,7 +3,7 @@ import { logout } from "@/app/actions/auth";
 import { Brand } from "@/components/brand";
 import { services } from "@/components/service-card";
 import { isApprovedVendor, sessionUsesAuthMethod } from "@/lib/auth";
-import { createClient, getProfile, isSupabaseConfigured, type UserRole } from "@/lib/supabase/server";
+import { createClient, getCurrentUser, getProfile, isSupabaseConfigured, type UserRole } from "@/lib/supabase/server";
 
 const HOME_FOR_ROLE: Record<UserRole, { href: string; label: string } | null> = {
   customer: { href: "/dashboard", label: "My projects" },
@@ -70,10 +70,10 @@ export async function Header() {
 
   if (isSupabaseConfigured) {
     const supabase = await createClient();
-    const { data } = await supabase.auth.getUser();
-    email = data.user?.email ?? null;
-    if (data.user) {
-      const profile = await getProfile(supabase, data.user.id);
+    const user = await getCurrentUser(supabase);
+    email = user?.email ?? null;
+    if (user) {
+      const profile = await getProfile(supabase, user.id);
       const allowed = profile?.role === "customer"
         ? await sessionUsesAuthMethod(supabase, "oauth")
         : profile?.role === "vendor"
