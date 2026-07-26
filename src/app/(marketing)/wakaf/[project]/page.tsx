@@ -7,6 +7,11 @@ import { wakafProjects, type WakafProjectSlug } from "@/lib/wakaf-projects";
 
 const offeringSlugs: Record<WakafProjectSlug, string> = { "water-pump": "wakaf-water-pump", quran: "wakaf-quran", "food-for-orphans": "wakaf-food-for-orphans" };
 
+export const dynamicParams = false;
+export function generateStaticParams() {
+  return Object.keys(wakafProjects).map((project) => ({ project }));
+}
+
 export default async function WakafProjectPage({ params }: { params: Promise<{ project: string }> }) {
   const { project: slug } = await params;
   const project = wakafProjects[slug as WakafProjectSlug];

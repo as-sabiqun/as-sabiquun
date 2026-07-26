@@ -1,15 +1,6 @@
 import Link from "next/link";
-import { logout } from "@/app/actions/auth";
 import { Brand } from "@/components/brand";
 import { services } from "@/components/service-card";
-import { isApprovedVendor, sessionUsesAuthMethod } from "@/lib/auth";
-import { createClient, getCurrentUser, getProfile, isSupabaseConfigured, type UserRole } from "@/lib/supabase/server";
-
-const HOME_FOR_ROLE: Record<UserRole, { href: string; label: string } | null> = {
-  customer: { href: "/dashboard", label: "My projects" },
-  vendor: { href: "/vendor-dashboard", label: "Vendor dashboard" },
-  admin: null,
-};
 
 const mainNav = [
   ["About", "/about"],
@@ -38,51 +29,7 @@ function ServicesMenu() {
   );
 }
 
-function AccountNavItem({ email, home }: { email: string | null; home: { href: string; label: string } | null }) {
-  if (!email) return <Link href="/login" className="nav-link">Login</Link>;
-
-  return (
-    <>
-      {home && <Link href={home.href} className="nav-link">{home.label}</Link>}
-      <form action={logout} className="flex">
-        <button type="submit" className="nav-link" title={email}>Log out</button>
-      </form>
-    </>
-  );
-}
-
-function AccountMobileItem({ email, home }: { email: string | null; home: { href: string; label: string } | null }) {
-  if (!email) return <Link href="/login">Login</Link>;
-
-  return (
-    <>
-      {home && <Link href={home.href}>{home.label}</Link>}
-      <form action={logout}>
-        <button type="submit">Log out ({email})</button>
-      </form>
-    </>
-  );
-}
-
-export async function Header() {
-  let email: string | null = null;
-  let home: { href: string; label: string } | null = null;
-
-  if (isSupabaseConfigured) {
-    const supabase = await createClient();
-    const user = await getCurrentUser(supabase);
-    email = user?.email ?? null;
-    if (user) {
-      const profile = await getProfile(supabase, user.id);
-      const allowed = profile?.role === "customer"
-        ? await sessionUsesAuthMethod(supabase, "oauth")
-        : profile?.role === "vendor"
-          ? isApprovedVendor(profile) && await sessionUsesAuthMethod(supabase, "password")
-          : Boolean(profile);
-      if (profile && allowed) home = HOME_FOR_ROLE[profile.role];
-    }
-  }
-
+export function Header() {
   return (
     <header className="site-header">
       <div className="container site-nav-shell flex h-16 items-center justify-between gap-5">
@@ -90,7 +37,7 @@ export async function Header() {
         <nav className="desktop-nav flex items-center gap-1 text-sm font-semibold" aria-label="Main navigation">
           <ServicesMenu />
           {mainNav.map(([label, href]) => <Link key={href} href={href} className="nav-link">{label}</Link>)}
-          <AccountNavItem email={email} home={home} />
+          <Link href="/login" className="nav-link">Login</Link>
         </nav>
         <div className="desktop-cta">
           <Link className="btn btn-small" href="/services">Choose a service <span aria-hidden="true">→</span></Link>
@@ -101,7 +48,7 @@ export async function Header() {
             <Link href="/services">All services</Link>
             {services.map((service) => <Link key={service.slug} href={service.href}>{service.title}</Link>)}
             {mainNav.map(([label, href]) => <Link key={href} href={href}>{label}</Link>)}
-            <AccountMobileItem email={email} home={home} />
+            <Link href="/login">Login</Link>
           </nav>
         </details>
       </div>
