@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useState } from "react";
-import { customerDirectoryState, customerDirectorySummary, type CustomerDirectoryRecord, type CustomerDirectoryState } from "@/lib/customer-directory";
+import { customerDirectoryState, customerDirectorySummary, customerReadinessDetail, type CustomerDirectoryRecord, type CustomerDirectoryState } from "@/lib/customer-directory";
 import { formatCents } from "@/lib/orders";
 
 export interface CustomerRow extends CustomerDirectoryRecord {
@@ -121,7 +121,7 @@ export function CustomersListReal({ customers }: { customers: CustomerRow[] }) {
               </div>
               <div className="admin-customer-ready-cell">
                 <span className={`vendor-status ${stateVariant(customer)}`}>{stateLabel(customer)}</span>
-                <small><span className={customer.verified ? "is-connected" : ""}>Email</span><span className={customer.telegramLinked ? "is-connected" : ""}>Telegram</span></small>
+                <small>{customerReadinessDetail(customer)}</small>
               </div>
               <div className="admin-customer-workload"><strong>{customer.activeProjects}</strong><span>active</span><small>{customer.completedProjects} delivered · {customer.ordersCount} total</small></div>
               <div className="admin-customer-value"><strong>{formatCents(customer.lifetimeSpendCents)}</strong><small>{customer.paidOrdersCount} paid project{customer.paidOrdersCount === 1 ? "" : "s"}</small></div>

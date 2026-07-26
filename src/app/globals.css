@@ -791,10 +791,8 @@ button, a, summary { -webkit-tap-highlight-color: transparent; }
 .admin-customer-identity strong, .admin-customer-identity small { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .admin-customer-identity strong { font-size: .82rem; }
 .admin-customer-identity small { color: var(--muted); font-size: .64rem; }
-.admin-customer-ready-cell { display: grid; justify-items: start; gap: 7px; }
-.admin-customer-ready-cell > small { display: flex; gap: 5px; }
-.admin-customer-ready-cell > small span { padding: 3px 6px; color: var(--muted); background: var(--cream); border: 1px solid var(--line); border-radius: 99px; font-size: .56rem; font-weight: 700; }
-.admin-customer-ready-cell > small span.is-connected { color: var(--teal-dark); background: var(--teal-soft); border-color: color-mix(in srgb, var(--teal) 30%, var(--line)); }
+.admin-customer-ready-cell { display: grid; justify-items: start; gap: 6px; }
+.admin-customer-ready-cell > small { color: var(--muted); font-size: .61rem; }
 .admin-customer-workload { display: grid; grid-template-columns: auto 1fr; align-items: baseline; gap: 0 5px; }
 .admin-customer-workload strong { color: var(--teal-dark); font-family: var(--font-display); font-size: 1.25rem; }
 .admin-customer-workload span { color: var(--ink); font-size: .67rem; font-weight: 700; }
