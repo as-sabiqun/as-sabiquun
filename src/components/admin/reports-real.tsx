@@ -11,7 +11,8 @@ export interface ReportRow {
   status: "open" | "resolved";
   created_at: string;
   order_reference: string | null;
-  vendor_name: string;
+  reporter_name: string;
+  source: "vendor" | "customer";
 }
 
 export function ReportsReal({ reports }: { reports: ReportRow[] }) {
@@ -20,9 +21,9 @@ export function ReportsReal({ reports }: { reports: ReportRow[] }) {
   const open = reports.filter((r) => r.status === "open");
   const resolved = reports.filter((r) => r.status === "resolved");
 
-  function resolve(id: string) {
+  function resolve(id: string, source: ReportRow["source"]) {
     startTransition(async () => {
-      await resolveReportAction(id);
+      await resolveReportAction(id, source);
       router.refresh();
     });
   }
@@ -33,7 +34,7 @@ export function ReportsReal({ reports }: { reports: ReportRow[] }) {
         <div>
           <p className="vendor-eyebrow">Support</p>
           <h1 className="display vendor-page-title">Reports</h1>
-          <p className="vendor-page-lead">Issues vendors have flagged from their dashboard.</p>
+          <p className="vendor-page-lead">Issues customers and vendors have flagged from their portals.</p>
         </div>
       </div>
 
@@ -49,9 +50,9 @@ export function ReportsReal({ reports }: { reports: ReportRow[] }) {
               <div key={report.id} className="vendor-report-item">
                 <div className="vendor-report-item-head">
                   <strong>{report.subject}</strong>
-                  <button type="button" className="btn-secondary btn btn-small" disabled={pending} onClick={() => resolve(report.id)}>Mark resolved</button>
+                  <button type="button" className="btn-secondary btn btn-small" disabled={pending} onClick={() => resolve(report.id, report.source)}>Mark resolved</button>
                 </div>
-                <small>{report.vendor_name} · {report.order_reference || "Not job-specific"} · {new Date(report.created_at).toLocaleDateString()}</small>
+                <small>{report.source === "customer" ? "Customer" : "Vendor"} · {report.reporter_name} · {report.order_reference || "Not job-specific"} · {new Date(report.created_at).toLocaleDateString()}</small>
                 <p>{report.message}</p>
               </div>
             ))}
@@ -73,7 +74,7 @@ export function ReportsReal({ reports }: { reports: ReportRow[] }) {
                   <strong>{report.subject}</strong>
                   <span className="vendor-status vendor-status-completed">Resolved</span>
                 </div>
-                <small>{report.vendor_name} · {report.order_reference || "Not job-specific"} · {new Date(report.created_at).toLocaleDateString()}</small>
+                <small>{report.source === "customer" ? "Customer" : "Vendor"} · {report.reporter_name} · {report.order_reference || "Not job-specific"} · {new Date(report.created_at).toLocaleDateString()}</small>
                 <p>{report.message}</p>
               </div>
             ))}

@@ -52,12 +52,12 @@ export async function recordCustomerDeliveryAction(orderId: string, channel: "em
   return { ok: Boolean(data) };
 }
 
-export async function resolveReportAction(reportId: string): Promise<{ ok: boolean; error?: string }> {
+export async function resolveReportAction(reportId: string, source: "vendor" | "customer" = "vendor"): Promise<{ ok: boolean; error?: string }> {
   const admin = await getAdminClient();
   if (!admin) return { ok: false, error: "Admin access required." };
   const { supabase } = admin;
   const { error } = await supabase
-    .from("vendor_reports")
+    .from(source === "customer" ? "customer_reports" : "vendor_reports")
     .update({ status: "resolved", resolved_at: new Date().toISOString() })
     .eq("id", reportId);
   if (error) return { ok: false, error: error.message };

@@ -8,7 +8,8 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
-    "check:auth": "node --test --experimental-strip-types src/lib/auth-redirect.test.ts"
+    "check:auth": "node --test --experimental-strip-types src/lib/auth-redirect.test.ts",
+    "check:dashboard": "node --test --experimental-strip-types src/lib/customer-dashboard.test.ts"
   },
   "dependencies": {
     "@supabase/ssr": "^0.12.3",
