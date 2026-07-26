@@ -1,5 +1,6 @@
 import { createClient, getProfile } from "@/lib/supabase/server";
 import { logout } from "@/app/actions/auth";
+import { isAdminMfaBypassActive } from "@/lib/auth-policy";
 
 export default async function AdminProfilePage() {
   const supabase = await createClient();
@@ -7,6 +8,7 @@ export default async function AdminProfilePage() {
   const email = data.user?.email ?? "Administrator";
   const profile = data.user ? await getProfile(supabase, data.user.id) : null;
   const name = profile?.display_name || email.split("@")[0];
+  const mfaBypassed = isAdminMfaBypassActive();
 
   return (
     <>
@@ -29,7 +31,7 @@ export default async function AdminProfilePage() {
 
         <dl className="vendor-profile-facts">
           <div><dt>Role</dt><dd>Administrator</dd></div>
-          <div><dt>Console access</dt><dd>Signed in with MFA</dd></div>
+          <div><dt>Console access</dt><dd>{mfaBypassed ? "Password only until 2:00 AM SGT" : "Signed in with MFA"}</dd></div>
         </dl>
 
         <form action={logout}>

@@ -2,6 +2,7 @@ import { redirect } from "next/navigation";
 import Link from "next/link";
 import { AdminSidebar } from "@/components/admin/admin-sidebar";
 import { getActiveAdmin, getAdminMfaState } from "@/lib/auth";
+import { isAdminMfaBypassActive } from "@/lib/auth-policy";
 import { createClient, isSupabaseConfigured } from "@/lib/supabase/server";
 
 export const metadata = { robots: { index: false, follow: false } };
@@ -20,6 +21,7 @@ export default async function AdminLayout({ children }: { children: React.ReactN
 
   const adminEmail = admin.user.email ?? "Administrator";
   const adminName = admin.profile.display_name || adminEmail.split("@")[0];
+  const mfaBypassed = isAdminMfaBypassActive();
 
   return (
     <div className="vendor-shell">
@@ -32,7 +34,7 @@ export default async function AdminLayout({ children }: { children: React.ReactN
           </form>
           <div className="vendor-topbar-right">
             <Link href="/admin/search" className="vendor-topbar-badge">Search</Link>
-            <span className="vendor-topbar-badge">AAL2 secured</span>
+            <span className="vendor-topbar-badge">{mfaBypassed ? "Temporary MFA bypass" : "AAL2 secured"}</span>
             <span className="vendor-sidebar-avatar vendor-topbar-avatar">{adminName.charAt(0)}</span>
           </div>
         </header>
