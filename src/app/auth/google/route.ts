@@ -1,25 +1,31 @@
 import { NextRequest, NextResponse } from "next/server";
 import { safeRedirectPath } from "@/lib/auth-redirect";
-import { getSiteUrl } from "@/lib/site-url";
-import { createClient } from "@/lib/supabase/server";
+import { createClient, isSupabaseConfigured } from "@/lib/supabase/server";
 
 export async function GET(request: NextRequest) {
-  const siteUrl = await getSiteUrl();
-  const callback = new URL("/auth/callback", siteUrl);
+  const loginWithError = () => {
+    const login = new URL("/login", request.nextUrl.origin);
+    login.searchParams.set("error", "Google sign-in is not configured on this deployment yet.");
+    return NextResponse.redirect(login);
+  };
+
+  if (!isSupabaseConfigured) return loginWithError();
+
+  const callback = new URL("/auth/callback", request.nextUrl.origin);
   callback.searchParams.set("next", safeRedirectPath(request.nextUrl.searchParams.get("next"), "/dashboard"));
   callback.searchParams.set("intent", "customer");
 
-  const supabase = await createClient();
-  const { data, error } = await supabase.auth.signInWithOAuth({
-    provider: "google",
-    options: { redirectTo: callback.toString() },
-  });
+  try {
+    const supabase = await createClient();
+    const { data, error } = await supabase.auth.signInWithOAuth({
+      provider: "google",
+      options: { redirectTo: callback.toString() },
+    });
 
-  if (error || !data.url) {
-    const login = new URL("/login", siteUrl);
-    login.searchParams.set("error", "Google sign-in could not be started. Try email instead.");
-    return NextResponse.redirect(login);
+    if (error || !data.url) return loginWithError();
+
+    return NextResponse.redirect(data.url);
+  } catch {
+    return loginWithError();
   }
-
-  return NextResponse.redirect(data.url);
 }
