@@ -791,8 +791,13 @@ button, a, summary { -webkit-tap-highlight-color: transparent; }
 .admin-customer-identity strong, .admin-customer-identity small { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .admin-customer-identity strong { font-size: .82rem; }
 .admin-customer-identity small { color: var(--muted); font-size: .64rem; }
-.admin-customer-ready-cell { display: grid; justify-items: start; gap: 6px; }
-.admin-customer-ready-cell > small { color: var(--muted); font-size: .61rem; }
+.admin-customer-account-state { display: flex; align-items: center; gap: 8px; color: #805f32; }
+.admin-customer-account-state > span { width: 7px; height: 7px; flex: 0 0 7px; background: var(--gold); border-radius: 50%; }
+.admin-customer-account-state > strong { font-size: .68rem; font-weight: 700; }
+.admin-customer-account-state.is-ready { color: var(--teal-dark); }
+.admin-customer-account-state.is-ready > span { background: var(--teal); }
+.admin-customer-account-state.is-suspended { color: #8a3d32; }
+.admin-customer-account-state.is-suspended > span { background: #b75b4d; }
 .admin-customer-workload { display: grid; grid-template-columns: auto 1fr; align-items: baseline; gap: 0 5px; }
 .admin-customer-workload strong { color: var(--teal-dark); font-family: var(--font-display); font-size: 1.25rem; }
 .admin-customer-workload span { color: var(--ink); font-size: .67rem; font-weight: 700; }
@@ -831,7 +836,7 @@ button, a, summary { -webkit-tap-highlight-color: transparent; }
   .admin-partner-open { grid-column: 2; grid-row: 1; }
   .admin-customer-table-head { display: none; }
   .admin-customer-row { grid-template-columns: minmax(0, 1fr) auto; gap: 13px 18px; }
-  .admin-customer-ready-cell, .admin-customer-workload, .admin-customer-value { grid-column: 1; }
+  .admin-customer-account-state, .admin-customer-workload, .admin-customer-value { grid-column: 1; }
   .admin-customer-row > .admin-partner-open { grid-column: 2; grid-row: 1; }
   .admin-list-row { grid-template-columns: auto 1fr; }
   .admin-list-stats, .admin-list-row > .vendor-status, .admin-list-row > .vendor-job-table-view { grid-column: 2; justify-self: start; }

@@ -1,12 +1,14 @@
 import assert from "node:assert/strict";
 import test from "node:test";
-import { customerDirectoryState, customerDirectorySummary, customerOrderMetrics, customerReadinessDetail } from "./customer-directory.ts";
+import { customerAccountLabel, customerDirectoryState, customerDirectorySummary, customerOrderMetrics } from "./customer-directory.ts";
 
 test("customer directory separates readiness and counts production activity", () => {
   assert.equal(customerDirectoryState({ verified: true, telegramLinked: true, status: "active" }), "ready");
   assert.equal(customerDirectoryState({ verified: true, telegramLinked: false, status: "active" }), "needs_setup");
   assert.equal(customerDirectoryState({ verified: true, telegramLinked: true, status: "suspended" }), "suspended");
-  assert.equal(customerReadinessDetail({ verified: true, telegramLinked: false, status: "active" }), "Telegram not linked");
+  assert.equal(customerAccountLabel({ verified: true, telegramLinked: false, status: "active" }), "Telegram needed");
+  assert.equal(customerAccountLabel({ verified: true, telegramLinked: true, status: "active" }), "Ready to pay");
+  assert.equal(customerAccountLabel({ verified: true, telegramLinked: true, status: "suspended" }), "Access suspended");
 
   const metrics = customerOrderMetrics([
     { total_amount: 28_000, payment_provider: "hitpay", payment_status: "paid", fulfilment_status: "in_progress", delivery_status: "not_ready" },

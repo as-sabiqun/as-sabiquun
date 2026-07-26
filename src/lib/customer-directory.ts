@@ -26,11 +26,11 @@ export function customerDirectoryState(customer: Pick<CustomerDirectoryRecord, "
   return customer.verified && customer.telegramLinked ? "ready" : "needs_setup";
 }
 
-export function customerReadinessDetail(customer: Pick<CustomerDirectoryRecord, "verified" | "telegramLinked" | "status">) {
-  if (customer.status === "suspended") return "Customer access paused";
-  if (customer.verified && customer.telegramLinked) return "Email + Telegram connected";
-  if (!customer.verified && !customer.telegramLinked) return "Email + Telegram incomplete";
-  return customer.verified ? "Telegram not linked" : "Email verification needed";
+export function customerAccountLabel(customer: Pick<CustomerDirectoryRecord, "verified" | "telegramLinked" | "status">) {
+  if (customer.status === "suspended") return "Access suspended";
+  if (customer.verified && customer.telegramLinked) return "Ready to pay";
+  if (!customer.verified && !customer.telegramLinked) return "Email + Telegram needed";
+  return customer.verified ? "Telegram needed" : "Email verification needed";
 }
 
 export function customerOrderMetrics(orders: CustomerOrderInput[]) {

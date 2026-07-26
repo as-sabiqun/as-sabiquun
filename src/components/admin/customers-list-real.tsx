@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useState } from "react";
-import { customerDirectoryState, customerDirectorySummary, customerReadinessDetail, type CustomerDirectoryRecord, type CustomerDirectoryState } from "@/lib/customer-directory";
+import { customerAccountLabel, customerDirectoryState, customerDirectorySummary, type CustomerDirectoryRecord, type CustomerDirectoryState } from "@/lib/customer-directory";
 import { formatCents } from "@/lib/orders";
 
 export interface CustomerRow extends CustomerDirectoryRecord {
@@ -23,20 +23,6 @@ const filters: Array<{ value: CustomerFilter; label: string }> = [
   { value: "needs_setup", label: "Needs setup" },
   { value: "suspended", label: "Suspended" },
 ];
-
-function stateLabel(customer: CustomerRow) {
-  const state = customerDirectoryState(customer);
-  if (state === "ready") return "Ready";
-  if (state === "suspended") return "Suspended";
-  return "Needs setup";
-}
-
-function stateVariant(customer: CustomerRow) {
-  const state = customerDirectoryState(customer);
-  if (state === "ready") return "vendor-status-accepted";
-  if (state === "suspended") return "vendor-status-rejected";
-  return "vendor-status-pending";
-}
 
 export function CustomersListReal({ customers }: { customers: CustomerRow[] }) {
   const [filter, setFilter] = useState<CustomerFilter>("all");
@@ -110,7 +96,7 @@ export function CustomersListReal({ customers }: { customers: CustomerRow[] }) {
         </div>
 
         <div className="admin-customer-table">
-          <div className="admin-customer-table-head" aria-hidden="true"><span>Customer</span><span>Readiness</span><span>Activity</span><span>Paid value</span><span /></div>
+          <div className="admin-customer-table-head" aria-hidden="true"><span>Customer</span><span>Account</span><span>Activity</span><span>Paid value</span><span /></div>
           {visible.length === 0 ? (
             <div className="admin-directory-empty"><strong>{customers.length === 0 ? "No customers yet" : "No matching customers"}</strong><p>{customers.length === 0 ? "Customer records appear after Google sign-in." : "Change the filter or search phrase to see other records."}</p></div>
           ) : visible.map((customer) => (
@@ -119,9 +105,9 @@ export function CustomersListReal({ customers }: { customers: CustomerRow[] }) {
                 <span className="vendor-sidebar-avatar admin-list-avatar">{customer.display_name.charAt(0)}</span>
                 <div><strong>{customer.display_name}</strong><small>{customer.email}</small><small>{customer.phone ?? (customer.latestOrderAt ? `Last activity ${new Date(customer.latestOrderAt).toLocaleDateString("en-SG")}` : `Joined ${new Date(customer.createdAt).toLocaleDateString("en-SG")}`)}</small></div>
               </div>
-              <div className="admin-customer-ready-cell">
-                <span className={`vendor-status ${stateVariant(customer)}`}>{stateLabel(customer)}</span>
-                <small>{customerReadinessDetail(customer)}</small>
+              <div className={`admin-customer-account-state is-${customerDirectoryState(customer)}`}>
+                <span aria-hidden="true" />
+                <strong>{customerAccountLabel(customer)}</strong>
               </div>
               <div className="admin-customer-workload"><strong>{customer.activeProjects}</strong><span>active</span><small>{customer.completedProjects} delivered · {customer.ordersCount} total</small></div>
               <div className="admin-customer-value"><strong>{formatCents(customer.lifetimeSpendCents)}</strong><small>{customer.paidOrdersCount} paid project{customer.paidOrdersCount === 1 ? "" : "s"}</small></div>
