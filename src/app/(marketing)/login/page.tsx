@@ -4,12 +4,12 @@ import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { Suspense, useActionState } from "react";
 import { GoogleMark } from "@/components/google-mark";
-import { login, loginWithGoogle } from "./actions";
+import { login } from "./actions";
 
 function LoginForm() {
   const [state, action, pending] = useActionState(login, undefined);
   const searchParams = useSearchParams();
-  const next = searchParams.get("next") ?? "/";
+  const next = searchParams.get("next") ?? "";
   const error = state?.error ?? searchParams.get("error");
 
   return (
@@ -19,7 +19,7 @@ function LoginForm() {
       <h1 className="display auth-title">Your deeds, kept together.</h1>
       <p className="auth-lead">Continue an order, follow a Wakaf contribution, or review its fulfilment record.</p>
 
-      <form action={loginWithGoogle} className="auth-google-form">
+      <form action="/auth/google" method="get" className="auth-google-form">
         <input type="hidden" name="next" value={next} />
         <button type="submit" className="auth-google"><GoogleMark /> Continue with Google</button>
       </form>

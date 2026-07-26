@@ -3,7 +3,6 @@
 import Link from "next/link";
 import { useActionState } from "react";
 import { GoogleMark } from "@/components/google-mark";
-import { loginWithGoogle } from "../login/actions";
 import { signup } from "./actions";
 
 export default function SignupPage() {
@@ -20,7 +19,7 @@ export default function SignupPage() {
           <h1 className="display auth-title">Create an account</h1>
           <p className="auth-lead">Keep every Korban order and Wakaf contribution connected to your own record.</p>
 
-          <form action={loginWithGoogle} className="auth-google-form">
+          <form action="/auth/google" method="get" className="auth-google-form">
             <input type="hidden" name="next" value="/dashboard" />
             <button type="submit" className="auth-google"><GoogleMark /> Continue with Google</button>
           </form>

@@ -2,7 +2,6 @@
 
 import { redirect } from "next/navigation";
 import { HOME_FOR_ROLE, safeRedirectPath } from "@/lib/auth-redirect";
-import { getSiteUrl } from "@/lib/site-url";
 import { createClient, getProfile } from "@/lib/supabase/server";
 
 export type AuthState = { error: string } | undefined;
@@ -28,24 +27,4 @@ export async function login(_prevState: AuthState, formData: FormData): Promise<
 
   const next = safeRedirectPath(String(formData.get("next") ?? ""), "");
   redirect(next || HOME_FOR_ROLE[profile.role]);
-}
-
-export async function loginWithGoogle(formData: FormData) {
-  const supabase = await createClient();
-  const siteUrl = await getSiteUrl();
-  const next = safeRedirectPath(String(formData.get("next") ?? ""), "/dashboard");
-  const callback = new URL("/auth/callback", siteUrl);
-  callback.searchParams.set("next", next);
-  callback.searchParams.set("intent", "customer");
-
-  const { data, error } = await supabase.auth.signInWithOAuth({
-    provider: "google",
-    options: { redirectTo: callback.toString() },
-  });
-
-  if (error || !data.url) {
-    redirect(`/login?error=${encodeURIComponent("Google sign-in could not be started. Try email instead.")}`);
-  }
-
-  redirect(data.url);
 }
