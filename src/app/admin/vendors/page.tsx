@@ -6,7 +6,7 @@ export default async function AdminVendorsPage() {
   const [{ data: profiles, error: profilesError }, { data: orders, error: ordersError }] = await Promise.all([
     supabase
       .from("profiles")
-      .select("id, display_name, phone, vendor_type, services, status, vendor_onboarding_status")
+      .select("id, display_name, contact_person, phone, country, city_address, vendor_type, services, status, vendor_onboarding_status, rating")
       .eq("role", "vendor")
       .order("created_at", { ascending: false }),
     supabase
