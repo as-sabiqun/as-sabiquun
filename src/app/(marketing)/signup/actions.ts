@@ -1,7 +1,7 @@
 "use server";
 
-import { headers } from "next/headers";
 import { redirect } from "next/navigation";
+import { getSiteUrl } from "@/lib/site-url";
 import { createClient } from "@/lib/supabase/server";
 
 export type SignupState = { error: string } | { message: string } | undefined;
@@ -18,7 +18,7 @@ export async function signup(_prevState: SignupState, formData: FormData): Promi
     return { error: "Password must be at least 8 characters." };
   }
 
-  const origin = (await headers()).get("origin");
+  const origin = await getSiteUrl();
   const supabase = await createClient();
   const { data, error } = await supabase.auth.signUp({
     email,
@@ -28,7 +28,7 @@ export async function signup(_prevState: SignupState, formData: FormData): Promi
       // always creates the profiles row as role='customer' regardless of
       // metadata, since the anon key is public.
       data: { full_name: name },
-      emailRedirectTo: `${origin}/auth/confirm`,
+      emailRedirectTo: `${origin}/auth/callback?next=/dashboard`,
     },
   });
 

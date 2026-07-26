@@ -1,7 +1,7 @@
 "use server";
 
 import { redirect } from "next/navigation";
-import { createClient, isSupabaseConfigured } from "@/lib/supabase/server";
+import { createClient, getProfile, isSupabaseConfigured } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 
 const PACKAGE_SLUGS = { share: "korban-share", goat: "korban-goat", cow: "korban-cow" } as const;
@@ -21,7 +21,7 @@ function reference() {
 export async function submitKorbanOrder(_prevState: SubmitKorbanState, formData: FormData): Promise<SubmitKorbanState> {
   const packageId = String(formData.get("packageId") ?? "") as PackageId;
   const quantity = Number(formData.get("quantity") ?? 1);
-  const names = formData.getAll("participantName").map(String).filter(Boolean);
+  const names = formData.getAll("participantName").map((name) => String(name).trim()).filter(Boolean);
   const customerName = String(formData.get("customerName") ?? "").trim();
   const customerPhone = String(formData.get("customerPhone") ?? "").trim();
 
@@ -46,6 +46,10 @@ export async function submitKorbanOrder(_prevState: SubmitKorbanState, formData:
   const { data: userData } = await supabase.auth.getUser();
   if (!userData.user) {
     return { ok: false, requiresLogin: true };
+  }
+  const profile = await getProfile(supabase, userData.user.id);
+  if (profile?.role !== "customer" || profile.status !== "active") {
+    return { ok: false, error: profile?.status === "suspended" ? "This account is suspended." : "Use a customer account to place an order." };
   }
 
   const admin = createAdminClient();

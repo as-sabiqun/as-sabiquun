@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
-import { createClient, isSupabaseConfigured } from "@/lib/supabase/server";
+import { createClient, getProfile, isSupabaseConfigured } from "@/lib/supabase/server";
 import { currentStepIndex, formatCents, orderStatusCopy, orderSteps, orderTitle, type OrderRow } from "@/lib/orders";
 
 export default async function OrderDetailPage({ params }: { params: Promise<{ reference: string }> }) {
@@ -12,6 +12,10 @@ export default async function OrderDetailPage({ params }: { params: Promise<{ re
   const { data: userData } = await supabase.auth.getUser();
   if (!userData.user) {
     redirect(`/login?next=/dashboard/orders/${reference}`);
+  }
+  const profile = await getProfile(supabase, userData.user.id);
+  if (profile?.role !== "customer" || profile.status !== "active") {
+    redirect(profile?.status === "suspended" ? "/login?error=This account is suspended." : "/");
   }
 
   const { data: order } = await supabase

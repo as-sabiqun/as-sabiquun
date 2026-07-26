@@ -1,7 +1,7 @@
 "use server";
 
 import { redirect } from "next/navigation";
-import { createClient, isSupabaseConfigured } from "@/lib/supabase/server";
+import { createClient, getProfile, isSupabaseConfigured } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { formatCents } from "@/lib/orders";
 
@@ -49,6 +49,10 @@ export async function submitWakafContribution(_prevState: SubmitWakafState, form
   const { data: userData } = await supabase.auth.getUser();
   if (!userData.user) {
     return { ok: false, requiresLogin: true };
+  }
+  const profile = await getProfile(supabase, userData.user.id);
+  if (profile?.role !== "customer" || profile.status !== "active") {
+    return { ok: false, error: profile?.status === "suspended" ? "This account is suspended." : "Use a customer account to make a contribution." };
   }
 
   const admin = createAdminClient();

@@ -10,8 +10,8 @@ import type { VendorJobRow } from "@/lib/vendor-orders-types";
 const columns: { key: string; label: string; match: (j: VendorJobRow) => boolean }[] = [
   { key: "offered", label: "Awaiting response", match: (j) => j.isOffer },
   { key: "assigned", label: "Accepted", match: (j) => !j.isOffer && j.status === "assigned" },
-  { key: "in_progress", label: "In progress", match: (j) => !j.isOffer && ["in_progress", "proof_submitted"].includes(j.status) },
-  { key: "completed", label: "Completed", match: (j) => j.status === "completed" },
+  { key: "in_progress", label: "In progress", match: (j) => !j.isOffer && ["in_progress", "proof_submitted", "revision_required"].includes(j.status) },
+  { key: "completed", label: "Completed", match: (j) => ["verified", "completed", "closed"].includes(j.status) },
 ];
 
 export function BoardReal({ jobs }: { jobs: VendorJobRow[] }) {
@@ -38,7 +38,7 @@ export function BoardReal({ jobs }: { jobs: VendorJobRow[] }) {
         <div>
           <p className="vendor-eyebrow">Pipeline</p>
           <h1 className="display vendor-page-title">Kanban board</h1>
-          <p className="vendor-page-lead">Drag an accepted job into "In progress" to start work. Claiming and completion happen on the job page.</p>
+          <p className="vendor-page-lead">Drag an accepted job into &quot;In progress&quot; to start work. Claiming and completion happen on the job page.</p>
         </div>
       </div>
 

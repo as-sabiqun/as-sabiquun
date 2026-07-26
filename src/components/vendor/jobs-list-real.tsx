@@ -9,8 +9,8 @@ import type { VendorJobRow } from "@/lib/vendor-orders-types";
 const filters: { label: string; match: (j: VendorJobRow) => boolean }[] = [
   { label: "All", match: () => true },
   { label: "Awaiting response", match: (j) => j.isOffer },
-  { label: "In progress", match: (j) => !j.isOffer && ["assigned", "in_progress", "proof_submitted"].includes(j.status) },
-  { label: "Completed", match: (j) => j.status === "completed" },
+  { label: "In progress", match: (j) => !j.isOffer && ["assigned", "in_progress", "proof_submitted", "revision_required"].includes(j.status) },
+  { label: "Completed", match: (j) => ["verified", "completed", "closed"].includes(j.status) },
 ];
 
 export function JobsListReal({ jobs }: { jobs: VendorJobRow[] }) {

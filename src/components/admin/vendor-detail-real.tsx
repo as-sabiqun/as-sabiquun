@@ -6,7 +6,7 @@ import { useState, useTransition, type FormEvent } from "react";
 import { adminOrderStatusLabel, adminStatusPillVariant } from "@/lib/admin-orders";
 import { formatCents, orderTitle, type OrderRow } from "@/lib/orders";
 import { vendorServiceOptions } from "@/lib/admin-demo";
-import { suspendVendorAction, recordVendorPaymentAction } from "@/app/admin/actions";
+import { suspendVendorAction, recordVendorPaymentAction, updateVendorRatingAction } from "@/app/admin/actions";
 
 export interface VendorDetail {
   id: string;
@@ -39,6 +39,13 @@ export interface VendorPaymentRow {
   order_reference: string | null;
 }
 
+export interface VendorOrderRow extends OrderRow {
+  vendor_payout_amount: number;
+  accepted_at: string | null;
+  completed_at: string | null;
+  completion_deadline: string | null;
+}
+
 export function VendorDetailReal({
   vendor,
   orders,
@@ -46,13 +53,14 @@ export function VendorDetailReal({
   totalPayable,
 }: {
   vendor: VendorDetail;
-  orders: OrderRow[];
+  orders: VendorOrderRow[];
   payments: VendorPaymentRow[];
   totalPayable: number;
 }) {
   const router = useRouter();
   const [pending, startTransition] = useTransition();
   const [paymentPending, startPaymentTransition] = useTransition();
+  const [ratingPending, startRatingTransition] = useTransition();
   const [showPaymentForm, setShowPaymentForm] = useState(false);
   const [amount, setAmount] = useState("");
   const [orderId, setOrderId] = useState("");
@@ -60,15 +68,34 @@ export function VendorDetailReal({
   const [reference, setReference] = useState("");
   const [notes, setNotes] = useState("");
   const [paymentError, setPaymentError] = useState<string | null>(null);
+  const [rating, setRating] = useState(vendor.rating != null ? String(vendor.rating) : "");
 
-  const completed = orders.filter((o) => o.status === "completed").length;
-  const active = orders.filter((o) => ["assigned", "in_progress", "proof_submitted"].includes(o.status)).length;
+  const completed = orders.filter((o) => ["verified", "completed", "closed"].includes(o.status)).length;
+  const active = orders.filter((o) => ["assigned", "in_progress", "proof_submitted", "revision_required"].includes(o.status)).length;
   const totalPaid = payments.reduce((sum, p) => sum + p.amount, 0);
   const outstanding = totalPayable - totalPaid;
+
+  const completionDurationsMs = orders
+    .filter((o) => o.accepted_at && o.completed_at)
+    .map((o) => new Date(o.completed_at!).getTime() - new Date(o.accepted_at!).getTime());
+  const avgCompletionHours = completionDurationsMs.length
+    ? completionDurationsMs.reduce((sum, ms) => sum + ms, 0) / completionDurationsMs.length / (1000 * 60 * 60)
+    : null;
+
+  const missedDeadlines = orders.filter((o) => o.completion_deadline && o.completed_at && new Date(o.completed_at).getTime() > new Date(o.completion_deadline).getTime()).length;
 
   function toggleStatus() {
     startTransition(async () => {
       await suspendVendorAction(vendor.id, vendor.status === "active" ? "suspended" : "active");
+      router.refresh();
+    });
+  }
+
+  function saveRating() {
+    const value = Number(rating);
+    if (!Number.isFinite(value) || value < 0 || value > 5) return;
+    startRatingTransition(async () => {
+      await updateVendorRatingAction(vendor.id, value);
       router.refresh();
     });
   }
@@ -124,10 +151,19 @@ export function VendorDetailReal({
             </span>
           </div>
 
-          <div className="vendor-stat-grid admin-vendor-stats">
+          <div className="vendor-stat-grid admin-vendor-stats" style={{ gridTemplateColumns: "repeat(4, 1fr)" }}>
             <div className="admin-inline-stat"><span>Jobs completed</span><strong className="numeral">{completed}</strong></div>
             <div className="admin-inline-stat"><span>Active jobs</span><strong className="numeral">{active}</strong></div>
-            <div className="admin-inline-stat"><span>Rating</span><strong className="numeral">{vendor.rating ? vendor.rating.toFixed(1) : "—"}</strong></div>
+            <div className="admin-inline-stat"><span>Avg completion time</span><strong className="numeral">{avgCompletionHours != null ? `${Math.round(avgCompletionHours)}h` : "—"}</strong></div>
+            <div className="admin-inline-stat"><span>Missed deadlines</span><strong className="numeral" style={missedDeadlines > 0 ? { color: "#b3402f" } : undefined}>{missedDeadlines}</strong></div>
+          </div>
+
+          <div className="mt-4">
+            <span className="label mb-2 block">Internal rating <span className="font-normal text-[var(--muted)]">0–5, adjust based on reliability</span></span>
+            <div className="admin-password-row" style={{ maxWidth: 220 }}>
+              <input className="input" type="number" min="0" max="5" step="0.1" value={rating} onChange={(e) => setRating(e.target.value)} />
+              <button type="button" className="btn-secondary btn btn-small" disabled={ratingPending} onClick={saveRating}>{ratingPending ? "Saving…" : "Save"}</button>
+            </div>
           </div>
 
           {vendor.notes && (

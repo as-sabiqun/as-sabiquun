@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
-import { createClient, isSupabaseConfigured } from "@/lib/supabase/server";
+import { createClient, getProfile, isSupabaseConfigured } from "@/lib/supabase/server";
 import { formatCents, orderStatusCopy, orderTitle, type OrderRow } from "@/lib/orders";
 
 export default async function DashboardPage() {
@@ -19,6 +19,10 @@ export default async function DashboardPage() {
   if (!userData.user) {
     redirect("/login?next=/dashboard");
   }
+  const profile = await getProfile(supabase, userData.user.id);
+  if (profile?.role !== "customer" || profile.status !== "active") {
+    redirect(profile?.status === "suspended" ? "/login?error=This account is suspended." : "/");
+  }
 
   const { data: orders } = await supabase
     .from("orders")
@@ -34,12 +38,12 @@ export default async function DashboardPage() {
         <div>
           <p className="vendor-eyebrow">Account</p>
           <h1 className="display" style={{ fontSize: "clamp(1.5rem, 2.4vw, 1.9rem)" }}>My orders</h1>
-          <p className="mt-2 text-sm text-[var(--muted)]">Every Korban order and Wakaf contribution you've made, and where it's at.</p>
+          <p className="mt-2 text-sm text-[var(--muted)]">Every Korban order and Wakaf contribution you&apos;ve made, and where it&apos;s at.</p>
         </div>
 
         {rows.length === 0 ? (
           <div className="card mt-8 p-8 text-center">
-            <p className="text-sm text-[var(--muted)]">You haven't placed an order yet.</p>
+            <p className="text-sm text-[var(--muted)]">You haven&apos;t placed an order yet.</p>
             <Link href="/services" className="btn mt-5">Choose a service <span aria-hidden="true">→</span></Link>
           </div>
         ) : (
@@ -55,7 +59,7 @@ export default async function DashboardPage() {
                   <strong className="numeral">{formatCents(order.total_amount)}</strong>
                 </div>
                 <div className="vendor-job-table-status">
-                  <span className={`vendor-status vendor-status-${order.status === "completed" ? "completed" : order.status === "cancelled" || order.status === "expired_unclaimed" ? "rejected" : "pending"}`}>
+                  <span className={`vendor-status vendor-status-${["verified", "completed", "closed"].includes(order.status) ? "completed" : order.status === "cancelled" || order.status === "expired_unclaimed" ? "rejected" : "pending"}`}>
                     {orderStatusCopy[order.status]}
                   </span>
                 </div>

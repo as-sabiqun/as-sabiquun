@@ -15,8 +15,8 @@ export default async function AdminLayout({ children }: { children: React.ReactN
       redirect("/login?next=/admin");
     }
     const profile = await getProfile(supabase, data.user.id);
-    if (profile?.role !== "admin") {
-      redirect("/");
+    if (profile?.role !== "admin" || profile.status !== "active") {
+      redirect(profile?.status === "suspended" ? "/login?error=This account is suspended." : "/");
     }
     signedIn = true;
     adminEmail = data.user.email ?? adminEmail;

@@ -21,8 +21,8 @@ export default async function AdminVendorsPage() {
     const vendorOrders = (orders ?? []).filter((o) => o.assigned_vendor_id === p.id);
     return {
       ...p,
-      jobsCompleted: vendorOrders.filter((o) => o.status === "completed").length,
-      jobsActive: vendorOrders.filter((o) => ["assigned", "in_progress", "proof_submitted"].includes(o.status)).length,
+      jobsCompleted: vendorOrders.filter((o) => ["verified", "completed", "closed"].includes(o.status)).length,
+      jobsActive: vendorOrders.filter((o) => ["assigned", "in_progress", "proof_submitted", "revision_required"].includes(o.status)).length,
     };
   });
 

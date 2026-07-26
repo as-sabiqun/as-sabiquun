@@ -5,8 +5,8 @@ import type { VendorJobRow } from "@/lib/vendor-orders-types";
 
 export function DashboardOverviewReal({ jobs }: { jobs: VendorJobRow[] }) {
   const pending = jobs.filter((j) => j.isOffer);
-  const active = jobs.filter((j) => !j.isOffer && ["assigned", "in_progress", "proof_submitted"].includes(j.status));
-  const completed = jobs.filter((j) => j.status === "completed");
+  const active = jobs.filter((j) => !j.isOffer && ["assigned", "in_progress", "proof_submitted", "revision_required"].includes(j.status));
+  const completed = jobs.filter((j) => ["verified", "completed", "closed"].includes(j.status));
   const earnings = jobs.filter((j) => !j.isOffer).reduce((sum, j) => sum + j.vendor_payout_amount, 0);
 
   const recent = [...jobs].sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime()).slice(0, 5);
@@ -17,7 +17,7 @@ export function DashboardOverviewReal({ jobs }: { jobs: VendorJobRow[] }) {
         <div>
           <p className="vendor-eyebrow">Overview</p>
           <h1 className="display vendor-page-title">Welcome back</h1>
-          <p className="vendor-page-lead">Here's what needs your attention across Korban and Wakaf fulfilment jobs.</p>
+          <p className="vendor-page-lead">Here&apos;s what needs your attention across Korban and Wakaf fulfilment jobs.</p>
         </div>
         <Link href="/vendor-dashboard/jobs" className="btn btn-small">View all jobs <span aria-hidden="true">→</span></Link>
       </div>

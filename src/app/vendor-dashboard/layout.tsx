@@ -15,8 +15,8 @@ export default async function VendorDashboardLayout({ children }: { children: Re
       redirect("/login?next=/vendor-dashboard");
     }
     const profile = await getProfile(supabase, data.user.id);
-    if (profile?.role !== "vendor") {
-      redirect("/");
+    if (profile?.role !== "vendor" || profile.status !== "active") {
+      redirect(profile?.status === "suspended" ? "/login?error=This account is suspended." : "/");
     }
     signedIn = true;
     vendorEmail = data.user.email ?? vendorEmail;

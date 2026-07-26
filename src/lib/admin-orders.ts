@@ -7,7 +7,8 @@ export const adminFilters: { label: string; statuses: OrderStatus[] | null }[] =
   { label: "In progress", statuses: ["assigned", "in_progress"] },
   { label: "Needs review", statuses: ["proof_submitted"] },
   { label: "Revision requested", statuses: ["revision_required"] },
-  { label: "Completed", statuses: ["completed"] },
+  { label: "Verified", statuses: ["verified"] },
+  { label: "Completed", statuses: ["completed", "closed"] },
   { label: "Unclaimed", statuses: ["expired_unclaimed"] },
 ];
 
@@ -18,13 +19,15 @@ export const adminOrderStatusLabel: Record<OrderStatus, string> = {
   in_progress: "In progress",
   proof_submitted: "Needs review",
   revision_required: "Revision requested",
+  verified: "Verified — awaiting delivery",
   completed: "Completed",
+  closed: "Closed",
   expired_unclaimed: "Unclaimed — expired",
   cancelled: "Cancelled",
 };
 
 export function adminStatusPillVariant(status: OrderStatus): string {
-  if (status === "completed") return "completed";
+  if (status === "completed" || status === "closed") return "completed";
   if (status === "submitted" || status === "broadcasting" || status === "proof_submitted") return "pending";
   if (status === "expired_unclaimed" || status === "cancelled" || status === "revision_required") return "rejected";
   return "accepted";

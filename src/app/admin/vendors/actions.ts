@@ -1,6 +1,6 @@
 "use server";
 
-import { isSupabaseAdminConfigured } from "@/lib/supabase/server";
+import { createClient, getProfile, isSupabaseAdminConfigured, isSupabaseConfigured } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 
 export type CreateVendorState =
@@ -9,6 +9,15 @@ export type CreateVendorState =
   | undefined;
 
 export async function createVendorAccount(_prevState: CreateVendorState, formData: FormData): Promise<CreateVendorState> {
+  if (isSupabaseConfigured) {
+    const sessionClient = await createClient();
+    const { data: { user } } = await sessionClient.auth.getUser();
+    const profile = user ? await getProfile(sessionClient, user.id) : null;
+    if (!profile || profile.role !== "admin" || profile.status !== "active") {
+      return { ok: false, error: "Admin access required." };
+    }
+  }
+
   const name = String(formData.get("name") ?? "").trim();
   const contactPerson = String(formData.get("contactPerson") ?? "").trim();
   const email = String(formData.get("email") ?? "").trim();

@@ -2,8 +2,7 @@ import { notFound } from "next/navigation";
 import { createClient, isSupabaseConfigured } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { VendorDetailDemo } from "@/components/admin/vendor-detail-demo";
-import { VendorDetailReal, type VendorDetail, type VendorPaymentRow } from "@/components/admin/vendor-detail-real";
-import type { OrderRow } from "@/lib/orders";
+import { VendorDetailReal, type VendorDetail, type VendorPaymentRow, type VendorOrderRow } from "@/components/admin/vendor-detail-real";
 
 export default async function AdminVendorDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
@@ -27,7 +26,9 @@ export default async function AdminVendorDetailPage({ params }: { params: Promis
 
   const { data: orders } = await supabase
     .from("orders")
-    .select("id, reference, service_type, category_slug, quantity, participant_names, dedication, total_amount, vendor_payout_amount, status, created_at, offerings(title)")
+    .select(
+      "id, reference, service_type, category_slug, quantity, participant_names, dedication, total_amount, vendor_payout_amount, status, created_at, accepted_at, completed_at, completion_deadline, offerings(title)"
+    )
     .eq("assigned_vendor_id", id)
     .order("created_at", { ascending: false });
 
@@ -46,9 +47,9 @@ export default async function AdminVendorDetailPage({ params }: { params: Promis
     order_reference: (p.orders as unknown as { reference: string } | null)?.reference ?? null,
   }));
 
-  const ordersList = (orders ?? []) as unknown as (OrderRow & { vendor_payout_amount: number })[];
+  const ordersList = (orders ?? []) as unknown as VendorOrderRow[];
   const totalPayable = ordersList
-    .filter((o) => ["assigned", "in_progress", "proof_submitted", "completed"].includes(o.status))
+    .filter((o) => ["assigned", "in_progress", "proof_submitted", "revision_required", "verified", "completed", "closed"].includes(o.status))
     .reduce((sum, o) => sum + o.vendor_payout_amount, 0);
 
   const vendor: VendorDetail = { ...profile, email: authUser.user?.email ?? "—" };

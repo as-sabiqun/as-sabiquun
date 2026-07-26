@@ -85,7 +85,7 @@ export function JobDetailReal({
   if (declined) {
     return (
       <div className="card vendor-panel p-8 text-center">
-        <p className="vendor-empty">You've declined this job. It's no longer in your queue.</p>
+        <p className="vendor-empty">You&apos;ve declined this job. It&apos;s no longer in your queue.</p>
         <Link href="/vendor-dashboard/jobs" className="btn mt-5">Back to jobs</Link>
       </div>
     );
@@ -107,7 +107,7 @@ export function JobDetailReal({
               <h1 className="display vendor-page-title mt-2">{orderTitle(order)}</h1>
               <p className="vendor-page-lead">{order.reference}</p>
             </div>
-            <span className={`vendor-status vendor-status-${isOffer ? "pending" : order.status === "completed" ? "completed" : order.status === "revision_required" ? "rejected" : "accepted"}`}>
+            <span className={`vendor-status vendor-status-${isOffer ? "pending" : ["verified", "completed", "closed"].includes(order.status) ? "completed" : order.status === "revision_required" ? "rejected" : "accepted"}`}>
               {isOffer ? "Awaiting response" : vendorOrderStatusLabel[order.status]}
             </span>
           </div>
@@ -140,7 +140,7 @@ export function JobDetailReal({
             <div className="vendor-terms">
               <label className="vendor-terms-check">
                 <input type="checkbox" checked={agreed} onChange={(event) => setAgreed(event.target.checked)} />
-                <span>I've read the job brief above, and I agree to complete this job as described if I accept it.</span>
+                <span>I&apos;ve read the job brief above, and I agree to complete this job as described if I accept it.</span>
               </label>
             </div>
           )}
@@ -152,7 +152,7 @@ export function JobDetailReal({
             </div>
           )}
 
-          {(order.status === "proof_submitted" || order.status === "completed" || order.status === "revision_required") && (
+          {(["proof_submitted", "revision_required", "verified", "completed", "closed"].includes(order.status)) && (
             <div className="mt-8 vendor-proof-summary">
               <span className="label mb-2 block">Submitted evidence</span>
               {proofs.length === 0 ? (
@@ -198,8 +198,11 @@ export function JobDetailReal({
           {order.status === "in_progress" && <p className="vendor-empty mt-6">Submit your completion evidence on the left to close this job out.</p>}
           {order.status === "revision_required" && <p className="vendor-empty mt-6">Resubmit your completion evidence on the left.</p>}
           {order.status === "proof_submitted" && <p className="vendor-empty mt-6">Submitted — awaiting review from operations.</p>}
+          {order.status === "verified" && <p className="vendor-empty mt-6">Verified. Operations is delivering the completion report to the customer.</p>}
           {order.status === "completed" && <p className="vendor-empty mt-6">Completed. No further action needed.</p>}
+          {order.status === "closed" && <p className="vendor-empty mt-6">Completed and paid in full.</p>}
 
+          {/* eslint-disable-next-line react/no-unescaped-entities */}
           <Link href="/vendor-dashboard/reports" className="vendor-report-link">Can't complete this? Report an issue <span aria-hidden="true">→</span></Link>
         </div>
       </div>

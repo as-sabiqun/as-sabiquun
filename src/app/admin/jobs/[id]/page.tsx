@@ -2,7 +2,7 @@ import { notFound } from "next/navigation";
 import { createClient, isSupabaseConfigured } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { JobDetailDemo } from "@/components/admin/job-detail-demo";
-import { JobDetailReal, type AdminOrderDetail, type JobOfferRow, type PaymentSummary, type ProofRow } from "@/components/admin/job-detail-real";
+import { JobDetailReal, type AdminOrderDetail, type JobOfferRow, type PaymentRow, type ProofRow } from "@/components/admin/job-detail-real";
 
 export default async function AdminJobDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
@@ -19,9 +19,9 @@ export default async function AdminJobDetailPage({ params }: { params: Promise<{
        beneficiary_country, beneficiary_state, beneficiary_village, partner_organisation, beneficiary_names,
        dedication_arabic, dedication_remarks,
        project_country, project_state, project_village, project_address, project_lat, project_lng, project_maps_link,
-       vendor_remarks, accepted_at, proof_submitted_at, completed_at,
+       vendor_remarks, broadcast_started_at, accepted_at, proof_submitted_at, completed_at, closed_at, completion_deadline,
        admin_verified_by, admin_verified_at, admin_verification_notes, admin_verification_status,
-       email_sent_at, telegram_sent_at,
+       email_sent_at, email_status, telegram_sent_at, telegram_status,
        offerings(title), assigned_vendor:profiles!orders_assigned_vendor_id_fkey(id, display_name, phone)`
     )
     .eq("id", id)
@@ -49,7 +49,7 @@ export default async function AdminJobDetailPage({ params }: { params: Promise<{
   }
 
   let proofs: ProofRow[] = [];
-  if (["proof_submitted", "completed", "revision_required"].includes(order.status)) {
+  if (["proof_submitted", "revision_required", "verified", "completed", "closed"].includes(order.status)) {
     const { data } = await supabase.from("proofs").select("id, storage_path, media_type, category").eq("order_id", id);
     proofs = await Promise.all(
       (data ?? []).map(async (p) => {
@@ -59,11 +59,12 @@ export default async function AdminJobDetailPage({ params }: { params: Promise<{
     );
   }
 
-  const { data: paymentRows } = await supabase.from("vendor_payments").select("amount").eq("order_id", id);
-  const payments: PaymentSummary = {
-    payable: order.vendor_payout_amount,
-    paid: (paymentRows ?? []).reduce((sum, p) => sum + p.amount, 0),
-  };
+  const { data: paymentData } = await supabase
+    .from("vendor_payments")
+    .select("id, amount, payment_date, method, reference, created_at")
+    .eq("order_id", id)
+    .order("payment_date", { ascending: false });
+  const payments = (paymentData ?? []) as PaymentRow[];
 
   const detail: AdminOrderDetail = {
     ...order,

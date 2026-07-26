@@ -2,6 +2,8 @@
 
 import Link from "next/link";
 import { useActionState } from "react";
+import { GoogleMark } from "@/components/google-mark";
+import { loginWithGoogle } from "../login/actions";
 import { signup } from "./actions";
 
 export default function SignupPage() {
@@ -13,13 +15,21 @@ export default function SignupPage() {
     <section className="auth-shell">
       <div className="container flex justify-center">
         <div className="card auth-card">
+          <p className="auth-arabic" lang="ar" dir="rtl">السَّابِقُونَ</p>
           <p className="auth-eyebrow">Get started</p>
           <h1 className="display auth-title">Create an account</h1>
           <p className="auth-lead">Keep every Korban order and Wakaf contribution connected to your own record.</p>
 
+          <form action={loginWithGoogle} className="auth-google-form">
+            <input type="hidden" name="next" value="/dashboard" />
+            <button type="submit" className="auth-google"><GoogleMark /> Continue with Google</button>
+          </form>
+
+          <div className="auth-divider"><span>or create with email</span></div>
+
           <form className="auth-form" action={action}>
-            {error && <p className="auth-error">{error}</p>}
-            {message && <p className="auth-message">{message}</p>}
+            {error && <p className="auth-error" role="alert">{error}</p>}
+            {message && <p className="auth-message" role="status">{message}</p>}
 
             <label className="label">Full name
               <input className="input" type="text" name="name" required placeholder="Your full name" autoComplete="name" />

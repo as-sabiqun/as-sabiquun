@@ -32,7 +32,7 @@ export default async function VendorJobDetailPage({ params }: { params: Promise<
   const isOffer = offer?.status === "offered" && order.status === "broadcasting";
 
   let proofs: ProofRow[] = [];
-  if (order.status === "proof_submitted" || order.status === "completed" || order.status === "revision_required") {
+  if (["proof_submitted", "revision_required", "verified", "completed", "closed"].includes(order.status)) {
     const { data } = await supabase.from("proofs").select("id, storage_path, media_type, category").eq("order_id", id);
     proofs = await Promise.all(
       (data ?? []).map(async (p) => {
