@@ -1,6 +1,8 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
+import { isGoogleCustomer } from "@/lib/auth";
+import { consumeRateLimit } from "@/lib/rate-limit";
 import { createClient, getProfile } from "@/lib/supabase/server";
 
 export type CustomerReportState = { ok?: boolean; error?: string } | undefined;
@@ -21,10 +23,17 @@ export async function submitCustomerReport(_previous: CustomerReportState, formD
   const { data } = await supabase.auth.getUser();
   if (!data.user) return { error: "Your session has expired. Log in and try again." };
   const profile = await getProfile(supabase, data.user.id);
-  if (profile?.role !== "customer" || profile.status !== "active") return { error: "This account cannot submit customer reports." };
+  if (!await isGoogleCustomer(supabase, data.user, profile)) return { error: "This account cannot submit customer reports." };
+  try {
+    if (!await consumeRateLimit("customer-support", data.user.id, 5, 3600)) {
+      return { error: "You have sent several reports recently. Please wait before sending another." };
+    }
+  } catch {
+    return { error: "Support reporting is temporarily unavailable." };
+  }
 
   if (orderId) {
-    const { data: order } = await supabase.from("orders").select("id").eq("id", orderId).eq("customer_id", data.user.id).maybeSingle();
+    const { data: order } = await supabase.from("customer_orders").select("id").eq("id", orderId).maybeSingle();
     if (!order) return { error: "Choose an order that belongs to this account." };
   }
 

@@ -10,25 +10,28 @@ interface CustomerReportRow {
   subject: string;
   status: "open" | "resolved";
   created_at: string;
+  resolved_at: string | null;
+  resolution_notes: string | null;
 }
 
-export default async function CustomerReportPage() {
+export default async function CustomerReportPage({ searchParams }: { searchParams: Promise<{ order?: string }> }) {
+  const { order: requestedOrderId } = await searchParams;
   const supabase = await createClient();
   const { data: userData } = await supabase.auth.getUser();
   const userId = userData.user?.id ?? "";
-  const [{ data: orders }, { data: reports }] = await Promise.all([
+  const [{ data: orders, error: ordersError }, { data: reports, error: reportsError }] = await Promise.all([
     supabase
-      .from("orders")
-      .select("id, reference, service_type, category_slug, quantity, participant_names, dedication, total_amount, status, created_at, offerings(title)")
-      .eq("customer_id", userId)
+      .from("customer_orders")
+      .select("id, reference, service_type, category_slug, quantity, participant_names, dedication, total_amount, status, created_at, offering_title")
       .order("created_at", { ascending: false }),
     supabase
       .from("customer_reports")
-      .select("id, subject, status, created_at")
+      .select("id, subject, status, created_at, resolved_at, resolution_notes")
       .eq("customer_id", userId)
       .order("created_at", { ascending: false })
       .limit(6),
   ]);
+  if (ordersError || reportsError) throw new Error("Support history could not be loaded.");
 
   const orderOptions: ReportOrderOption[] = ((orders ?? []) as unknown as OrderRow[]).map((order) => ({
     id: order.id,
@@ -56,7 +59,7 @@ export default async function CustomerReportPage() {
             <p>New report</p>
             <h2 id="new-report-heading">What can we help with?</h2>
           </div>
-          <ReportForm orders={orderOptions} />
+          <ReportForm orders={orderOptions} selectedOrderId={orderOptions.some((order) => order.id === requestedOrderId) ? requestedOrderId : undefined} />
         </section>
 
         <aside className={styles.reportHistory}>
@@ -73,6 +76,13 @@ export default async function CustomerReportPage() {
                   <span className={report.status === "resolved" ? styles.reportResolved : styles.reportOpen}>{report.status}</span>
                   <strong>{report.subject}</strong>
                   <small>{new Date(report.created_at).toLocaleDateString("en-SG", { day: "numeric", month: "short", year: "numeric" })}</small>
+                  {report.resolution_notes && (
+                    <p className={styles.reportResolution}>
+                      <strong>Resolution</strong>
+                      {report.resolution_notes}
+                      {report.resolved_at && <small>Resolved {new Date(report.resolved_at).toLocaleDateString("en-SG", { day: "numeric", month: "short", year: "numeric" })}</small>}
+                    </p>
+                  )}
                 </div>
               ))}
             </div>

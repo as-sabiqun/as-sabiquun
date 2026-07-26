@@ -1,7 +1,9 @@
+/* eslint-disable @next/next/no-img-element */
 import { readFile } from "node:fs/promises";
 import { join } from "node:path";
 import { ImageResponse } from "next/og";
 import { NextResponse } from "next/server";
+import { getAal2Admin, isGoogleCustomer } from "@/lib/auth";
 import { createClient, getProfile } from "@/lib/supabase/server";
 import { countryNameToIso2, flagUrl } from "@/lib/nameplate/country-codes";
 
@@ -31,6 +33,23 @@ function packageLabel(title: string, quantity: number): string {
 
 let fontCache: { schibstedBold: ArrayBuffer; schibstedBlack: ArrayBuffer; notoNaskh: ArrayBuffer } | null = null;
 
+interface NameplateOrder {
+  id: string;
+  reference: string;
+  fulfilment_status: string;
+  category_slug: string;
+  quantity: number;
+  participant_names: string[];
+  dedication: string | null;
+  dedication_arabic: string | null;
+  completed_at: string | null;
+  created_at: string;
+  project_country: string | null;
+  project_state: string | null;
+  project_village: string | null;
+  offering_title: string | null;
+}
+
 async function loadFonts() {
   if (fontCache) return fontCache;
   const dir = join(process.cwd(), "assets", "fonts");
@@ -50,20 +69,35 @@ async function loadFonts() {
 export async function GET(_req: Request, { params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
   const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-  if (!user) return NextResponse.json({ error: "Not signed in" }, { status: 401 });
-  const profile = await getProfile(supabase, user.id);
-  if (profile?.role !== "admin") return NextResponse.json({ error: "Admin only" }, { status: 403 });
+  const admin = await getAal2Admin(supabase);
+  const { data: authData } = await supabase.auth.getUser();
+  const profile = authData.user ? await getProfile(supabase, authData.user.id) : null;
+  const customer = authData.user && await isGoogleCustomer(supabase, authData.user, profile);
+  if (!admin && !customer) {
+    return NextResponse.json({ error: "A verified administrator or owning customer session is required" }, { status: 403 });
+  }
 
-  const { data: order } = await supabase
-    .from("orders")
-    .select(
-      "id, reference, category_slug, quantity, participant_names, completed_at, created_at, project_country, project_state, project_village, offerings(title)"
-    )
-    .eq("id", id)
-    .maybeSingle();
+  let order: NameplateOrder | null = null;
+  if (admin) {
+    const { data, error } = await supabase
+      .from("orders")
+      .select("id, reference, fulfilment_status, category_slug, quantity, participant_names, dedication, dedication_arabic, completed_at, created_at, project_country, project_state, project_village, offering_title")
+      .eq("id", id)
+      .maybeSingle();
+    if (error) return NextResponse.json({ error: "Nameplate data could not be loaded" }, { status: 500 });
+    if (data) {
+      order = data as NameplateOrder;
+    }
+  } else {
+    const { data, error } = await supabase
+      .from("customer_orders")
+      .select("id, reference, fulfilment_status, category_slug, quantity, participant_names, dedication, dedication_arabic, completed_at, created_at, project_country, project_state, project_village, offering_title")
+      .eq("id", id)
+      .eq("fulfilment_status", "verified")
+      .maybeSingle();
+    if (error) return NextResponse.json({ error: "Nameplate data could not be loaded" }, { status: 500 });
+    order = data as NameplateOrder | null;
+  }
 
   if (!order) return NextResponse.json({ error: "Order not found" }, { status: 404 });
 
@@ -71,12 +105,14 @@ export async function GET(_req: Request, { params }: { params: Promise<{ id: str
   const seal = await readFile(join(process.cwd(), "public", "brand", "as-sabiquun-seal.png"));
   const sealSrc = `data:image/png;base64,${seal.toString("base64")}`;
 
-  const title = (order.offerings as unknown as { title: string } | null)?.title ?? "As-Sabiqun Project";
+  const title = order.offering_title ?? "As-Sabiqun Project";
   const donorFlag = flagUrl("sg");
   const beneficiaryIso = countryNameToIso2(order.project_country);
   const beneficiaryFlag = flagUrl(beneficiaryIso);
   const dateLabel = formatDate(order.completed_at ?? order.created_at);
-  const names = (order.participant_names ?? []).filter(Boolean) as string[];
+  const participantNames = (order.participant_names ?? []).filter(Boolean) as string[];
+  const names = participantNames.length ? participantNames : order.dedication?.trim() ? [order.dedication.trim()] : [];
+  const dedicationArabic = order.dedication_arabic?.trim() || null;
   const locationLabel = [order.project_village, order.project_state].filter(Boolean).join(", ");
   const showDua = order.category_slug === "water";
 
@@ -93,7 +129,7 @@ export async function GET(_req: Request, { params }: { params: Promise<{ id: str
         background: "#e5e5e5",
       }}
     >
-      {src ? <img src={src} width={220} height={140} style={{ objectFit: "cover" }} /> : null}
+      {src ? <img src={src} width={220} height={140} alt="" style={{ objectFit: "cover" }} /> : null}
     </div>
   );
 
@@ -120,7 +156,7 @@ export async function GET(_req: Request, { params }: { params: Promise<{ id: str
             border: `4px solid ${TEAL}`,
           }}
         >
-          <img src={sealSrc} width={160} height={160} style={{ objectFit: "cover" }} />
+          <img src={sealSrc} width={160} height={160} alt="" style={{ objectFit: "contain", transform: "scale(2.2)" }} />
         </div>
         {flagBox(beneficiaryFlag)}
       </div>
@@ -166,6 +202,7 @@ export async function GET(_req: Request, { params }: { params: Promise<{ id: str
             <div style={{ display: "flex", fontSize: 88, fontWeight: 900, color: "#ffffff", lineHeight: 1.05, textTransform: "uppercase" }}>
               {names[0]}
             </div>
+            {dedicationArabic ? <div dir="rtl" style={{ display: "flex", fontFamily: "Noto Naskh Arabic", fontSize: 42, fontWeight: 700, color: "#ffffff", marginTop: 12 }}>{dedicationArabic}</div> : null}
             <div
               style={{
                 display: "flex",

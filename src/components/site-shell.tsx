@@ -1,17 +1,19 @@
 import Link from "next/link";
+import { logout } from "@/app/actions/auth";
 import { Brand } from "@/components/brand";
 import { services } from "@/components/service-card";
+import { isApprovedVendor, sessionUsesAuthMethod } from "@/lib/auth";
 import { createClient, getProfile, isSupabaseConfigured, type UserRole } from "@/lib/supabase/server";
-import { logout } from "@/app/actions/auth";
 
-const HOME_FOR_ROLE: Record<UserRole, { href: string; label: string }> = {
-  customer: { href: "/dashboard", label: "My orders" },
+const HOME_FOR_ROLE: Record<UserRole, { href: string; label: string } | null> = {
+  customer: { href: "/dashboard", label: "My projects" },
   vendor: { href: "/vendor-dashboard", label: "Vendor dashboard" },
-  admin: { href: "/admin", label: "Admin console" },
+  admin: null,
 };
 
 const mainNav = [
   ["About", "/about"],
+  ["Wakaf", "/wakaf"],
   ["How it works", "/#how"],
   ["Contact", "/contact"],
 ] as const;
@@ -37,9 +39,8 @@ function ServicesMenu() {
 }
 
 function AccountNavItem({ email, home }: { email: string | null; home: { href: string; label: string } | null }) {
-  if (!email) {
-    return <Link href="/login" className="nav-link">Login</Link>;
-  }
+  if (!email) return <Link href="/login" className="nav-link">Login</Link>;
+
   return (
     <>
       {home && <Link href={home.href} className="nav-link">{home.label}</Link>}
@@ -51,9 +52,8 @@ function AccountNavItem({ email, home }: { email: string | null; home: { href: s
 }
 
 function AccountMobileItem({ email, home }: { email: string | null; home: { href: string; label: string } | null }) {
-  if (!email) {
-    return <Link href="/login">Login</Link>;
-  }
+  if (!email) return <Link href="/login">Login</Link>;
+
   return (
     <>
       {home && <Link href={home.href}>{home.label}</Link>}
@@ -67,13 +67,19 @@ function AccountMobileItem({ email, home }: { email: string | null; home: { href
 export async function Header() {
   let email: string | null = null;
   let home: { href: string; label: string } | null = null;
+
   if (isSupabaseConfigured) {
     const supabase = await createClient();
     const { data } = await supabase.auth.getUser();
     email = data.user?.email ?? null;
     if (data.user) {
       const profile = await getProfile(supabase, data.user.id);
-      if (profile) home = HOME_FOR_ROLE[profile.role];
+      const allowed = profile?.role === "customer"
+        ? await sessionUsesAuthMethod(supabase, "oauth")
+        : profile?.role === "vendor"
+          ? isApprovedVendor(profile) && await sessionUsesAuthMethod(supabase, "password")
+          : Boolean(profile);
+      if (profile && allowed) home = HOME_FOR_ROLE[profile.role];
     }
   }
 
@@ -83,16 +89,14 @@ export async function Header() {
         <Brand compact />
         <nav className="desktop-nav flex items-center gap-1 text-sm font-semibold" aria-label="Main navigation">
           <ServicesMenu />
-          {mainNav.map(([label, href]) => (
-            <Link key={href} href={href} className="nav-link">{label}</Link>
-          ))}
+          {mainNav.map(([label, href]) => <Link key={href} href={href} className="nav-link">{label}</Link>)}
           <AccountNavItem email={email} home={home} />
         </nav>
         <div className="desktop-cta">
           <Link className="btn btn-small" href="/services">Choose a service <span aria-hidden="true">→</span></Link>
         </div>
         <details className="mobile-menu">
-          <summary aria-label="Open navigation"><span></span><span></span></summary>
+          <summary aria-label="Open navigation"><span /><span /></summary>
           <nav aria-label="Mobile navigation">
             <Link href="/services">All services</Link>
             {services.map((service) => <Link key={service.slug} href={service.href}>{service.title}</Link>)}
@@ -124,26 +128,27 @@ export function Footer() {
             </div>
           </div>
           <div>
-            <p className="footer-heading">As-Sābiqūn</p>
+            <p className="footer-heading">As-Sabiqun</p>
             <div className="footer-links">
               <Link href="/about">About us</Link>
               <Link href="/#how">How it works</Link>
               <Link href="/contact">Contact</Link>
-              <Link href="/login">Account login</Link>
+              <Link href="/login">Customer login</Link>
+              <Link href="/partner-login">Partner login</Link>
             </div>
           </div>
           <div>
             <p className="footer-heading">Socials</p>
             <div className="footer-socials" aria-label="Social media profiles coming soon">
-              {['Instagram', 'Facebook', 'TikTok', 'Telegram'].map((social) => (
+              {["Instagram", "Facebook", "TikTok", "Telegram"].map((social) => (
                 <span key={social}>{social}<small>Soon</small></span>
               ))}
             </div>
           </div>
         </div>
         <div className="footer-bottom">
-          <span>© 2026 As-Sābiqūn Association Consultancy</span>
-          <span>Preview website · No live transactions</span>
+          <span>© 2026 As-Sabiqun Association Consultancy</span>
+          <span>Islamic services with a documented completion trail</span>
         </div>
       </div>
     </footer>

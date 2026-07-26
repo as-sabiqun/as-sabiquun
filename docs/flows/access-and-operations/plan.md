@@ -1,5 +1,7 @@
 # Access and operations implementation plan
 
+> **Historical prototype plan.** Use the current [platform lifecycle spec](../platform-lifecycle/spec.md) and [implementation plan](../platform-lifecycle/plan.md) for production status and remaining work.
+
 ## 1. Confirm the domain flow
 
 - [x] Audit the current vendor and dashboard implementation.

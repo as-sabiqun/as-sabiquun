@@ -1,4 +1,4 @@
-import type { OrderStatus } from "@/lib/orders";
+import { isPaid, type DeliveryStatus, type FulfilmentStatus, type PaymentStatus } from "./order-lifecycle.ts";
 
 export type CustomerBoardKey = "waiting" | "active" | "review" | "completed";
 
@@ -6,38 +6,36 @@ export const customerBoardColumns: ReadonlyArray<{
   key: CustomerBoardKey;
   label: string;
   description: string;
-  statuses: readonly OrderStatus[];
 }> = [
   {
     key: "waiting",
     label: "Received",
     description: "We are preparing your service",
-    statuses: ["submitted", "broadcasting", "expired_unclaimed"],
   },
   {
     key: "active",
     label: "In fulfilment",
     description: "A partner is carrying it out",
-    statuses: ["assigned", "in_progress", "revision_required"],
   },
   {
     key: "review",
     label: "Being verified",
     description: "Evidence and reports are checked",
-    statuses: ["proof_submitted", "verified"],
   },
   {
     key: "completed",
     label: "Completed",
     description: "Delivered to you",
-    statuses: ["completed", "closed"],
   },
 ];
 
 export interface JourneyOrder {
   created_at: string;
+  payment_confirmed_at?: string | null;
   admin_verified_at?: string | null;
-  status: OrderStatus;
+  payment_status: PaymentStatus;
+  fulfilment_status: FulfilmentStatus;
+  is_test?: boolean;
 }
 
 export interface JourneyPoint {
@@ -46,19 +44,23 @@ export interface JourneyPoint {
   verified: number;
 }
 
+export function isImpactOrder(order: Pick<JourneyOrder, "payment_status" | "fulfilment_status" | "is_test">) {
+  return !order.is_test && order.fulfilment_status !== "cancelled" && isPaid(order.payment_status);
+}
+
 export function buildJourneySeries(orders: JourneyOrder[], now = new Date(), monthCount = 8): JourneyPoint[] {
   const endMonth = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), 1));
   const startMonth = new Date(Date.UTC(endMonth.getUTCFullYear(), endMonth.getUTCMonth() - (monthCount - 1), 1));
-  const validOrders = orders.filter((order) => order.status !== "cancelled");
-  let startedTotal = validOrders.filter((order) => new Date(order.created_at) < startMonth).length;
+  const validOrders = orders.filter(isImpactOrder);
+  let startedTotal = validOrders.filter((order) => new Date(order.payment_confirmed_at ?? order.created_at) < startMonth).length;
   let verifiedTotal = validOrders.filter((order) => order.admin_verified_at && new Date(order.admin_verified_at) < startMonth).length;
 
   return Array.from({ length: monthCount }, (_, index) => {
     const month = new Date(Date.UTC(startMonth.getUTCFullYear(), startMonth.getUTCMonth() + index, 1));
     const nextMonth = new Date(Date.UTC(month.getUTCFullYear(), month.getUTCMonth() + 1, 1));
     startedTotal += validOrders.filter((order) => {
-      const createdAt = new Date(order.created_at);
-      return createdAt >= month && createdAt < nextMonth;
+      const paidAt = new Date(order.payment_confirmed_at ?? order.created_at);
+      return paidAt >= month && paidAt < nextMonth;
     }).length;
     verifiedTotal += validOrders.filter((order) => {
       if (!order.admin_verified_at) return false;
@@ -74,6 +76,16 @@ export function buildJourneySeries(orders: JourneyOrder[], now = new Date(), mon
   });
 }
 
-export function boardKeyForStatus(status: OrderStatus): CustomerBoardKey | null {
-  return customerBoardColumns.find((column) => column.statuses.includes(status))?.key ?? null;
+export function boardKeyForFulfilment(status: FulfilmentStatus): CustomerBoardKey | null {
+  if (status === "ready" || status === "broadcasting" || status === "not_ready") return "waiting";
+  if (status === "assigned" || status === "in_progress" || status === "revision_required") return "active";
+  if (status === "proof_submitted" || status === "verified") return "review";
+  return null;
+}
+
+export function customerStepIndex(fulfilment: FulfilmentStatus, delivery: DeliveryStatus): number {
+  if (delivery === "delivered") return 3;
+  if (fulfilment === "proof_submitted" || fulfilment === "verified") return 2;
+  if (fulfilment === "assigned" || fulfilment === "in_progress" || fulfilment === "revision_required") return 1;
+  return 0;
 }

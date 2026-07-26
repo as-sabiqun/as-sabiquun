@@ -1,21 +1,15 @@
-import type { OrderStatus } from "@/lib/orders";
+import { deriveOrderMilestone, milestoneLabels, type LifecycleAxes, type OrderMilestone } from "@/lib/order-lifecycle";
 
-export const vendorOrderStatusLabel: Record<OrderStatus, string> = {
-  submitted: "Not yet offered",
-  broadcasting: "Awaiting response",
-  assigned: "Accepted",
-  in_progress: "In progress",
-  proof_submitted: "Submitted — under review",
-  revision_required: "Changes requested — resubmit",
-  verified: "Verified — customer report pending",
-  closed: "Completed",
-  completed: "Completed",
-  expired_unclaimed: "Expired",
-  cancelled: "Cancelled",
-};
+export function vendorJobMilestone(job: LifecycleAxes): OrderMilestone {
+  return deriveOrderMilestone(job);
+}
 
-export function vendorStatusPillVariant(status: OrderStatus): string {
-  if (status === "verified" || status === "completed" || status === "closed" || status === "proof_submitted") return "completed";
+export function vendorOrderStatusLabel(job: LifecycleAxes): string {
+  return milestoneLabels[vendorJobMilestone(job)];
+}
+
+export function vendorStatusPillVariant(status: OrderMilestone): string {
+  if (["verified", "completed", "closed", "under_review"].includes(status)) return "completed";
   if (status === "assigned" || status === "in_progress") return "accepted";
   if (status === "broadcasting") return "pending";
   if (status === "revision_required") return "rejected";

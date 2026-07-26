@@ -1,47 +1,40 @@
 import { redirect } from "next/navigation";
+import { isApprovedVendor, sessionUsesAuthMethod, vendorAccessMessage } from "@/lib/auth";
 import { createClient, getProfile, isSupabaseConfigured } from "@/lib/supabase/server";
 import { VendorSidebar } from "@/components/vendor/vendor-sidebar";
-import { VendorDataProvider } from "@/components/vendor/vendor-data-context";
+
+export const metadata = { robots: { index: false, follow: false } };
 
 export default async function VendorDashboardLayout({ children }: { children: React.ReactNode }) {
-  let vendorEmail = "vendor@preview.local";
-  let vendorName = "Demo Vendor";
-  let signedIn = false;
+  if (!isSupabaseConfigured) redirect("/partner-login?error=Partner access is not configured on this deployment.");
 
-  if (isSupabaseConfigured) {
-    const supabase = await createClient();
-    const { data } = await supabase.auth.getUser();
-    if (!data.user) {
-      redirect("/login?next=/vendor-dashboard");
-    }
-    const profile = await getProfile(supabase, data.user.id);
-    if (profile?.role !== "vendor" || profile.status !== "active") {
-      redirect(profile?.status === "suspended" ? "/login?error=This account is suspended." : "/");
-    }
-    signedIn = true;
-    vendorEmail = data.user.email ?? vendorEmail;
-    vendorName = profile.display_name || vendorEmail.split("@")[0];
+  const supabase = await createClient();
+  const { data } = await supabase.auth.getUser();
+  if (!data.user) {
+    redirect("/partner-login?next=/vendor-dashboard");
   }
+  const profile = await getProfile(supabase, data.user.id);
+  if (!isApprovedVendor(profile) || !await sessionUsesAuthMethod(supabase, "password")) {
+    redirect(`/partner-login?error=${encodeURIComponent(vendorAccessMessage(profile))}`);
+  }
+  const vendorEmail = data.user.email ?? "Vendor";
+  const vendorName = profile.display_name || vendorEmail.split("@")[0];
 
   return (
-    <VendorDataProvider>
-      <div className="vendor-shell">
-        <VendorSidebar vendorName={vendorName} vendorEmail={vendorEmail} />
-        <div className="vendor-main">
-          <header className="vendor-topbar">
-            <div className="vendor-topbar-search">
-              <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7" /><path d="m21 21-4.35-4.35" /></svg>
-              <input type="search" placeholder="Search jobs, orders, references…" />
-            </div>
-            <div className="vendor-topbar-right">
-              {!signedIn && <span className="status">Preview mode</span>}
-              <span className="vendor-topbar-badge">Vendor</span>
-              <span className="vendor-sidebar-avatar vendor-topbar-avatar">{vendorName.charAt(0)}</span>
-            </div>
-          </header>
-          <main className="vendor-content">{children}</main>
-        </div>
+    <div className="vendor-shell">
+      <VendorSidebar vendorName={vendorName} vendorEmail={vendorEmail} />
+      <div className="vendor-main">
+        <header className="vendor-topbar">
+          <div className="vendor-topbar-search">
+            <span className="vendor-eyebrow">Fulfilment workspace</span>
+          </div>
+          <div className="vendor-topbar-right">
+            <span className="vendor-topbar-badge">Vendor</span>
+            <span className="vendor-sidebar-avatar vendor-topbar-avatar">{vendorName.charAt(0)}</span>
+          </div>
+        </header>
+        <main className="vendor-content">{children}</main>
       </div>
-    </VendorDataProvider>
+    </div>
   );
 }

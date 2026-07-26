@@ -1,33 +1,40 @@
 # As-Sābiqūn Association Consultancy
 
-Connected demonstration of public Korban/Wakaf journeys, role-aware account access, and customer/vendor/admin fulfilment workspaces.
+Production MVP for coordinated Korban and Wakaf services, with customer, fulfilment-partner, and MFA-protected admin portals.
 
 ## Product routes
 
-- `/login` — public Vendor/Customer access gateway; it never assigns a role.
-- `/onboarding` — progressive Customer/Vendor setup preview.
-- `/dashboard` — customer order and proof preview.
-- `/vendor-dashboard` — vendor assignments, evidence bundles, and reports.
-- `/admin` — unlinked admin operations workspace.
-- `/admin/sign-in` — unlinked staff entrance.
+- Public: `/`, `/about`, `/services`, `/korban`, `/wakaf`, `/contact`
+- Customer: Google-only `/login`, `/checkout/[reference]`, `/dashboard`, projects, support, receipts, and completion reports
+- Vendor: invited email/password `/partner-login`, onboarding, jobs, evidence, earnings, reports, and profile
+- Admin: unlinked `/admin/sign-in`, mandatory TOTP MFA, operations, jobs, vendors, customers, finance, support, and settings
 
-When public Supabase credentials are absent, local development uses demonstration data and resets on refresh. A deployed preview must explicitly set `ENABLE_PORTAL_DEMOS=true`; otherwise portal routes fail closed. When authentication is configured, dashboard routes verify the signed-in account and its trusted database role before routing it.
+Portal routes fail closed when Supabase is not configured. There is no production demo-data fallback.
 
-## Setup
+## Local setup
 
-1. Copy `.env.example` to `.env.local` and add Supabase project credentials.
-2. Apply `supabase/migrations/20260715000000_initial_demo.sql`.
-3. Create invited Supabase Auth users and matching `profiles` rows with `admin` and `vendor` roles for the current migration.
-4. Run `npm run dev` or deploy to Vercel.
+1. Copy `.env.example` to `.env.local` and supply the required development/provider values.
+2. Apply `supabase/migrations/001_platform_foundation.sql` through `014_financial_reconciliation.sql` in order.
+3. Configure Google OAuth, HitPay, Brevo, Telegram, private Supabase Storage, and invited admin/vendor accounts.
+4. Run `npm install` and `npm run dev`.
 
-The current migration does not yet include customer ownership, account approval states, OAuth/OTP callbacks, custom SMTP, or admin TOTP enforcement. The production closure and route model are documented in `docs/flows/access-and-operations/spec.md`.
-
-No real payment provider is connected. All offerings, prices, orders, and payment states are demonstration data.
+The scheduler, Vault entries, health checks, deployment order, and recovery steps are documented in [`docs/flows/platform-lifecycle/operations.md`](docs/flows/platform-lifecycle/operations.md).
 
 ## Checks
 
 ```bash
-npm test
 npm run lint
+npx tsc --noEmit
+npm run check:auth
+npm run check:dashboard
+npm run check:lifecycle
+npm run check:evidence
+npm run check:checkout
+npm run check:providers
+npm run check:admin
+npm run check:access
+npm run check:reports
 npm run build
 ```
+
+Run `supabase/tests/009_production_lifecycle_test.sql` through `014_financial_reconciliation_test.sql` in order against a disposable database after all migrations.

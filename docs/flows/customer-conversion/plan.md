@@ -1,5 +1,7 @@
 # Task Plan: Customer conversion and demo checkout
 
+> **Historical prototype plan.** Use the current [platform lifecycle spec](../platform-lifecycle/spec.md) and [implementation plan](../platform-lifecycle/plan.md) for production status and remaining work.
+
 Source spec: `docs/flows/customer-conversion/spec.md`
 
 1. Reference checkpoint - selected Wise and generated a Wise-only board.

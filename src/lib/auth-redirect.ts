@@ -16,3 +16,15 @@ export function safeRedirectPath(value: string | null | undefined, fallback = "/
     return fallback;
   }
 }
+
+export function safeAdminRedirectPath(value: string | null | undefined, fallback = "/admin") {
+  const path = safeRedirectPath(value, fallback);
+  if (path !== "/admin" && !path.startsWith("/admin/")) return fallback;
+  if (path === "/admin/sign-in" || path.startsWith("/admin/sign-in/") || path === "/admin/mfa" || path.startsWith("/admin/mfa/")) return fallback;
+  return path;
+}
+
+export function safeVendorRedirectPath(value: string | null | undefined, fallback = "/vendor-dashboard") {
+  const path = safeRedirectPath(value, fallback);
+  return path === "/vendor-dashboard" || path.startsWith("/vendor-dashboard/") ? path : fallback;
+}

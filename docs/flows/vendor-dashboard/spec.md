@@ -1,5 +1,7 @@
 # Flow Spec: Premium vendor workspace
 
+> **Historical prototype record.** Demo, in-memory, and no-auth statements below describe an earlier build. Use the current [platform lifecycle spec](../platform-lifecycle/spec.md) and [implementation plan](../platform-lifecycle/plan.md) for production behaviour.
+
 ## Goal
 
 Give a fulfilment vendor a calm, high-trust workspace where the next required action is visible immediately. The functional demo remains in-memory and no-auth; this pass upgrades hierarchy, density, responsive behaviour, and visual consistency.

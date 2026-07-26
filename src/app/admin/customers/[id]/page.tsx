@@ -1,16 +1,14 @@
-import { notFound } from "next/navigation";
-import { createClient, isSupabaseConfigured } from "@/lib/supabase/server";
+import { notFound, redirect } from "next/navigation";
+import { getAal2Admin } from "@/lib/auth";
+import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
-import { CustomerDetailDemo } from "@/components/admin/customer-detail-demo";
-import { CustomerDetailReal, type CustomerDetail } from "@/components/admin/customer-detail-real";
-import type { OrderRow } from "@/lib/orders";
+import { CustomerDetailReal, type CustomerDetail, type CustomerOrderRow } from "@/components/admin/customer-detail-real";
 
 export default async function AdminCustomerDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
 
-  if (!isSupabaseConfigured) return <CustomerDetailDemo id={id} />;
-
   const supabase = await createClient();
+  if (!(await getAal2Admin(supabase))) redirect("/admin/sign-in");
   const { data: profile } = await supabase
     .from("profiles")
     .select("id, display_name, phone, status, created_at")
@@ -25,7 +23,7 @@ export default async function AdminCustomerDetailPage({ params }: { params: Prom
 
   const { data: orders } = await supabase
     .from("orders")
-    .select("id, reference, service_type, category_slug, quantity, participant_names, dedication, total_amount, status, created_at, offerings(title)")
+    .select("id, reference, service_type, category_slug, quantity, participant_names, dedication, total_amount, offering_title, status, payment_status, fulfilment_status, delivery_status, settlement_status, created_at, offerings(title)")
     .eq("customer_id", id)
     .order("created_at", { ascending: false });
 
@@ -35,5 +33,5 @@ export default async function AdminCustomerDetailPage({ params }: { params: Prom
     verified: Boolean(authUser.user?.email_confirmed_at),
   };
 
-  return <CustomerDetailReal customer={customer} orders={(orders ?? []) as unknown as OrderRow[]} />;
+  return <CustomerDetailReal customer={customer} orders={(orders ?? []) as unknown as CustomerOrderRow[]} />;
 }

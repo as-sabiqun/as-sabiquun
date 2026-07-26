@@ -1,25 +1,24 @@
-import { createClient, isSupabaseConfigured } from "@/lib/supabase/server";
-import { ReportsDemo } from "@/components/vendor/reports-demo";
+import { createClient } from "@/lib/supabase/server";
 import { ReportsReal } from "@/components/vendor/reports-real";
 
 export default async function VendorReportsPage() {
-  if (!isSupabaseConfigured) return <ReportsDemo />;
-
   const supabase = await createClient();
   const { data: userData } = await supabase.auth.getUser();
   if (!userData.user) return <ReportsReal vendorId="" reports={[]} jobOptions={[]} />;
 
-  const [{ data: reports }, { data: orders }] = await Promise.all([
+  const [{ data: reports, error: reportsError }, { data: orders, error: ordersError }] = await Promise.all([
     supabase
       .from("vendor_reports")
-      .select("id, subject, message, status, created_at, orders(reference)")
+      .select("id, order_id, subject, message, status, created_at, resolved_at, resolution_notes")
       .eq("vendor_id", userData.user.id)
       .order("created_at", { ascending: false }),
     supabase
-      .from("orders")
-      .select("id, reference, offerings(title)")
-      .eq("assigned_vendor_id", userData.user.id),
+      .from("vendor_assigned_orders")
+      .select("id, reference, offering_title"),
   ]);
+  if (reportsError || ordersError) throw new Error("Partner reports could not be loaded.");
+
+  const orderById = new Map((orders ?? []).map((order) => [order.id, order]));
 
   const reportRows = (reports ?? []).map((r) => ({
     id: r.id,
@@ -27,13 +26,15 @@ export default async function VendorReportsPage() {
     message: r.message,
     status: r.status,
     created_at: r.created_at,
-    order_reference: (r.orders as unknown as { reference: string } | null)?.reference ?? null,
+    resolved_at: r.resolved_at,
+    resolution_notes: r.resolution_notes,
+    order_reference: r.order_id ? orderById.get(r.order_id)?.reference ?? null : null,
   }));
 
   const jobOptions = (orders ?? []).map((o) => ({
     orderId: o.id,
     reference: o.reference,
-    title: (o.offerings as unknown as { title: string } | null)?.title ?? "Order",
+    title: o.offering_title ?? "Order",
   }));
 
   return <ReportsReal vendorId={userData.user.id} reports={reportRows} jobOptions={jobOptions} />;

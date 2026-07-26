@@ -2,15 +2,15 @@
 
 import Link from "next/link";
 import { useState } from "react";
-import { vendorOrderStatusLabel, vendorStatusPillVariant, formatOfferCountdown } from "@/lib/vendor-orders";
+import { vendorJobMilestone, vendorOrderStatusLabel, vendorStatusPillVariant, formatOfferCountdown } from "@/lib/vendor-orders";
 import { formatCents } from "@/lib/orders";
 import type { VendorJobRow } from "@/lib/vendor-orders-types";
 
 const filters: { label: string; match: (j: VendorJobRow) => boolean }[] = [
   { label: "All", match: () => true },
   { label: "Awaiting response", match: (j) => j.isOffer },
-  { label: "In progress", match: (j) => !j.isOffer && ["assigned", "in_progress", "proof_submitted", "revision_required"].includes(j.status) },
-  { label: "Completed", match: (j) => ["verified", "completed", "closed"].includes(j.status) },
+  { label: "In progress", match: (j) => !j.isOffer && ["assigned", "in_progress", "proof_submitted", "revision_required"].includes(j.fulfilment_status) },
+  { label: "Verified", match: (j) => j.fulfilment_status === "verified" },
 ];
 
 export function JobsListReal({ jobs }: { jobs: VendorJobRow[] }) {
@@ -56,14 +56,14 @@ export function JobsListReal({ jobs }: { jobs: VendorJobRow[] }) {
                 </div>
 
                 <div className="vendor-job-table-status">
-                  <span className={`vendor-status vendor-status-${vendorStatusPillVariant(job.isOffer ? "broadcasting" : job.status)}`}>
-                    {job.isOffer ? "Awaiting response" : vendorOrderStatusLabel[job.status]}
+                  <span className={`vendor-status vendor-status-${vendorStatusPillVariant(vendorJobMilestone(job))}`}>
+                    {job.isOffer ? "Awaiting response" : vendorOrderStatusLabel(job)}
                   </span>
                   {countdown && <span className={`vendor-countdown ${countdown.urgent ? "is-urgent" : ""}`}>{countdown.label}</span>}
                 </div>
 
                 <Link href={`/vendor-dashboard/jobs/${job.order_id}`} className="vendor-job-table-view">
-                  {job.isOffer ? "Review & respond" : job.status === "assigned" || job.status === "in_progress" ? "Submit completion" : "View"} <span aria-hidden="true">→</span>
+                  {job.isOffer ? "Review & respond" : job.fulfilment_status === "assigned" || job.fulfilment_status === "in_progress" ? "Submit completion" : "View"} <span aria-hidden="true">→</span>
                 </Link>
               </div>
             );

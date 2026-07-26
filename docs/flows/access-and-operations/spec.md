@@ -1,5 +1,7 @@
 # Access and operations flow spec
 
+> **Historical prototype record.** Demo, in-memory, and “not yet connected” statements below describe an earlier build. Use the current [platform lifecycle spec](../platform-lifecycle/spec.md) and [implementation plan](../platform-lifecycle/plan.md) for production behaviour.
+
 ## Objective
 
 Create one coherent service-fulfilment system across the public access gateway, vendor workspace, and private admin workspace. The prototype must make each actor's next action obvious while keeping production authorization decisions on the server.

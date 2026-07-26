@@ -15,7 +15,7 @@ export interface CustomerRow {
 }
 
 const tabs = [
-  { label: "All", filter: (c: CustomerRow) => true },
+  { label: "All", filter: () => true },
   { label: "Verified", filter: (c: CustomerRow) => c.verified && c.status === "active" },
   { label: "Pending confirmation", filter: (c: CustomerRow) => !c.verified },
   { label: "Suspended", filter: (c: CustomerRow) => c.status === "suspended" },

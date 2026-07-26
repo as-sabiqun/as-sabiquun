@@ -1,47 +1,43 @@
 import { redirect } from "next/navigation";
-import { createClient, getProfile, isSupabaseConfigured } from "@/lib/supabase/server";
+import Link from "next/link";
 import { AdminSidebar } from "@/components/admin/admin-sidebar";
-import { AdminDataProvider } from "@/components/admin/admin-data-context";
+import { getActiveAdmin, getAdminMfaState } from "@/lib/auth";
+import { createClient, isSupabaseConfigured } from "@/lib/supabase/server";
+
+export const metadata = { robots: { index: false, follow: false } };
 
 export default async function AdminLayout({ children }: { children: React.ReactNode }) {
-  let adminEmail = "admin@preview.local";
-  let adminName = "Demo Admin";
-  let signedIn = false;
+  if (!isSupabaseConfigured) redirect("/admin/sign-in?error=Admin access is not configured on this deployment.");
 
-  if (isSupabaseConfigured) {
-    const supabase = await createClient();
-    const { data } = await supabase.auth.getUser();
-    if (!data.user) {
-      redirect("/login?next=/admin");
-    }
-    const profile = await getProfile(supabase, data.user.id);
-    if (profile?.role !== "admin" || profile.status !== "active") {
-      redirect(profile?.status === "suspended" ? "/login?error=This account is suspended." : "/");
-    }
-    signedIn = true;
-    adminEmail = data.user.email ?? adminEmail;
-    adminName = profile.display_name || adminEmail.split("@")[0];
-  }
+  const supabase = await createClient();
+  const admin = await getActiveAdmin(supabase);
+  if (!admin) redirect("/admin/sign-in?error=Administrator access is required.");
+
+  const mfaState = await getAdminMfaState(supabase);
+  if (mfaState === "challenge") redirect("/admin/mfa/challenge");
+  if (mfaState === "enroll") redirect("/admin/mfa/enroll");
+  if (mfaState !== "verified") redirect("/admin/sign-in?error=We could not verify this administrator session.");
+
+  const adminEmail = admin.user.email ?? "Administrator";
+  const adminName = admin.profile.display_name || adminEmail.split("@")[0];
 
   return (
-    <AdminDataProvider>
-      <div className="vendor-shell">
-        <AdminSidebar adminName={adminName} adminEmail={adminEmail} />
-        <div className="vendor-main">
-          <header className="vendor-topbar">
-            <div className="vendor-topbar-search">
-              <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7" /><path d="m21 21-4.35-4.35" /></svg>
-              <input type="search" placeholder="Search jobs, vendors, customers…" />
-            </div>
-            <div className="vendor-topbar-right">
-              {!signedIn && <span className="status">Preview mode</span>}
-              <span className="vendor-topbar-badge">Admin</span>
-              <span className="vendor-sidebar-avatar vendor-topbar-avatar">{adminName.charAt(0)}</span>
-            </div>
-          </header>
-          <main className="vendor-content">{children}</main>
-        </div>
+    <div className="vendor-shell">
+      <AdminSidebar adminName={adminName} adminEmail={adminEmail} />
+      <div className="vendor-main">
+        <header className="vendor-topbar">
+          <form className="vendor-topbar-search" action="/admin/search" role="search">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7" /><path d="m21 21-4.35-4.35" /></svg>
+            <input name="q" type="search" aria-label="Search jobs, customers, or vendors" placeholder="Search jobs, customers, vendors…" />
+          </form>
+          <div className="vendor-topbar-right">
+            <Link href="/admin/search" className="vendor-topbar-badge">Search</Link>
+            <span className="vendor-topbar-badge">AAL2 secured</span>
+            <span className="vendor-sidebar-avatar vendor-topbar-avatar">{adminName.charAt(0)}</span>
+          </div>
+        </header>
+        <main className="vendor-content">{children}</main>
       </div>
-    </AdminDataProvider>
+    </div>
   );
 }

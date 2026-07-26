@@ -10,6 +10,8 @@ export interface VendorReportRow {
   message: string;
   status: "open" | "resolved";
   created_at: string;
+  resolved_at: string | null;
+  resolution_notes: string | null;
   order_reference: string | null;
 }
 
@@ -26,18 +28,21 @@ export function ReportsReal({
   const [orderId, setOrderId] = useState(jobOptions[0]?.orderId ?? "");
   const [subject, setSubject] = useState("");
   const [message, setMessage] = useState("");
-  const [submitted, setSubmitted] = useState(false);
+  const [feedback, setFeedback] = useState<{ error?: string; message?: string }>({});
   const [pending, startTransition] = useTransition();
 
   function submit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     startTransition(async () => {
-      await fileReportAction(vendorId, orderId || null, subject, message);
+      const result = await fileReportAction(vendorId, orderId || null, subject, message);
+      if (!result.ok) {
+        setFeedback({ error: result.error ?? "The report could not be submitted." });
+        return;
+      }
       setSubject("");
       setMessage("");
-      setSubmitted(true);
+      setFeedback({ message: "Report submitted. The operations team’s resolution will appear here." });
       router.refresh();
-      setTimeout(() => setSubmitted(false), 3000);
     });
   }
 
@@ -47,7 +52,7 @@ export function ReportsReal({
         <div>
           <p className="vendor-eyebrow">Support</p>
           <h1 className="display vendor-page-title">Reports</h1>
-          <p className="vendor-page-lead">Can't do something on the dashboard, or hit a blocker on a job? Flag it here for the operations team.</p>
+          <p className="vendor-page-lead">Can’t do something on the dashboard, or hit a blocker on a job? Flag it here for the operations team.</p>
         </div>
       </div>
 
@@ -57,7 +62,8 @@ export function ReportsReal({
             <h2 className="display text-lg">New report</h2>
           </div>
           <form className="grid gap-5" onSubmit={submit}>
-            {submitted && <p className="auth-message">Report submitted. Operations will follow up by email.</p>}
+            {feedback.message && <p className="auth-message" role="status">{feedback.message}</p>}
+            {feedback.error && <p className="auth-error" role="alert">{feedback.error}</p>}
 
             <label className="label">Related job
               <select className="input" value={orderId} onChange={(event) => setOrderId(event.target.value)}>
@@ -66,10 +72,10 @@ export function ReportsReal({
               </select>
             </label>
             <label className="label">Subject
-              <input className="input" required placeholder="What's the issue?" value={subject} onChange={(event) => setSubject(event.target.value)} />
+              <input className="input" required minLength={4} maxLength={120} placeholder="What’s the issue?" value={subject} onChange={(event) => setSubject(event.target.value)} />
             </label>
             <label className="label">Details
-              <textarea className="input vendor-textarea" required rows={5} placeholder="Describe what's blocking you, and what you've already tried." value={message} onChange={(event) => setMessage(event.target.value)} />
+              <textarea className="input vendor-textarea" required minLength={20} maxLength={2000} rows={5} placeholder="Describe what’s blocking you, and what you’ve already tried." value={message} onChange={(event) => setMessage(event.target.value)} />
             </label>
             <button type="submit" className="btn" disabled={pending}>{pending ? "Submitting…" : "Submit report"} <span aria-hidden="true">→</span></button>
           </form>
@@ -93,6 +99,13 @@ export function ReportsReal({
                   </div>
                   <small>{report.order_reference || "Not job-specific"} · {new Date(report.created_at).toLocaleDateString()}</small>
                   <p>{report.message}</p>
+                  {report.resolution_notes && (
+                    <p className="vendor-report-resolution">
+                      <strong>Resolution</strong>
+                      {report.resolution_notes}
+                      {report.resolved_at && <small>Resolved {new Date(report.resolved_at).toLocaleDateString()}</small>}
+                    </p>
+                  )}
                 </div>
               ))}
             </div>

@@ -1,4 +1,5 @@
 import { NextResponse, type NextRequest } from "next/server";
+import { sessionUsesAuthMethod } from "@/lib/auth";
 import { HOME_FOR_ROLE, safeRedirectPath } from "@/lib/auth-redirect";
 import { createClient, getProfile } from "@/lib/supabase/server";
 
@@ -26,9 +27,27 @@ export async function GET(request: NextRequest) {
     return loginError(request, profile?.status === "suspended" ? "This account is suspended. Contact As-Sābiqūn for help." : "This account is not ready yet.");
   }
 
-  if (request.nextUrl.searchParams.get("intent") === "customer" && profile.role !== "customer") {
+  const intent = request.nextUrl.searchParams.get("intent");
+  const oauthSession = await sessionUsesAuthMethod(supabase, "oauth");
+  if (intent === "customer") {
+    const providers = Array.isArray(data.user.app_metadata.providers) ? data.user.app_metadata.providers : [];
+    if (!oauthSession || profile.role !== "customer" || !providers.includes("google") || !data.user.email_confirmed_at) {
+      await supabase.auth.signOut();
+      return loginError(request, "Customer access requires a verified Google account.");
+    }
+  } else if (intent === "vendor") {
+    if (oauthSession || profile.role !== "vendor") {
+      await supabase.auth.signOut();
+      return loginError(request, "This partner invitation is not valid for this account.");
+    }
+  } else if (intent === "recovery") {
+    if (oauthSession || !["vendor", "admin"].includes(profile.role)) {
+      await supabase.auth.signOut();
+      return loginError(request, "Password recovery is available only to invited staff and partners.");
+    }
+  } else {
     await supabase.auth.signOut();
-    return loginError(request, "Staff and fulfilment partners must use their assigned email and password.");
+    return loginError(request, "This sign-in link is invalid or has expired.");
   }
 
   const next = safeRedirectPath(request.nextUrl.searchParams.get("next"), HOME_FOR_ROLE[profile.role]);

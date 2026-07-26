@@ -1,5 +1,7 @@
 # Flow Spec: Public site v1
 
+> **Historical prototype record.** Demo-form and disconnected-backend statements below describe an earlier build. Use the current [platform lifecycle spec](../platform-lifecycle/spec.md) and [implementation plan](../platform-lifecycle/plan.md) for production behaviour.
+
 ## Goal
 
 Give a Muslim visitor a clear, trustworthy path from understanding As-Sābiqūn to choosing one of four Islamic services. The public site must feel established and accountable before the operational backend is connected.

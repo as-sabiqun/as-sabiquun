@@ -1,5 +1,7 @@
 # Flow Spec: Customer conversion and demo checkout
 
+> **Historical prototype record.** Demo checkout and disconnected-backend statements below describe an earlier build. Use the current [platform lifecycle spec](../platform-lifecycle/spec.md) and [implementation plan](../platform-lifecycle/plan.md) for production behaviour.
+
 ## Goal
 
 Help a Muslim customer understand the service model, choose an Islamic service, review one order, and reach an honest demonstration confirmation without changing visual language between marketing and checkout.

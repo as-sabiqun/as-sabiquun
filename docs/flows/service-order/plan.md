@@ -1,5 +1,7 @@
 # Task Plan: Islamic service order
 
+> **Historical prototype plan.** Use the current [platform lifecycle spec](../platform-lifecycle/spec.md) and [implementation plan](../platform-lifecycle/plan.md) for production status and remaining work.
+
 1. Build the marketing shell and five public pages.
 2. Add validated Korban, Wakaf, and contact forms.
 3. Create Supabase schema, seed data, Auth, Storage, and RLS.

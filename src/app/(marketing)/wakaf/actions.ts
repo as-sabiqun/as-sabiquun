@@ -1,9 +1,12 @@
 "use server";
 
+import { randomUUID } from "node:crypto";
 import { redirect } from "next/navigation";
+import { dollarsToCents, isContactNumber } from "@/lib/checkout-validation";
 import { createClient, getProfile, isSupabaseConfigured } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { formatCents } from "@/lib/orders";
+import { isGoogleCustomer } from "@/lib/auth";
 
 const PROJECT_MAP = {
   "water-pump": { slug: "wakaf-water-pump", category: "water" },
@@ -11,6 +14,7 @@ const PROJECT_MAP = {
   "food-for-orphans": { slug: "wakaf-food-for-orphans", category: "orphans" },
 } as const;
 type ProjectId = keyof typeof PROJECT_MAP;
+const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 
 export type SubmitWakafState =
   | { ok: false; requiresLogin: true }
@@ -19,12 +23,13 @@ export type SubmitWakafState =
 
 function reference() {
   const stamp = new Date().toISOString().slice(2, 7).replace("-", "");
-  const rand = Math.random().toString(36).slice(2, 6).toUpperCase();
+  const rand = randomUUID().slice(0, 8).toUpperCase();
   return `ASQ-${stamp}-${rand}`;
 }
 
 export async function submitWakafContribution(_prevState: SubmitWakafState, formData: FormData): Promise<SubmitWakafState> {
   const projectId = String(formData.get("projectId") ?? "") as ProjectId;
+  const requestId = String(formData.get("requestId") ?? "");
   const amountDollars = Number(formData.get("amount") ?? 0);
   const dedication = String(formData.get("dedication") ?? "").trim() || null;
   const customerName = String(formData.get("customerName") ?? "").trim();
@@ -34,15 +39,23 @@ export async function submitWakafContribution(_prevState: SubmitWakafState, form
   if (!project) {
     return { ok: false, error: "Choose a project." };
   }
-  if (!Number.isFinite(amountDollars) || amountDollars <= 0) {
+  if (!UUID.test(requestId)) return { ok: false, error: "This checkout draft expired. Refresh and try again." };
+  const totalAmount = dollarsToCents(amountDollars);
+  if (totalAmount === null) {
     return { ok: false, error: "Enter a valid contribution amount." };
+  }
+  if ((dedication?.length ?? 0) > 300 || customerName.length > 120) {
+    return { ok: false, error: "The dedication or customer name is too long." };
+  }
+  if (!isContactNumber(customerPhone)) {
+    return { ok: false, error: "Enter a valid contact number." };
   }
   if (!customerName || !customerPhone) {
     return { ok: false, error: "Your name and phone are required." };
   }
 
   if (!isSupabaseConfigured) {
-    return { ok: false, error: "Checkout isn't connected yet — this is a working preview." };
+    return { ok: false, error: "Checkout is not configured on this deployment." };
   }
 
   const supabase = await createClient();
@@ -51,7 +64,7 @@ export async function submitWakafContribution(_prevState: SubmitWakafState, form
     return { ok: false, requiresLogin: true };
   }
   const profile = await getProfile(supabase, userData.user.id);
-  if (profile?.role !== "customer" || profile.status !== "active") {
+  if (!await isGoogleCustomer(supabase, userData.user, profile)) {
     return { ok: false, error: profile?.status === "suspended" ? "This account is suspended." : "Use a customer account to make a contribution." };
   }
 
@@ -59,7 +72,7 @@ export async function submitWakafContribution(_prevState: SubmitWakafState, form
 
   const { data: offering, error: offeringError } = await admin
     .from("offerings")
-    .select("id, min_amount")
+    .select("id, title, detail, min_amount")
     .eq("slug", project.slug)
     .eq("active", true)
     .single();
@@ -69,40 +82,54 @@ export async function submitWakafContribution(_prevState: SubmitWakafState, form
   }
 
   // Money is stored in cents; the form collects a plain dollar amount.
-  const totalAmount = Math.round(amountDollars * 100);
   if (totalAmount < offering.min_amount) {
     return { ok: false, error: `Contribution must be at least ${formatCents(offering.min_amount)}.` };
   }
 
-  const { data: settings } = await admin.from("platform_settings").select("commission_rate").single();
-  const commissionRate = settings?.commission_rate ?? 0.1;
+  const { data: settings, error: settingsError } = await admin.from("platform_settings").select("commission_rate").single();
+  if (settingsError || settings?.commission_rate == null) {
+    return { ok: false, error: "Checkout pricing is temporarily unavailable." };
+  }
+  const commissionRate = Number(settings.commission_rate);
   const commissionAmount = Math.round(totalAmount * commissionRate);
   const vendorPayoutAmount = totalAmount - commissionAmount;
 
-  const { data: order, error: insertError } = await admin
+  const { data: inserted, error: insertError } = await admin
     .from("orders")
-    .insert({
+    .upsert({
+      client_request_id: requestId,
       reference: reference(),
       customer_id: userData.user.id,
       offering_id: offering.id,
+      offering_title: offering.title,
+      offering_detail: offering.detail,
       service_type: "wakaf",
       category_slug: project.category,
       dedication,
       customer_name: customerName,
       customer_phone: customerPhone,
+      customer_email: userData.user.email,
       unit_amount: totalAmount,
       total_amount: totalAmount,
       commission_rate_snapshot: commissionRate,
       commission_amount: commissionAmount,
       vendor_payout_amount: vendorPayoutAmount,
+      currency: "SGD",
+      payment_provider: "hitpay",
+      payment_status: "pending",
+      fulfilment_status: "not_ready",
+      delivery_status: "not_ready",
+      settlement_status: "unpaid",
       status: "submitted",
-    })
+    }, { onConflict: "customer_id,client_request_id", ignoreDuplicates: true })
     .select("reference")
-    .single();
+    .maybeSingle();
 
-  if (insertError || !order) {
+  if (insertError) {
     return { ok: false, error: "Something went wrong creating your order. Please try again." };
   }
+  const order = inserted ?? (await admin.from("orders").select("reference").eq("customer_id", userData.user.id).eq("client_request_id", requestId).single()).data;
+  if (!order) return { ok: false, error: "Something went wrong creating your order. Please try again." };
 
-  redirect(`/dashboard/orders/${order.reference}`);
+  redirect(`/checkout/${order.reference}`);
 }

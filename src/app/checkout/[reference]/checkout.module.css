@@ -1,0 +1,55 @@
+.page { min-height: 100vh; background: var(--cream); }
+.header { display: flex; min-height: 78px; align-items: center; justify-content: space-between; border-bottom: 1px solid var(--line); padding: 0 clamp(20px, 5vw, 72px); }
+.header > span { color: var(--muted); font-size: .68rem; font-weight: 800; letter-spacing: .08em; text-transform: uppercase; }
+.shell { display: grid; grid-template-columns: minmax(0, 1.35fr) minmax(340px, .65fr); width: min(1180px, calc(100% - 40px)); margin: 0 auto; padding: clamp(40px, 7vw, 92px) 0; gap: clamp(35px, 7vw, 100px); }
+.summary { min-width: 0; }
+.back { display: inline-flex; align-items: center; gap: 5px; color: var(--muted); font-size: .7rem; font-weight: 750; }
+.back svg { width: 14px; }
+.eyebrow { margin-top: 48px; color: var(--teal); font-size: .65rem; font-weight: 850; letter-spacing: .11em; text-transform: uppercase; }
+.summary > h1 { max-width: 650px; margin-top: 8px; font-family: var(--font-display), sans-serif; font-size: clamp(2.6rem, 6vw, 5.6rem); letter-spacing: -.065em; line-height: .92; }
+.lead { max-width: 560px; margin-top: 18px; color: var(--muted); font-size: .88rem; line-height: 1.65; }
+.serviceBlock { display: flex; align-items: flex-start; justify-content: space-between; gap: 30px; margin-top: 46px; border-block: 1px solid var(--line); padding: 25px 0; }
+.serviceBlock span { color: var(--teal); font-size: .58rem; font-weight: 850; letter-spacing: .1em; text-transform: uppercase; }
+.serviceBlock h2 { margin-top: 5px; font-size: 1rem; }
+.serviceBlock p { max-width: 560px; margin-top: 6px; color: var(--muted); font-size: .73rem; line-height: 1.55; }
+.serviceBlock > strong { flex: none; font-size: 1.1rem; }
+.details { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0 30px; }
+.details > div { border-bottom: 1px solid var(--line); padding: 17px 0; }
+.details dt { color: var(--muted); font-size: .62rem; }
+.details dd { margin-top: 5px; overflow-wrap: anywhere; font-size: .77rem; font-weight: 750; }
+.paymentPanel { align-self: start; border: 1px solid var(--line); border-radius: 20px; background: var(--white); padding: clamp(24px, 4vw, 36px); }
+.arabic { color: var(--teal); font-family: var(--font-arabic), sans-serif; font-size: 1.1rem; }
+.panelLabel { display: block; margin-top: 25px; color: var(--muted); font-size: .62rem; font-weight: 760; }
+.total { display: block; margin-top: 4px; color: var(--ink); font-family: var(--font-display), sans-serif; font-size: clamp(2.4rem, 5vw, 4.2rem); letter-spacing: -.06em; line-height: 1; }
+.paymentPanel > small { color: var(--muted); font-size: .62rem; font-weight: 750; }
+.readiness { display: grid; gap: 11px; margin-top: 27px; border-block: 1px solid var(--line); padding: 20px 0; }
+.readiness > div { display: flex; align-items: flex-start; gap: 10px; color: var(--teal-dark); }
+.readiness svg { width: 17px; height: 17px; flex: none; }
+.readiness span, .readiness strong, .readiness small { display: block; }
+.readiness strong { font-size: .7rem; }
+.readiness small { margin-top: 2px; color: var(--muted); font-size: .59rem; }
+.readiness .missing { color: var(--gold); }
+.payAction { display: grid; gap: 9px; margin-top: 24px; }
+.payAction > p { border: 1px solid #b3402f55; border-radius: 10px; background: #b3402f10; padding: 10px; color: #8a3222; font-size: .68rem; }
+.payAction button, .connectButton { display: flex; width: 100%; min-height: 54px; cursor: pointer; align-items: center; justify-content: center; gap: 10px; border: 0; border-radius: 999px; background: var(--teal); padding: 0 18px; color: white; font-size: .76rem; font-weight: 820; }
+.payAction button:disabled { cursor: wait; opacity: .6; }
+.payAction button svg { width: 16px; height: 16px; }
+.payAction button svg:last-child { margin-left: auto; }
+.payAction small { text-align: center; }
+.connectButton { margin-top: 24px; }
+.paidState { display: flex; gap: 12px; margin-top: 24px; border: 1px solid color-mix(in srgb, var(--teal) 35%, var(--line)); border-radius: 14px; background: var(--teal-soft); padding: 17px; color: var(--teal-dark); }
+.paidState > svg { width: 18px; flex: none; }
+.paidState strong { font-size: .76rem; }
+.paidState p, .paidState a { margin-top: 4px; font-size: .65rem; }
+.paidState a { display: inline-block; font-weight: 800; text-decoration: underline; }
+.terminalState { margin-top: 24px; border: 1px solid var(--line); border-radius: 14px; background: var(--cream); padding: 17px; }
+.terminalState strong { font-size: .76rem; }
+.terminalState p, .terminalState a { margin-top: 4px; font-size: .65rem; line-height: 1.5; }
+.terminalState a { display: inline-block; color: var(--teal-dark); font-weight: 800; text-decoration: underline; }
+.nextSteps { display: grid; gap: 13px; margin-top: 26px; }
+.nextSteps li { display: grid; grid-template-columns: 24px 1fr; gap: 10px; align-items: start; color: var(--muted); font-size: .65rem; line-height: 1.5; }
+.nextSteps span { display: grid; width: 22px; height: 22px; place-items: center; border: 1px solid var(--line); border-radius: 50%; color: var(--teal-dark); font-size: .58rem; font-weight: 850; }
+.nextSteps strong { color: var(--ink); }
+
+@media (max-width: 850px) { .shell { grid-template-columns: 1fr; } .paymentPanel { order: -1; } .eyebrow { margin-top: 34px; } }
+@media (max-width: 520px) { .header { min-height: 68px; padding-inline: 15px; } .header > span { display: none; } .shell { width: min(100% - 28px, 1180px); padding-top: 24px; } .paymentPanel { border-radius: 16px; padding: 22px; } .details { grid-template-columns: 1fr; } .serviceBlock { flex-direction: column; } }

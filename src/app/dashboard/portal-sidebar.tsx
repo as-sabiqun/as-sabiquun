@@ -2,16 +2,16 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { ChartSpline, ExternalLink, House, LogOut, MessageSquareWarning, Rows3 } from "lucide-react";
+import { ExternalLink, House, LifeBuoy, LogOut, Rows3, UserRound } from "lucide-react";
 import { logout } from "@/app/actions/auth";
 import { BrandMark } from "@/components/brand";
 import styles from "./dashboard.module.css";
 
 const navItems = [
-  { href: "/dashboard", label: "Home", icon: House, exact: true },
-  { href: "/dashboard#journey", label: "My impact", icon: ChartSpline, exact: true },
-  { href: "/dashboard#orders", label: "My orders", icon: Rows3, exact: true },
-  { href: "/dashboard/report", label: "Report a concern", icon: MessageSquareWarning, exact: false },
+  { href: "/dashboard", label: "Overview", icon: House, exact: true },
+  { href: "/dashboard/projects", label: "Projects", icon: Rows3, exact: false },
+  { href: "/dashboard/report", label: "Support", icon: LifeBuoy, exact: false },
+  { href: "/dashboard/account", label: "Account", icon: UserRound, exact: false },
 ] as const;
 
 export function PortalSidebar({ customerName, customerEmail }: { customerName: string; customerEmail: string }) {
@@ -68,7 +68,7 @@ export function FloatingReportButton() {
 
   return (
     <Link href="/dashboard/report" className={styles.reportButton}>
-      <MessageSquareWarning aria-hidden="true" />
+      <LifeBuoy aria-hidden="true" />
       <span>Report a concern</span>
     </Link>
   );

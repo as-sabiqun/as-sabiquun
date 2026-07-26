@@ -1,4 +1,4 @@
-import type { OrderStatus } from "@/lib/orders";
+import type { DeliveryStatus, FulfilmentStatus, PaymentStatus, SettlementStatus } from "@/lib/order-lifecycle";
 
 export interface VendorJobRow {
   order_id: string;
@@ -12,7 +12,10 @@ export interface VendorJobRow {
   participant_names: string[];
   dedication: string | null;
   vendor_payout_amount: number;
-  status: OrderStatus;
+  payment_status: PaymentStatus;
+  fulfilment_status: FulfilmentStatus;
+  delivery_status: DeliveryStatus;
+  settlement_status: SettlementStatus;
   expires_at?: string;
   created_at: string;
   customer_name?: string;

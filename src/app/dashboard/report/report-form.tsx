@@ -11,7 +11,7 @@ export interface ReportOrderOption {
   title: string;
 }
 
-export function ReportForm({ orders }: { orders: ReportOrderOption[] }) {
+export function ReportForm({ orders, selectedOrderId }: { orders: ReportOrderOption[]; selectedOrderId?: string }) {
   const [state, action, pending] = useActionState(submitCustomerReport, undefined);
 
   return (
@@ -31,7 +31,7 @@ export function ReportForm({ orders }: { orders: ReportOrderOption[] }) {
           </select>
         </label>
         <label className="label">Related order <span className={styles.optional}>Optional</span>
-          <select className="input" name="order_id" defaultValue="">
+          <select className="input" name="order_id" defaultValue={selectedOrderId ?? ""}>
             <option value="">Not related to one order</option>
             {orders.map((order) => <option key={order.id} value={order.id}>{order.reference} — {order.title}</option>)}
           </select>

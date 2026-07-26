@@ -1,5 +1,7 @@
 # Flow Spec: Modern Islamic marketing to service
 
+> **Historical design exploration.** Demo-state statements below do not describe the production runtime. Use the current [platform lifecycle spec](../platform-lifecycle/spec.md) and [implementation plan](../platform-lifecycle/plan.md) for production behaviour.
+
 ## Goal
 Help a Muslim visitor recognise the organisation as credible and faith-led, understand the available services, see how fulfilment is handled, and confidently begin Korban or Wakaf.
 
@@ -75,4 +77,3 @@ We are adopting the references' hierarchy, clarity, task focus, and progress/sta
 - [ ] No mobile horizontal overflow at 390px.
 - [ ] Existing marketing and service routes remain functional.
 - [ ] Visuals use As-Sābiqūn tokens rather than reference brand values.
-

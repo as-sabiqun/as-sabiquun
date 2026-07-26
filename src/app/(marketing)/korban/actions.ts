@@ -1,11 +1,15 @@
 "use server";
 
+import { randomUUID } from "node:crypto";
 import { redirect } from "next/navigation";
+import { isContactNumber } from "@/lib/checkout-validation";
 import { createClient, getProfile, isSupabaseConfigured } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
+import { isGoogleCustomer } from "@/lib/auth";
 
 const PACKAGE_SLUGS = { share: "korban-share", goat: "korban-goat", cow: "korban-cow" } as const;
 type PackageId = keyof typeof PACKAGE_SLUGS;
+const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 
 export type SubmitKorbanState =
   | { ok: false; requiresLogin: true }
@@ -14,12 +18,13 @@ export type SubmitKorbanState =
 
 function reference() {
   const stamp = new Date().toISOString().slice(2, 7).replace("-", "");
-  const rand = Math.random().toString(36).slice(2, 6).toUpperCase();
+  const rand = randomUUID().slice(0, 8).toUpperCase();
   return `ASQ-${stamp}-${rand}`;
 }
 
 export async function submitKorbanOrder(_prevState: SubmitKorbanState, formData: FormData): Promise<SubmitKorbanState> {
   const packageId = String(formData.get("packageId") ?? "") as PackageId;
+  const requestId = String(formData.get("requestId") ?? "");
   const quantity = Number(formData.get("quantity") ?? 1);
   const names = formData.getAll("participantName").map((name) => String(name).trim()).filter(Boolean);
   const customerName = String(formData.get("customerName") ?? "").trim();
@@ -28,18 +33,25 @@ export async function submitKorbanOrder(_prevState: SubmitKorbanState, formData:
   if (!PACKAGE_SLUGS[packageId]) {
     return { ok: false, error: "Choose a package." };
   }
+  if (!UUID.test(requestId)) return { ok: false, error: "This checkout draft expired. Refresh and try again." };
   if (!Number.isInteger(quantity) || quantity < 1 || quantity > 7) {
-    return { ok: false, error: "Shares must be between 1 and 7." };
+    return { ok: false, error: "Quantity must be between 1 and 7." };
   }
   if (names.length !== quantity) {
-    return { ok: false, error: "Add a participant name for each share." };
+    return { ok: false, error: "Add a participant name for each package." };
+  }
+  if (names.some((name) => name.length > 120) || customerName.length > 120) {
+    return { ok: false, error: "Names must be 120 characters or fewer." };
+  }
+  if (!isContactNumber(customerPhone)) {
+    return { ok: false, error: "Enter a valid contact number." };
   }
   if (!customerName || !customerPhone) {
     return { ok: false, error: "Your name and phone are required." };
   }
 
   if (!isSupabaseConfigured) {
-    return { ok: false, error: "Checkout isn't connected yet — this is a working preview." };
+    return { ok: false, error: "Checkout is not configured on this deployment." };
   }
 
   const supabase = await createClient();
@@ -48,7 +60,7 @@ export async function submitKorbanOrder(_prevState: SubmitKorbanState, formData:
     return { ok: false, requiresLogin: true };
   }
   const profile = await getProfile(supabase, userData.user.id);
-  if (profile?.role !== "customer" || profile.status !== "active") {
+  if (!await isGoogleCustomer(supabase, userData.user, profile)) {
     return { ok: false, error: profile?.status === "suspended" ? "This account is suspended." : "Use a customer account to place an order." };
   }
 
@@ -56,7 +68,7 @@ export async function submitKorbanOrder(_prevState: SubmitKorbanState, formData:
 
   const { data: offering, error: offeringError } = await admin
     .from("offerings")
-    .select("id, unit_amount")
+    .select("id, title, detail, unit_amount")
     .eq("slug", PACKAGE_SLUGS[packageId])
     .eq("active", true)
     .single();
@@ -65,39 +77,54 @@ export async function submitKorbanOrder(_prevState: SubmitKorbanState, formData:
     return { ok: false, error: "That package isn't available right now." };
   }
 
-  const { data: settings } = await admin.from("platform_settings").select("commission_rate").single();
-  const commissionRate = settings?.commission_rate ?? 0.1;
+  const { data: settings, error: settingsError } = await admin.from("platform_settings").select("commission_rate").single();
+  if (settingsError || settings?.commission_rate == null) {
+    return { ok: false, error: "Checkout pricing is temporarily unavailable." };
+  }
+  const commissionRate = Number(settings.commission_rate);
 
   const unitAmount = offering.unit_amount;
   const totalAmount = unitAmount * quantity;
   const commissionAmount = Math.round(totalAmount * commissionRate);
   const vendorPayoutAmount = totalAmount - commissionAmount;
 
-  const { data: order, error: insertError } = await admin
+  const { data: inserted, error: insertError } = await admin
     .from("orders")
-    .insert({
+    .upsert({
+      client_request_id: requestId,
       reference: reference(),
       customer_id: userData.user.id,
       offering_id: offering.id,
+      offering_title: offering.title,
+      offering_detail: offering.detail,
       service_type: "korban",
       category_slug: "korban",
       quantity,
       participant_names: names,
       customer_name: customerName,
       customer_phone: customerPhone,
+      customer_email: userData.user.email,
       unit_amount: unitAmount,
       total_amount: totalAmount,
       commission_rate_snapshot: commissionRate,
       commission_amount: commissionAmount,
       vendor_payout_amount: vendorPayoutAmount,
+      currency: "SGD",
+      payment_provider: "hitpay",
+      payment_status: "pending",
+      fulfilment_status: "not_ready",
+      delivery_status: "not_ready",
+      settlement_status: "unpaid",
       status: "submitted",
-    })
+    }, { onConflict: "customer_id,client_request_id", ignoreDuplicates: true })
     .select("reference")
-    .single();
+    .maybeSingle();
 
-  if (insertError || !order) {
+  if (insertError) {
     return { ok: false, error: "Something went wrong creating your order. Please try again." };
   }
+  const order = inserted ?? (await admin.from("orders").select("reference").eq("customer_id", userData.user.id).eq("client_request_id", requestId).single()).data;
+  if (!order) return { ok: false, error: "Something went wrong creating your order. Please try again." };
 
-  redirect(`/dashboard/orders/${order.reference}`);
+  redirect(`/checkout/${order.reference}`);
 }

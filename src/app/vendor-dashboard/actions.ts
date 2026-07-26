@@ -1,13 +1,26 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import { createClient } from "@/lib/supabase/server";
+import { isApprovedVendor, sessionUsesAuthMethod } from "@/lib/auth";
+import { consumeRateLimit } from "@/lib/rate-limit";
+import { createClient, getProfile } from "@/lib/supabase/server";
 
 // These call the SECURITY DEFINER RPC functions using the caller's own
 // session — the functions check auth.uid()/assigned_vendor_id themselves.
 
-export async function claimJobAction(orderId: string): Promise<{ ok: boolean; claimed?: boolean; error?: string }> {
+async function getVendorClient() {
   const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  const profile = user ? await getProfile(supabase, user.id) : null;
+  return user && isApprovedVendor(profile) && await sessionUsesAuthMethod(supabase, "password") ? { supabase, user } : null;
+}
+
+export async function claimJobAction(orderId: string): Promise<{ ok: boolean; claimed?: boolean; error?: string }> {
+  const vendor = await getVendorClient();
+  if (!vendor) return { ok: false, error: "An approved partner account is required." };
+  const { supabase } = vendor;
   const { data, error } = await supabase.rpc("claim_job", { p_order_id: orderId });
   if (error) return { ok: false, error: error.message };
   revalidatePath("/vendor-dashboard");
@@ -17,7 +30,9 @@ export async function claimJobAction(orderId: string): Promise<{ ok: boolean; cl
 }
 
 export async function declineJobAction(orderId: string): Promise<{ ok: boolean; error?: string }> {
-  const supabase = await createClient();
+  const vendor = await getVendorClient();
+  if (!vendor) return { ok: false, error: "An approved partner account is required." };
+  const { supabase } = vendor;
   const { error } = await supabase.rpc("decline_job", { p_order_id: orderId });
   if (error) return { ok: false, error: error.message };
   revalidatePath("/vendor-dashboard");
@@ -26,7 +41,9 @@ export async function declineJobAction(orderId: string): Promise<{ ok: boolean; 
 }
 
 export async function markInProgressAction(orderId: string): Promise<{ ok: boolean; error?: string }> {
-  const supabase = await createClient();
+  const vendor = await getVendorClient();
+  if (!vendor) return { ok: false, error: "An approved partner account is required." };
+  const { supabase } = vendor;
   const { data, error } = await supabase.rpc("mark_in_progress", { p_order_id: orderId });
   if (error) return { ok: false, error: error.message };
   revalidatePath(`/vendor-dashboard/jobs/${orderId}`);
@@ -40,7 +57,9 @@ export async function submitProofAction(
   notes: string,
   location: { country: string; state: string; village: string; address: string; lat: number | null; lng: number | null; mapsLink: string }
 ): Promise<{ ok: boolean; error?: string }> {
-  const supabase = await createClient();
+  const vendor = await getVendorClient();
+  if (!vendor) return { ok: false, error: "An approved partner account is required." };
+  const { supabase } = vendor;
   const { data, error } = await supabase.rpc("submit_proof", {
     p_order_id: orderId,
     p_items: items,
@@ -60,8 +79,25 @@ export async function submitProofAction(
 }
 
 export async function fileReportAction(vendorId: string, orderId: string | null, subject: string, message: string): Promise<{ ok: boolean; error?: string }> {
-  const supabase = await createClient();
-  const { error } = await supabase.from("vendor_reports").insert({ vendor_id: vendorId, order_id: orderId, subject, message });
+  const vendor = await getVendorClient();
+  if (!vendor || vendor.user.id !== vendorId) return { ok: false, error: "An approved partner account is required." };
+  const cleanSubject = subject.trim();
+  const cleanMessage = message.trim();
+  if (cleanSubject.length < 4 || cleanSubject.length > 120 || cleanMessage.length < 20 || cleanMessage.length > 2000) {
+    return { ok: false, error: "Use a 4–120 character subject and a 20–2,000 character message." };
+  }
+  if (orderId) {
+    const { data: order } = await vendor.supabase.from("vendor_assigned_orders").select("id").eq("id", orderId).maybeSingle();
+    if (!order) return { ok: false, error: "Choose a job assigned to your organisation." };
+  }
+  try {
+    if (!await consumeRateLimit("vendor-support", vendor.user.id, 5, 3600)) {
+      return { ok: false, error: "You have sent several reports recently. Please wait before sending another." };
+    }
+  } catch {
+    return { ok: false, error: "Support reporting is temporarily unavailable." };
+  }
+  const { error } = await vendor.supabase.from("vendor_reports").insert({ vendor_id: vendor.user.id, order_id: orderId, subject: cleanSubject, message: cleanMessage });
   if (error) return { ok: false, error: error.message };
   revalidatePath("/vendor-dashboard/reports");
   return { ok: true };

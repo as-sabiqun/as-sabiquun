@@ -1,18 +1,23 @@
-import type { CSSProperties } from "react";
 import Link from "next/link";
 import { ArrowUpRight, Check, Clock3, Plus, Sparkles } from "lucide-react";
 import { redirect } from "next/navigation";
-import { buildJourneySeries, boardKeyForStatus, customerBoardColumns, type CustomerBoardKey } from "@/lib/customer-dashboard";
-import { currentStepIndex, formatCents, orderStatusCopy, orderTitle, type OrderRow } from "@/lib/orders";
+import { buildJourneySeries, boardKeyForFulfilment, customerBoardColumns, customerStepIndex, isImpactOrder, type CustomerBoardKey } from "@/lib/customer-dashboard";
+import { type DeliveryStatus, type FulfilmentStatus, type PaymentStatus, type SettlementStatus } from "@/lib/order-lifecycle";
+import { customerOrderStatus, formatCents, orderTitle, type OrderRow } from "@/lib/orders";
 import { createClient, getProfile } from "@/lib/supabase/server";
 import { ImpactChart } from "./impact-chart";
 import styles from "./dashboard.module.css";
 
 interface CustomerOrderRow extends OrderRow {
-  payment_status: "pending" | "paid" | "failed";
+  payment_status: PaymentStatus;
+  fulfilment_status: FulfilmentStatus;
+  delivery_status: DeliveryStatus;
+  settlement_status: SettlementStatus;
   admin_verified_at: string | null;
   completed_at: string | null;
   project_country: string | null;
+  payment_confirmed_at: string | null;
+  is_test: boolean;
 }
 
 const categoryLabels: Record<string, string> = {
@@ -30,31 +35,31 @@ export default async function DashboardPage() {
   const [profile, orderResult] = await Promise.all([
     getProfile(supabase, userData.user.id),
     supabase
-      .from("orders")
-      .select("id, reference, service_type, category_slug, quantity, participant_names, dedication, total_amount, payment_status, status, created_at, admin_verified_at, completed_at, project_country, offerings(title)")
-      .eq("customer_id", userData.user.id)
+      .from("customer_orders")
+      .select("id, reference, service_type, category_slug, quantity, participant_names, dedication, total_amount, payment_status, fulfilment_status, delivery_status, settlement_status, status, created_at, admin_verified_at, completed_at, project_country, offering_title, payment_confirmed_at, is_test")
       .order("created_at", { ascending: false }),
   ]);
+  if (orderResult.error) throw new Error("Customer projects could not be loaded.");
 
   const rows = (orderResult.data ?? []) as unknown as CustomerOrderRow[];
-  const visibleRows = rows.filter((order) => order.status !== "cancelled");
+  const visibleRows = rows.filter((order) => ["pending", "paid", "partially_refunded"].includes(order.payment_status) && order.fulfilment_status !== "cancelled");
+  const impactRows = rows.filter(isImpactOrder);
   const board: Record<CustomerBoardKey, CustomerOrderRow[]> = { waiting: [], active: [], review: [], completed: [] };
   visibleRows.forEach((order) => {
-    const key = boardKeyForStatus(order.status);
+    const key = order.delivery_status === "delivered" ? "completed" : boardKeyForFulfilment(order.fulfilment_status);
     if (key) board[key].push(order);
   });
 
-  const verifiedCount = visibleRows.filter((order) => ["verified", "completed", "closed"].includes(order.status)).length;
-  const completedCount = visibleRows.filter((order) => ["completed", "closed"].includes(order.status)).length;
+  const verifiedCount = impactRows.filter((order) => order.fulfilment_status === "verified").length;
+  const completedCount = impactRows.filter((order) => order.delivery_status === "delivered").length;
   const inMotionCount = board.active.length + board.review.length;
-  const countries = new Set(visibleRows.map((order) => order.project_country).filter(Boolean));
-  const committedValue = visibleRows.reduce((sum, order) => sum + order.total_amount, 0);
-  const completionPercent = visibleRows.length === 0 ? 0 : Math.round((completedCount / visibleRows.length) * 100);
-  const completionDegrees = Math.max(10, Math.round((completionPercent / 100) * 360));
+  const countries = new Set(impactRows.map((order) => order.project_country).filter(Boolean));
+  const committedValue = impactRows.reduce((sum, order) => sum + order.total_amount, 0);
+  const completionPercent = impactRows.length === 0 ? 0 : Math.round((completedCount / impactRows.length) * 100);
   const firstName = (profile?.display_name || userData.user.email?.split("@")[0] || "there").split(" ")[0];
-  const journey = buildJourneySeries(rows, new Date(), 8);
+  const journey = buildJourneySeries(impactRows, new Date(), 8);
   const categoryCounts = Object.entries(categoryLabels)
-    .map(([key, label]) => ({ key, label, count: visibleRows.filter((order) => order.category_slug === key).length }))
+    .map(([key, label]) => ({ key, label, count: impactRows.filter((order) => order.category_slug === key).length }))
     .filter((item) => item.count > 0);
 
   return (
@@ -87,7 +92,7 @@ export default async function DashboardPage() {
           <ImpactChart points={journey} />
 
           <div className={styles.journeyLedger}>
-            <div><span>Services supported</span><strong>{visibleRows.length}</strong></div>
+            <div><span>Services supported</span><strong>{impactRows.length}</strong></div>
             <div><span>Verified fulfilments</span><strong>{verifiedCount}</strong></div>
             <div><span>Currently in motion</span><strong>{inMotionCount}</strong></div>
             <div><span>Service value coordinated</span><strong>{formatCents(committedValue)}</strong></div>
@@ -99,7 +104,7 @@ export default async function DashboardPage() {
             <span><Sparkles aria-hidden="true" /> Impact ledger</span>
             <small>Updated live</small>
           </div>
-          <div className={styles.completionRing} style={{ "--completion": `${completionDegrees}deg` } as CSSProperties}>
+          <div className={styles.completionRing}>
             <div>
               <strong>{completionPercent}%</strong>
               <span>fulfilled</span>
@@ -157,10 +162,10 @@ export default async function DashboardPage() {
                       </div>
                       <strong>{orderTitle(order)}</strong>
                       <small>{order.reference} · {new Date(order.created_at).toLocaleDateString("en-SG", { day: "numeric", month: "short", year: "numeric" })}</small>
-                      <div className={styles.orderStatus}>{orderStatusCopy[order.status]}</div>
+                      <div className={styles.orderStatus}>{customerOrderStatus(order)}</div>
                       <div className={styles.orderCardFooter}>
-                        <div className={styles.miniProgress} aria-label={`Step ${currentStepIndex(order.status) + 1} of 4`}>
-                          {[0, 1, 2, 3].map((step) => <i key={step} className={step <= currentStepIndex(order.status) ? styles.progressDone : ""} />)}
+                        <div className={styles.miniProgress} aria-label={`Step ${customerStepIndex(order.fulfilment_status, order.delivery_status) + 1} of 4`}>
+                          {[0, 1, 2, 3].map((step) => <i key={step} className={step <= customerStepIndex(order.fulfilment_status, order.delivery_status) ? styles.progressDone : ""} />)}
                         </div>
                         <span>{formatCents(order.total_amount)}</span>
                       </div>
@@ -173,7 +178,7 @@ export default async function DashboardPage() {
         )}
 
         {rows.length > visibleRows.length && (
-          <p className={styles.archiveNote}>{rows.length - visibleRows.length} cancelled order{rows.length - visibleRows.length === 1 ? " is" : "s are"} kept in your account history.</p>
+          <p className={styles.archiveNote}>{rows.length - visibleRows.length} historical order{rows.length - visibleRows.length === 1 ? " is" : "s are"} kept in Projects.</p>
         )}
       </section>
     </div>

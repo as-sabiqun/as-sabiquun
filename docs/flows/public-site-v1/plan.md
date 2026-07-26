@@ -1,5 +1,7 @@
 # Task Plan: Public site v1
 
+> **Historical prototype plan.** Use the current [platform lifecycle spec](../platform-lifecycle/spec.md) and [implementation plan](../platform-lifecycle/plan.md) for production status and remaining work.
+
 > Source spec: `docs/flows/public-site-v1/spec.md`
 
 ## Tasks

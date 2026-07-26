@@ -1,29 +1,23 @@
 import "./landing.css";
 import { Footer, Header } from "@/components/site-shell";
 import {
+  Accountability,
   AmanahShowcase,
   FAQ,
   FinalCTA,
   Hero,
-  HowItWorks,
   ServicesOutline,
-  StatsBar,
-  WhyDifferent,
-  WhoItsFor,
 } from "@/components/landing-sections";
 
 export default function LandingPage() {
   return (
     <>
       <Header />
-      <main>
+      <main className="lp-page">
         <Hero />
-        <AmanahShowcase />
-        <StatsBar />
-        <WhyDifferent />
-        <HowItWorks />
-        <WhoItsFor />
         <ServicesOutline />
+        <AmanahShowcase />
+        <Accountability />
         <FAQ />
         <FinalCTA />
       </main>

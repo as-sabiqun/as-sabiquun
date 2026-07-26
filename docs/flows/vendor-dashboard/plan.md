@@ -1,5 +1,7 @@
 # Task Plan: Premium vendor workspace
 
+> **Historical prototype plan.** Use the current [platform lifecycle spec](../platform-lifecycle/spec.md) and [implementation plan](../platform-lifecycle/plan.md) for production status and remaining work.
+
 > Source spec: `docs/flows/vendor-dashboard/spec.md`
 
 ## Tasks

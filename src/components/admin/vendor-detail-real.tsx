@@ -3,10 +3,12 @@
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState, useTransition, type FormEvent } from "react";
-import { adminOrderStatusLabel, adminStatusPillVariant } from "@/lib/admin-orders";
+import { lifecycleLabel, lifecyclePillVariant } from "@/components/admin/operations-jobs";
 import { formatCents, orderTitle, type OrderRow } from "@/lib/orders";
-import { vendorServiceOptions } from "@/lib/admin-demo";
-import { suspendVendorAction, recordVendorPaymentAction, updateVendorRatingAction } from "@/app/admin/actions";
+import { vendorServiceOptions } from "@/lib/vendor-options";
+import { approveVendorAction, suspendVendorAction, recordVendorPaymentAction, updateVendorRatingAction } from "@/app/admin/actions";
+import { resendVendorInvitationAction } from "@/app/admin/vendors/actions";
+import type { DeliveryStatus, FulfilmentStatus, PaymentStatus, SettlementStatus } from "@/lib/order-lifecycle";
 
 export interface VendorDetail {
   id: string;
@@ -20,6 +22,7 @@ export interface VendorDetail {
   vendor_type: string | null;
   services: string[];
   status: "active" | "suspended";
+  vendor_onboarding_status?: "not_applicable" | "invited" | "pending" | "approved" | "rejected";
   currency: string | null;
   bank_name: string | null;
   bank_account_name: string | null;
@@ -32,6 +35,7 @@ export interface VendorDetail {
 
 export interface VendorPaymentRow {
   id: string;
+  order_id: string | null;
   amount: number;
   payment_date: string;
   method: string | null;
@@ -40,6 +44,10 @@ export interface VendorPaymentRow {
 }
 
 export interface VendorOrderRow extends OrderRow {
+  fulfilment_status: FulfilmentStatus;
+  payment_status: PaymentStatus;
+  delivery_status: DeliveryStatus;
+  settlement_status: SettlementStatus;
   vendor_payout_amount: number;
   accepted_at: string | null;
   completed_at: string | null;
@@ -59,6 +67,7 @@ export function VendorDetailReal({
 }) {
   const router = useRouter();
   const [pending, startTransition] = useTransition();
+  const [invitationPending, startInvitationTransition] = useTransition();
   const [paymentPending, startPaymentTransition] = useTransition();
   const [ratingPending, startRatingTransition] = useTransition();
   const [showPaymentForm, setShowPaymentForm] = useState(false);
@@ -69,10 +78,13 @@ export function VendorDetailReal({
   const [notes, setNotes] = useState("");
   const [paymentError, setPaymentError] = useState<string | null>(null);
   const [rating, setRating] = useState(vendor.rating != null ? String(vendor.rating) : "");
+  const [invitationMessage, setInvitationMessage] = useState<{ ok: boolean; text: string } | null>(null);
 
-  const completed = orders.filter((o) => ["verified", "completed", "closed"].includes(o.status)).length;
-  const active = orders.filter((o) => ["assigned", "in_progress", "proof_submitted", "revision_required"].includes(o.status)).length;
-  const totalPaid = payments.reduce((sum, p) => sum + p.amount, 0);
+  const settlementOrders = orders.filter((order) => order.fulfilment_status === "verified");
+  const settlementOrderIds = new Set(settlementOrders.map((order) => order.id));
+  const completed = settlementOrders.length;
+  const active = orders.filter((order) => ["assigned", "in_progress", "proof_submitted", "revision_required"].includes(order.fulfilment_status)).length;
+  const totalPaid = payments.filter((payment) => payment.order_id && settlementOrderIds.has(payment.order_id)).reduce((sum, payment) => sum + payment.amount, 0);
   const outstanding = totalPayable - totalPaid;
 
   const completionDurationsMs = orders
@@ -86,7 +98,11 @@ export function VendorDetailReal({
 
   function toggleStatus() {
     startTransition(async () => {
-      await suspendVendorAction(vendor.id, vendor.status === "active" ? "suspended" : "active");
+      if (vendor.vendor_onboarding_status === "pending" || vendor.vendor_onboarding_status === "rejected") {
+        await approveVendorAction(vendor.id);
+      } else {
+        await suspendVendorAction(vendor.id, vendor.status === "active" ? "suspended" : "active");
+      }
       router.refresh();
     });
   }
@@ -100,18 +116,30 @@ export function VendorDetailReal({
     });
   }
 
+  function resendInvitation() {
+    setInvitationMessage(null);
+    startInvitationTransition(async () => {
+      const result = await resendVendorInvitationAction(vendor.id);
+      setInvitationMessage({
+        ok: result.ok,
+        text: result.ok ? "A fresh secure setup email was sent." : result.error,
+      });
+      if (result.ok) router.refresh();
+    });
+  }
+
   function submitPayment(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     const amountCents = Math.round(Number(amount) * 100);
-    if (!amountCents || amountCents <= 0) {
-      setPaymentError("Enter a valid amount.");
+    if (!amountCents || amountCents <= 0 || !orderId || !reference.trim()) {
+      setPaymentError("Select a verified job, enter an amount, and add a unique payment reference.");
       return;
     }
     setPaymentError(null);
     startPaymentTransition(async () => {
       const res = await recordVendorPaymentAction({
         vendorId: vendor.id,
-        orderId: orderId || null,
+        orderId,
         amountCents,
         paymentDate: new Date().toISOString().slice(0, 10),
         method,
@@ -146,8 +174,8 @@ export function VendorDetailReal({
               <h1 className="display vendor-page-title">{vendor.display_name}</h1>
               <p className="vendor-page-lead">{vendor.vendor_type ?? "—"} · Vendor since {new Date(vendor.created_at).toLocaleDateString()}</p>
             </div>
-            <span className={`vendor-status ${vendor.status === "active" ? "vendor-status-accepted" : "vendor-status-rejected"}`}>
-              {vendor.status === "active" ? "Active" : "Suspended"}
+            <span className={`vendor-status ${vendor.status === "suspended" || vendor.vendor_onboarding_status === "rejected" ? "vendor-status-rejected" : vendor.vendor_onboarding_status === "approved" || !vendor.vendor_onboarding_status ? "vendor-status-accepted" : "vendor-status-pending"}`}>
+              {vendor.status === "suspended" ? "Suspended" : vendor.vendor_onboarding_status === "approved" || !vendor.vendor_onboarding_status ? "Active" : vendor.vendor_onboarding_status === "invited" ? "Invited" : vendor.vendor_onboarding_status === "pending" ? "Pending approval" : "Rejected"}
             </span>
           </div>
 
@@ -186,8 +214,8 @@ export function VendorDetailReal({
                       <small>{order.reference}</small>
                     </div>
                     <div className="vendor-job-row-meta">
-                      <span className={`vendor-status vendor-status-${adminStatusPillVariant(order.status)}`}>
-                        {adminOrderStatusLabel[order.status]}
+                      <span className={`vendor-status vendor-status-${lifecyclePillVariant(order)}`}>
+                        {lifecycleLabel(order)}
                       </span>
                       <strong className="numeral">{formatCents(order.total_amount)}</strong>
                     </div>
@@ -218,10 +246,10 @@ export function VendorDetailReal({
                   <label className="label">Amount ({vendor.currency ?? "SGD"})
                     <input className="input" type="number" step="0.01" min="0" required value={amount} onChange={(event) => setAmount(event.target.value)} />
                   </label>
-                  <label className="label">Related job <span className="font-normal text-[var(--muted)]">Optional</span>
-                    <select className="input" value={orderId} onChange={(event) => setOrderId(event.target.value)}>
-                      <option value="">Not job-specific</option>
-                      {orders.map((o) => <option key={o.id} value={o.id}>{o.reference} — {orderTitle(o)}</option>)}
+                  <label className="label">Verified job
+                    <select className="input" required value={orderId} onChange={(event) => setOrderId(event.target.value)}>
+                      <option value="">Select a job</option>
+                      {settlementOrders.map((o) => <option key={o.id} value={o.id}>{o.reference} — {orderTitle(o)}</option>)}
                     </select>
                   </label>
                 </div>
@@ -229,8 +257,8 @@ export function VendorDetailReal({
                   <label className="label">Method <span className="font-normal text-[var(--muted)]">Optional</span>
                     <input className="input" placeholder="e.g. Bank transfer" value={method} onChange={(event) => setMethod(event.target.value)} />
                   </label>
-                  <label className="label">Reference <span className="font-normal text-[var(--muted)]">Optional</span>
-                    <input className="input" placeholder="Transaction reference" value={reference} onChange={(event) => setReference(event.target.value)} />
+                  <label className="label">Unique reference
+                    <input className="input" required placeholder="Bank transaction reference" value={reference} onChange={(event) => setReference(event.target.value)} />
                   </label>
                 </div>
                 <label className="label">Notes <span className="font-normal text-[var(--muted)]">Optional</span>
@@ -290,9 +318,17 @@ export function VendorDetailReal({
             </>
           )}
 
-          <button type="button" className="btn-secondary btn mt-6" disabled={pending} onClick={toggleStatus}>
-            {pending ? "Updating…" : vendor.status === "active" ? "Suspend vendor" : "Reactivate vendor"}
+          <button type="button" className="btn-secondary btn mt-6" disabled={pending || vendor.vendor_onboarding_status === "invited"} onClick={toggleStatus}>
+            {pending ? "Updating…" : vendor.vendor_onboarding_status === "invited" ? "Awaiting partner setup" : vendor.vendor_onboarding_status === "pending" || vendor.vendor_onboarding_status === "rejected" ? "Approve vendor" : vendor.status === "active" ? "Suspend vendor" : "Reactivate vendor"}
           </button>
+          {vendor.vendor_onboarding_status === "invited" && (
+            <>
+              <button type="button" className="btn-secondary btn mt-3" disabled={invitationPending} onClick={resendInvitation}>
+                {invitationPending ? "Sending…" : "Resend secure invitation"}
+              </button>
+              {invitationMessage && <p className={invitationMessage.ok ? "auth-message mt-3" : "auth-error mt-3"} role="status">{invitationMessage.text}</p>}
+            </>
+          )}
         </div>
       </div>
     </>

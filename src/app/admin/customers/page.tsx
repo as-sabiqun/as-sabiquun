@@ -1,26 +1,29 @@
-import { createClient, isSupabaseConfigured } from "@/lib/supabase/server";
+import { redirect } from "next/navigation";
+import { getAal2Admin } from "@/lib/auth";
+import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
-import { CustomersListDemo } from "@/components/admin/customers-list-demo";
 import { CustomersListReal, type CustomerRow } from "@/components/admin/customers-list-real";
 
 export default async function AdminCustomersPage() {
-  if (!isSupabaseConfigured) return <CustomersListDemo />;
-
   const supabase = await createClient();
-  const { data: profiles } = await supabase
+  if (!(await getAal2Admin(supabase))) redirect("/admin/sign-in");
+  const { data: profiles, error: profilesError } = await supabase
     .from("profiles")
     .select("id, display_name, phone, status")
     .eq("role", "customer")
     .order("created_at", { ascending: false });
+  if (profilesError) throw new Error("Customers could not be loaded.");
 
   const admin = createAdminClient();
-  const { data: authList } = await admin.auth.admin.listUsers({ perPage: 1000 });
+  const { data: authList, error: authError } = await admin.auth.admin.listUsers({ perPage: 1000 });
+  if (authError) throw new Error("Customer identities could not be loaded.");
   const authById = new Map(authList.users.map((u) => [u.id, u]));
 
   const ids = (profiles ?? []).map((p) => p.id);
-  const { data: orders } = ids.length
-    ? await supabase.from("orders").select("customer_id, total_amount").in("customer_id", ids)
-    : { data: [] };
+  const { data: orders, error: ordersError } = ids.length
+    ? await supabase.from("orders").select("customer_id, total_amount, payment_status").in("customer_id", ids)
+    : { data: [], error: null };
+  if (ordersError) throw new Error("Customer orders could not be loaded.");
 
   const customers: CustomerRow[] = (profiles ?? []).map((p) => {
     const authUser = authById.get(p.id);
@@ -33,7 +36,7 @@ export default async function AdminCustomersPage() {
       verified: Boolean(authUser?.email_confirmed_at),
       status: p.status,
       ordersCount: customerOrders.length,
-      lifetimeSpendCents: customerOrders.reduce((sum, o) => sum + o.total_amount, 0),
+      lifetimeSpendCents: customerOrders.filter((order) => ["paid", "partially_refunded"].includes(order.payment_status)).reduce((sum, order) => sum + order.total_amount, 0),
     };
   });
 

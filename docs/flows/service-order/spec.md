@@ -1,5 +1,7 @@
 # Flow Spec: Islamic service order
 
+> **Historical prototype record.** Demo and disconnected-backend statements below describe an earlier build. Use the current [platform lifecycle spec](../platform-lifecycle/spec.md) and [implementation plan](../platform-lifecycle/plan.md) for production behaviour.
+
 ## Goal
 Let a visitor understand Korban or Wakaf, submit the minimum required details, simulate payment, and let admin and vendor roles carry the order through documented fulfilment.
 

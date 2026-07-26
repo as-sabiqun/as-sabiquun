@@ -1,5 +1,8 @@
 import { redirect } from "next/navigation";
+import { isGoogleCustomer } from "@/lib/auth";
 import { createClient, getProfile, isSupabaseConfigured } from "@/lib/supabase/server";
+
+export const metadata = { robots: { index: false, follow: false } };
 import { FloatingReportButton, PortalSidebar } from "./portal-sidebar";
 import styles from "./dashboard.module.css";
 
@@ -11,11 +14,11 @@ export default async function CustomerDashboardLayout({ children }: { children: 
   if (!data.user) redirect("/login?next=/dashboard");
 
   const profile = await getProfile(supabase, data.user.id);
-  if (profile?.role !== "customer" || profile.status !== "active") {
+  if (!await isGoogleCustomer(supabase, data.user, profile)) {
     redirect(profile?.status === "suspended" ? "/login?error=This account is suspended." : "/");
   }
 
-  const customerName = profile.display_name || data.user.email?.split("@")[0] || "Customer";
+  const customerName = profile?.display_name || data.user.email?.split("@")[0] || "Customer";
   const customerEmail = data.user.email ?? "";
 
   return (

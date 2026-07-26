@@ -1,244 +1,59 @@
 import Link from "next/link";
-import { ArrowRight, ArrowUpRight, ChevronDown, HandHeart, ShieldCheck, Sparkles } from "lucide-react";
 import { services } from "@/components/service-card";
-import { Reveal } from "@/components/landing-reveal";
 
-export function SectionEyebrow({ label }: { label: string }) {
+function AmanahStar({ className = "" }: { className?: string }) {
   return (
-    <div className="mb-6 inline-flex items-center gap-3">
-      <span className="h-2 w-2 rounded-sm" style={{ backgroundColor: "var(--gold)" }} />
-      <span className="text-[10px] font-bold uppercase tracking-[0.32em]" style={{ color: "var(--gold)" }}>{label}</span>
+    <svg className={className} viewBox="0 0 48 48" aria-hidden="true">
+      <polygon points="24,2 27.8,14.8 39.6,8.4 33.2,20.2 46,24 33.2,27.8 39.6,39.6 27.8,33.2 24,46 20.2,33.2 8.4,39.6 14.8,27.8 2,24 14.8,20.2 8.4,8.4 20.2,14.8" />
+    </svg>
+  );
+}
+
+function SectionHeading({
+  id,
+  eyebrow,
+  title,
+  copy,
+}: {
+  id: string;
+  eyebrow: string;
+  title: string;
+  copy: string;
+}) {
+  return (
+    <div className="lp-section-heading">
+      <p className="lp-eyebrow"><span aria-hidden="true" />{eyebrow}</p>
+      <h2 id={id}>{title}</h2>
+      <p>{copy}</p>
     </div>
   );
 }
 
 export function Hero() {
   return (
-    <section className="lp-hero-canvas relative flex min-h-screen flex-col overflow-hidden pt-24">
-      <div className="lp-hero-glow pointer-events-none absolute inset-0 z-[2]" aria-hidden="true" />
-      <div className="lp-grain pointer-events-none absolute inset-0 z-[3]" aria-hidden="true" />
-
-      <div className="relative z-10 flex flex-1 flex-col items-center justify-center px-6 text-center">
-        <p className="mb-5 text-[11px] font-bold uppercase tracking-[0.26em]" style={{ color: "var(--gold)" }}>Islamic services - Singapore</p>
-        <h1 className="display max-w-[1100px]" style={{ fontSize: "clamp(38px, 5.6vw, 72px)", lineHeight: 1.02, color: "var(--teal-dark)" }}>
-          Islamic services,<br />clearly carried through.
-        </h1>
-        <p className="mx-auto mt-6 max-w-lg text-[16px] font-medium leading-relaxed lg:text-[17px]" style={{ color: "var(--ink)" }}>
-          Choose a service, review its scope, and follow every handoff from your request to the completion record.
+    <section className="lp-hero" aria-labelledby="landing-title">
+      <div className="lp-hero-mark" aria-hidden="true">
+        <AmanahStar />
+      </div>
+      <div className="lp-hero-inner">
+        <p className="lp-arabic" lang="ar" dir="rtl">السَّابِقُونَ إِلَى الْخَيْرِ</p>
+        <p className="lp-kicker">Islamic services, thoughtfully coordinated</p>
+        <h1 id="landing-title">Good intentions deserve clear follow-through.</h1>
+        <p className="lp-hero-copy">
+          Arrange Korban and Wakaf through one trusted service. From payment to verified proof,
+          every handoff stays visible in your Amanah record.
         </p>
-        <div className="mt-8 flex items-center justify-center">
-          <Link href="/services" className="btn">
-            Choose a service
-            <span aria-hidden="true">→</span>
+        <div className="lp-actions">
+          <Link className="lp-button lp-button-primary" href="/services">
+            Choose a service <span aria-hidden="true">→</span>
           </Link>
-        </div>
-        <p className="mt-6 text-xs font-semibold uppercase tracking-[0.14em]" style={{ color: "var(--muted)" }}>Website preview - no live payments are being accepted</p>
-      </div>
-
-      <a href="#record" className="relative z-10 mx-auto mb-7 flex flex-col items-center" aria-label="Scroll down">
-        <ChevronDown size={20} className="animate-bounce" style={{ color: "var(--gold)" }} />
-      </a>
-    </section>
-  );
-}
-
-export function AmanahShowcase() {
-  const recordSteps = [
-    { label: "Intention recorded", state: "complete" as const },
-    { label: "Team review", state: "complete" as const },
-    { label: "Partner fulfilment", state: "current" as const },
-    { label: "Reviewed proof", state: "pending" as const },
-  ];
-  return (
-    <section id="record" className="relative overflow-hidden px-6 py-24 lg:px-10 lg:py-32" style={{ backgroundColor: "var(--white)" }}>
-      <div className="relative mx-auto grid max-w-6xl grid-cols-1 items-center gap-12 lg:grid-cols-2 lg:gap-16">
-        <Reveal>
-          <SectionEyebrow label="See a live record" />
-          <h2 className="display" style={{ fontSize: "clamp(32px, 4.5vw, 50px)", lineHeight: 1.06 }}>
-            You don&apos;t just place an order.{" "}
-            <span style={{ color: "var(--gold)" }}>You follow it.</span>
-          </h2>
-          <p className="mt-6 max-w-md text-[16px] leading-relaxed" style={{ color: "var(--muted)" }}>
-            Every service becomes an amanah record - reference, status, and completion evidence kept together from the moment you submit a request to the day it&apos;s fulfilled.
-          </p>
-          <div className="mt-8 flex flex-wrap gap-2.5">
-            {["Ordered", "Reviewed", "Assigned", "Documented"].map((s, i) => (
-              <span key={s} className="chip" style={{ backgroundColor: "rgba(162,124,71,0.1)", color: "var(--gold)" }}>
-                <span className="opacity-60">{i + 1}</span> {s}
-              </span>
-            ))}
-          </div>
-          <div className="mt-9">
-            <Link href="/korban" className="btn">
-              See how it works
-              <span aria-hidden="true">→</span>
-            </Link>
-          </div>
-        </Reveal>
-        <Reveal delay={120} className="card card-dark p-6 md:p-7">
-          <div className="flex items-center justify-between border-b pb-5" style={{ borderColor: "rgba(255,253,250,.14)" }}>
-            <div>
-              <p className="text-[.68rem] font-black uppercase tracking-[.16em]" style={{ color: "var(--muted)" }}>Example amanah record</p>
-              <h3 className="display mt-1 text-xl">Wakaf Quran</h3>
-            </div>
-            <span className="rounded-full px-3 py-2 text-[.65rem] font-black" style={{ backgroundColor: "rgba(162,124,71,0.22)", color: "var(--gold)" }}>In fulfilment</span>
-          </div>
-          <ol className="mt-5 space-y-1">
-            {recordSteps.map((step) => (
-              <li key={step.label} className="grid grid-cols-[26px_1fr_auto] items-center gap-3 rounded-xl px-2 py-2.5" style={step.state === "current" ? { backgroundColor: "rgba(255,253,250,.06)" } : undefined}>
-                <span
-                  className="grid h-6 w-6 place-items-center rounded-full text-[10px] font-black"
-                  style={
-                    step.state === "complete"
-                      ? { backgroundColor: "var(--gold)", color: "var(--teal-dark)" }
-                      : step.state === "current"
-                        ? { border: "1px solid var(--gold)", color: "var(--gold)" }
-                        : { border: "1px solid rgba(255,253,250,.2)", color: "rgba(255,253,250,.4)" }
-                  }
-                >
-                  {step.state === "complete" ? "✓" : ""}
-                </span>
-                <span className="text-sm font-semibold">{step.label}</span>
-                <span className="text-[.68rem] font-bold" style={{ color: "var(--muted)" }}>
-                  {step.state === "complete" ? "Done" : step.state === "current" ? "Current" : "Next"}
-                </span>
-              </li>
-            ))}
-          </ol>
-          <p className="mt-6 text-xs leading-6" style={{ color: "var(--muted)" }}>Illustrative record - no live order has been created.</p>
-        </Reveal>
-      </div>
-    </section>
-  );
-}
-
-export function StatsBar() {
-  const stats = [
-    { num: "4", label: "Services", sub: "korban and wakaf" },
-    { num: "100%", label: "Documented proof", sub: "reviewed before release" },
-    { num: "24h", label: "Response window", sub: "for assignment" },
-    { num: "2", label: "Fulfilment partners", sub: "and growing" },
-  ];
-  return (
-    <section className="relative border-y px-6 py-10 lg:px-10 lg:py-14" style={{ borderColor: "var(--line)", backgroundColor: "var(--cream-dark)" }}>
-      <div className="mx-auto grid max-w-6xl grid-cols-2 gap-6 lg:grid-cols-4 lg:gap-10">
-        {stats.map((s, i) => (
-          <Reveal key={s.label} delay={i * 90} className="text-center lg:text-left">
-            <div className="numeral mb-2 text-[44px] leading-none lg:text-[56px]" style={{ color: "var(--gold)" }}>{s.num}</div>
-            <div className="display text-[14px] leading-snug" style={{ color: "var(--ink)" }}>{s.label}</div>
-            <div className="mt-1 text-[11px]" style={{ color: "var(--muted)" }}>{s.sub}</div>
-          </Reveal>
-        ))}
-      </div>
-    </section>
-  );
-}
-
-export function WhyDifferent() {
-  const pillars = [
-    { title: "Clear scope, first", body: "See the service, the demonstration price, and what's included before you share a single detail. No surprises between request and receipt.", icon: <Sparkles size={22} style={{ color: "var(--gold)" }} />, tags: ["Scope upfront", "No hidden steps"] },
-    { title: "Human coordination", body: "A team reviews every request and manages the handoff to a fulfilment partner - your order is never just a queue position.", icon: <HandHeart size={22} style={{ color: "var(--gold)" }} />, tags: ["Reviewed by people", "Assigned, not automated"] },
-    { title: "Documented proof", body: "Available photos or video are reviewed before they're returned to you, so completion means something you can actually see.", icon: <ShieldCheck size={22} style={{ color: "var(--gold)" }} />, tags: ["Reviewed evidence", "Kept with your order"] },
-  ];
-  return (
-    <section id="why" className="relative px-6 py-24 lg:px-10 lg:py-36">
-      <div className="mx-auto max-w-6xl">
-        <SectionEyebrow label="Why As-Sabiqun" />
-        <h2 className="display max-w-3xl" style={{ fontSize: "clamp(32px, 4.5vw, 48px)", lineHeight: 1.08 }}>
-          Most platforms bolt Islamic services onto a generic form.{" "}
-          <span style={{ color: "var(--gold)" }}>As-Sabiqun is built around the handoff.</span>
-        </h2>
-        <p className="mt-6 max-w-2xl text-[16px] leading-relaxed" style={{ color: "var(--muted)" }}>
-          Amanah and ihsan aren&apos;t taglines here - they&apos;re the reason every order carries a visible record from intention through completion.
-        </p>
-        <div className="mt-16 grid grid-cols-1 gap-5 md:grid-cols-3">
-          {pillars.map((p, i) => (
-            <Reveal key={p.title} delay={i * 110} className="card flex min-h-[300px] flex-col p-6">
-              <div className="flex items-start justify-between gap-4">
-                <div className="grid h-12 w-12 shrink-0 place-items-center rounded-2xl" style={{ backgroundColor: "rgba(162,124,71,0.1)", border: "1px solid var(--line)" }}>{p.icon}</div>
-                <div className="flex max-w-[72%] flex-wrap justify-end gap-1.5">
-                  {p.tags.map((t) => (
-                    <span key={t} className="chip" style={{ backgroundColor: "rgba(162,124,71,0.1)", color: "var(--muted)" }}>{t}</span>
-                  ))}
-                </div>
-              </div>
-              <div className="flex-1" />
-              <h3 className="display mb-2 text-[22px]">{p.title}</h3>
-              <p className="max-w-[34ch] text-[13.5px] leading-relaxed" style={{ color: "var(--muted)" }}>{p.body}</p>
-            </Reveal>
-          ))}
+          <a className="lp-button lp-button-quiet" href="#how">
+            See how it works
+          </a>
         </div>
       </div>
-    </section>
-  );
-}
-
-export function HowItWorks() {
-  const steps = [
-    { n: "01", title: "Choose the service", body: "See the scope first, then share the details needed to arrange Korban or Wakaf." },
-    { n: "02", title: "We coordinate it", body: "Our team reviews the request and manages the handoff to a fulfilment partner." },
-    { n: "03", title: "Keep the record", body: "Your receipt, updates, and available reviewed evidence stay with the order." },
-  ];
-  return (
-    <section id="how" className="relative border-t px-6 py-24 lg:px-10 lg:py-36" style={{ borderColor: "var(--line)", backgroundColor: "var(--cream)" }}>
-      <div className="mx-auto max-w-6xl">
-        <SectionEyebrow label="How it works" />
-        <h2 className="display max-w-3xl" style={{ fontSize: "clamp(32px, 4.5vw, 48px)", lineHeight: 1.08 }}>
-          Three steps.{" "}
-          <span style={{ color: "var(--gold)" }}>Then it&apos;s underway.</span>
-        </h2>
-        <p className="mt-6 max-w-2xl text-[16px] leading-relaxed" style={{ color: "var(--muted)" }}>
-          The same simple loop carries every service from your first request to a documented completion.
-        </p>
-        <div className="relative mt-16 grid grid-cols-1 gap-5 md:grid-cols-3">
-          {steps.map((s, i) => (
-            <Reveal key={s.n} delay={i * 120} className="card card-dark relative p-7">
-              <div className="mb-5 flex items-baseline justify-between">
-                <span className="numeral text-[48px] leading-none" style={{ color: "rgba(162,124,71,0.85)" }}>{s.n}</span>
-                {i < steps.length - 1 && <ArrowRight size={18} className="hidden translate-x-[14px] md:block" style={{ color: "rgba(162,124,71,0.4)" }} />}
-              </div>
-              <h3 className="display mb-2 text-[22px]">{s.title}</h3>
-              <p className="text-[14px] leading-relaxed" style={{ color: "var(--muted)" }}>{s.body}</p>
-            </Reveal>
-          ))}
-        </div>
-      </div>
-    </section>
-  );
-}
-
-export function WhoItsFor() {
-  const groups = [
-    { title: "Individuals", body: "Arrange Korban or contribute to a Wakaf project with a guided form and a clear service record." },
-    { title: "Organisations", body: "A practical partner for associations and community programmes that need visible fulfilment, not just a payment link." },
-    { title: "Fulfilment partners", body: "Focused assignments, participant details, and structured proof requirements in one workspace." },
-  ];
-  return (
-    <section className="relative overflow-hidden px-6 py-24 lg:px-10 lg:py-36" style={{ backgroundColor: "var(--cream-dark)" }}>
-      <div className="relative mx-auto max-w-5xl">
-        <SectionEyebrow label="Who it's for" />
-        <h2 className="display max-w-3xl" style={{ fontSize: "clamp(32px, 4.5vw, 48px)", lineHeight: 1.08 }}>
-          Built for anyone who wants Islamic services{" "}
-          <span style={{ color: "var(--gold)" }}>handled with amanah.</span>
-        </h2>
-        <div className="mt-14 grid grid-cols-1 gap-5 md:grid-cols-3">
-          {groups.map((c, i) => (
-            <Reveal key={c.title} delay={i * 110} className="card flex min-h-[200px] flex-col p-6">
-              <h3 className="display mb-2 text-[20px]">{c.title}</h3>
-              <p className="text-[13.5px] leading-relaxed" style={{ color: "var(--muted)" }}>{c.body}</p>
-            </Reveal>
-          ))}
-        </div>
-        <Reveal delay={120} className="card card-dark mt-5 flex flex-col items-start gap-6 p-7 lg:flex-row lg:items-center lg:p-9">
-          <span className="display flex-shrink-0 text-[56px] leading-none" style={{ color: "rgba(162,124,71,0.5)" }}>&ldquo;</span>
-          <div>
-            <p className="display text-[18px] leading-snug lg:text-[20px]">
-              An Islamic service platform that treats every handoff as something you can{" "}
-              <span style={{ color: "var(--gold)" }}>see</span> - clear scope, human coordination, documented proof.
-            </p>
-            <p className="mt-3 text-[11px] font-bold uppercase tracking-[0.24em]" style={{ color: "rgba(162,124,71,0.85)" }}>Korban and Wakaf · preview website</p>
-          </div>
-        </Reveal>
+      <div className="lp-service-ribbon" aria-label="Available services">
+        {services.map((service) => <span key={service.slug}>{service.title}</span>)}
       </div>
     </section>
   );
@@ -246,28 +61,22 @@ export function WhoItsFor() {
 
 export function ServicesOutline() {
   return (
-    <section id="services" className="relative border-t px-6 py-24 lg:px-10 lg:py-36" style={{ borderColor: "var(--line)" }}>
-      <div className="mx-auto max-w-6xl">
-        <SectionEyebrow label="Our services" />
-        <h2 className="display max-w-3xl" style={{ fontSize: "clamp(32px, 4.5vw, 48px)", lineHeight: 1.08 }}>
-          Four focused ways{" "}
-          <span style={{ color: "var(--gold)" }}>to arrange something good.</span>
-        </h2>
-        <p className="mt-6 max-w-2xl text-[16px] leading-relaxed" style={{ color: "var(--muted)" }}>
-          These are the first services in the As-Sabiqun platform. More will follow as their fulfilment journeys are ready.
-        </p>
-        <div className="mt-14 grid grid-cols-1 gap-4 md:grid-cols-2">
-          {services.map((service, i) => (
-            <Reveal key={service.slug} delay={i * 80}>
-              <Link href={service.href} className="card group flex items-center gap-5 p-6 transition-transform hover:scale-[1.01] active:scale-[0.99]">
-                <span className="numeral grid h-14 w-14 shrink-0 place-items-center rounded-2xl text-[18px]" style={{ backgroundColor: "rgba(162,124,71,0.1)", border: "1px solid var(--line)", color: "var(--gold)" }}>{service.number}</span>
-                <div className="min-w-0 flex-1">
-                  <h3 className="display text-[18px] leading-snug">{service.title}</h3>
-                  <p className="mt-0.5 text-[12.5px]" style={{ color: "var(--muted)" }}>{service.description}</p>
-                </div>
-                <ArrowUpRight size={18} className="flex-shrink-0 opacity-50 transition-opacity group-hover:opacity-100" style={{ color: "var(--gold)" }} />
-              </Link>
-            </Reveal>
+    <section className="lp-section lp-services" id="services" aria-labelledby="services-title">
+      <div className="lp-container">
+        <SectionHeading
+          id="services-title"
+          eyebrow="Choose a service"
+          title="One careful process, shaped for each act of giving."
+          copy="Start with the service you need. You will see the scope, provide the right details, and review everything before payment."
+        />
+        <div className="lp-service-list">
+          {services.map((service) => (
+            <Link className="lp-service-row" href={service.href} key={service.slug}>
+              <span className="lp-service-number">{service.number}</span>
+              <span className="lp-service-name">{service.title}</span>
+              <span className="lp-service-copy">{service.description}</span>
+              <span className="lp-service-action">View service <span aria-hidden="true">↗</span></span>
+            </Link>
           ))}
         </div>
       </div>
@@ -275,30 +84,116 @@ export function ServicesOutline() {
   );
 }
 
+export function AmanahShowcase() {
+  const steps = [
+    ["01", "Request received", "Your service, dedication, and payment are recorded together."],
+    ["02", "Partner assigned", "An approved partner accepts the work and begins fulfilment."],
+    ["03", "Evidence reviewed", "Location and required media are checked by our team."],
+    ["04", "Report delivered", "Your completion record is sent by email and Telegram."],
+  ];
+
+  return (
+    <section className="lp-section lp-amanah" id="how" aria-labelledby="amanah-title">
+      <div className="lp-container lp-amanah-layout">
+        <div>
+          <SectionHeading
+            id="amanah-title"
+            eyebrow="The Amanah trail"
+            title="Every request leaves a record you can follow."
+            copy="The same four-stage trail guides every service. It makes the work clear for you, the fulfilment partner, and the team reviewing it."
+          />
+          <ol className="lp-trail">
+            {steps.map(([number, title, copy]) => (
+              <li key={number}>
+                <span className="lp-trail-marker"><AmanahStar /></span>
+                <span className="lp-trail-number">{number}</span>
+                <span><strong>{title}</strong><small>{copy}</small></span>
+              </li>
+            ))}
+          </ol>
+        </div>
+
+        <article className="lp-record" aria-label="Example project record">
+          <header>
+            <div>
+              <p>Example Amanah record</p>
+              <h3>Wakaf Quran</h3>
+            </div>
+            <span>In review</span>
+          </header>
+          <div className="lp-record-summary">
+            <div><span>Project</span><strong>Quran distribution</strong></div>
+            <div><span>Current step</span><strong>Evidence review</strong></div>
+          </div>
+          <ol className="lp-record-progress">
+            <li className="is-done"><span>1</span><strong>Payment confirmed</strong><small>Complete</small></li>
+            <li className="is-done"><span>2</span><strong>Partner fulfilment</strong><small>Complete</small></li>
+            <li className="is-current"><span>3</span><strong>Admin verification</strong><small>In progress</small></li>
+            <li><span>4</span><strong>Customer report</strong><small>Next</small></li>
+          </ol>
+          <p className="lp-record-note">Illustrative record. Your dashboard reflects the live state of your own project.</p>
+        </article>
+      </div>
+    </section>
+  );
+}
+
+export function Accountability() {
+  const proof = [
+    ["Exact location", "Country, locality, address, and coordinates"],
+    ["9 photographs", "Before, during, and after the project"],
+    ["4 videos", "Before, during, after, and a dua video"],
+    ["Admin review", "Evidence approved before your report is sent"],
+  ];
+
+  return (
+    <section className="lp-proof" aria-labelledby="proof-title">
+      <div className="lp-container lp-proof-layout">
+        <div>
+          <p className="lp-eyebrow lp-eyebrow-light"><span aria-hidden="true" />Accountability by design</p>
+          <h2 id="proof-title">Completion means more than changing a status.</h2>
+          <p>
+            A partner cannot submit a project without its required location and evidence.
+            Our team reviews that record before it reaches you.
+          </p>
+          <Link href="/about" className="lp-text-link">How As-Sabiqun works <span aria-hidden="true">→</span></Link>
+        </div>
+        <dl className="lp-proof-list">
+          {proof.map(([label, copy], index) => (
+            <div key={label}>
+              <dt><span>{String(index + 1).padStart(2, "0")}</span>{label}</dt>
+              <dd>{copy}</dd>
+            </div>
+          ))}
+        </dl>
+      </div>
+    </section>
+  );
+}
+
 export function FAQ() {
   const faqs = [
-    { q: "Is this a live website I can pay through?", a: "Not yet - this is a preview of the As-Sabiqun platform. Offerings, prices, orders, and payment states you see here are demonstration data, not real transactions." },
-    { q: "What happens after I submit a request?", a: "The order appears in our operations workspace, a team member reviews it, and it's assigned to a fulfilment partner. You can follow the whole trail in your amanah record." },
-    { q: "How does the completion proof work?", a: "Once a service is fulfilled, the assigned partner uploads photos or short video. Our team reviews the evidence before it's returned to your order record." },
-    { q: "Can organisations use As-Sabiqun, not just individuals?", a: "Yes - associations and community programmes can arrange services the same way, with the same visible scope and documented fulfilment." },
-    { q: "What other services are planned?", a: "AI consultancy and business consultancy are on the roadmap alongside Korban and Wakaf, once their service models are ready for a proper journey." },
+    ["What happens after payment?", "Payment must be confirmed securely before the request is made available to a fulfilment partner. You can then follow the project from your dashboard."],
+    ["How will I receive completion proof?", "After admin verification, your completion report is sent by email and Telegram. A secure copy also remains available from your project page."],
+    ["Who carries out the project?", "An approved partner accepts the assignment. As-Sabiqun coordinates the handoff, checks the required evidence, and keeps the operational record."],
+    ["What if something needs correcting?", "The reviewer returns the submission to the partner with a reason. A corrected submission is reviewed as a new version, so the history remains clear."],
   ];
+
   return (
-    <section id="faq" className="relative border-t px-6 py-24 lg:px-10 lg:py-36" style={{ borderColor: "var(--line)", backgroundColor: "var(--cream)" }}>
-      <div className="mx-auto max-w-3xl">
-        <SectionEyebrow label="Common questions" />
-        <h2 className="display mb-12" style={{ fontSize: "clamp(32px, 4.5vw, 48px)", lineHeight: 1.08 }}>
-          Things people <span style={{ color: "var(--gold)" }}>actually</span> ask.
-        </h2>
-        <div className="space-y-3">
-          {faqs.map((f, i) => (
-            <Reveal key={f.q} delay={i * 70} as="details" className="card group cursor-pointer p-5">
-              <summary className="flex list-none items-center justify-between gap-4">
-                <h3 className="display text-[16px] leading-snug lg:text-[17px]">{f.q}</h3>
-                <ChevronDown size={18} className="flex-shrink-0 transition-transform group-open:rotate-180" style={{ color: "var(--gold)" }} />
-              </summary>
-              <p className="mt-4 text-[14px] leading-relaxed" style={{ color: "var(--muted)" }}>{f.a}</p>
-            </Reveal>
+    <section className="lp-section lp-faq" aria-labelledby="faq-title">
+      <div className="lp-container lp-faq-layout">
+        <SectionHeading
+          id="faq-title"
+          eyebrow="Before you begin"
+          title="Questions, answered plainly."
+          copy="The service is designed to make each handoff understandable. Here are the details customers ask about most often."
+        />
+        <div className="lp-faq-list">
+          {faqs.map(([question, answer]) => (
+            <details key={question}>
+              <summary>{question}<span aria-hidden="true">+</span></summary>
+              <p>{answer}</p>
+            </details>
           ))}
         </div>
       </div>
@@ -308,23 +203,15 @@ export function FAQ() {
 
 export function FinalCTA() {
   return (
-    <section className="relative overflow-hidden border-t px-6 py-28 lg:px-10 lg:py-40" style={{ borderColor: "var(--line)" }}>
-      <div className="pointer-events-none absolute inset-0" aria-hidden="true" style={{ background: "radial-gradient(ellipse 70% 60% at 50% 50%, rgba(162,124,71,0.15) 0%, transparent 70%)" }} />
-      <div className="relative mx-auto max-w-3xl text-center">
-        <SectionEyebrow label="Begin with clarity" />
-        <h2 className="display" style={{ fontSize: "clamp(34px, 5.5vw, 58px)", lineHeight: 1.02 }}>
-          Your service, clearly delivered.{" "}
-          <span style={{ color: "var(--gold)" }}>What are you arranging today?</span>
-        </h2>
-        <p className="mx-auto mt-6 max-w-xl text-[16px] leading-relaxed" style={{ color: "var(--muted)" }}>
-          Choose Korban or a Wakaf project - review the scope, submit your details, and keep the record with you from request to completion.
-        </p>
-        <div className="mt-10">
-          <Link href="/services" className="btn">
-            Choose a service
-            <span aria-hidden="true">→</span>
-          </Link>
-        </div>
+    <section className="lp-final" aria-labelledby="final-title">
+      <div className="lp-container">
+        <AmanahStar className="lp-final-star" />
+        <p className="lp-arabic" lang="ar" dir="rtl">بِسْمِ اللَّهِ</p>
+        <h2 id="final-title">Begin with clarity.</h2>
+        <p>Choose a service, review the details, and keep its Amanah record with you through completion.</p>
+        <Link className="lp-button lp-button-primary" href="/services">
+          Explore all services <span aria-hidden="true">→</span>
+        </Link>
       </div>
     </section>
   );

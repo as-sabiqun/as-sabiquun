@@ -8,7 +8,8 @@ export async function GET(request: NextRequest) {
   const { searchParams } = new URL(request.url);
   const tokenHash = searchParams.get("token_hash");
   const type = searchParams.get("type") as EmailOtpType | null;
-  const next = safeRedirectPath(searchParams.get("next"));
+  const fallback = type === "invite" || type === "recovery" ? "/update-password" : "/";
+  const next = safeRedirectPath(searchParams.get("next"), fallback);
 
   if (tokenHash && type) {
     const supabase = await createClient();
@@ -18,5 +19,5 @@ export async function GET(request: NextRequest) {
     }
   }
 
-  redirect("/login?error=Your confirmation link is invalid or has expired.");
+  redirect(type === "invite" ? "/partner-login?error=Your invitation link is invalid or has expired." : "/login?error=Your confirmation link is invalid or has expired.");
 }

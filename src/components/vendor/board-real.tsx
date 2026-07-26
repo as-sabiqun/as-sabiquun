@@ -9,9 +9,9 @@ import type { VendorJobRow } from "@/lib/vendor-orders-types";
 
 const columns: { key: string; label: string; match: (j: VendorJobRow) => boolean }[] = [
   { key: "offered", label: "Awaiting response", match: (j) => j.isOffer },
-  { key: "assigned", label: "Accepted", match: (j) => !j.isOffer && j.status === "assigned" },
-  { key: "in_progress", label: "In progress", match: (j) => !j.isOffer && ["in_progress", "proof_submitted", "revision_required"].includes(j.status) },
-  { key: "completed", label: "Completed", match: (j) => ["verified", "completed", "closed"].includes(j.status) },
+  { key: "assigned", label: "Accepted", match: (j) => !j.isOffer && j.fulfilment_status === "assigned" },
+  { key: "in_progress", label: "In progress", match: (j) => !j.isOffer && ["in_progress", "proof_submitted", "revision_required"].includes(j.fulfilment_status) },
+  { key: "completed", label: "Verified", match: (j) => j.fulfilment_status === "verified" },
 ];
 
 export function BoardReal({ jobs }: { jobs: VendorJobRow[] }) {
@@ -25,7 +25,7 @@ export function BoardReal({ jobs }: { jobs: VendorJobRow[] }) {
     // action (mark_in_progress). Every other move needs a form (claim needs
     // the terms checkbox, completion needs photos), so those drops just
     // snap back instead of silently faking a transition.
-    if (job && !job.isOffer && job.status === "assigned" && columnKey === "in_progress") {
+    if (job && !job.isOffer && job.fulfilment_status === "assigned" && columnKey === "in_progress") {
       markInProgressAction(job.order_id).then(() => router.refresh());
     }
     setDragId(null);

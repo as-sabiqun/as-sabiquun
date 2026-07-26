@@ -1,5 +1,10 @@
+"use client";
+
 import Link from "next/link";
-import { adminOrderStatusLabel, adminStatusPillVariant } from "@/lib/admin-orders";
+import { useState, useTransition } from "react";
+import { setCustomerStatusAction } from "@/app/admin/actions";
+import { lifecycleLabel, lifecyclePillVariant } from "@/components/admin/operations-jobs";
+import type { DeliveryStatus, FulfilmentStatus, PaymentStatus, SettlementStatus } from "@/lib/order-lifecycle";
 import { formatCents, orderTitle, type OrderRow } from "@/lib/orders";
 
 export interface CustomerDetail {
@@ -12,8 +17,25 @@ export interface CustomerDetail {
   created_at: string;
 }
 
-export function CustomerDetailReal({ customer, orders }: { customer: CustomerDetail; orders: OrderRow[] }) {
-  const lifetimeSpend = orders.reduce((sum, o) => sum + o.total_amount, 0);
+export interface CustomerOrderRow extends OrderRow {
+  payment_status: PaymentStatus;
+  fulfilment_status: FulfilmentStatus;
+  delivery_status: DeliveryStatus;
+  settlement_status: SettlementStatus;
+}
+
+export function CustomerDetailReal({ customer, orders }: { customer: CustomerDetail; orders: CustomerOrderRow[] }) {
+  const [pending, startTransition] = useTransition();
+  const [error, setError] = useState<string | null>(null);
+  const lifetimeSpend = orders.filter((order) => ["paid", "partially_refunded"].includes(order.payment_status)).reduce((sum, order) => sum + order.total_amount, 0);
+
+  function toggleStatus() {
+    setError(null);
+    startTransition(async () => {
+      const result = await setCustomerStatusAction(customer.id, customer.status === "active" ? "suspended" : "active");
+      if (!result.ok) setError(result.error ?? "The customer status could not be updated.");
+    });
+  }
 
   return (
     <>
@@ -25,6 +47,7 @@ export function CustomerDetailReal({ customer, orders }: { customer: CustomerDet
 
       <div className="vendor-detail-layout mt-6">
         <div className="card vendor-panel">
+          {error && <p className="auth-error mb-4" role="alert">{error}</p>}
           <div className="vendor-detail-head">
             <div>
               <h1 className="display vendor-page-title">{customer.display_name}</h1>
@@ -53,8 +76,8 @@ export function CustomerDetailReal({ customer, orders }: { customer: CustomerDet
                       <small>{order.reference}</small>
                     </div>
                     <div className="vendor-job-row-meta">
-                      <span className={`vendor-status vendor-status-${adminStatusPillVariant(order.status)}`}>
-                        {adminOrderStatusLabel[order.status]}
+                      <span className={`vendor-status vendor-status-${lifecyclePillVariant(order)}`}>
+                        {lifecycleLabel(order)}
                       </span>
                       <strong className="numeral">{formatCents(order.total_amount)}</strong>
                     </div>
@@ -63,6 +86,7 @@ export function CustomerDetailReal({ customer, orders }: { customer: CustomerDet
               </div>
             )}
           </div>
+          <button type="button" className="btn btn-secondary btn-small mt-6" disabled={pending} onClick={toggleStatus}>{pending ? "Saving…" : customer.status === "active" ? "Suspend customer access" : "Restore customer access"}</button>
         </div>
 
         <div className="card vendor-panel">

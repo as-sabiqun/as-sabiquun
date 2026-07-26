@@ -1,21 +1,12 @@
-import { createClient, getProfile, isSupabaseConfigured } from "@/lib/supabase/server";
+import { createClient, getProfile } from "@/lib/supabase/server";
 import { logout } from "@/app/actions/auth";
 
 export default async function AdminProfilePage() {
-  let email = "admin@preview.local";
-  let name = "Demo Admin";
-  let signedIn = false;
-
-  if (isSupabaseConfigured) {
-    const supabase = await createClient();
-    const { data } = await supabase.auth.getUser();
-    if (data.user) {
-      signedIn = true;
-      email = data.user.email ?? email;
-      const profile = await getProfile(supabase, data.user.id);
-      name = profile?.display_name || email.split("@")[0];
-    }
-  }
+  const supabase = await createClient();
+  const { data } = await supabase.auth.getUser();
+  const email = data.user?.email ?? "Administrator";
+  const profile = data.user ? await getProfile(supabase, data.user.id) : null;
+  const name = profile?.display_name || email.split("@")[0];
 
   return (
     <>
@@ -38,16 +29,12 @@ export default async function AdminProfilePage() {
 
         <dl className="vendor-profile-facts">
           <div><dt>Role</dt><dd>Administrator</dd></div>
-          <div><dt>Console access</dt><dd>{signedIn ? "Signed in" : "Preview mode"}</dd></div>
+          <div><dt>Console access</dt><dd>Signed in with MFA</dd></div>
         </dl>
 
-        {signedIn ? (
-          <form action={logout}>
-            <button type="submit" className="btn-secondary btn">Log out</button>
-          </form>
-        ) : (
-          <p className="vendor-empty">Connect Supabase credentials to enable real admin sign-in and log out here.</p>
-        )}
+        <form action={logout}>
+          <button type="submit" className="btn-secondary btn">Log out</button>
+        </form>
       </div>
     </>
   );

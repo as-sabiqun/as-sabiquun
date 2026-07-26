@@ -6,7 +6,9 @@ export const isSupabaseConfigured = Boolean(
   process.env.NEXT_PUBLIC_SUPABASE_URL && process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY
 );
 
-export const isSupabaseAdminConfigured = Boolean(isSupabaseConfigured && process.env.SUPABASE_SERVICE_ROLE_KEY);
+export const isSupabaseAdminConfigured = Boolean(
+  isSupabaseConfigured && (process.env.SUPABASE_SECRET_KEY || process.env.SUPABASE_SERVICE_ROLE_KEY)
+);
 
 export type UserRole = "customer" | "vendor" | "admin";
 
@@ -18,6 +20,18 @@ export interface Profile {
   vendor_type: string | null;
   services: string[];
   status: "active" | "suspended";
+  vendor_onboarding_status?: "not_applicable" | "invited" | "pending" | "approved" | "rejected";
+  contact_person?: string | null;
+  whatsapp?: string | null;
+  country?: string | null;
+  city_address?: string | null;
+  currency?: string | null;
+  bank_name?: string | null;
+  bank_account_name?: string | null;
+  bank_account_number?: string | null;
+  swift_code?: string | null;
+  telegram_username?: string | null;
+  telegram_linked_at?: string | null;
   created_at: string;
 }
 

@@ -1,5 +1,7 @@
 # Task Plan: Modern Islamic marketing to service
 
+> **Historical design exploration.** Use the current [platform lifecycle spec](../platform-lifecycle/spec.md) and [implementation plan](../platform-lifecycle/plan.md) for production status and remaining work.
+
 > Source spec: [`spec.md`](./spec.md)
 
 ## Tasks
@@ -12,4 +14,3 @@
 
 ## Checkpoint
 The user explicitly requested the more Islamic, modern, Mobbin-grounded rebuild after reviewing the first concepts. That request authorises execution against this plan.
-

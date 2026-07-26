@@ -1,12 +1,12 @@
 import Link from "next/link";
 import { formatCents } from "@/lib/orders";
-import { vendorOrderStatusLabel, vendorStatusPillVariant, formatOfferCountdown } from "@/lib/vendor-orders";
+import { vendorJobMilestone, vendorOrderStatusLabel, vendorStatusPillVariant, formatOfferCountdown } from "@/lib/vendor-orders";
 import type { VendorJobRow } from "@/lib/vendor-orders-types";
 
 export function DashboardOverviewReal({ jobs }: { jobs: VendorJobRow[] }) {
   const pending = jobs.filter((j) => j.isOffer);
-  const active = jobs.filter((j) => !j.isOffer && ["assigned", "in_progress", "proof_submitted", "revision_required"].includes(j.status));
-  const completed = jobs.filter((j) => ["verified", "completed", "closed"].includes(j.status));
+  const active = jobs.filter((j) => !j.isOffer && ["assigned", "in_progress", "proof_submitted", "revision_required"].includes(j.fulfilment_status));
+  const completed = jobs.filter((j) => j.fulfilment_status === "verified");
   const earnings = jobs.filter((j) => !j.isOffer).reduce((sum, j) => sum + j.vendor_payout_amount, 0);
 
   const recent = [...jobs].sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime()).slice(0, 5);
@@ -89,8 +89,8 @@ export function DashboardOverviewReal({ jobs }: { jobs: VendorJobRow[] }) {
                     <small>{job.reference}</small>
                   </div>
                   <div className="vendor-job-row-meta">
-                    <span className={`vendor-status vendor-status-${vendorStatusPillVariant(job.isOffer ? "broadcasting" : job.status)}`}>
-                      {job.isOffer ? "Awaiting response" : vendorOrderStatusLabel[job.status]}
+                    <span className={`vendor-status vendor-status-${vendorStatusPillVariant(vendorJobMilestone(job))}`}>
+                      {job.isOffer ? "Awaiting response" : vendorOrderStatusLabel(job)}
                     </span>
                   </div>
                 </Link>

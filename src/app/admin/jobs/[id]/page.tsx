@@ -1,76 +1,82 @@
 import { notFound } from "next/navigation";
-import { createClient, isSupabaseConfigured } from "@/lib/supabase/server";
-import { createAdminClient } from "@/lib/supabase/admin";
-import { JobDetailDemo } from "@/components/admin/job-detail-demo";
-import { JobDetailReal, type AdminOrderDetail, type JobOfferRow, type PaymentRow, type ProofRow } from "@/components/admin/job-detail-real";
+import {
+  JobDetailReal,
+  type AdminOrderDetail,
+  type CompletionReportRow,
+  type CompletionSubmissionRow,
+  type JobOfferRow,
+  type NotificationRow,
+  type OrderEventRow,
+  type PaymentRow,
+  type ProofRow,
+  type ProviderTransactionRow,
+} from "@/components/admin/job-detail-real";
+import { createClient } from "@/lib/supabase/server";
 
 export default async function AdminJobDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
-
-  if (!isSupabaseConfigured) return <JobDetailDemo id={id} />;
-
   const supabase = await createClient();
-
-  const { data: order } = await supabase
+  const { data: order, error: orderError } = await supabase
     .from("orders")
-    .select(
-      `id, reference, service_type, category_slug, quantity, participant_names, dedication, total_amount,
-       vendor_payout_amount, status, created_at, customer_id, customer_name, customer_phone,
-       beneficiary_country, beneficiary_state, beneficiary_village, partner_organisation, beneficiary_names,
-       dedication_arabic, dedication_remarks,
-       project_country, project_state, project_village, project_address, project_lat, project_lng, project_maps_link,
-       vendor_remarks, broadcast_started_at, accepted_at, proof_submitted_at, completed_at, closed_at, completion_deadline,
-       admin_verified_by, admin_verified_at, admin_verification_notes, admin_verification_status,
-       email_sent_at, email_status, telegram_sent_at, telegram_status,
-       offerings(title), assigned_vendor:profiles!orders_assigned_vendor_id_fkey(id, display_name, phone)`
-    )
+    .select(`id, reference, service_type, category_slug, quantity, participant_names, dedication, notes,
+      unit_amount, total_amount, commission_amount, vendor_payout_amount, currency, offering_title, offering_detail, status,
+      payment_status, fulfilment_status, delivery_status, settlement_status, payment_reference,
+      created_at, updated_at, customer_id, customer_name, customer_phone, customer_email,
+      beneficiary_country, beneficiary_state, beneficiary_village, partner_organisation, beneficiary_names,
+      dedication_arabic, dedication_remarks, project_country, project_state, project_village,
+      project_address, project_lat, project_lng, project_maps_link, vendor_remarks,
+      broadcast_started_at, broadcast_expires_at, accepted_at, proof_submitted_at, completed_at, closed_at, completion_deadline,
+      refund_fulfilment_resolution, refund_resolution_reason, refund_resolved_at,
+      admin_verified_by, admin_verified_at, admin_verification_notes, admin_verification_status,
+      offerings(title), assigned_vendor:profiles!orders_assigned_vendor_id_fkey(id, display_name, phone)`)
     .eq("id", id)
     .maybeSingle();
 
+  if (orderError) throw new Error("The operational record could not be loaded.");
   if (!order) notFound();
 
-  const admin = createAdminClient();
-  const { data: customerAuth } = await admin.auth.admin.getUserById(order.customer_id);
+  const [offersResult, submissionsResult, proofsResult, notificationsResult, reportsResult, transactionsResult, paymentsResult, eventsResult, verifierResult] = await Promise.all([
+    supabase.from("job_offers").select("id, status, offered_at, expires_at, vendor:profiles!job_offers_vendor_id_fkey(id, display_name)").eq("order_id", id).order("offered_at", { ascending: false }),
+    supabase.from("completion_submissions").select(`id, version, status, project_country, project_state, project_village, project_address,
+      project_lat, project_lng, project_maps_link, vendor_remarks, submitted_at, reviewed_at, review_notes, review_checklist,
+      vendor:profiles!completion_submissions_vendor_id_fkey(id, display_name), reviewer:profiles!completion_submissions_reviewed_by_fkey(display_name)`)
+      .eq("order_id", id).order("version", { ascending: false }),
+    supabase.from("proofs").select("id, submission_id, storage_path, media_type, category, evidence_slot, mime_type, size_bytes, created_at").eq("order_id", id).order("created_at"),
+    supabase.from("notification_deliveries").select("id, report_id, channel, recipient, attempt, status, provider_message_id, error_code, error_message, next_retry_at, attempted_at, sent_at, delivered_at, created_at, updated_at").eq("order_id", id).order("created_at", { ascending: false }),
+    supabase.from("completion_reports").select("id, submission_id, kind, version, storage_path, checksum, generated_at").eq("order_id", id).order("generated_at", { ascending: false }),
+    supabase.from("payment_transactions").select("id, transaction_type, provider_request_id, provider_payment_id, amount, currency, status, provider_event_at, created_at").eq("order_id", id).order("created_at", { ascending: false }),
+    supabase.from("vendor_payments").select("id, amount, currency, payment_date, method, reference, notes, entry_type, reverses_payment_id, created_at").eq("order_id", id).order("created_at", { ascending: false }),
+    supabase.from("order_events").select("id, actor_id, actor_role, event_type, source, previous_state, new_state, metadata, created_at").eq("order_id", id).order("created_at", { ascending: true }).order("id", { ascending: true }),
+    order.admin_verified_by ? supabase.from("profiles").select("display_name").eq("id", order.admin_verified_by).maybeSingle() : Promise.resolve({ data: null }),
+  ]);
 
-  let adminVerifierName: string | null = null;
-  if (order.admin_verified_by) {
-    const { data: verifier } = await supabase.from("profiles").select("display_name").eq("id", order.admin_verified_by).maybeSingle();
-    adminVerifierName = verifier?.display_name ?? null;
-  }
-
-  let offers: JobOfferRow[] = [];
-  if (order.status === "broadcasting") {
-    const { data } = await supabase
-      .from("job_offers")
-      .select("id, status, expires_at, vendor:profiles!job_offers_vendor_id_fkey(id, display_name)")
-      .eq("order_id", id)
-      .order("offered_at", { ascending: true });
-    offers = (data ?? []) as unknown as JobOfferRow[];
-  }
-
-  let proofs: ProofRow[] = [];
-  if (["proof_submitted", "revision_required", "verified", "completed", "closed"].includes(order.status)) {
-    const { data } = await supabase.from("proofs").select("id, storage_path, media_type, category").eq("order_id", id);
-    proofs = await Promise.all(
-      (data ?? []).map(async (p) => {
-        const { data: signed } = await supabase.storage.from("proofs").createSignedUrl(p.storage_path, 3600);
-        return { id: p.id, media_type: p.media_type, category: p.category, url: signed?.signedUrl ?? null };
-      })
-    );
-  }
-
-  const { data: paymentData } = await supabase
-    .from("vendor_payments")
-    .select("id, amount, payment_date, method, reference, created_at")
-    .eq("order_id", id)
-    .order("payment_date", { ascending: false });
-  const payments = (paymentData ?? []) as PaymentRow[];
+  const signedProofs = await Promise.all((proofsResult.data ?? []).map(async (proof) => {
+    const { data: signed, error } = await supabase.storage.from("proofs").createSignedUrl(proof.storage_path, 3600);
+    return { proof: { ...proof, url: signed?.signedUrl ?? null } as ProofRow, error };
+  }));
+  const proofs = signedProofs.map(({ proof }) => proof);
 
   const detail: AdminOrderDetail = {
     ...order,
-    customer_email: customerAuth.user?.email ?? "—",
-    admin_verifier_name: adminVerifierName,
+    assigned_vendor: order.assigned_vendor as unknown as AdminOrderDetail["assigned_vendor"],
+    admin_verifier_name: verifierResult.data?.display_name ?? null,
   } as unknown as AdminOrderDetail;
+  const warnings = [offersResult, submissionsResult, proofsResult, notificationsResult, reportsResult, transactionsResult, paymentsResult, eventsResult]
+    .flatMap((result) => result.error ? [result.error.message] : [])
+    .concat(signedProofs.flatMap(({ error }) => error ? [error.message] : []));
 
-  return <JobDetailReal order={detail} offers={offers} proofs={proofs} payments={payments} />;
+  return (
+    <JobDetailReal
+      order={detail}
+      offers={(offersResult.data ?? []) as unknown as JobOfferRow[]}
+      submissions={(submissionsResult.data ?? []) as unknown as CompletionSubmissionRow[]}
+      proofs={proofs}
+      notifications={(notificationsResult.data ?? []) as NotificationRow[]}
+      reports={(reportsResult.data ?? []) as CompletionReportRow[]}
+      transactions={(transactionsResult.data ?? []) as ProviderTransactionRow[]}
+      payments={(paymentsResult.data ?? []) as PaymentRow[]}
+      events={(eventsResult.data ?? []) as unknown as OrderEventRow[]}
+      warnings={warnings}
+    />
+  );
 }

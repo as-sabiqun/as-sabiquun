@@ -2,11 +2,12 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { BrandMark } from "@/components/brand";
 
 const navItems: { href: string; label: string; icon: () => React.JSX.Element; exact: boolean }[] = [
-  { href: "/vendor-dashboard", label: "Dashboard", icon: DashboardIcon, exact: true },
+  { href: "/vendor-dashboard", label: "Overview", icon: DashboardIcon, exact: true },
   { href: "/vendor-dashboard/jobs", label: "Jobs", icon: JobsIcon, exact: false },
-  { href: "/vendor-dashboard/board", label: "Kanban board", icon: BoardIcon, exact: false },
+  { href: "/vendor-dashboard/earnings", label: "Earnings", icon: EarningsIcon, exact: false },
   { href: "/vendor-dashboard/reports", label: "Reports", icon: ReportIcon, exact: false },
 ];
 
@@ -16,8 +17,8 @@ function DashboardIcon() {
 function JobsIcon() {
   return <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="7" width="18" height="13" rx="2" /><path d="M8 7V5a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" /><path d="M3 12h18" /></svg>;
 }
-function BoardIcon() {
-  return <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="4" width="18" height="16" rx="2" /><path d="M9 4v16M15 4v16" /></svg>;
+function EarningsIcon() {
+  return <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h15a2 2 0 0 1 2 2v10H5a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h13" /><path d="M15 12h6M7 11h4M7 15h6" /></svg>;
 }
 function ReportIcon() {
   return <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 2 20h20L12 3Z" /><path d="M12 10v4" /><circle cx="12" cy="17" r=".6" fill="currentColor" stroke="none" /></svg>;
@@ -32,7 +33,7 @@ export function VendorSidebar({ vendorName, vendorEmail }: { vendorName: string;
   return (
     <aside className="vendor-sidebar">
       <div className="vendor-sidebar-brand">
-        <span className="vendor-sidebar-mark">AS</span>
+        <span className="vendor-sidebar-mark"><BrandMark className="h-10 w-10" priority /></span>
         <div>
           <strong>As-Sābiqūn</strong>
           <small>Vendor Portal</small>

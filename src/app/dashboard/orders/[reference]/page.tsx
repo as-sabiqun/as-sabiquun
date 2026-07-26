@@ -1,89 +1,284 @@
+import Image from "next/image";
 import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
+import { Check, CircleDollarSign, Download, ExternalLink, FileBadge2, ImageIcon, MapPin, MessageCircle, Video } from "lucide-react";
+import { deriveOrderMilestone, isPaid, type DeliveryStatus, type FulfilmentStatus, type PaymentStatus, type SettlementStatus } from "@/lib/order-lifecycle";
+import { formatCents, orderTitle, type OrderRow } from "@/lib/orders";
 import { createClient, getProfile } from "@/lib/supabase/server";
-import { currentStepIndex, formatCents, orderStatusCopy, orderSteps, orderTitle, type OrderRow } from "@/lib/orders";
+import { isGoogleCustomer } from "@/lib/auth";
+import styles from "../../dashboard.module.css";
 
-export default async function OrderDetailPage({ params }: PageProps<"/dashboard/orders/[reference]">) {
+interface CustomerOrder extends OrderRow {
+  customer_name: string;
+  currency: string;
+  payment_status: PaymentStatus;
+  fulfilment_status: FulfilmentStatus;
+  delivery_status: DeliveryStatus;
+  settlement_status: SettlementStatus;
+  accepted_at: string | null;
+  proof_submitted_at: string | null;
+  completed_at: string | null;
+}
+
+interface CompletionRecord {
+  submission_id: string;
+  version: number;
+  project_country: string;
+  project_state: string;
+  project_village: string;
+  project_address: string;
+  project_lat: number;
+  project_lng: number;
+  project_maps_link: string | null;
+  vendor_remarks: string;
+  reviewed_at: string;
+}
+
+interface CustomerEvidence {
+  proof_id: string;
+  submission_id: string;
+  category: string;
+  evidence_slot: string;
+  media_type: "photo" | "video";
+  created_at: string;
+}
+
+const paymentLabels: Record<PaymentStatus, string> = {
+  pending: "Awaiting payment",
+  paid: "Paid",
+  partially_refunded: "Partially refunded",
+  refunded: "Refunded",
+  failed: "Payment failed",
+  expired: "Checkout expired",
+  cancelled: "Cancelled",
+};
+
+const milestoneLabels = {
+  awaiting_payment: "Awaiting payment",
+  payment_issue: "Payment needs attention",
+  ready: "Preparing fulfilment",
+  broadcasting: "Finding a partner",
+  assigned: "Partner assigned",
+  in_progress: "In fulfilment",
+  under_review: "Evidence under review",
+  revision_required: "Evidence being corrected",
+  verified: "Verified",
+  delivery_failed: "Report delivery needs attention",
+  completed: "Completed",
+  closed: "Closed",
+  cancelled: "Cancelled",
+  refunded: "Refunded",
+} as const;
+
+const eventLabels: Record<string, string> = {
+  "order.created": "Order received",
+  "payment.paid": "Payment confirmed",
+  "payment.partially_refunded": "Payment partially refunded",
+  "payment.refunded": "Payment refunded",
+  "payment.failed": "Payment attempt failed",
+  "payment.expired": "Payment request expired",
+  "payment.cancelled": "Payment cancelled",
+  "fulfilment.ready": "Ready for fulfilment",
+  "fulfilment.broadcasting": "Shared with approved partners",
+  "fulfilment.assigned": "Fulfilment partner assigned",
+  "vendor.accepted": "Fulfilment partner accepted",
+  "fulfilment.in_progress": "Project work started",
+  "fulfilment.proof_submitted": "Completion evidence submitted",
+  "fulfilment.revision_required": "Evidence correction requested",
+  "fulfilment.verified": "Project evidence verified",
+  "fulfilment.cancelled": "Fulfilment cancelled",
+  "delivery.queued": "Completion report queued",
+  "delivery.partial": "One report channel succeeded",
+  "delivery.delivered": "Completion report delivered",
+  "delivery.failed": "Report delivery needs attention",
+};
+
+function date(value: string | null | undefined, includeTime = false) {
+  if (!value) return "Not yet";
+  return new Date(value).toLocaleString("en-SG", includeTime
+    ? { day: "numeric", month: "short", year: "numeric", hour: "numeric", minute: "2-digit" }
+    : { day: "numeric", month: "short", year: "numeric" });
+}
+
+function categoryLabel(value: string) {
+  return value.replaceAll("_", " ").replace(/\b\w/g, (letter) => letter.toUpperCase());
+}
+
+export default async function OrderDetailPage({ params, searchParams }: PageProps<"/dashboard/orders/[reference]">) {
   const { reference } = await params;
+  const paymentQuery = (await searchParams).payment;
   const supabase = await createClient();
   const { data: userData } = await supabase.auth.getUser();
-  if (!userData.user) redirect(`/login?next=/dashboard/orders/${reference}`);
+  if (!userData.user) redirect(`/login?next=/dashboard/orders/${encodeURIComponent(reference)}`);
 
   const profile = await getProfile(supabase, userData.user.id);
-  if (profile?.role !== "customer" || profile.status !== "active") {
+  if (!await isGoogleCustomer(supabase, userData.user, profile)) {
     redirect(profile?.status === "suspended" ? "/login?error=This account is suspended." : "/");
   }
 
-  const { data: order } = await supabase
-    .from("orders")
-    .select("id, reference, service_type, category_slug, quantity, participant_names, dedication, customer_name, total_amount, status, created_at, offerings(title)")
-    .eq("customer_id", userData.user.id)
+  const { data: order, error: orderError } = await supabase
+    .from("customer_orders")
+    .select("id, reference, service_type, category_slug, quantity, participant_names, dedication, customer_name, total_amount, currency, payment_status, fulfilment_status, delivery_status, settlement_status, status, accepted_at, proof_submitted_at, completed_at, created_at, offering_title")
     .eq("reference", reference)
     .maybeSingle();
-
+  if (orderError) throw new Error("Project details could not be loaded.");
   if (!order) notFound();
-  const row = order as unknown as OrderRow & { customer_name: string };
-  const stepIndex = currentStepIndex(row.status);
-  const isStalled = row.status === "expired_unclaimed" || row.status === "cancelled";
+  const row = order as unknown as CustomerOrder;
+  const [recordResult, reportResult, notificationResult, eventResult] = await Promise.all([
+    supabase.from("customer_completion_records").select("submission_id, version, project_country, project_state, project_village, project_address, project_lat, project_lng, project_maps_link, vendor_remarks, reviewed_at").eq("order_id", row.id).order("version", { ascending: false }).limit(1).maybeSingle(),
+    supabase.from("customer_completion_report_metadata").select("id, generated_at, version").eq("order_id", row.id).order("version", { ascending: false }).limit(1).maybeSingle(),
+    supabase.from("customer_notification_deliveries").select("channel, status, sent_at, delivered_at, attempted_at").eq("order_id", row.id).order("attempt", { ascending: false }),
+    supabase.from("customer_order_events").select("event_type, created_at").eq("order_id", row.id).order("created_at"),
+  ]);
+  if (recordResult.error || reportResult.error || notificationResult.error || eventResult.error) {
+    throw new Error("The completion record could not be loaded.");
+  }
+  const record = recordResult.data as CompletionRecord | null;
+  const { data: evidenceData, error: evidenceError } = record
+    ? await supabase.from("customer_completion_evidence").select("proof_id, submission_id, category, evidence_slot, media_type, created_at").eq("submission_id", record.submission_id).order("evidence_slot")
+    : { data: [], error: null };
+  if (evidenceError) throw new Error("Completion evidence could not be loaded.");
+  const evidence = (evidenceData ?? []) as CustomerEvidence[];
+  const report = reportResult.data as { id: string; generated_at: string; version: number } | null;
+  const notifications = (notificationResult.data ?? []) as Array<{ channel: "email" | "telegram"; status: string; sent_at: string | null; delivered_at: string | null; attempted_at: string | null }>;
+  const events = (eventResult.data ?? []) as Array<{ event_type: string; created_at: string }>;
+  const latestNotification = (channel: "email" | "telegram") => notifications.find((item) => item.channel === channel);
+  const milestone = deriveOrderMilestone(row);
+  const paid = isPaid(row.payment_status);
+  const fulfilmentStarted = !["not_ready", "ready", "broadcasting"].includes(row.fulfilment_status);
+  const verified = row.fulfilment_status === "verified";
+  const delivered = row.delivery_status === "delivered";
+
+  const journey = [
+    { label: "Payment confirmed", done: paid },
+    { label: "Partner fulfilment", done: fulfilmentStarted },
+    { label: "Evidence verified", done: verified },
+    { label: "Report delivered", done: delivered },
+  ];
 
   return (
-    <section className="py-6 lg:py-8">
+    <div className={styles.detailPage}>
       <nav className="breadcrumb">
-        <Link href="/dashboard">Dashboard</Link>
-        <span aria-hidden="true">/</span>
-        <span>{row.reference}</span>
+        <Link href="/dashboard/projects">Projects</Link><span aria-hidden="true">/</span><span>{row.reference}</span>
       </nav>
 
-      <div className="vendor-detail-layout mt-6">
-        <div className="card vendor-panel">
-          <div className="vendor-detail-head">
-            <div>
-              <span className="vendor-job-table-category">{row.service_type}</span>
-              <h1 className="display vendor-page-title mt-2">{orderTitle(row)}</h1>
-              <p className="vendor-page-lead">{row.reference} · Placed {new Date(row.created_at).toLocaleDateString("en-SG")}</p>
-            </div>
+      <header className={styles.detailHero}>
+        <div>
+          <p>{row.service_type}</p>
+          <h1>{orderTitle(row)}</h1>
+          <span>{row.reference} · Ordered {date(row.created_at)}</span>
+        </div>
+        <strong className={styles.milestone}>{milestoneLabels[milestone]}</strong>
+      </header>
+
+      {typeof paymentQuery === "string" && paymentQuery === "processing" && !paid && (
+        <p className={styles.notice} role="status">Your payment is still being confirmed by HitPay. This page updates only after the verified payment webhook arrives.</p>
+      )}
+      {["failed", "expired", "cancelled"].includes(row.payment_status) && (
+        <p className={styles.alert}>Payment was not completed. Your order is safe and can be paid again.</p>
+      )}
+
+      <section className={styles.trail} aria-label="Project journey">
+        {journey.map((step, index) => (
+          <div key={step.label} className={step.done ? styles.trailDone : ""}>
+            <span>{step.done ? <Check aria-hidden="true" /> : index + 1}</span><strong>{step.label}</strong>
           </div>
+        ))}
+      </section>
 
-          {isStalled ? (
-            <div className="auth-error mt-6">
-              {row.status === "cancelled" ? "This order was cancelled." : "We are still finding a fulfilment partner for this order. Thanks for your patience."}
-            </div>
-          ) : (
-            <div className="order-tracker mt-8">
-              {orderSteps.map((step, index) => (
-                <div key={step.key} className={`order-tracker-step ${index <= stepIndex ? "is-done" : ""} ${index === stepIndex ? "is-current" : ""}`}>
-                  <span className="order-tracker-dot" />
-                  <span className="order-tracker-label">{step.label}</span>
-                </div>
-              ))}
-            </div>
+      <div className={styles.detailGrid}>
+        <div className={styles.detailMain}>
+          <section className={styles.detailPanel}>
+            <header><div><p>Project record</p><h2>Order and payment</h2></div><CircleDollarSign aria-hidden="true" /></header>
+            <dl className={styles.detailFacts}>
+              <div><dt>Service</dt><dd>{orderTitle(row)}</dd></div>
+              <div><dt>Quantity</dt><dd>{row.quantity}</dd></div>
+              <div><dt>Amount</dt><dd>{formatCents(row.total_amount)} {row.currency}</dd></div>
+              <div><dt>Payment</dt><dd>{paymentLabels[row.payment_status]}</dd></div>
+              <div><dt>Customer</dt><dd>{row.customer_name}</dd></div>
+              <div><dt>Order date</dt><dd>{date(row.created_at, true)}</dd></div>
+            </dl>
+            {!paid && row.payment_status !== "refunded" && <Link href={`/checkout/${row.reference}`} className={styles.primaryAction}>Continue to payment</Link>}
+          </section>
+
+          {(row.participant_names?.length > 0 || row.dedication) && (
+            <section className={styles.detailPanel}>
+              <header><div><p>Amanah details</p><h2>Names and dedication</h2></div><FileBadge2 aria-hidden="true" /></header>
+              <dl className={styles.detailFacts}>
+                {row.participant_names?.length > 0 && <div><dt>Participant names</dt><dd>{row.participant_names.join(", ")}</dd></div>}
+                {row.dedication && <div><dt>Dedication</dt><dd>{row.dedication}</dd></div>}
+              </dl>
+            </section>
           )}
 
-          {row.participant_names?.length > 0 && (
-            <div className="mt-8">
-              <span className="label mb-2 block">Participant{row.participant_names.length > 1 ? "s" : ""}</span>
-              <p className="text-sm text-[var(--muted)]">{row.participant_names.join(", ")}</p>
-            </div>
+          {record && (
+            <section className={styles.detailPanel}>
+              <header><div><p>Approved completion</p><h2>Project location</h2></div><MapPin aria-hidden="true" /></header>
+              <dl className={styles.detailFacts}>
+                <div><dt>Country</dt><dd>{record.project_country}</dd></div>
+                <div><dt>State / district</dt><dd>{record.project_state}</dd></div>
+                <div><dt>Village / locality</dt><dd>{record.project_village}</dd></div>
+                <div><dt>Exact location</dt><dd>{record.project_address}</dd></div>
+                <div><dt>Coordinates</dt><dd>{record.project_lat}, {record.project_lng}</dd></div>
+                <div><dt>Verified</dt><dd>{date(record.reviewed_at, true)}</dd></div>
+              </dl>
+              {record.project_maps_link && <a className={styles.secondaryAction} href={record.project_maps_link} target="_blank" rel="noreferrer">Open map <ExternalLink aria-hidden="true" /></a>}
+            </section>
           )}
-          {row.dedication && (
-            <div className="mt-6">
-              <span className="label mb-2 block">Dedication</span>
-              <p className="text-sm text-[var(--muted)]">{row.dedication}</p>
-            </div>
+
+          {evidence.length > 0 && (
+            <section id="evidence" className={styles.detailPanel}>
+              <header><div><p>Approved evidence</p><h2>Completion media</h2></div><ImageIcon aria-hidden="true" /></header>
+              <div className={styles.evidenceGrid}>
+                {evidence.map((proof) => proof.media_type === "photo" ? (
+                  <a key={proof.proof_id} href={`/api/proofs/${proof.proof_id}`} target="_blank" rel="noreferrer" className={styles.evidenceCard}>
+                    <Image src={`/api/proofs/${proof.proof_id}`} width={360} height={240} unoptimized alt={`${categoryLabel(proof.category)} approved project evidence`} />
+                    <span>{categoryLabel(proof.evidence_slot)}</span>
+                  </a>
+                ) : (
+                  <a key={proof.proof_id} href={`/api/proofs/${proof.proof_id}`} target="_blank" rel="noreferrer" className={`${styles.evidenceCard} ${styles.videoCard}`}>
+                    <Video aria-hidden="true" /><strong>{categoryLabel(proof.evidence_slot)}</strong><span>Open secure video</span>
+                  </a>
+                ))}
+              </div>
+            </section>
           )}
         </div>
 
-        <aside className="card vendor-panel vendor-buy-box">
-          <span className="vendor-eyebrow">Current status</span>
-          <strong className="display text-lg mt-2 block">{orderStatusCopy[row.status]}</strong>
-          <dl className="admin-contact-facts mt-6">
-            <div><dt>Service value</dt><dd>{formatCents(row.total_amount)}</dd></div>
-            <div><dt>Placed by</dt><dd>{row.customer_name}</dd></div>
-          </dl>
-          <Link href="/dashboard/report" className="vendor-report-link">Something wrong? Report a concern</Link>
-          <Link href="/dashboard" className="vendor-job-table-view mt-4 inline-block">Back to dashboard <span aria-hidden="true">→</span></Link>
+        <aside className={styles.detailAside}>
+          <section className={styles.detailPanel}>
+            <header><div><p>Documents</p><h2>Your completion record</h2></div><Download aria-hidden="true" /></header>
+            {report ? (
+              <div className={styles.documentList}>
+                {paid && <Link href={`/receipts/${row.reference}`}><CircleDollarSign aria-hidden="true" /><span><strong>Payment receipt</strong><small>Provider-confirmed PDF</small></span><Download aria-hidden="true" /></Link>}
+                <Link href={`/reports/${report.id}`}><FileBadge2 aria-hidden="true" /><span><strong>Completion report</strong><small>PDF · Version {report.version}</small></span><Download aria-hidden="true" /></Link>
+                {verified && <Link href={`/nameplates/${row.id}`} target="_blank"><ImageIcon aria-hidden="true" /><span><strong>Certificate / nameplate</strong><small>Branded PNG</small></span><ExternalLink aria-hidden="true" /></Link>}
+              </div>
+            ) : paid ? (
+              <div className={styles.documentList}><Link href={`/receipts/${row.reference}`}><CircleDollarSign aria-hidden="true" /><span><strong>Payment receipt</strong><small>Provider-confirmed PDF</small></span><Download aria-hidden="true" /></Link></div>
+            ) : <p className={styles.emptyDetail}>Your report will appear after evidence is verified and the document is generated.</p>}
+          </section>
+
+          <section className={styles.detailPanel}>
+            <header><div><p>Delivery</p><h2>Email and Telegram</h2></div><MessageCircle aria-hidden="true" /></header>
+            <dl className={styles.detailFacts}>
+              {["email", "telegram"].map((channel) => {
+                const item = latestNotification(channel as "email" | "telegram");
+                return <div key={channel}><dt>{channel === "email" ? "Email" : "Telegram"}</dt><dd>{item ? categoryLabel(item.status) : "Not queued"}<small>{item ? date(item.delivered_at ?? item.sent_at ?? item.attempted_at, true) : ""}</small></dd></div>;
+              })}
+            </dl>
+          </section>
+
+          <section className={styles.detailPanel}>
+            <header><div><p>Timeline</p><h2>Customer-safe updates</h2></div></header>
+            <ol className={styles.eventTimeline}>
+              {events.length ? events.map((event, index) => <li key={`${event.event_type}-${event.created_at}-${index}`}><i /><div><strong>{eventLabels[event.event_type] ?? "Project updated"}</strong><span>{date(event.created_at, true)}</span></div></li>) : <li><i /><div><strong>Order received</strong><span>{date(row.created_at, true)}</span></div></li>}
+            </ol>
+          </section>
+
+          <Link href={`/dashboard/report?order=${encodeURIComponent(row.id)}`} className={styles.supportLink}>Report a concern about this project</Link>
         </aside>
       </div>
-    </section>
+    </div>
   );
 }
