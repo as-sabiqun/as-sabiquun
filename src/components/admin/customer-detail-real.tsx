@@ -29,6 +29,8 @@ export function CustomerDetailReal({ customer, orders }: { customer: CustomerDet
   const [error, setError] = useState<string | null>(null);
   const [copied, setCopied] = useState<string | null>(null);
   const lifetimeSpend = orders.filter((order) => ["paid", "partially_refunded"].includes(order.payment_status)).reduce((sum, order) => sum + order.total_amount, 0);
+  const activeProjects = orders.filter((order) => ["paid", "partially_refunded"].includes(order.payment_status) && order.delivery_status !== "delivered" && order.fulfilment_status !== "cancelled").length;
+  const deliveredProjects = orders.filter((order) => order.delivery_status === "delivered").length;
   const contactDetails = [
     { key: "email", label: "Email", value: customer.email },
     { key: "phone", label: "Phone", value: customer.phone },
@@ -61,57 +63,66 @@ export function CustomerDetailReal({ customer, orders }: { customer: CustomerDet
         <span>{customer.display_name}</span>
       </nav>
 
-      <div className="vendor-detail-layout mt-6">
-        <div className="card vendor-panel">
-          {error && <p className="auth-error mb-4" role="alert">{error}</p>}
-          <div className="vendor-detail-head">
-            <div>
-              <h1 className="display vendor-page-title">{customer.display_name}</h1>
-              <p className="vendor-page-lead">Customer since {new Date(customer.created_at).toLocaleDateString()}</p>
-            </div>
-            <span className={`vendor-status ${customer.status === "suspended" ? "vendor-status-rejected" : customer.verified ? "vendor-status-accepted" : "vendor-status-pending"}`}>
-              {customer.status === "suspended" ? "Suspended" : customer.verified ? "Verified" : "Pending confirmation"}
-            </span>
-          </div>
+      {error && <p className="auth-error mt-5" role="alert">{error}</p>}
 
-          <div className="vendor-stat-grid admin-vendor-stats">
-            <div className="admin-inline-stat"><span>Orders</span><strong className="numeral">{orders.length}</strong></div>
-            <div className="admin-inline-stat"><span>Lifetime spend</span><strong className="numeral">{formatCents(lifetimeSpend)}</strong></div>
+      <section className="admin-customer-profile-hero mt-6" aria-labelledby="customer-name">
+        <div className="admin-customer-profile-identity">
+          <span className="admin-customer-profile-avatar" aria-hidden="true">{customer.display_name.charAt(0)}</span>
+          <div>
+            <span className="vendor-eyebrow">Customer record</span>
+            <h1 id="customer-name" className="display">{customer.display_name}</h1>
+            <p>Joined {new Date(customer.created_at).toLocaleDateString("en-SG", { day: "numeric", month: "long", year: "numeric" })}</p>
           </div>
-
-          <div className="mt-8">
-            <span className="label mb-3 block">Order activity</span>
-            {orders.length === 0 ? (
-              <p className="vendor-empty">No orders yet.</p>
-            ) : (
-              <div className="vendor-job-list">
-                {orders.map((order) => (
-                  <Link key={order.id} href={`/admin/jobs/${order.id}`} className="vendor-job-row">
-                    <div>
-                      <strong>{orderTitle(order)}</strong>
-                      <small>{order.reference}</small>
-                    </div>
-                    <div className="vendor-job-row-meta">
-                      <span className={`vendor-status vendor-status-${lifecyclePillVariant(order)}`}>
-                        {lifecycleLabel(order)}
-                      </span>
-                      <strong className="numeral">{formatCents(order.total_amount)}</strong>
-                    </div>
-                  </Link>
-                ))}
-              </div>
-            )}
-          </div>
-          <button type="button" className="btn btn-secondary btn-small mt-6" disabled={pending} onClick={toggleStatus}>{pending ? "Saving…" : customer.status === "active" ? "Suspend customer access" : "Restore customer access"}</button>
         </div>
+        <span className={`vendor-status ${customer.status === "suspended" ? "vendor-status-rejected" : customer.verified ? "vendor-status-accepted" : "vendor-status-pending"}`}>
+          {customer.status === "suspended" ? "Suspended" : customer.verified ? "Verified" : "Pending confirmation"}
+        </span>
+        <div className="admin-customer-profile-metrics">
+          <div><span>Total orders</span><strong className="numeral">{orders.length}</strong></div>
+          <div><span>Paid value</span><strong className="numeral">{formatCents(lifetimeSpend)}</strong></div>
+          <div><span>Active projects</span><strong className="numeral">{activeProjects}</strong></div>
+          <div><span>Delivered</span><strong className="numeral">{deliveredProjects}</strong></div>
+        </div>
+      </section>
 
-        <div className="card vendor-panel">
-          <span className="vendor-eyebrow">Contact details</span>
-          <dl className="admin-contact-facts mt-3">
+      <div className="admin-customer-profile-layout mt-5">
+        <section className="card admin-customer-projects" aria-labelledby="customer-projects-title">
+          <header>
+            <div>
+              <span className="vendor-eyebrow">Activity</span>
+              <h2 id="customer-projects-title">Project history</h2>
+            </div>
+            <span>{orders.length} record{orders.length === 1 ? "" : "s"}</span>
+          </header>
+          {orders.length === 0 ? (
+            <div className="admin-customer-projects-empty">
+              <span aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M7 7V5a2 2 0 0 1 2-2h6a2 2 0 0 1 2 2v2M4 7h16v13H4z" /><path d="M4 11h16" /></svg></span>
+              <strong>No projects yet</strong>
+              <p>Projects will appear here after this customer completes checkout.</p>
+            </div>
+          ) : (
+            <div className="admin-customer-project-list">
+              {orders.map((order) => (
+                <Link key={order.id} href={`/admin/jobs/${order.id}`} className="admin-customer-project-row">
+                  <div><strong>{orderTitle(order)}</strong><small>{order.reference} · {new Date(order.created_at).toLocaleDateString("en-SG")}</small></div>
+                  <span className={`vendor-status vendor-status-${lifecyclePillVariant(order)}`}>{lifecycleLabel(order)}</span>
+                  <strong className="numeral">{formatCents(order.total_amount)}</strong>
+                  <span aria-hidden="true">→</span>
+                </Link>
+              ))}
+            </div>
+          )}
+        </section>
+
+        <aside className="card admin-customer-account-panel">
+          <header><span className="vendor-eyebrow">Account</span><h2>Customer details</h2></header>
+          <section aria-labelledby="customer-contact-title">
+            <h3 id="customer-contact-title">Contact</h3>
+            <dl className="admin-contact-facts">
             {contactDetails.map((detail) => (
               <div className="admin-copy-fact" key={detail.key}>
                 <dt>{detail.label}</dt>
-                <dd title={detail.value ?? undefined}>{detail.value ?? "—"}</dd>
+                <dd title={detail.value ?? undefined}>{detail.value ?? "Not provided"}</dd>
                 {detail.value && (
                   <button type="button" className={`admin-copy-button ${copied === detail.key ? "is-copied" : ""}`} onClick={() => copyContact(detail.key, detail.value!)} aria-label={`${copied === detail.key ? "Copied" : "Copy"} ${detail.label.toLowerCase()}`}>
                     {copied === detail.key ? (
@@ -124,8 +135,20 @@ export function CustomerDetailReal({ customer, orders }: { customer: CustomerDet
                 )}
               </div>
             ))}
-          </dl>
-        </div>
+            </dl>
+          </section>
+          <section aria-labelledby="customer-access-title">
+            <h3 id="customer-access-title">Access</h3>
+            <dl className="admin-customer-access-facts">
+              <div><dt>Google email</dt><dd>{customer.verified ? "Verified" : "Unverified"}</dd></div>
+              <div><dt>Portal access</dt><dd>{customer.status === "active" ? "Active" : "Suspended"}</dd></div>
+            </dl>
+          </section>
+          <div className="admin-customer-access-action">
+            <p>{customer.status === "active" ? "Suspending access signs the customer out and blocks their portal." : "Restore this customer’s access to the portal."}</p>
+            <button type="button" className="btn btn-secondary btn-small" disabled={pending} onClick={toggleStatus}>{pending ? "Saving…" : customer.status === "active" ? "Suspend access" : "Restore access"}</button>
+          </div>
+        </aside>
       </div>
     </>
   );
