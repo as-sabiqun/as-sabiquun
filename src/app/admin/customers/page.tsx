@@ -1,8 +1,15 @@
 import { redirect } from "next/navigation";
-import { getAal2Admin } from "@/lib/auth";
-import { createClient } from "@/lib/supabase/server";
-import { createAdminClient } from "@/lib/supabase/admin";
 import { CustomersListReal, type CustomerRow } from "@/components/admin/customers-list-real";
+import { getAal2Admin } from "@/lib/auth";
+import { customerOrderMetrics, type CustomerOrderInput } from "@/lib/customer-directory";
+import { createAdminClient } from "@/lib/supabase/admin";
+import { createClient } from "@/lib/supabase/server";
+
+type CustomerOrderRecord = CustomerOrderInput & {
+  customer_id: string;
+  created_at: string;
+  updated_at: string;
+};
 
 export default async function AdminCustomersPage() {
   const supabase = await createClient();
@@ -15,29 +22,41 @@ export default async function AdminCustomersPage() {
   ] = await Promise.all([
     supabase
       .from("profiles")
-      .select("id, display_name, phone, status")
+      .select("id, display_name, phone, status, telegram_linked_at, created_at")
       .eq("role", "customer")
       .order("created_at", { ascending: false }),
     admin.auth.admin.listUsers({ perPage: 1000 }),
-    supabase.from("orders").select("customer_id, total_amount, payment_status"),
+    supabase
+      .from("orders")
+      .select("customer_id, total_amount, payment_provider, payment_status, fulfilment_status, delivery_status, created_at, updated_at, payment_transactions(transaction_type, amount, status)"),
   ]);
   if (profilesError) throw new Error("Customers could not be loaded.");
   if (authError) throw new Error("Customer identities could not be loaded.");
-  const authById = new Map(authList.users.map((u) => [u.id, u]));
   if (ordersError) throw new Error("Customer orders could not be loaded.");
 
-  const customers: CustomerRow[] = (profiles ?? []).map((p) => {
-    const authUser = authById.get(p.id);
-    const customerOrders = (orders ?? []).filter((o) => o.customer_id === p.id);
+  const authById = new Map(authList.users.map((user) => [user.id, user]));
+  const ordersByCustomer = new Map<string, CustomerOrderRecord[]>();
+  for (const order of (orders ?? []) as CustomerOrderRecord[]) {
+    const customerOrders = ordersByCustomer.get(order.customer_id) ?? [];
+    customerOrders.push(order);
+    ordersByCustomer.set(order.customer_id, customerOrders);
+  }
+
+  const customers: CustomerRow[] = (profiles ?? []).map((profile) => {
+    const authUser = authById.get(profile.id);
+    const customerOrders = ordersByCustomer.get(profile.id) ?? [];
     return {
-      id: p.id,
-      display_name: p.display_name,
+      id: profile.id,
+      display_name: profile.display_name,
       email: authUser?.email ?? "—",
-      phone: p.phone,
+      phone: profile.phone,
       verified: Boolean(authUser?.email_confirmed_at),
-      status: p.status,
+      telegramLinked: Boolean(profile.telegram_linked_at),
+      status: profile.status as "active" | "suspended",
+      createdAt: profile.created_at,
+      latestOrderAt: customerOrders.reduce<string | null>((latest, order) => !latest || order.updated_at > latest ? order.updated_at : latest, null),
       ordersCount: customerOrders.length,
-      lifetimeSpendCents: customerOrders.filter((order) => ["paid", "partially_refunded"].includes(order.payment_status)).reduce((sum, order) => sum + order.total_amount, 0),
+      ...customerOrderMetrics(customerOrders),
     };
   });
 
