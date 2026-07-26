@@ -118,7 +118,7 @@ export function VendorsListReal({ vendors }: { vendors: VendorRow[] }) {
           <div className="admin-capability-grid">
             {mvpServices.map((service, index) => {
               const count = vendors.filter((vendor) => vendorDirectoryState(vendor) === "operational" && vendor.services.includes(service.slug)).length;
-              return <div key={service.slug}><span>{String(index + 1).padStart(2, "0")}</span><strong>{service.title}</strong><small>{count} ready</small></div>;
+              return <div key={service.slug} data-service={service.slug}><span>{String(index + 1).padStart(2, "0")}</span><strong>{service.title}</strong><small>{count} ready</small></div>;
             })}
           </div>
         </div>
@@ -158,7 +158,7 @@ export function VendorsListReal({ vendors }: { vendors: VendorRow[] }) {
                 <div><strong>{vendor.display_name}</strong><small>{[vendor.country || vendor.city_address, vendor.contact_person || vendor.phone].filter(Boolean).join(" · ") || "Contact details pending"}</small></div>
               </div>
               <div className="admin-partner-capabilities">
-                {vendor.services.length ? vendor.services.slice(0, 3).map((slug) => <span key={slug}>{vendorServiceOptions.find((option) => option.slug === slug)?.title ?? slug}</span>) : <small>No services selected</small>}
+                {vendor.services.length ? vendor.services.slice(0, 3).map((slug) => <span key={slug} data-service={slug}>{vendorServiceOptions.find((option) => option.slug === slug)?.title ?? slug}</span>) : <small>No services selected</small>}
                 {vendor.services.length > 3 && <small>+{vendor.services.length - 3} more</small>}
               </div>
               <div className="admin-partner-state">
