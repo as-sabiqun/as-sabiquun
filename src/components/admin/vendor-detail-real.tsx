@@ -79,6 +79,17 @@ export function VendorDetailReal({
   const [paymentError, setPaymentError] = useState<string | null>(null);
   const [rating, setRating] = useState(vendor.rating != null ? String(vendor.rating) : "");
   const [invitationMessage, setInvitationMessage] = useState<{ ok: boolean; text: string } | null>(null);
+  const [copied, setCopied] = useState<string | null>(null);
+  const [copyError, setCopyError] = useState<string | null>(null);
+  const contactDetails = [
+    { key: "contact", label: "Contact", value: vendor.contact_person },
+    { key: "email", label: "Email", value: vendor.email },
+    { key: "phone", label: "Phone", value: vendor.phone },
+    { key: "whatsapp", label: "WhatsApp", value: vendor.whatsapp },
+    { key: "country", label: "Country", value: vendor.country },
+    { key: "address", label: "Address", value: vendor.city_address },
+    { key: "id", label: "Vendor ID", value: vendor.id },
+  ].filter((detail) => detail.value);
 
   const settlementOrders = orders.filter((order) => order.fulfilment_status === "verified");
   const settlementOrderIds = new Set(settlementOrders.map((order) => order.id));
@@ -126,6 +137,17 @@ export function VendorDetailReal({
       });
       if (result.ok) router.refresh();
     });
+  }
+
+  async function copyContact(key: string, value: string) {
+    try {
+      await navigator.clipboard.writeText(value);
+      setCopyError(null);
+      setCopied(key);
+      window.setTimeout(() => setCopied((current) => current === key ? null : current), 1600);
+    } catch {
+      setCopyError("This detail could not be copied.");
+    }
   }
 
   function submitPayment(event: FormEvent<HTMLFormElement>) {
@@ -286,14 +308,22 @@ export function VendorDetailReal({
 
         <div className="card vendor-panel">
           <span className="vendor-eyebrow">Contact details</span>
+          {copyError && <p className="auth-error mt-3" role="alert">{copyError}</p>}
           <dl className="admin-contact-facts mt-3">
-            {vendor.contact_person && <div><dt>Contact</dt><dd>{vendor.contact_person}</dd></div>}
-            <div><dt>Email</dt><dd>{vendor.email}</dd></div>
-            <div><dt>Phone</dt><dd>{vendor.phone || "—"}</dd></div>
-            {vendor.whatsapp && <div><dt>WhatsApp</dt><dd>{vendor.whatsapp}</dd></div>}
-            {vendor.country && <div><dt>Country</dt><dd>{vendor.country}</dd></div>}
-            {vendor.city_address && <div><dt>Address</dt><dd>{vendor.city_address}</dd></div>}
-            <div><dt>Vendor ID</dt><dd>{vendor.id}</dd></div>
+            {contactDetails.map((detail) => (
+              <div className="admin-copy-fact" key={detail.key}>
+                <dt>{detail.label}</dt>
+                <dd title={detail.value!}>{detail.value}</dd>
+                <button type="button" className={`admin-copy-button ${copied === detail.key ? "is-copied" : ""}`} onClick={() => copyContact(detail.key, detail.value!)} aria-label={`${copied === detail.key ? "Copied" : "Copy"} ${detail.label.toLowerCase()}`}>
+                  {copied === detail.key ? (
+                    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12 4 4L19 6" /></svg>
+                  ) : (
+                    <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="8" y="8" width="11" height="11" rx="2" /><path d="M16 8V6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h2" /></svg>
+                  )}
+                  {copied === detail.key && <span role="status">Copied</span>}
+                </button>
+              </div>
+            ))}
           </dl>
 
           <span className="vendor-eyebrow mt-6 block">Services</span>
