@@ -44,7 +44,6 @@ export default async function AdminOverviewPage() {
           <h1 className="display vendor-page-title">Overview</h1>
           <p className="vendor-page-lead">Start with jobs that need you. Then check progress, payments, and completed work.</p>
         </div>
-        <Link href="/admin/jobs" className="btn btn-small">View all jobs <span aria-hidden="true">→</span></Link>
       </div>
 
       {error && <p className="auth-error">Dashboard data could not be loaded: {error.message}</p>}
