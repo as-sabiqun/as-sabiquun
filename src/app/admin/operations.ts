@@ -1,4 +1,4 @@
-import type { DeliveryStatus, FulfilmentStatus, PaymentStatus, SettlementStatus } from "@/lib/order-lifecycle";
+import { deriveOrderMilestone, type DeliveryStatus, type FulfilmentStatus, type PaymentStatus, type SettlementStatus } from "../../lib/order-lifecycle.ts";
 
 export type AdminQueueKey =
   | "payment_issue"
@@ -8,6 +8,8 @@ export type AdminQueueKey =
   | "review"
   | "delivery_failed"
   | "settlement";
+
+export type AdminJobStage = "payment" | "fulfilment" | "review" | "completed" | "cancelled";
 
 export interface QueueableOrder {
   payment_status: PaymentStatus;
@@ -40,4 +42,13 @@ export function queueForOrder(order: QueueableOrder, now = Date.now()): AdminQue
   if (order.fulfilment_status === "broadcasting" && order.broadcast_expires_at && new Date(order.broadcast_expires_at).getTime() <= now) return "unclaimed";
   if (["broadcasting", "assigned", "in_progress", "revision_required"].includes(order.fulfilment_status)) return "fulfilment";
   return null;
+}
+
+export function jobStageForOrder(order: QueueableOrder): AdminJobStage {
+  const milestone = deriveOrderMilestone(order);
+  if (["awaiting_payment", "payment_issue"].includes(milestone)) return "payment";
+  if (["ready", "broadcasting", "assigned", "in_progress", "revision_required"].includes(milestone)) return "fulfilment";
+  if (["under_review", "verified", "delivery_failed"].includes(milestone)) return "review";
+  if (["completed", "closed"].includes(milestone)) return "completed";
+  return "cancelled";
 }

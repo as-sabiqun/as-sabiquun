@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import test from "node:test";
-import { queueForOrder, type QueueableOrder } from "./operations.ts";
+import { jobStageForOrder, queueForOrder, type QueueableOrder } from "./operations.ts";
 
 const base: QueueableOrder = {
   payment_status: "paid",
@@ -21,4 +21,12 @@ test("admin queue derives one highest-priority operational action", () => {
   assert.equal(queueForOrder({ ...base, fulfilment_status: "verified", delivery_status: "delivered" }), "settlement");
   assert.equal(queueForOrder({ ...base, broadcast_started_at: "2026-01-01T00:00:00Z" }), "unclaimed");
   assert.equal(queueForOrder({ ...base, fulfilment_status: "verified", delivery_status: "delivered", settlement_status: "paid" }), null);
+});
+
+test("admin jobs group every lifecycle into one visual stage", () => {
+  assert.equal(jobStageForOrder({ ...base, payment_status: "pending", fulfilment_status: "not_ready" }), "payment");
+  assert.equal(jobStageForOrder({ ...base, fulfilment_status: "in_progress" }), "fulfilment");
+  assert.equal(jobStageForOrder({ ...base, fulfilment_status: "proof_submitted" }), "review");
+  assert.equal(jobStageForOrder({ ...base, fulfilment_status: "verified", delivery_status: "delivered", settlement_status: "paid" }), "completed");
+  assert.equal(jobStageForOrder({ ...base, payment_status: "refunded" }), "cancelled");
 });

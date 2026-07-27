@@ -1,9 +1,16 @@
 import Link from "next/link";
 import { AdminJobsTable, type AdminLifecycleOrder } from "@/components/admin/operations-jobs";
-import { queueForOrder, queueMeta, type AdminQueueKey } from "@/app/admin/operations";
+import { jobStageForOrder, queueForOrder, queueMeta, type AdminJobStage, type AdminQueueKey } from "@/app/admin/operations";
 import { createClient } from "@/lib/supabase/server";
 
 const queueKeys = Object.keys(queueMeta) as AdminQueueKey[];
+const stageMeta: Record<AdminJobStage, { label: string; color: string }> = {
+  payment: { label: "Payment", color: "#A27C47" },
+  fulfilment: { label: "Fulfilment", color: "#1D737F" },
+  review: { label: "Review & delivery", color: "#758F96" },
+  completed: { label: "Completed", color: "#5E826F" },
+  cancelled: { label: "Cancelled / refunded", color: "#A64B3C" },
+};
 
 function one(value: string | string[] | undefined) {
   return Array.isArray(value) ? value[0] : value;
@@ -45,25 +52,43 @@ export default async function AdminJobsPage({ searchParams }: { searchParams: Pr
   const all = (data ?? []) as unknown as AdminLifecycleOrder[];
   const orders = queue ? all.filter((order) => queueForOrder(order) === queue) : all;
   const queueCounts = Object.fromEntries(queueKeys.map((key) => [key, all.filter((order) => queueForOrder(order) === key).length])) as Record<AdminQueueKey, number>;
+  const stageCounts = Object.fromEntries(Object.keys(stageMeta).map((key) => [key, all.filter((order) => jobStageForOrder(order) === key).length])) as Record<AdminJobStage, number>;
+  const stageKeys = Object.keys(stageMeta) as AdminJobStage[];
+  let stageOffset = 0;
+  const stageSegments = stageKeys.map((key) => {
+    const share = all.length ? stageCounts[key] / all.length * 100 : 0;
+    const segment = { key, share, offset: -stageOffset };
+    stageOffset += share;
+    return segment;
+  });
+  const activeQueueKeys = queueKeys.filter((key) => queueCounts[key] > 0);
+  const attentionTotal = activeQueueKeys.reduce((sum, key) => sum + queueCounts[key], 0);
   const queueHref = (key?: AdminQueueKey) => `/admin/jobs?${new URLSearchParams({ ...(key ? { queue: key } : {}), ...(query ? { q: query } : {}) })}`;
 
   return (
     <>
       <div className="vendor-page-head">
         <div><p className="vendor-eyebrow">Operations register</p><h1 className="display vendor-page-title">Jobs</h1><p className="vendor-page-lead">Work from the next action, then open the full record for payment, fulfilment, delivery, and settlement.</p></div>
-        <div className="admin-jobs-total"><strong className="display numeral">{all.length}</strong><span>total jobs</span></div>
       </div>
 
-      <section className="card admin-jobs-queue" aria-labelledby="jobs-queue-title">
-        <header><div><span className="vendor-eyebrow">Next action</span><h2 id="jobs-queue-title">Operational queue</h2></div><Link className={!queue ? "is-active" : ""} href={queueHref()}>All jobs <span>{all.length}</span></Link></header>
-        <div>
-          {queueKeys.map((key) => (
-            <Link key={key} href={queueHref(key)} className={queue === key ? "is-active" : ""} data-queue={key}>
-              <strong className="numeral">{queueCounts[key]}</strong>
-              <span>{queueMeta[key].label}</span>
-              <small>{queueMeta[key].help}</small>
-            </Link>
-          ))}
+      <section className="admin-jobs-dashboard" aria-label="Job overview">
+        <div className="admin-jobs-mix">
+          <header><div><span className="vendor-eyebrow">Portfolio</span><h2>Where work stands</h2></div><Link href={queueHref()} className={!queue ? "is-active" : ""}>View all</Link></header>
+          <div className="admin-jobs-mix-body">
+            <div className="admin-jobs-donut">
+              <svg viewBox="0 0 100 100" role="img" aria-label={`${all.length} jobs grouped by lifecycle stage`}>
+                <circle className="admin-jobs-donut-track" cx="50" cy="50" r="41" pathLength="100" />
+                {stageSegments.filter((segment) => segment.share > 0).map((segment) => <circle key={segment.key} cx="50" cy="50" r="41" pathLength="100" stroke={stageMeta[segment.key].color} strokeDasharray={`${segment.share} ${100 - segment.share}`} strokeDashoffset={segment.offset} />)}
+              </svg>
+              <div><strong className="display numeral">{all.length}</strong><span>Total jobs</span></div>
+            </div>
+            <dl className="admin-jobs-legend">{stageKeys.map((key) => <div key={key}><dt><i style={{ background: stageMeta[key].color }} />{stageMeta[key].label}</dt><dd>{stageCounts[key]}</dd></div>)}</dl>
+          </div>
+        </div>
+
+        <div className="admin-jobs-attention">
+          <header><div><span className="vendor-eyebrow">Next action</span><h2>Needs attention</h2></div><strong className="display numeral">{attentionTotal}</strong></header>
+          {activeQueueKeys.length ? <div>{activeQueueKeys.map((key) => <Link key={key} href={queueHref(key)} className={queue === key ? "is-active" : ""} data-queue={key}><i /><span><strong>{queueMeta[key].label}</strong><small>{queueMeta[key].help}</small></span><b>{queueCounts[key]}</b></Link>)}</div> : <div className="admin-jobs-clear"><span aria-hidden="true">✓</span><strong>No intervention needed</strong><p>There are no operational exceptions waiting for an administrator.</p></div>}
         </div>
       </section>
 
