@@ -167,6 +167,21 @@ const evidenceRequirements = [
   ["before_video", "Before video", 1], ["during_video", "During video", 1], ["after_video", "After video", 1], ["dua_video", "Du'a video", 1],
 ] as const;
 
+const recordSections = [
+  ["01", "job-information", "Job"],
+  ["02", "customer-information", "Customer"],
+  ["03", "beneficiary-information", "Beneficiary"],
+  ["04", "dedication-nameplate", "Dedication"],
+  ["05", "vendor-information", "Vendor"],
+  ["06", "project-location", "Location"],
+  ["07", "completion-evidence", "Evidence"],
+  ["08", "vendor-remarks", "Remarks"],
+  ["09", "admin-verification", "Verification"],
+  ["10", "customer-notification", "Delivery"],
+  ["11", "payment-tracking", "Finance"],
+  ["12", "audit-timeline", "Audit"],
+] as const;
+
 function formatDate(value: string | null, withTime = false) {
   if (!value) return "Not recorded";
   return withTime ? new Date(value).toLocaleString() : new Date(value).toLocaleDateString();
@@ -183,8 +198,8 @@ function humanize(value: string) {
   return value.replaceAll("_", " ").replaceAll(".", " · ").replace(/^./, (letter) => letter.toUpperCase());
 }
 
-function RecordSection({ number, title, children }: { number: string; title: string; children: ReactNode }) {
-  return <section className="admin-record-section"><header><span>{number}</span><h2>{title}</h2></header>{children}</section>;
+function RecordSection({ id, number, title, children }: { id: string; number: string; title: string; children: ReactNode }) {
+  return <section id={id} className="admin-record-section"><header><span>{number}</span><h2>{title}</h2></header>{children}</section>;
 }
 function Facts({ children }: { children: ReactNode }) { return <dl className="admin-record-facts">{children}</dl>; }
 function Fact({ label, children }: { label: string; children: ReactNode }) { return <div><dt>{label}</dt><dd>{children || "—"}</dd></div>; }
@@ -287,13 +302,18 @@ export function JobDetailReal({ order, offers, submissions, proofs, notification
         <div className={order.settlement_status === "paid" ? "is-complete" : ""}><span>Vendor settlement</span><strong>{humanize(order.settlement_status)}</strong><small>{formatCents(outstanding)} outstanding</small></div>
       </div>
 
+      <nav className="admin-record-index mt-4" aria-label="Job record sections">
+        <span>Record</span>
+        <div>{recordSections.map(([number, id, label]) => <a key={id} href={`#${id}`}><small>{number}</small>{label}</a>)}</div>
+      </nav>
+
       {error && <p className="auth-error mt-4" role="alert">{error}</p>}
       {notice && <p className="vendor-empty mt-4" role="status">{notice}</p>}
       {warnings.length > 0 && <p className="auth-error mt-4" role="alert">Some historical records could not be loaded. Refresh before taking action. {warnings.join(" · ")}</p>}
 
       <div className="admin-record-layout mt-5">
         <main className="admin-record-main">
-          <RecordSection number="01" title="Job information">
+          <RecordSection id="job-information" number="01" title="Job information">
             <Facts>
               <Fact label="Job ID">{order.id}</Fact><Fact label="Service type">{order.service_type}</Fact>
               <Fact label="Package purchased">{orderTitle(order)}</Fact><Fact label="Order number">{order.reference}</Fact>
@@ -302,10 +322,10 @@ export function JobDetailReal({ order, offers, submissions, proofs, notification
             </Facts>
           </RecordSection>
 
-          <RecordSection number="02" title="Customer information"><Facts><Fact label="Customer">{order.customer_name}</Fact><Fact label="Contact number">{order.customer_phone}</Fact><Fact label="Email">{order.customer_email}</Fact><Fact label="Invoice / order">{order.reference}</Fact></Facts></RecordSection>
+          <RecordSection id="customer-information" number="02" title="Customer information"><Facts><Fact label="Customer">{order.customer_name}</Fact><Fact label="Contact number">{order.customer_phone}</Fact><Fact label="Email">{order.customer_email}</Fact><Fact label="Invoice / order">{order.reference}</Fact></Facts></RecordSection>
 
           <form className="admin-record-editor" onSubmit={saveRecordDetails}>
-            <RecordSection number="03" title="Beneficiary information">
+            <RecordSection id="beneficiary-information" number="03" title="Beneficiary information">
               <div className="admin-form-grid">
                 <label className="label">Country<input className="input" maxLength={100} disabled={recordLocked} value={recordDetails.beneficiaryCountry} onChange={(event) => changeRecordDetail("beneficiaryCountry", event.target.value)} /></label>
                 <label className="label">State / province / district<input className="input" maxLength={120} disabled={recordLocked} value={recordDetails.beneficiaryState} onChange={(event) => changeRecordDetail("beneficiaryState", event.target.value)} /></label>
@@ -315,7 +335,7 @@ export function JobDetailReal({ order, offers, submissions, proofs, notification
               </div>
             </RecordSection>
 
-            <RecordSection number="04" title="Dedication and nameplate">
+            <RecordSection id="dedication-nameplate" number="04" title="Dedication and nameplate">
               <Facts><Fact label="Name(s)">{order.participant_names.join(", ") || order.dedication}</Fact></Facts>
               <div className="admin-form-grid mt-4">
                 <label className="label">Arabic spelling (optional)<input className="input" dir="rtl" maxLength={500} disabled={recordLocked} value={recordDetails.dedicationArabic} onChange={(event) => changeRecordDetail("dedicationArabic", event.target.value)} /></label>
@@ -326,14 +346,14 @@ export function JobDetailReal({ order, offers, submissions, proofs, notification
             </RecordSection>
           </form>
 
-          <RecordSection number="05" title="Vendor information"><Facts><Fact label="Vendor">{order.assigned_vendor?.display_name}</Fact><Fact label="Vendor ID">{order.assigned_vendor?.id}</Fact><Fact label="Accepted">{formatDate(order.accepted_at, true)}</Fact><Fact label="Submitted by">{latestSubmission?.vendor?.display_name}</Fact></Facts></RecordSection>
+          <RecordSection id="vendor-information" number="05" title="Vendor information"><Facts><Fact label="Vendor">{order.assigned_vendor?.display_name}</Fact><Fact label="Vendor ID">{order.assigned_vendor?.id}</Fact><Fact label="Accepted">{formatDate(order.accepted_at, true)}</Fact><Fact label="Submitted by">{latestSubmission?.vendor?.display_name}</Fact></Facts></RecordSection>
 
-          <RecordSection number="06" title="Project location">
+          <RecordSection id="project-location" number="06" title="Project location">
             <Facts><Fact label="Country">{latestSubmission?.project_country || order.project_country}</Fact><Fact label="State / district">{latestSubmission?.project_state || order.project_state}</Fact><Fact label="Village / locality">{latestSubmission?.project_village || order.project_village}</Fact><Fact label="Exact address">{latestSubmission?.project_address || order.project_address}</Fact><Fact label="GPS coordinates">{latestSubmission ? `${latestSubmission.project_lat}, ${latestSubmission.project_lng}` : order.project_lat != null && order.project_lng != null ? `${order.project_lat}, ${order.project_lng}` : null}</Fact></Facts>
             {(latestSubmission?.project_maps_link || order.project_maps_link) && <a href={latestSubmission?.project_maps_link || order.project_maps_link || undefined} target="_blank" rel="noreferrer" className="vendor-job-table-view mt-4 inline-block">Open map →</a>}
           </RecordSection>
 
-          <RecordSection number="07" title="Completion evidence">
+          <RecordSection id="completion-evidence" number="07" title="Completion evidence">
             {submissions.length === 0 ? <p className="vendor-empty">No immutable submission exists yet.</p> : submissions.map((submission) => {
               const versionProofs = proofs.filter((proof) => proof.submission_id === submission.id);
               const counts = versionProofs.reduce<Record<string, number>>((all, proof) => ({ ...all, [proof.category || "extra"]: (all[proof.category || "extra"] || 0) + 1 }), {});
@@ -348,9 +368,9 @@ export function JobDetailReal({ order, offers, submissions, proofs, notification
             })}
           </RecordSection>
 
-          <RecordSection number="08" title="Vendor remarks"><p className="admin-record-note">{latestSubmission?.vendor_remarks || order.vendor_remarks || "No vendor remarks recorded."}</p></RecordSection>
+          <RecordSection id="vendor-remarks" number="08" title="Vendor remarks"><p className="admin-record-note">{latestSubmission?.vendor_remarks || order.vendor_remarks || "No vendor remarks recorded."}</p></RecordSection>
 
-          <RecordSection number="09" title="Admin verification">
+          <RecordSection id="admin-verification" number="09" title="Admin verification">
             {order.fulfilment_status === "proof_submitted" ? (
               <div className="admin-review-box">
                 <div className="grid gap-2 mb-4">
@@ -362,7 +382,7 @@ export function JobDetailReal({ order, offers, submissions, proofs, notification
             ) : <Facts><Fact label="Status">{order.admin_verification_status ? humanize(order.admin_verification_status) : "Not reviewed"}</Fact><Fact label="Verified by">{order.admin_verifier_name}</Fact><Fact label="Verification date">{formatDate(order.admin_verified_at, true)}</Fact><Fact label="Notes">{order.admin_verification_notes}</Fact></Facts>}
           </RecordSection>
 
-          <RecordSection number="10" title="Customer notification">
+          <RecordSection id="customer-notification" number="10" title="Customer notification">
             <div className="admin-delivery-grid">{(["email", "telegram"] as const).map((channel) => {
               const attempts = notifications.filter((item) => item.channel === channel);
               const latest = attempts.reduce<NotificationRow | undefined>((current, item) => !current || item.attempt > current.attempt ? item : current, undefined);
@@ -375,14 +395,14 @@ export function JobDetailReal({ order, offers, submissions, proofs, notification
             <p className="admin-record-help">Delivery state comes only from Brevo webhooks and Telegram send results. Administrators cannot mark delivery manually.</p>
           </RecordSection>
 
-          <RecordSection number="11" title="Payment tracking">
+          <RecordSection id="payment-tracking" number="11" title="Payment tracking">
             <Facts><Fact label="Package price">{formatCents(order.total_amount)}</Fact><Fact label="Payment state">{humanize(order.payment_status)}</Fact><Fact label="Vendor cost">{formatCents(order.vendor_payout_amount)}</Fact><Fact label="Vendor paid">{formatCents(paid)}</Fact><Fact label="Vendor outstanding">{formatCents(outstanding)}</Fact><Fact label="Currency">{order.currency}</Fact></Facts>
             {transactions.length > 0 && <><p className="vendor-eyebrow mt-5 mb-2">HitPay transactions</p><div className="admin-payment-list">{transactions.map((transaction) => <div key={transaction.id}><strong>{formatCents(transaction.transaction_type === "refund" ? -transaction.amount : transaction.amount)}</strong><span>{humanize(transaction.transaction_type)} · {humanize(transaction.status)}</span><small>{transaction.provider_payment_id || transaction.provider_request_id}</small></div>)}</div></>}
             {payments.length > 0 && <><p className="vendor-eyebrow mt-5 mb-2">Vendor settlement ledger</p><div className="admin-payment-list">{payments.map((payment) => <div key={payment.id}><strong>{formatCents(payment.amount)}</strong><span>{humanize(payment.entry_type)} · {formatDate(payment.payment_date)} · {payment.method || "Method not recorded"}</span><small>{payment.reference || "No reference"}</small></div>)}</div></>}
             <Link href="/admin/finance" className="vendor-job-table-view mt-4 inline-block">Open finance →</Link>
           </RecordSection>
 
-          <RecordSection number="12" title="Audit timeline">
+          <RecordSection id="audit-timeline" number="12" title="Audit timeline">
             {events.length === 0 ? <p className="vendor-empty">No system audit events are available.</p> : <ol className="admin-audit-timeline">{events.map((event, index) => <li key={event.id}><span>{String(index + 1).padStart(2, "0")}</span><div><strong>{humanize(event.event_type)}</strong><small>{event.actor_role}{event.actor_id ? ` · ${event.actor_id}` : ""} · {event.source} · {formatDate(event.created_at, true)}</small>{(event.previous_state || event.new_state) && <details className="mt-2 text-xs"><summary>State change</summary><pre className="mt-2 whitespace-pre-wrap overflow-auto">{JSON.stringify({ from: event.previous_state, to: event.new_state }, null, 2)}</pre></details>}</div></li>)}</ol>}
           </RecordSection>
         </main>
