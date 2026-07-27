@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import test from "node:test";
-import { jobStageForOrder, queueForOrder, type QueueableOrder } from "./operations.ts";
+import { adminActionQueueKeys, jobStageForOrder, queueForOrder, type QueueableOrder } from "./operations.ts";
 
 const base: QueueableOrder = {
   payment_status: "paid",
@@ -12,6 +12,7 @@ const base: QueueableOrder = {
 };
 
 test("admin queue derives one highest-priority operational action", () => {
+  assert.equal(adminActionQueueKeys.includes("fulfilment"), false);
   assert.equal(queueForOrder(base), "ready");
   assert.equal(queueForOrder({ ...base, payment_status: "failed" }), "payment_issue");
   assert.equal(queueForOrder({ ...base, payment_status: "refunded", fulfilment_status: "in_progress" }), "payment_issue");

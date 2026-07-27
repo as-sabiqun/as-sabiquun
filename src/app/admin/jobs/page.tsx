@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { AdminJobsTable, type AdminLifecycleOrder } from "@/components/admin/operations-jobs";
-import { jobStageForOrder, queueForOrder, queueMeta, type AdminJobStage, type AdminQueueKey } from "@/app/admin/operations";
+import { adminActionQueueKeys, jobStageForOrder, queueForOrder, queueMeta, type AdminJobStage, type AdminQueueKey } from "@/app/admin/operations";
 import { createClient } from "@/lib/supabase/server";
 
 const queueKeys = Object.keys(queueMeta) as AdminQueueKey[];
@@ -61,7 +61,7 @@ export default async function AdminJobsPage({ searchParams }: { searchParams: Pr
     stageOffset += share;
     return segment;
   });
-  const activeQueueKeys = queueKeys.filter((key) => queueCounts[key] > 0);
+  const activeQueueKeys = adminActionQueueKeys.filter((key) => queueCounts[key] > 0);
   const attentionTotal = activeQueueKeys.reduce((sum, key) => sum + queueCounts[key], 0);
   const queueHref = (key?: AdminQueueKey) => `/admin/jobs?${new URLSearchParams({ ...(key ? { queue: key } : {}), ...(query ? { q: query } : {}) })}`;
 
@@ -87,7 +87,7 @@ export default async function AdminJobsPage({ searchParams }: { searchParams: Pr
         </div>
 
         <div className="admin-jobs-attention">
-          <header><div><span className="vendor-eyebrow">Next action</span><h2>Needs attention</h2></div><strong className="display numeral">{attentionTotal}</strong></header>
+          <header><div><span className="vendor-eyebrow">To do</span><h2>Your next actions</h2></div><strong className="display numeral">{attentionTotal}</strong></header>
           {activeQueueKeys.length ? <div>{activeQueueKeys.map((key) => <Link key={key} href={queueHref(key)} className={queue === key ? "is-active" : ""} data-queue={key}><i /><span><strong>{queueMeta[key].label}</strong><small>{queueMeta[key].help}</small></span><b>{queueCounts[key]}</b></Link>)}</div> : <div className="admin-jobs-clear"><span aria-hidden="true">✓</span><strong>No intervention needed</strong><p>There are no operational exceptions waiting for an administrator.</p></div>}
         </div>
       </section>

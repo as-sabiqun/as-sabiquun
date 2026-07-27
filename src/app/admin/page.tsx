@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { queueForOrder, queueMeta, type AdminQueueKey } from "@/app/admin/operations";
+import { adminActionQueueKeys, queueForOrder, queueMeta, type AdminQueueKey } from "@/app/admin/operations";
 import { AdminJobsTable, type AdminLifecycleOrder } from "@/components/admin/operations-jobs";
 import { DashboardLineChart } from "@/components/dashboard/dashboard-charts";
 import { buildMonthlyMetricSeries } from "@/lib/dashboard-analytics";
@@ -27,10 +27,10 @@ export default async function AdminOverviewPage() {
 
   const orders = (data ?? []) as unknown as AdminOverviewOrder[];
   const queues = Object.fromEntries(queueOrder.map((key) => [key, orders.filter((order) => queueForOrder(order) === key)])) as unknown as Record<AdminQueueKey, AdminLifecycleOrder[]>;
-  const actionCount = queueOrder.filter((key) => key !== "fulfilment").reduce((sum, key) => sum + queues[key].length, 0);
+  const actionCount = adminActionQueueKeys.reduce((sum, key) => sum + queues[key].length, 0);
   const paidVolume = orders.filter((order) => ["paid", "partially_refunded"].includes(order.payment_status)).reduce((sum, order) => sum + order.total_amount, 0);
   const closedCount = orders.filter((order) => order.settlement_status === "paid" && order.delivery_status === "delivered" && order.fulfilment_status === "verified").length;
-  const activeQueues = queueOrder.filter((key) => queues[key].length > 0);
+  const activeQueues = adminActionQueueKeys.filter((key) => queues[key].length > 0);
   const throughput = buildMonthlyMetricSeries(["paid", "verified"], orders.flatMap((order) => [
     ...(["paid", "partially_refunded"].includes(order.payment_status) ? [{ metric: "paid", occurredAt: order.payment_confirmed_at ?? order.created_at }] : []),
     ...(order.fulfilment_status === "verified" ? [{ metric: "verified", occurredAt: order.admin_verified_at ?? order.completed_at ?? order.updated_at }] : []),
@@ -73,7 +73,7 @@ export default async function AdminOverviewPage() {
       </section>
 
       <section className="admin-overview-actions">
-        <header><div><p className="vendor-eyebrow">Next-action queue</p><h2 className="display text-lg mt-1">What needs attention</h2></div><Link href="/admin/jobs">Open full queue →</Link></header>
+        <header><div><p className="vendor-eyebrow">To do</p><h2 className="display text-lg mt-1">Your next actions</h2></div><Link href="/admin/jobs">See all jobs →</Link></header>
         {activeQueues.length ? <div>{activeQueues.map((key) => (
           <Link key={key} href={`/admin/jobs?queue=${key}`} data-queue={key}>
             <i /><span><strong>{queueMeta[key].label}</strong><small>{queueMeta[key].help}</small></span><b>{queues[key].length}</b>

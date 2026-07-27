@@ -39,7 +39,7 @@ export function lifecycleLabel(axes: LifecycleAxes) {
 }
 
 export function orderLifecycleLabel(order: AdminLifecycleOrder) {
-  if (queueForOrder(order) === "unclaimed") return "Unclaimed";
+  if (queueForOrder(order) === "unclaimed") return "Needs vendor";
   return lifecycleLabel(order);
 }
 

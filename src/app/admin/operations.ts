@@ -11,6 +11,8 @@ export type AdminQueueKey =
 
 export type AdminJobStage = "payment" | "fulfilment" | "review" | "completed" | "cancelled";
 
+export const adminActionQueueKeys: AdminQueueKey[] = ["payment_issue", "ready", "unclaimed", "review", "delivery_failed", "settlement"];
+
 export interface QueueableOrder {
   payment_status: PaymentStatus;
   fulfilment_status: FulfilmentStatus;
@@ -22,13 +24,13 @@ export interface QueueableOrder {
 }
 
 export const queueMeta: Record<AdminQueueKey, { label: string; help: string }> = {
-  payment_issue: { label: "Payment issue", help: "Payment failed or expired" },
-  ready: { label: "Ready to broadcast", help: "Paid and ready for a partner" },
-  unclaimed: { label: "Unclaimed", help: "Offer window expired without a claim" },
-  fulfilment: { label: "In fulfilment", help: "Offered, assigned, or being revised" },
-  review: { label: "Evidence review", help: "A submission is waiting for verification" },
-  delivery_failed: { label: "Delivery failed", help: "Email or Telegram needs intervention" },
-  settlement: { label: "Settlement outstanding", help: "Customer delivery is complete; vendor payment is due" },
+  payment_issue: { label: "Fix payment", help: "Payment failed or expired" },
+  ready: { label: "Send to vendors", help: "Offer this paid project to vendors" },
+  unclaimed: { label: "Find a vendor", help: "No vendor accepted; offer it again" },
+  fulfilment: { label: "Ongoing", help: "Currently being handled by a vendor" },
+  review: { label: "Review submission", help: "Approve the evidence or request changes" },
+  delivery_failed: { label: "Resend report", help: "Customer delivery needs another attempt" },
+  settlement: { label: "Pay vendor", help: "Record the outstanding vendor payment" },
 };
 
 export function queueForOrder(order: QueueableOrder, now = Date.now()): AdminQueueKey | null {
