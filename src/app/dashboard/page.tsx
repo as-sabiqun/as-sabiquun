@@ -1,4 +1,5 @@
 import Link from "next/link";
+import type { CSSProperties } from "react";
 import { ArrowUpRight, Check, Clock3, Plus, Sparkles } from "lucide-react";
 import { redirect } from "next/navigation";
 import { buildJourneySeries, boardKeyForFulfilment, customerBoardColumns, customerStepIndex, isImpactOrder, type CustomerBoardKey } from "@/lib/customer-dashboard";
@@ -25,6 +26,13 @@ const categoryLabels: Record<string, string> = {
   water: "Clean water",
   quran: "Quran",
   orphans: "Orphan care",
+};
+
+const categoryColors: Record<string, string> = {
+  korban: "#d0a153",
+  water: "#59bdc8",
+  quran: "#ad90c7",
+  orphans: "#da8b6a",
 };
 
 export default async function DashboardPage() {
@@ -104,7 +112,7 @@ export default async function DashboardPage() {
             <span><Sparkles aria-hidden="true" /> Impact ledger</span>
             <small>Updated live</small>
           </div>
-          <div className={styles.completionRing}>
+          <div className={styles.completionRing} style={{ "--completion": `${completionPercent * 3.6}deg` } as CSSProperties}>
             <div>
               <strong>{completionPercent}%</strong>
               <span>fulfilled</span>
@@ -116,12 +124,15 @@ export default async function DashboardPage() {
             <div><dt><Clock3 aria-hidden="true" /> In progress</dt><dd>{inMotionCount}</dd></div>
             <div><dt>Countries reached</dt><dd>{countries.size}</dd></div>
           </dl>
-          <div className={styles.categoryList}>
+          <div className={styles.categoryMix}>
             {categoryCounts.length === 0 ? (
               <p>Your supported causes will collect here.</p>
-            ) : categoryCounts.map((category) => (
-              <div key={category.key}><span>{category.label}</span><strong>{category.count}</strong></div>
-            ))}
+            ) : <>
+              <div className={styles.categoryTrack} role="img" aria-label={`Services supported by cause: ${categoryCounts.map((category) => `${category.label} ${category.count}`).join(", ")}`}>
+                {categoryCounts.map((category) => <i key={category.key} style={{ width: `${(category.count / Math.max(1, impactRows.length)) * 100}%`, "--category-color": categoryColors[category.key] } as CSSProperties} />)}
+              </div>
+              <div className={styles.categoryLegend}>{categoryCounts.map((category) => <div key={category.key}><span><i style={{ "--category-color": categoryColors[category.key] } as CSSProperties} />{category.label}</span><strong>{category.count}</strong></div>)}</div>
+            </>}
           </div>
         </aside>
       </section>

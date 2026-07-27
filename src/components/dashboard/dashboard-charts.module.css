@@ -1,0 +1,93 @@
+.chartShell {
+  min-width: 0;
+  overflow: hidden;
+  border: 1px solid var(--line);
+  border-radius: 18px;
+  background: var(--white);
+}
+
+.chartHeader {
+  display: flex;
+  min-height: 92px;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 24px;
+  border-bottom: 1px solid var(--line);
+  padding: 20px 24px 17px;
+}
+
+.chartHeader > div:first-child { min-width: 0; }
+.chartHeader > div:first-child > span { color: var(--gold); font-size: .61rem; font-weight: 850; letter-spacing: .1em; text-transform: uppercase; }
+.chartHeader h2 { margin-top: 4px; color: var(--ink); font-family: var(--font-display), var(--font-sans), sans-serif; font-size: 1.08rem; letter-spacing: -.025em; }
+.chartHeader p { max-width: 560px; margin-top: 4px; color: var(--muted); font-size: .65rem; line-height: 1.45; }
+
+.legend { display: flex; flex: none; flex-wrap: wrap; justify-content: flex-end; gap: 8px 14px; padding-top: 6px; color: var(--muted); font-size: .6rem; font-weight: 700; }
+.legend span, .distributionLegend span { display: inline-flex; align-items: center; gap: 6px; white-space: nowrap; }
+.legend i, .distributionLegend i, .donutLegend i { width: 8px; height: 8px; flex: none; border-radius: 50%; background: var(--legend-color); }
+
+.plotWrap { padding: 8px 16px 10px 8px; }
+.plot { display: block; width: 100%; height: auto; overflow: visible; }
+.gridLine { stroke: color-mix(in srgb, var(--ink) 9%, transparent); stroke-width: 1; stroke-dasharray: 3 7; }
+.zeroLine { stroke: color-mix(in srgb, var(--ink) 22%, transparent); stroke-width: 1; }
+.axisLabel, .axisValue, .emptyLabel { fill: var(--muted); font-family: var(--font-sans), sans-serif; }
+.axisLabel { font-size: 10px; font-weight: 700; }
+.axisValue { font-size: 9px; font-weight: 650; }
+.emptyLabel { font-size: 11px; font-weight: 650; }
+.area { opacity: .08; }
+.line { stroke-width: 3; stroke-linecap: round; stroke-linejoin: round; }
+.point { stroke: var(--white); stroke-width: 2; }
+.bar { opacity: .92; }
+
+.donutShell { height: 100%; }
+.donutBody { display: grid; grid-template-columns: 170px minmax(0, 1fr); align-items: center; gap: 23px; min-height: 252px; padding: 22px 27px; }
+.donutPlot { position: relative; width: 160px; height: 160px; }
+.donutPlot svg { width: 100%; height: 100%; overflow: visible; }
+.donutTrack, .donutSegment { fill: none; stroke-width: 12; }
+.donutTrack { stroke: var(--cream-dark); }
+.donutSegment { stroke-linecap: butt; }
+.donutPlot > div { position: absolute; inset: 0; display: grid; place-content: center; text-align: center; }
+.donutPlot strong { color: var(--ink); font-family: var(--font-display), var(--font-sans), sans-serif; font-size: 2.25rem; line-height: 1; }
+.donutPlot span { margin-top: 4px; color: var(--muted); font-size: .59rem; font-weight: 750; }
+.donutLegend { display: grid; }
+.donutLegend > div { display: flex; align-items: center; justify-content: space-between; gap: 18px; border-bottom: 1px solid var(--line); padding: 10px 0; }
+.donutLegend > div:last-child { border-bottom: 0; }
+.donutLegend dt { display: flex; align-items: center; gap: 8px; color: var(--muted); font-size: .67rem; }
+.donutLegend dd { color: var(--ink); font-size: .82rem; font-weight: 800; }
+
+.distribution { display: grid; gap: 11px; }
+.distributionHead { display: flex; align-items: center; justify-content: space-between; gap: 18px; }
+.distributionHead strong { color: var(--ink); font-size: .72rem; }
+.distributionHead span { color: var(--muted); font-size: .62rem; }
+.distributionTrack { display: flex; min-height: 13px; overflow: hidden; border-radius: 999px; background: var(--cream-dark); }
+.distributionTrack > i { min-width: 3px; background: var(--segment-color); }
+.distributionLegend { display: flex; flex-wrap: wrap; gap: 8px 16px; color: var(--muted); font-size: .61rem; }
+.distributionLegend b { color: var(--ink); font-weight: 750; }
+
+.srTable {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+@media (max-width: 760px) {
+  .chartHeader { display: grid; }
+  .legend { justify-content: flex-start; padding-top: 0; }
+  .plotWrap { overflow-x: auto; }
+  .plot { min-width: 620px; }
+  .donutBody { grid-template-columns: 140px minmax(0, 1fr); padding-inline: 20px; }
+  .donutPlot { width: 135px; height: 135px; }
+}
+
+@media (max-width: 480px) {
+  .chartHeader { padding-inline: 18px; }
+  .donutBody { grid-template-columns: 1fr; justify-items: center; }
+  .donutLegend { width: 100%; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .line, .point, .bar, .donutSegment { transition: none; }
+}

@@ -9,7 +9,7 @@
     "start": "next start",
     "lint": "eslint",
     "check:auth": "node --test --experimental-strip-types src/lib/auth-redirect.test.ts",
-    "check:dashboard": "node --test --experimental-strip-types src/lib/customer-dashboard.test.ts",
+    "check:dashboard": "node --test --experimental-strip-types src/lib/customer-dashboard.test.ts src/lib/dashboard-analytics.test.ts",
     "check:lifecycle": "node --test --experimental-strip-types src/lib/order-lifecycle.test.ts",
     "check:evidence": "node --test --experimental-strip-types src/lib/proof-evidence.test.ts src/lib/supabase/resumable-upload.test.ts",
     "check:checkout": "node --test --experimental-strip-types src/lib/checkout-validation.test.ts",

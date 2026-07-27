@@ -1,4 +1,6 @@
 import Link from "next/link";
+import { DashboardBarChart, DashboardDistribution } from "@/components/dashboard/dashboard-charts";
+import { buildMonthlyMetricSeries } from "@/lib/dashboard-analytics";
 import { createClient, getCurrentUser } from "@/lib/supabase/server";
 import { formatCents } from "@/lib/orders";
 
@@ -42,6 +44,7 @@ export default async function VendorEarningsPage() {
   const pendingVerification = orders.filter((order) => order.fulfilment_status !== "verified").reduce((sum, order) => sum + order.vendor_payout_amount, 0);
   const paid = payments.reduce((sum, payment) => sum + payment.amount, 0);
   const payable = orders.filter((order) => order.fulfilment_status === "verified").reduce((sum, order) => sum + Math.max(0, order.vendor_payout_amount - (paidByOrder.get(order.id) ?? 0)), 0);
+  const payoutFlow = buildMonthlyMetricSeries(["paid"], payments.map((payment) => ({ metric: "paid", occurredAt: payment.payment_date, value: payment.amount })));
 
   return (
     <>
@@ -49,12 +52,30 @@ export default async function VendorEarningsPage() {
         <div><p className="vendor-eyebrow">Finance</p><h1 className="display vendor-page-title">Earnings</h1><p className="vendor-page-lead">A transparent SGD ledger for assigned, verified, payable, and paid work.</p></div>
       </div>
 
-      <div className="vendor-stat-grid">
-        <Metric label="Committed" value={committed} note="All work assigned to you" />
-        <Metric label="Pending verification" value={pendingVerification} note="Work not yet approved" />
-        <Metric label="Payable" value={payable} note="Verified and outstanding" />
-        <Metric label="Paid" value={paid} note="Net of recorded reversals" />
-      </div>
+      <section className="vendor-earnings-grid" aria-label="Earnings analytics">
+        <DashboardBarChart
+          id="vendor-payout-flow"
+          eyebrow="Six-month movement"
+          title="Net payouts received"
+          description="Recorded vendor payments and reversals grouped by payment month."
+          points={payoutFlow}
+          format="currency"
+          series={[{ key: "paid", label: "Net paid", color: "#1d737f" }]}
+        />
+        <aside className="vendor-earnings-position">
+          <header><span className="vendor-eyebrow">Current position</span><h2>Settlement breakdown</h2></header>
+          <div className="vendor-earnings-focus"><span>Ready to be paid</span><strong>{formatCents(payable)}</strong><small>Verified and outstanding</small></div>
+          <DashboardDistribution
+            label="Committed earnings"
+            totalLabel={formatCents(committed)}
+            segments={[
+              { label: "Pending review", value: pendingVerification, valueLabel: formatCents(pendingVerification), color: "#a27c47" },
+              { label: "Payable", value: payable, valueLabel: formatCents(payable), color: "#1d737f" },
+              { label: "Paid", value: Math.max(0, paid), valueLabel: formatCents(paid), color: "#5e826f" },
+            ]}
+          />
+        </aside>
+      </section>
 
       <section className="card vendor-panel mt-5">
         <div className="vendor-panel-head"><div><p className="vendor-eyebrow">By project</p><h2 className="display text-lg">Settlement ledger</h2></div></div>
@@ -77,8 +98,4 @@ export default async function VendorEarningsPage() {
       </section>
     </>
   );
-}
-
-function Metric({ label, value, note }: { label: string; value: number; note: string }) {
-  return <div className="card vendor-stat-card"><span className="vendor-stat-label">{label}</span><strong className="vendor-stat-value numeral">{formatCents(value)}</strong><span className="vendor-stat-note">{note}</span></div>;
 }

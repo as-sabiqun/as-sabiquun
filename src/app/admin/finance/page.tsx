@@ -1,4 +1,6 @@
 import { FinanceReal, type ProviderTransactionRow, type RefundableOrder, type SettlementOrder, type VendorLedgerRow } from "@/components/admin/finance-real";
+import { DashboardBarChart } from "@/components/dashboard/dashboard-charts";
+import { buildMonthlyMetricSeries } from "@/lib/dashboard-analytics";
 import { createClient } from "@/lib/supabase/server";
 import { formatCents } from "@/lib/orders";
 
@@ -68,6 +70,14 @@ export default async function AdminFinancePage() {
 
   const outstanding = settlements.reduce((sum, order) => sum + order.outstanding_amount, 0);
   const refunds = providerTransactions.filter((transaction) => transaction.transaction_type === "refund" && transaction.status === "succeeded").reduce((sum, transaction) => sum + transaction.amount, 0);
+  const moneyMovement = buildMonthlyMetricSeries(["payments", "payouts", "refunds"], [
+    ...providerTransactions.filter((transaction) => transaction.status === "succeeded").map((transaction) => ({
+      metric: transaction.transaction_type === "refund" ? "refunds" : "payments",
+      occurredAt: transaction.created_at,
+      value: transaction.amount,
+    })),
+    ...vendorLedger.map((payment) => ({ metric: "payouts", occurredAt: payment.payment_date ?? payment.created_at, value: payment.amount })),
+  ]);
   const financeError = orderError || paymentError || transactionError || refundableError || refundError;
 
   return (
@@ -82,6 +92,19 @@ export default async function AdminFinancePage() {
           <div><dt>Confirmed refunds</dt><dd>{formatCents(refunds)}</dd><small>HitPay confirmed</small></div>
         </dl>
       </section>
+      <DashboardBarChart
+        id="admin-money-movement"
+        eyebrow="Six-month movement"
+        title="Customer money and partner settlement"
+        description="Confirmed HitPay collections and refunds compared with the net vendor ledger for each month."
+        points={moneyMovement}
+        format="currency"
+        series={[
+          { key: "payments", label: "Customer payments", color: "#1d737f" },
+          { key: "payouts", label: "Vendor payouts", color: "#a27c47" },
+          { key: "refunds", label: "Refunds", color: "#a64b3c" },
+        ]}
+      />
       {!financeError && <FinanceReal settlements={settlements} vendorLedger={vendorLedger} providerTransactions={providerTransactions} refundableOrders={refundableOrders} />}
     </>
   );

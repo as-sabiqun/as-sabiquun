@@ -441,6 +441,21 @@ button, a, summary { -webkit-tap-highlight-color: transparent; }
 .vendor-stat-value { font-size: 1.7rem; color: var(--teal-dark); }
 .vendor-stat-note { font-size: .74rem; color: var(--muted); }
 
+.vendor-dashboard-analytics { display: grid; grid-template-columns: minmax(0, 1.55fr) minmax(310px, .8fr); gap: 16px; }
+.vendor-dashboard-ledger { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); overflow: hidden; border: 1px solid var(--line); border-radius: 16px; background: var(--white); }
+.vendor-dashboard-ledger > div { min-width: 0; display: grid; gap: 4px; border-right: 1px solid var(--line); padding: 17px 20px; }
+.vendor-dashboard-ledger > div:last-child { border-right: 0; }
+.vendor-dashboard-ledger dt, .vendor-dashboard-ledger small { overflow: hidden; color: var(--muted); font-size: .62rem; text-overflow: ellipsis; white-space: nowrap; }
+.vendor-dashboard-ledger dd { overflow: hidden; color: var(--teal-dark); font-family: var(--font-display); font-size: 1.28rem; font-weight: 750; text-overflow: ellipsis; white-space: nowrap; }
+.vendor-earnings-grid { display: grid; grid-template-columns: minmax(0, 1.55fr) minmax(310px, .8fr); gap: 16px; }
+.vendor-earnings-position { min-width: 0; display: grid; align-content: start; overflow: hidden; border: 1px solid var(--line); border-radius: 18px; background: var(--white); }
+.vendor-earnings-position > header { min-height: 92px; display: grid; align-content: center; gap: 4px; border-bottom: 1px solid var(--line); padding: 20px 24px; }
+.vendor-earnings-position h2 { font-family: var(--font-display); font-size: 1.08rem; }
+.vendor-earnings-focus { display: grid; gap: 5px; padding: 25px 24px 21px; }
+.vendor-earnings-focus span, .vendor-earnings-focus small { color: var(--muted); font-size: .63rem; }
+.vendor-earnings-focus strong { color: var(--teal-dark); font-family: var(--font-display); font-size: 2.15rem; line-height: 1; }
+.vendor-earnings-position > div:last-child { margin: 0 24px 24px; border-top: 1px solid var(--line); padding-top: 19px; }
+
 .vendor-split { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; align-items: start; }
 .vendor-panel { padding: 24px 26px; }
 .vendor-panel-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 16px; }
@@ -568,6 +583,8 @@ button, a, summary { -webkit-tap-highlight-color: transparent; }
 
 @media (max-width: 1100px) {
   .vendor-stat-grid { grid-template-columns: repeat(2, 1fr); }
+  .vendor-dashboard-analytics { grid-template-columns: 1fr; }
+  .vendor-earnings-grid { grid-template-columns: 1fr; }
   .vendor-split { grid-template-columns: 1fr; }
   .vendor-kanban { grid-template-columns: repeat(2, 1fr); }
   .vendor-detail-layout { grid-template-columns: 1fr; }
@@ -584,6 +601,9 @@ button, a, summary { -webkit-tap-highlight-color: transparent; }
 }
 @media (max-width: 640px) {
   .vendor-stat-grid { grid-template-columns: 1fr; }
+  .vendor-dashboard-ledger { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .vendor-dashboard-ledger > div:nth-child(2) { border-right: 0; }
+  .vendor-dashboard-ledger > div:nth-child(-n+2) { border-bottom: 1px solid var(--line); }
   .vendor-kanban { grid-template-columns: 1fr; }
   .vendor-topbar { padding: 14px 18px; }
   .vendor-topbar-search { display: none; }
@@ -657,6 +677,34 @@ button, a, summary { -webkit-tap-highlight-color: transparent; }
 .admin-customer-access-action { padding: 20px 26px 24px; }
 .admin-customer-access-action p { margin-bottom: 14px; color: var(--muted); font-size: .65rem; line-height: 1.5; }
 .admin-jobs-dashboard { display: grid; grid-template-columns: minmax(0, 1.55fr) minmax(300px, .8fr); gap: 16px; }
+.admin-overview-grid { display: grid; grid-template-columns: minmax(0, 1.65fr) minmax(280px, .7fr); gap: 16px; }
+.admin-overview-pulse { min-width: 0; overflow: hidden; border: 1px solid var(--line); border-radius: 18px; background: var(--ink); color: var(--cream); }
+.admin-overview-pulse > header { min-height: 92px; display: grid; align-content: center; gap: 4px; border-bottom: 1px solid color-mix(in srgb, var(--cream) 14%, transparent); padding: 20px 24px; }
+.admin-overview-pulse h2 { color: var(--cream); font-family: var(--font-display); font-size: 1.08rem; }
+.admin-overview-pulse dl { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.admin-overview-pulse dl > div { min-width: 0; display: grid; align-content: center; gap: 4px; min-height: 102px; border-right: 1px solid color-mix(in srgb, var(--cream) 12%, transparent); border-bottom: 1px solid color-mix(in srgb, var(--cream) 12%, transparent); padding: 18px 20px; }
+.admin-overview-pulse dl > div:nth-child(even) { border-right: 0; }
+.admin-overview-pulse dl > div:nth-last-child(-n+2) { border-bottom: 0; }
+.admin-overview-pulse dt, .admin-overview-pulse small { overflow: hidden; color: color-mix(in srgb, var(--cream) 62%, var(--ink)); font-size: .61rem; text-overflow: ellipsis; white-space: nowrap; }
+.admin-overview-pulse dd { overflow: hidden; color: var(--cream); font-family: var(--font-display); font-size: 1.35rem; font-weight: 750; text-overflow: ellipsis; white-space: nowrap; }
+.admin-overview-actions { overflow: hidden; border: 1px solid var(--line); border-radius: 18px; background: var(--white); }
+.admin-overview-actions > header { min-height: 76px; display: flex; align-items: center; justify-content: space-between; gap: 18px; border-bottom: 1px solid var(--line); padding: 18px 24px; }
+.admin-overview-actions > header > a { color: var(--teal-dark); font-size: .67rem; font-weight: 750; }
+.admin-overview-actions > div:not(.admin-overview-clear) { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); }
+.admin-overview-actions > div > a { --queue-accent: var(--teal); min-width: 0; display: grid; grid-template-columns: 5px minmax(0, 1fr) auto; align-items: center; gap: 12px; min-height: 82px; border-right: 1px solid var(--line); border-bottom: 1px solid var(--line); padding: 15px 18px; }
+.admin-overview-actions a[data-queue="payment_issue"], .admin-overview-actions a[data-queue="delivery_failed"] { --queue-accent: #a64b3c; }
+.admin-overview-actions a[data-queue="review"], .admin-overview-actions a[data-queue="settlement"] { --queue-accent: var(--gold); }
+.admin-overview-actions > div > a:hover { background: color-mix(in srgb, var(--queue-accent) 7%, var(--white)); }
+.admin-overview-actions a > i { width: 5px; height: 31px; border-radius: 99px; background: var(--queue-accent); }
+.admin-overview-actions a > span { min-width: 0; display: grid; gap: 3px; }
+.admin-overview-actions a strong, .admin-overview-actions a small { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.admin-overview-actions a strong { font-size: .7rem; }
+.admin-overview-actions a small { color: var(--muted); font-size: .59rem; }
+.admin-overview-actions a b { color: var(--queue-accent); font-family: var(--font-display); font-size: 1.05rem; }
+.admin-overview-clear { min-height: 126px; display: grid; place-content: center; justify-items: center; gap: 4px; text-align: center; }
+.admin-overview-clear > span { width: 34px; height: 34px; display: grid; place-items: center; border-radius: 50%; background: var(--teal-soft); color: var(--teal-dark); font-weight: 900; }
+.admin-overview-clear strong { margin-top: 5px; font-size: .74rem; }
+.admin-overview-clear small { color: var(--muted); font-size: .62rem; }
 .admin-jobs-mix, .admin-jobs-attention { min-width: 0; overflow: hidden; background: var(--white); border: 1px solid var(--line); border-radius: 18px; }
 .admin-jobs-mix > header, .admin-jobs-attention > header { min-height: 76px; display: flex; align-items: center; justify-content: space-between; gap: 20px; padding: 18px 24px; border-bottom: 1px solid var(--line); }
 .admin-jobs-mix h2, .admin-jobs-attention h2, .admin-jobs-results-head h2 { margin-top: 4px; font-family: var(--font-display); font-size: 1.08rem; }
@@ -955,6 +1003,7 @@ button, a, summary { -webkit-tap-highlight-color: transparent; }
 .admin-inline-stat strong { font-size: 1.2rem; color: var(--teal-dark); }
 
 @media (max-width: 860px) {
+  .admin-overview-grid { grid-template-columns: 1fr; }
   .admin-finance-overview { grid-template-columns: 1fr; }
   .admin-finance-exposure { border-right: 0; border-bottom: 1px solid color-mix(in srgb, var(--cream) 15%, transparent); }
   .admin-finance-layout { grid-template-columns: 1fr; grid-template-areas: "settlements" "refunds" "vendor-ledger" "hitpay-ledger"; }
@@ -983,6 +1032,11 @@ button, a, summary { -webkit-tap-highlight-color: transparent; }
   .admin-jobs-dashboard { grid-template-columns: 1fr; }
 }
 @media (max-width: 640px) {
+  .admin-overview-pulse dl { grid-template-columns: 1fr; }
+  .admin-overview-pulse dl > div { border-right: 0; border-bottom: 1px solid color-mix(in srgb, var(--cream) 12%, transparent); }
+  .admin-overview-pulse dl > div:nth-last-child(-n+2) { border-bottom: 1px solid color-mix(in srgb, var(--cream) 12%, transparent); }
+  .admin-overview-pulse dl > div:last-child { border-bottom: 0; }
+  .admin-overview-actions > header { align-items: flex-start; flex-direction: column; }
   .admin-finance-exposure { padding: 24px 22px; }
   .admin-finance-summary { grid-template-columns: 1fr; }
   .admin-finance-summary > div { padding: 18px 22px; border-right: 0; border-bottom: 1px solid color-mix(in srgb, var(--cream) 15%, transparent); }
