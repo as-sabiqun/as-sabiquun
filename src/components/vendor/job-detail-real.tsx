@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { useState, useTransition } from "react";
 import { deriveOrderMilestone, milestoneLabels, type DeliveryStatus, type FulfilmentStatus, type PaymentStatus, type SettlementStatus } from "@/lib/order-lifecycle";
 import { formatCents, orderTitle, type OrderRow } from "@/lib/orders";
+import { vendorServiceOptions } from "@/lib/vendor-options";
 import { ProofUploadFormReal } from "@/components/vendor/proof-upload-form-real";
 import { claimJobAction, declineJobAction, markInProgressAction } from "@/app/vendor-dashboard/actions";
 
@@ -15,6 +16,7 @@ export interface VendorOrderDetail extends Omit<OrderRow, "total_amount"> {
   admin_verification_notes?: string | null;
   offering_detail?: string | null;
   completion_deadline?: string | null;
+  accepted_at?: string | null;
   beneficiary_country?: string | null;
   beneficiary_state?: string | null;
   beneficiary_village?: string | null;
@@ -64,6 +66,13 @@ export function JobDetailReal({
 
   const milestone = deriveOrderMilestone(order);
   const needsWork = order.fulfilment_status === "in_progress" || order.fulfilment_status === "revision_required";
+  const serviceLabel = vendorServiceOptions.find((service) => service.slug === order.category_slug)?.title ?? orderTitle(order);
+  const workflowSteps = [
+    { label: "Accepted", complete: !isOffer },
+    { label: "In progress", complete: ["in_progress", "proof_submitted", "revision_required", "verified"].includes(order.fulfilment_status) },
+    { label: "Submitted", complete: ["proof_submitted", "verified"].includes(order.fulfilment_status) },
+    { label: "Admin review", complete: order.fulfilment_status === "verified" },
+  ];
 
   function accept() {
     setBusy(true);
@@ -133,43 +142,65 @@ export function JobDetailReal({
             <p className="auth-error mt-6">Admin requested changes: {order.admin_verification_notes}</p>
           )}
 
-          {order.offering_detail && <p className="vendor-page-lead mt-6">{order.offering_detail}</p>}
-          <dl className="admin-contact-facts mt-6">
-            <div><dt>Quantity</dt><dd>{order.quantity}</dd></div>
-            <div><dt>Target region</dt><dd>{[order.beneficiary_village, order.beneficiary_state, order.beneficiary_country].filter(Boolean).join(", ") || "Not recorded"}</dd></div>
-            <div><dt>Completion deadline</dt><dd>{order.completion_deadline ? new Date(order.completion_deadline).toLocaleString() : "Not recorded"}</dd></div>
-            {order.partner_organisation && <div><dt>Local partner</dt><dd>{order.partner_organisation}</dd></div>}
-          </dl>
+          {!isOffer && (
+            <ol className="vendor-job-progress mt-6" aria-label="Vendor job progress">
+              {workflowSteps.map((step, index) => (
+                <li key={step.label} className={step.complete ? "is-complete" : ""}>
+                  <span>{step.complete ? "✓" : index + 1}</span>
+                  <strong>{step.label}</strong>
+                </li>
+              ))}
+            </ol>
+          )}
 
-          <div className="vendor-report-item mt-6">
-            <strong>Mandatory completion record</strong>
+          <section className="vendor-job-brief mt-6" aria-labelledby="vendor-job-brief-title">
+            <span className="vendor-eyebrow">Execution brief</span>
+            <h2 id="vendor-job-brief-title" className="display text-lg mt-1">Complete job details</h2>
+            {order.offering_detail && <p className="vendor-page-lead mt-4">{order.offering_detail}</p>}
+            <dl className="admin-contact-facts mt-4">
+              <div><dt>Job / order ID</dt><dd>{order.reference}</dd></div>
+              <div><dt>Service type</dt><dd>{serviceLabel}</dd></div>
+              <div><dt>Package</dt><dd>{orderTitle(order)}</dd></div>
+              <div><dt>Quantity</dt><dd>{order.quantity}</dd></div>
+              <div><dt>Created</dt><dd>{new Date(order.created_at).toLocaleString()}</dd></div>
+              {!isOffer && <div><dt>Accepted</dt><dd>{order.accepted_at ? new Date(order.accepted_at).toLocaleString() : "Not recorded"}</dd></div>}
+              <div><dt>Target location</dt><dd>{[order.beneficiary_village, order.beneficiary_state, order.beneficiary_country].filter(Boolean).join(", ") || "Not recorded"}</dd></div>
+              <div><dt>Completion deadline</dt><dd>{order.completion_deadline ? new Date(order.completion_deadline).toLocaleString() : "Not recorded"}</dd></div>
+              {order.partner_organisation && <div><dt>Local organisation</dt><dd>{order.partner_organisation}</dd></div>}
+            </dl>
+          </section>
+
+          {(order.participant_names?.length > 0 || order.dedication || order.dedication_arabic || order.dedication_remarks) && (
+            <section className="vendor-job-brief mt-4" aria-labelledby="vendor-nameplate-title">
+              <span className="vendor-eyebrow">Nameplate / dedication</span>
+              <h2 id="vendor-nameplate-title" className="display text-lg mt-1">Names to reproduce</h2>
+              <dl className="admin-contact-facts mt-4">
+                {order.participant_names?.length > 0 && <div><dt>Names</dt><dd>{order.participant_names.join(", ")}</dd></div>}
+                {order.dedication && <div><dt>Dedication</dt><dd>{order.dedication}</dd></div>}
+                {order.dedication_arabic && <div><dt>Arabic spelling</dt><dd dir="rtl">{order.dedication_arabic}</dd></div>}
+                {order.dedication_remarks && <div><dt>Remarks</dt><dd>{order.dedication_remarks}</dd></div>}
+              </dl>
+            </section>
+          )}
+
+          {!isOffer && (order.customer_name || (order.beneficiary_names && order.beneficiary_names.length > 0)) && (
+            <section className="vendor-job-brief mt-4" aria-labelledby="vendor-customer-title">
+              <span className="vendor-eyebrow">People</span>
+              <h2 id="vendor-customer-title" className="display text-lg mt-1">Customer and beneficiaries</h2>
+              <dl className="admin-contact-facts mt-4">
+                {order.customer_name && <div><dt>Customer</dt><dd>{order.customer_name}</dd></div>}
+                {order.customer_phone && <div><dt>Customer phone</dt><dd>{order.customer_phone}</dd></div>}
+                {order.beneficiary_names && order.beneficiary_names.length > 0 && <div><dt>Beneficiaries</dt><dd>{order.beneficiary_names.join(", ")}</dd></div>}
+              </dl>
+            </section>
+          )}
+
+          <div className="vendor-report-item mt-4">
+            <strong>Required before final submission</strong>
             <ul className="mt-3 grid gap-2 text-sm text-[var(--muted)]">
               {evidenceBrief.map((item) => <li key={item}>✓ {item}</li>)}
             </ul>
           </div>
-
-          {order.participant_names?.length > 0 && (
-            <div className="mt-6">
-              <span className="label mb-2 block">Participant{order.participant_names.length > 1 ? "s" : ""}</span>
-              <p className="text-sm text-[var(--muted)]">{order.participant_names.join(", ")}</p>
-            </div>
-          )}
-          {order.dedication && (
-            <div className="mt-6">
-              <span className="label mb-2 block">Dedication</span>
-              <p className="text-sm text-[var(--muted)]">{order.dedication}</p>
-            </div>
-          )}
-          {order.dedication_arabic && <div className="mt-6"><span className="label mb-2 block">Arabic nameplate spelling</span><p dir="rtl" className="text-sm text-[var(--muted)]">{order.dedication_arabic}</p></div>}
-          {order.dedication_remarks && <div className="mt-6"><span className="label mb-2 block">Dedication remarks</span><p className="text-sm text-[var(--muted)]">{order.dedication_remarks}</p></div>}
-          {order.beneficiary_names && order.beneficiary_names.length > 0 && <div className="mt-6"><span className="label mb-2 block">Beneficiaries</span><p className="text-sm text-[var(--muted)]">{order.beneficiary_names.join(", ")}</p></div>}
-
-          {!isOffer && order.customer_name && (
-            <div className="mt-6">
-              <span className="label mb-2 block">Customer</span>
-              <p className="text-sm text-[var(--muted)]">{order.customer_name} · {order.customer_phone}</p>
-            </div>
-          )}
 
           {isOffer && (
             <div className="vendor-terms">

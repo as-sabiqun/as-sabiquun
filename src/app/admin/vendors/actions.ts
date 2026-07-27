@@ -2,9 +2,11 @@
 
 import { revalidatePath } from "next/cache";
 import { getAal2Admin } from "@/lib/auth";
+import { isContactNumber } from "@/lib/checkout-validation";
 import { getSiteUrl } from "@/lib/site-url";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { createClient, isSupabaseAdminConfigured, isSupabaseConfigured } from "@/lib/supabase/server";
+import { vendorServiceOptions, vendorTypes } from "@/lib/vendor-options";
 
 export type CreateVendorState =
   | { ok: true; email: string; live: boolean }
@@ -21,6 +23,7 @@ async function reissueExistingVendorInvitation(input: {
   siteUrl: string;
   name?: string;
   notes?: string | null;
+  profile?: Record<string, string | string[] | null>;
 }): Promise<InvitationResult> {
   const { serviceClient, vendorId, email, invitedBy, siteUrl } = input;
   const [{ data: profile, error: profileError }, { data: authData, error: authError }] = await Promise.all([
@@ -61,7 +64,7 @@ async function reissueExistingVendorInvitation(input: {
   if (input.name !== undefined) {
     const { error: updateError } = await serviceClient
       .from("profiles")
-      .update({ display_name: input.name, notes: input.notes ?? null })
+      .update({ display_name: input.name, notes: input.notes ?? null, ...input.profile })
       .eq("id", vendorId)
       .eq("role", "vendor")
       .eq("vendor_onboarding_status", "invited");
@@ -85,12 +88,36 @@ async function reissueExistingVendorInvitation(input: {
 export async function createVendorAccount(_prevState: CreateVendorState, formData: FormData): Promise<CreateVendorState> {
   const name = String(formData.get("name") ?? "").trim();
   const email = String(formData.get("email") ?? "").trim().toLowerCase();
+  const contactPerson = String(formData.get("contactPerson") ?? "").trim();
+  const phone = String(formData.get("phone") ?? "").trim();
+  const whatsapp = String(formData.get("whatsapp") ?? "").trim();
+  const country = String(formData.get("country") ?? "").trim();
+  const cityAddress = String(formData.get("cityAddress") ?? "").trim();
+  const vendorType = String(formData.get("vendorType") ?? "").trim();
+  const services = [...new Set(formData.getAll("services").map(String))];
+  const bankName = String(formData.get("bankName") ?? "").trim();
+  const bankAccountName = String(formData.get("bankAccountName") ?? "").trim();
+  const bankAccountNumber = String(formData.get("bankAccountNumber") ?? "").trim();
+  const swiftCode = String(formData.get("swiftCode") ?? "").trim();
   const notes = String(formData.get("notes") ?? "").trim() || null;
+  const allowedServices = new Set(vendorServiceOptions.map((item) => item.slug));
 
-  if (!name || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email) || email.length > 254) {
-    return { ok: false, error: "Fill in a valid organisation name and email." };
+  if (
+    !name || !contactPerson || !country || !cityAddress || !bankName || !bankAccountName || !bankAccountNumber
+    || !isContactNumber(phone) || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email) || email.length > 254
+  ) {
+    return { ok: false, error: "Complete every required company, contact, location, and bank field." };
   }
-  if (name.length > 200 || (notes?.length ?? 0) > 2000) {
+  if (whatsapp && !isContactNumber(whatsapp)) return { ok: false, error: "Enter a valid WhatsApp number or leave it blank." };
+  if (!vendorTypes.includes(vendorType as (typeof vendorTypes)[number])) return { ok: false, error: "Choose a valid vendor type." };
+  if (!services.length || services.some((service) => !allowedServices.has(service as (typeof vendorServiceOptions)[number]["slug"]))) {
+    return { ok: false, error: "Choose at least one valid service." };
+  }
+  if (
+    [name, contactPerson, phone, whatsapp, country, cityAddress, vendorType, bankName, bankAccountName, bankAccountNumber, swiftCode]
+      .some((value) => value.length > 200)
+    || (notes?.length ?? 0) > 2000
+  ) {
     return { ok: false, error: "One or more vendor details are too long." };
   }
 
@@ -113,6 +140,20 @@ export async function createVendorAccount(_prevState: CreateVendorState, formDat
   if (previousInvitationError) return { ok: false, error: "Existing invitations could not be checked." };
 
   const siteUrl = await getSiteUrl();
+  const profile = {
+    contact_person: contactPerson,
+    phone,
+    whatsapp: whatsapp || null,
+    country,
+    city_address: cityAddress,
+    vendor_type: vendorType,
+    services,
+    currency: "SGD",
+    bank_name: bankName,
+    bank_account_name: bankAccountName,
+    bank_account_number: bankAccountNumber,
+    swift_code: swiftCode || null,
+  };
   if (previousInvitation?.auth_user_id) {
     const result = await reissueExistingVendorInvitation({
       serviceClient,
@@ -122,6 +163,7 @@ export async function createVendorAccount(_prevState: CreateVendorState, formDat
       siteUrl,
       name,
       notes,
+      profile,
     });
     if (!result.ok) return { ok: false, error: result.error };
     revalidatePath("/admin/vendors");
@@ -161,7 +203,7 @@ export async function createVendorAccount(_prevState: CreateVendorState, formDat
       status: "active",
       vendor_onboarding_status: "invited",
       display_name: name,
-      services: [],
+      ...profile,
       currency: "SGD",
       notes,
     })

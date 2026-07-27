@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useActionState, useState } from "react";
 import { vendorDirectoryState } from "@/lib/vendor-directory";
-import { vendorServiceOptions } from "@/lib/vendor-options";
+import { vendorServiceOptions, vendorTypes } from "@/lib/vendor-options";
 import { createVendorAccount } from "@/app/admin/vendors/actions";
 
 export interface VendorRow {
@@ -77,15 +77,76 @@ export function VendorsListReal({ vendors }: { vendors: VendorRow[] }) {
           <div className="vendor-panel-head"><h2 className="display text-lg">Invite a vendor</h2></div>
           <form className="grid gap-6" action={action}>
             {state && !state.ok && <p className="auth-error">{state.error}</p>}
-            <p className="text-sm text-[var(--muted)]">The vendor will securely add their contact, service areas, available services, and bank details during setup.</p>
-            <div className="admin-form-grid">
-              <label className="label">Organisation / company name
-                <input className="input" name="name" required maxLength={200} placeholder="e.g. Amanah Service Partners" />
+            <p className="text-sm text-[var(--muted)]">Create the complete trusted-partner record. The vendor receives a secure email to choose a password; no password is sent or stored in plaintext.</p>
+            <fieldset className="grid gap-4">
+              <legend className="vendor-eyebrow mb-3">Company information</legend>
+              <div className="admin-form-grid">
+                <label className="label">Organisation / company name
+                  <input className="input" name="name" required maxLength={200} placeholder="e.g. Amanah Service Partners" />
+                </label>
+                <label className="label">Contact person
+                  <input className="input" name="contactPerson" required maxLength={200} />
+                </label>
+              </div>
+              <div className="admin-form-grid">
+                <label className="label">Invitation email
+                  <input className="input" type="email" name="email" required maxLength={254} autoComplete="email" placeholder="ops@vendor.example" />
+                </label>
+                <label className="label">Phone number
+                  <input className="input" name="phone" required maxLength={25} placeholder="+65 8123 4567" />
+                </label>
+              </div>
+              <div className="admin-form-grid">
+                <label className="label">WhatsApp number <span className="font-normal text-[var(--muted)]">Optional</span>
+                  <input className="input" name="whatsapp" maxLength={25} placeholder="+65 8123 4567" />
+                </label>
+                <label className="label">Country
+                  <input className="input" name="country" required maxLength={120} />
+                </label>
+              </div>
+              <label className="label">City / full address
+                <input className="input" name="cityAddress" required maxLength={200} />
               </label>
-              <label className="label">Invitation email
-                <input className="input" type="email" name="email" required maxLength={254} autoComplete="email" placeholder="ops@vendor.example" />
+            </fieldset>
+
+            <fieldset>
+              <legend className="vendor-eyebrow mb-3">Services offered</legend>
+              <label className="label">Vendor type
+                <select className="input" name="vendorType" required defaultValue="">
+                  <option value="" disabled>Select a vendor type</option>
+                  {vendorTypes.map((type) => <option key={type}>{type}</option>)}
+                </select>
               </label>
-            </div>
+              <div className="admin-checkbox-group mt-4">
+                {vendorServiceOptions.map((service) => (
+                  <label key={service.slug} className="admin-checkbox-pill">
+                    <input type="checkbox" name="services" value={service.slug} />
+                    {service.title}
+                  </label>
+                ))}
+              </div>
+            </fieldset>
+
+            <fieldset className="grid gap-4">
+              <legend className="vendor-eyebrow mb-3">Payment information</legend>
+              <p className="text-sm text-[var(--muted)]">The MVP payment ledger records vendor settlements in SGD.</p>
+              <div className="admin-form-grid">
+                <label className="label">Bank name
+                  <input className="input" name="bankName" required maxLength={200} />
+                </label>
+                <label className="label">Account name
+                  <input className="input" name="bankAccountName" required maxLength={200} />
+                </label>
+              </div>
+              <div className="admin-form-grid">
+                <label className="label">Account number
+                  <input className="input" name="bankAccountNumber" required maxLength={200} />
+                </label>
+                <label className="label">SWIFT code <span className="font-normal text-[var(--muted)]">If applicable</span>
+                  <input className="input" name="swiftCode" maxLength={200} />
+                </label>
+              </div>
+            </fieldset>
             <label className="label">Internal notes <span className="font-normal text-[var(--muted)]">Optional, admin-only</span>
               <textarea className="input vendor-textarea" name="notes" rows={3} maxLength={2000} placeholder="Anything worth remembering about this vendor" />
             </label>
@@ -97,7 +158,7 @@ export function VendorsListReal({ vendors }: { vendors: VendorRow[] }) {
       {state?.ok && (
         <div className="card admin-credentials-card">
           <span className="vendor-eyebrow">Invitation sent</span>
-          <p className="mt-2 text-sm text-[var(--muted)]">The partner will choose a password from the email invitation. Approve the account after their setup is complete.</p>
+          <p className="mt-2 text-sm text-[var(--muted)]">The vendor only needs to choose a password. Their admin-created profile will be activated automatically.</p>
           <div className="admin-credentials-row"><span>Email</span><strong>{state.email}</strong></div>
         </div>
       )}

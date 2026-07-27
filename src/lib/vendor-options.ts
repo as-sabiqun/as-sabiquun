@@ -9,9 +9,9 @@ export type VendorType = (typeof vendorTypes)[number];
 
 export const vendorServiceOptions = [
   { slug: "korban", title: "Korban" },
-  { slug: "water", title: "Wakaf Water Pump" },
-  { slug: "quran", title: "Wakaf Quran" },
-  { slug: "orphans", title: "Food for Orphans" },
+  { slug: "water", title: "Water Wells / Pumps" },
+  { slug: "quran", title: "Quran Printing / Waqf" },
+  { slug: "orphans", title: "Food Distribution" },
   { slug: "tahfiz", title: "Tahfiz Sponsorship" },
   { slug: "aqiqah", title: "Aqiqah" },
   { slug: "digital_products", title: "Digital Products" },

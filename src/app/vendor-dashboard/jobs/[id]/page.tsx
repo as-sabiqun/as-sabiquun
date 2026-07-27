@@ -13,7 +13,7 @@ export default async function VendorJobDetailPage({ params }: { params: Promise<
     supabase
       .from("vendor_assigned_orders")
       .select(
-        "id, reference, service_type, category_slug, quantity, participant_names, dedication, vendor_payout_amount, payment_status, fulfilment_status, delivery_status, settlement_status, status, created_at, customer_name, customer_phone, admin_verification_notes, completion_deadline, beneficiary_country, beneficiary_state, beneficiary_village, partner_organisation, beneficiary_names, dedication_arabic, dedication_remarks, offering_title, offering_detail"
+        "id, reference, service_type, category_slug, quantity, participant_names, dedication, vendor_payout_amount, payment_status, fulfilment_status, delivery_status, settlement_status, status, created_at, accepted_at, customer_name, customer_phone, admin_verification_notes, completion_deadline, beneficiary_country, beneficiary_state, beneficiary_village, partner_organisation, beneficiary_names, dedication_arabic, dedication_remarks, offering_title, offering_detail"
       )
       .eq("id", id)
       .maybeSingle(),
