@@ -130,7 +130,7 @@ export function JobDetailReal({
           </div>
 
           {order.fulfilment_status === "revision_required" && order.admin_verification_notes && (
-            <p className="auth-error mt-6">Operations requested changes: {order.admin_verification_notes}</p>
+            <p className="auth-error mt-6">Admin requested changes: {order.admin_verification_notes}</p>
           )}
 
           {order.offering_detail && <p className="vendor-page-lead mt-6">{order.offering_detail}</p>}
@@ -189,9 +189,9 @@ export function JobDetailReal({
 
           {(["proof_submitted", "revision_required", "verified"].includes(order.fulfilment_status)) && (
             <div className="mt-8 vendor-proof-summary">
-              <span className="label mb-2 block">Submitted evidence</span>
+              <span className="label mb-2 block">Submitted files</span>
               {proofs.length === 0 ? (
-                <p className="vendor-empty">No evidence on record.</p>
+                <p className="vendor-empty">No files submitted yet.</p>
               ) : (
                 <div className="admin-proof-grid">
                   {proofs.map((proof) => (
@@ -230,11 +230,11 @@ export function JobDetailReal({
             </button>
           )}
 
-          {order.fulfilment_status === "in_progress" && <p className="vendor-empty mt-6">Submit your completion evidence on the left to close this job out.</p>}
-          {order.fulfilment_status === "revision_required" && <p className="vendor-empty mt-6">Resubmit your completion evidence on the left.</p>}
-          {order.fulfilment_status === "proof_submitted" && <p className="vendor-empty mt-6">Submitted — awaiting review from operations.</p>}
-          {milestone === "verified" && <p className="vendor-empty mt-6">Verified. Operations is delivering the completion report to the customer.</p>}
-          {milestone === "completed" && <p className="vendor-empty mt-6">Completed for the customer. Settlement is tracked separately.</p>}
+          {order.fulfilment_status === "in_progress" && <p className="vendor-empty mt-6">Upload the required photos, videos, and location details on the left when the work is complete.</p>}
+          {order.fulfilment_status === "revision_required" && <p className="vendor-empty mt-6">Update the requested files or details on the left and submit again.</p>}
+          {order.fulfilment_status === "proof_submitted" && <p className="vendor-empty mt-6">Submitted — waiting for admin review.</p>}
+          {milestone === "verified" && <p className="vendor-empty mt-6">Approved. The completion report is being sent to the customer.</p>}
+          {milestone === "completed" && <p className="vendor-empty mt-6">The customer received the report. Your payment is tracked separately.</p>}
           {milestone === "closed" && <p className="vendor-empty mt-6">Completed and paid in full.</p>}
 
           {/* eslint-disable-next-line react/no-unescaped-entities */}

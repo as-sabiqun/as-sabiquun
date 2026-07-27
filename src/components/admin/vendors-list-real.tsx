@@ -26,7 +26,7 @@ type VendorFilter = "all" | "operational" | "pending" | "invited" | "paused";
 
 const filters: { value: VendorFilter; label: string }[] = [
   { value: "all", label: "All" },
-  { value: "operational", label: "Operational" },
+  { value: "operational", label: "Active" },
   { value: "pending", label: "Pending approval" },
   { value: "invited", label: "Invited" },
   { value: "paused", label: "Paused" },
@@ -36,7 +36,7 @@ const mvpServices = vendorServiceOptions.filter(({ slug }) => ["korban", "water"
 
 function stateLabel(vendor: VendorRow) {
   const state = vendorDirectoryState(vendor);
-  if (state === "operational") return "Operational";
+  if (state === "operational") return "Active";
   if (state === "pending") return "Pending approval";
   if (state === "invited") return "Invited";
   return vendor.status === "suspended" ? "Suspended" : "Rejected";
@@ -65,7 +65,7 @@ export function VendorsListReal({ vendors }: { vendors: VendorRow[] }) {
         <div>
           <p className="vendor-eyebrow">Network</p>
           <h1 className="display vendor-page-title">Vendors</h1>
-          <p className="vendor-page-lead">Manage the partners trusted to carry each project from assignment to verified evidence.</p>
+          <p className="vendor-page-lead">Manage the vendors trusted to carry out each project and submit completed work.</p>
         </div>
         <button type="button" className="btn btn-small" onClick={() => setOpen((value) => !value)}>
           {open ? "Cancel" : "Add vendor"} {!open && <span aria-hidden="true">→</span>}
@@ -74,13 +74,13 @@ export function VendorsListReal({ vendors }: { vendors: VendorRow[] }) {
 
       {open && (
         <div className="card vendor-panel admin-vendor-invite">
-          <div className="vendor-panel-head"><h2 className="display text-lg">Invite a fulfilment partner</h2></div>
+          <div className="vendor-panel-head"><h2 className="display text-lg">Invite a vendor</h2></div>
           <form className="grid gap-6" action={action}>
             {state && !state.ok && <p className="auth-error">{state.error}</p>}
-            <p className="text-sm text-[var(--muted)]">The partner will securely add their contact, service-region, capability, and bank details during onboarding.</p>
+            <p className="text-sm text-[var(--muted)]">The vendor will securely add their contact, service areas, available services, and bank details during setup.</p>
             <div className="admin-form-grid">
               <label className="label">Organisation / company name
-                <input className="input" name="name" required maxLength={200} placeholder="e.g. Amanah Fulfilment Partners" />
+                <input className="input" name="name" required maxLength={200} placeholder="e.g. Amanah Service Partners" />
               </label>
               <label className="label">Invitation email
                 <input className="input" type="email" name="email" required maxLength={254} autoComplete="email" placeholder="ops@vendor.example" />
@@ -104,17 +104,17 @@ export function VendorsListReal({ vendors }: { vendors: VendorRow[] }) {
 
       <section className="admin-network-overview" aria-label="Vendor network summary">
         <div className="admin-network-total">
-          <span>Fulfilment network</span>
+          <span>Vendor network</span>
           <strong className="display numeral">{vendors.length.toString().padStart(2, "0")}</strong>
           <p>partner{vendors.length === 1 ? "" : "s"} recorded</p>
         </div>
         <dl className="admin-network-facts">
-          <div><dt>Operational</dt><dd>{operational}</dd></div>
-          <div><dt>Onboarding</dt><dd>{onboarding}</dd></div>
-          <div><dt>Active assignments</dt><dd>{activeJobs}</dd></div>
+          <div><dt>Active vendors</dt><dd>{operational}</dd></div>
+          <div><dt>Still setting up</dt><dd>{onboarding}</dd></div>
+          <div><dt>Ongoing projects</dt><dd>{activeJobs}</dd></div>
         </dl>
         <div className="admin-capability-wrap">
-          <div className="admin-capability-head"><span>Service capability</span><small>Approved, active partners</small></div>
+          <div className="admin-capability-head"><span>Services covered</span><small>Approved, active vendors</small></div>
           <div className="admin-capability-grid">
             {mvpServices.map((service, index) => {
               const count = vendors.filter((vendor) => vendorDirectoryState(vendor) === "operational" && vendor.services.includes(service.slug)).length;
@@ -143,12 +143,12 @@ export function VendorsListReal({ vendors }: { vendors: VendorRow[] }) {
 
         <div className="admin-partner-table">
           <div className="admin-partner-table-head" aria-hidden="true">
-            <span>Partner</span><span>Capability</span><span>State</span><span>Workload</span><span />
+            <span>Vendor</span><span>Services</span><span>Status</span><span>Projects</span><span />
           </div>
           {visible.length === 0 ? (
             <div className="admin-directory-empty">
               <strong>{vendors.length === 0 ? "No vendors yet" : "No matching vendors"}</strong>
-              <p>{vendors.length === 0 ? "Invite the first fulfilment partner to begin building the network." : "Change the filter or search phrase to see other records."}</p>
+              <p>{vendors.length === 0 ? "Invite your first vendor to begin building the network." : "Change the filter or search phrase to see other records."}</p>
             </div>
           ) : visible.map((vendor, index) => (
             <Link key={vendor.id} href={`/admin/vendors/${vendor.id}`} className="admin-partner-row">

@@ -8,7 +8,7 @@ function one(value: string | string[] | undefined) {
 
 export default async function AdminSearchPage({ searchParams }: { searchParams: Promise<{ q?: string | string[] }> }) {
   const query = (one((await searchParams).q) ?? "").trim().slice(0, 80);
-  if (!query) return <div className="card vendor-panel"><p className="vendor-eyebrow">Search</p><h1 className="display vendor-page-title">Find an operational record</h1><p className="vendor-page-lead">Search by job reference, customer name, or vendor name.</p><form action="/admin/search" className="flex gap-3 mt-5" role="search"><input className="input" name="q" type="search" aria-label="Search operational records" required placeholder="Reference, customer, or vendor" /><button className="btn btn-small">Search</button></form></div>;
+  if (!query) return <div className="card vendor-panel"><p className="vendor-eyebrow">Search</p><h1 className="display vendor-page-title">Find a record</h1><p className="vendor-page-lead">Search by job reference, customer name, or vendor name.</p><form action="/admin/search" className="flex gap-3 mt-5" role="search"><input className="input" name="q" type="search" aria-label="Search records" required placeholder="Reference, customer, or vendor" /><button className="btn btn-small">Search</button></form></div>;
 
   const supabase = await createClient();
   const pattern = `%${query}%`;
@@ -33,8 +33,8 @@ export default async function AdminSearchPage({ searchParams }: { searchParams: 
 
   return (
     <>
-      <div className="vendor-page-head"><div><p className="vendor-eyebrow">Global search</p><h1 className="display vendor-page-title">Results for “{query}”</h1><p className="vendor-page-lead">Jobs, customers, and fulfilment partners from the secured operations record.</p></div></div>
-      <form action="/admin/search" className="card vendor-panel flex gap-3" role="search"><input className="input" name="q" type="search" aria-label="Search operational records" required defaultValue={query} /><button className="btn btn-small">Search</button></form>
+      <div className="vendor-page-head"><div><p className="vendor-eyebrow">Search</p><h1 className="display vendor-page-title">Results for “{query}”</h1><p className="vendor-page-lead">Matching jobs, customers, and vendors.</p></div></div>
+      <form action="/admin/search" className="card vendor-panel flex gap-3" role="search"><input className="input" name="q" type="search" aria-label="Search records" required defaultValue={query} /><button className="btn btn-small">Search</button></form>
       {(profileError || orderError) && <p className="auth-error">Some results could not be loaded. {(profileError || orderError)?.message}</p>}
 
       <section><div className="vendor-panel-head"><h2 className="display text-lg">Jobs ({orders.length})</h2></div><AdminJobsTable orders={orders} empty="No matching jobs." /></section>

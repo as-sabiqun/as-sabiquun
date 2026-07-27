@@ -11,7 +11,7 @@ const columns: { key: string; label: string; match: (j: VendorJobRow) => boolean
   { key: "offered", label: "Awaiting response", match: (j) => j.isOffer },
   { key: "assigned", label: "Accepted", match: (j) => !j.isOffer && j.fulfilment_status === "assigned" },
   { key: "in_progress", label: "In progress", match: (j) => !j.isOffer && ["in_progress", "proof_submitted", "revision_required"].includes(j.fulfilment_status) },
-  { key: "completed", label: "Verified", match: (j) => j.fulfilment_status === "verified" },
+  { key: "completed", label: "Approved", match: (j) => j.fulfilment_status === "verified" },
 ];
 
 export function BoardReal({ jobs }: { jobs: VendorJobRow[] }) {
@@ -36,9 +36,9 @@ export function BoardReal({ jobs }: { jobs: VendorJobRow[] }) {
     <>
       <div className="vendor-page-head">
         <div>
-          <p className="vendor-eyebrow">Pipeline</p>
-          <h1 className="display vendor-page-title">Kanban board</h1>
-          <p className="vendor-page-lead">Drag an accepted job into &quot;In progress&quot; to start work. Claiming and completion happen on the job page.</p>
+          <p className="vendor-eyebrow">Project board</p>
+          <h1 className="display vendor-page-title">Work board</h1>
+          <p className="vendor-page-lead">Drag an accepted job into &quot;In progress&quot; to start work. Accepting jobs and submitting completed work happen on the job page.</p>
         </div>
       </div>
 

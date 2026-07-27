@@ -10,7 +10,7 @@ const filters: { label: string; match: (j: VendorJobRow) => boolean }[] = [
   { label: "All", match: () => true },
   { label: "Awaiting response", match: (j) => j.isOffer },
   { label: "In progress", match: (j) => !j.isOffer && ["assigned", "in_progress", "proof_submitted", "revision_required"].includes(j.fulfilment_status) },
-  { label: "Verified", match: (j) => j.fulfilment_status === "verified" },
+  { label: "Approved", match: (j) => j.fulfilment_status === "verified" },
 ];
 
 export function JobsListReal({ jobs }: { jobs: VendorJobRow[] }) {
@@ -24,7 +24,7 @@ export function JobsListReal({ jobs }: { jobs: VendorJobRow[] }) {
         <div>
           <p className="vendor-eyebrow">Jobs</p>
           <h1 className="display vendor-page-title">All jobs</h1>
-          <p className="vendor-page-lead">Accept or decline fulfilment jobs before the response window closes.</p>
+          <p className="vendor-page-lead">Review each new project and accept or decline it before the response time ends.</p>
         </div>
       </div>
 

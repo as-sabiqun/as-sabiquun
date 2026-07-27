@@ -76,7 +76,7 @@ export default async function DashboardPage() {
         <div>
           <p className={styles.salam}>Assalamu alaikum, {firstName}</p>
           <h1>Every contribution, one clear journey.</h1>
-          <p>See what you have supported, where each service is now, and when its fulfilment has been verified.</p>
+          <p>See what you have supported, where each service is now, and when the work has been approved.</p>
         </div>
         <Link href="/services" className={styles.primaryAction}>
           <Plus aria-hidden="true" /> Support another service
@@ -89,11 +89,11 @@ export default async function DashboardPage() {
             <div>
               <p className={styles.arabicEyebrow} lang="ar" dir="rtl">رِحْلَةُ الْعَطَاءِ</p>
               <h2 id="journey-heading">Your giving journey</h2>
-              <p>Services supported and fulfilments verified through As-Sābiqūn.</p>
+              <p>Services supported and completed work approved through As-Sābiqūn.</p>
             </div>
             <div className={styles.chartLegend} aria-label="Chart legend">
               <span><i className={styles.legendStarted} /> Services started</span>
-              <span><i className={styles.legendVerified} /> Verified</span>
+              <span><i className={styles.legendVerified} /> Approved</span>
             </div>
           </header>
 
@@ -101,21 +101,21 @@ export default async function DashboardPage() {
 
           <div className={styles.journeyLedger}>
             <div><span>Services supported</span><strong>{impactRows.length}</strong></div>
-            <div><span>Verified fulfilments</span><strong>{verifiedCount}</strong></div>
-            <div><span>Currently in motion</span><strong>{inMotionCount}</strong></div>
-            <div><span>Service value coordinated</span><strong>{formatCents(committedValue)}</strong></div>
+            <div><span>Approved projects</span><strong>{verifiedCount}</strong></div>
+            <div><span>In progress</span><strong>{inMotionCount}</strong></div>
+            <div><span>Total supported</span><strong>{formatCents(committedValue)}</strong></div>
           </div>
         </article>
 
         <aside className={styles.impactLedger} aria-label="Impact summary">
           <div className={styles.ledgerHeading}>
-            <span><Sparkles aria-hidden="true" /> Impact ledger</span>
+            <span><Sparkles aria-hidden="true" /> Your impact</span>
             <small>Updated live</small>
           </div>
           <div className={styles.completionRing} style={{ "--completion": `${completionPercent * 3.6}deg` } as CSSProperties}>
             <div>
               <strong>{completionPercent}%</strong>
-              <span>fulfilled</span>
+              <span>completed</span>
             </div>
           </div>
           <p className={styles.ledgerNote}>This reflects services coordinated through As-Sābiqūn. The true reward of every sincere deed is known by Allah.</p>
@@ -140,8 +140,8 @@ export default async function DashboardPage() {
       <section id="orders" className={styles.ordersSection} aria-labelledby="orders-heading">
         <div className={styles.sectionHeading}>
           <div>
-            <p>Fulfilment board</p>
-            <h2 id="orders-heading">Your services, from request to completion</h2>
+            <p>Project tracker</p>
+            <h2 id="orders-heading">Follow each service from request to completion</h2>
           </div>
           <span className={styles.automaticLabel}><i /> Updates automatically</span>
         </div>

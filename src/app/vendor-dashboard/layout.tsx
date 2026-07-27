@@ -26,7 +26,7 @@ export default async function VendorDashboardLayout({ children }: { children: Re
       <div className="vendor-main">
         <header className="vendor-topbar">
           <div className="vendor-topbar-search">
-            <span className="vendor-eyebrow">Fulfilment workspace</span>
+            <span className="vendor-eyebrow">Vendor workspace</span>
           </div>
           <div className="vendor-topbar-right">
             <span className="vendor-topbar-badge">Vendor</span>

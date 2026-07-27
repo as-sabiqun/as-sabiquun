@@ -38,7 +38,7 @@ export function ImpactChart({ points }: { points: ImpactPoint[] }) {
     <div className={styles.chartWrap}>
       <svg className={styles.chart} viewBox={`0 0 ${width} ${height}`} role="img" aria-labelledby="impact-chart-title impact-chart-desc">
         <title id="impact-chart-title">Your giving journey over the last eight months</title>
-        <desc id="impact-chart-desc">Cumulative services started and fulfilments verified through As-Sābiqūn.</desc>
+        <desc id="impact-chart-desc">Cumulative services started and projects approved through As-Sābiqūn.</desc>
         <defs>
           <linearGradient id="journey-area" x1="0" y1="0" x2="0" y2="1">
             <stop offset="0" stopColor="#f7f4ec" stopOpacity="0.28" />

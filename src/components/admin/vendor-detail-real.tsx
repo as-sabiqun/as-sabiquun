@@ -132,7 +132,7 @@ export function VendorDetailReal({
     event.preventDefault();
     const amountCents = Math.round(Number(amount) * 100);
     if (!amountCents || amountCents <= 0 || !orderId || !reference.trim()) {
-      setPaymentError("Select a verified job, enter an amount, and add a unique payment reference.");
+      setPaymentError("Select an approved job, enter an amount, and add a unique payment reference.");
       return;
     }
     setPaymentError(null);
@@ -227,14 +227,14 @@ export function VendorDetailReal({
 
           <div className="mt-8">
             <div className="vendor-panel-head">
-              <span className="label">Payment ledger</span>
+              <span className="label">Payment history</span>
               <button type="button" className="btn-secondary btn btn-small" onClick={() => setShowPaymentForm((v) => !v)}>
                 {showPaymentForm ? "Cancel" : "Record payment"}
               </button>
             </div>
 
             <div className="vendor-stat-grid admin-vendor-stats" style={{ gridTemplateColumns: "repeat(3, 1fr)" }}>
-              <div className="admin-inline-stat"><span>Payable</span><strong className="numeral">{formatCents(totalPayable)}</strong></div>
+              <div className="admin-inline-stat"><span>Total approved</span><strong className="numeral">{formatCents(totalPayable)}</strong></div>
               <div className="admin-inline-stat"><span>Paid</span><strong className="numeral">{formatCents(totalPaid)}</strong></div>
               <div className="admin-inline-stat"><span>Outstanding</span><strong className="numeral" style={outstanding > 0 ? { color: "#b3402f" } : undefined}>{formatCents(outstanding)}</strong></div>
             </div>
@@ -246,7 +246,7 @@ export function VendorDetailReal({
                   <label className="label">Amount ({vendor.currency ?? "SGD"})
                     <input className="input" type="number" step="0.01" min="0" required value={amount} onChange={(event) => setAmount(event.target.value)} />
                   </label>
-                  <label className="label">Verified job
+                  <label className="label">Approved job
                     <select className="input" required value={orderId} onChange={(event) => setOrderId(event.target.value)}>
                       <option value="">Select a job</option>
                       {settlementOrders.map((o) => <option key={o.id} value={o.id}>{o.reference} — {orderTitle(o)}</option>)}

@@ -21,7 +21,7 @@ export function DashboardOverviewReal({ jobs }: { jobs: VendorJobRow[] }) {
         <div>
           <p className="vendor-eyebrow">Overview</p>
           <h1 className="display vendor-page-title">Welcome back</h1>
-          <p className="vendor-page-lead">See incoming offers, active fulfilment, and the work already verified by As-Sābiqūn.</p>
+          <p className="vendor-page-lead">See new offers, ongoing projects, and work already approved by As-Sābiqūn.</p>
         </div>
         <Link href="/vendor-dashboard/jobs" className="btn btn-small">View all jobs <span aria-hidden="true">→</span></Link>
       </div>
@@ -37,15 +37,15 @@ export function DashboardOverviewReal({ jobs }: { jobs: VendorJobRow[] }) {
         />
         <DashboardDonut
           id="vendor-work-mix"
-          eyebrow="Current position"
-          title="Where your work stands"
-          description="A live view of offers and assigned projects by operational stage."
+          eyebrow="Project status"
+          title="Where your projects stand"
+          description="New offers and assigned projects grouped by their current status."
           centerLabel="projects"
           segments={[
             { label: "Offers", value: pending.length, color: "#a27c47" },
             { label: "In progress", value: inProgress.length, color: "#1d737f" },
             { label: "In review", value: review.length, color: "#ad90c7" },
-            { label: "Verified", value: completed.length, color: "#5e826f" },
+            { label: "Approved", value: completed.length, color: "#5e826f" },
           ]}
         />
       </section>
@@ -53,8 +53,8 @@ export function DashboardOverviewReal({ jobs }: { jobs: VendorJobRow[] }) {
       <dl className="vendor-dashboard-ledger" aria-label="Vendor summary">
         <div><dt>Awaiting response</dt><dd>{pending.length}</dd><small>{pending.length ? "Respond before expiry" : "All caught up"}</small></div>
         <div><dt>Active work</dt><dd>{active.length}</dd><small>In progress or review</small></div>
-        <div><dt>Verified</dt><dd>{completed.length}</dd><small>Approved projects</small></div>
-        <div><dt>Earnings tracked</dt><dd>{formatCents(earnings)}</dd><small>Across assigned work</small></div>
+        <div><dt>Approved</dt><dd>{completed.length}</dd><small>Work accepted by admin</small></div>
+        <div><dt>Total earnings</dt><dd>{formatCents(earnings)}</dd><small>Across assigned projects</small></div>
       </dl>
 
       <div className="vendor-split">

@@ -19,8 +19,8 @@ type CustomerFilter = "all" | CustomerDirectoryState;
 
 const filters: Array<{ value: CustomerFilter; label: string }> = [
   { value: "all", label: "All" },
-  { value: "ready", label: "Checkout ready" },
-  { value: "needs_setup", label: "Needs setup" },
+  { value: "ready", label: "Ready to pay" },
+  { value: "needs_setup", label: "Setup needed" },
   { value: "suspended", label: "Suspended" },
 ];
 
@@ -34,7 +34,7 @@ export function CustomersListReal({ customers }: { customers: CustomerRow[] }) {
   const readiness = [
     { label: "Google email verified", value: summary.verified },
     { label: "Telegram connected", value: summary.telegramLinked },
-    { label: "Ready for checkout", value: summary.ready },
+    { label: "Ready to pay", value: summary.ready },
   ];
 
   function filterCount(value: CustomerFilter) {
@@ -70,7 +70,7 @@ export function CustomersListReal({ customers }: { customers: CustomerRow[] }) {
           <div className="admin-customer-summary-head"><span>Customer activity</span><small>Confirmed HitPay projects only</small></div>
           <div className="admin-customer-activity-grid">
             <div><span>Paid projects</span><strong>{summary.paidOrders}</strong></div>
-            <div><span>In fulfilment</span><strong>{summary.activeProjects}</strong></div>
+            <div><span>In progress</span><strong>{summary.activeProjects}</strong></div>
             <div><span>Delivered</span><strong>{summary.completedProjects}</strong></div>
             <div><span>Net paid</span><strong>{formatCents(summary.lifetimeSpendCents)}</strong></div>
           </div>

@@ -4,7 +4,7 @@ import { createClient } from "@/lib/supabase/server";
 function Health({ label, configured, help }: { label: string; configured: boolean; help: string }) {
   return (
     <div className="vendor-report-item">
-      <div className="vendor-report-item-head"><strong>{label}</strong><span className={`vendor-status ${configured ? "vendor-status-accepted" : "vendor-status-rejected"}`}>{configured ? "Configured" : "Incomplete"}</span></div>
+      <div className="vendor-report-item-head"><strong>{label}</strong><span className={`vendor-status ${configured ? "vendor-status-accepted" : "vendor-status-rejected"}`}>{configured ? "Ready" : "Setup needed"}</span></div>
       <p>{help}</p>
     </div>
   );
@@ -60,16 +60,16 @@ export default async function AdminSettingsPage() {
 
   return (
     <>
-      <div className="vendor-page-head"><div><p className="vendor-eyebrow">System</p><h1 className="display vendor-page-title">Settings and health</h1><p className="vendor-page-lead">Operational configuration only. Secret values are never rendered in the console.</p></div></div>
+      <div className="vendor-page-head"><div><p className="vendor-eyebrow">System</p><h1 className="display vendor-page-title">Settings and system status</h1><p className="vendor-page-lead">Check connected services, business settings, and anything that needs fixing.</p></div></div>
       {(offeringsError || settingsError || deliveryError || paymentError || queueError || integrationError || cronError) && <p className="auth-error">Some health data could not be loaded. {(offeringsError || settingsError || deliveryError || paymentError || queueError || integrationError || cronError)?.message}</p>}
 
       <div className="vendor-split">
         <section className="card vendor-panel">
-          <div className="vendor-panel-head"><h2 className="display text-lg">Provider readiness</h2></div>
+          <div className="vendor-panel-head"><h2 className="display text-lg">Connected services</h2></div>
           <div className="vendor-report-list">{providers.map((provider) => <Health key={provider.label} {...provider} />)}</div>
         </section>
         <section className="card vendor-panel">
-          <div className="vendor-panel-head"><h2 className="display text-lg">Platform controls</h2></div>
+          <div className="vendor-panel-head"><h2 className="display text-lg">Business settings</h2></div>
           <dl className="admin-contact-facts">
             <div><dt>Commission rate</dt><dd>{settings ? `${Number(settings.commission_rate) * 100}%` : "Not available"}</dd></div>
             <div><dt>Default offer window</dt><dd>{settings ? `${settings.default_claim_window_hours} hours` : "Not available"}</dd></div>
@@ -81,15 +81,15 @@ export default async function AdminSettingsPage() {
       </div>
 
       <section className="card vendor-panel">
-        <div className="vendor-panel-head"><div><p className="vendor-eyebrow">Catalog source</p><h2 className="display text-lg mt-1">Offerings</h2></div></div>
+        <div className="vendor-panel-head"><div><p className="vendor-eyebrow">Services</p><h2 className="display text-lg mt-1">Services and prices</h2></div></div>
         <div className="admin-payment-list">
           {(offerings ?? []).map((offering) => <div key={offering.id}><strong>{offering.title}</strong><span>{offering.category_slug} · {offering.slug}</span><small>{offering.unit_amount ? formatCents(offering.unit_amount) : offering.min_amount ? `From ${formatCents(offering.min_amount)}` : "Price missing"} · {offering.active ? "Active" : "Inactive"}</small></div>)}
         </div>
       </section>
 
       <section className="card vendor-panel">
-        <div className="vendor-panel-head"><div><p className="vendor-eyebrow">Recent failures</p><h2 className="display text-lg mt-1">Integration attention</h2></div></div>
-        {failures.length === 0 ? <p className="vendor-empty">No recent provider failures are recorded.</p> : <div className="vendor-report-list">{failures.map((failure) => <div key={failure.id} className="vendor-report-item"><div className="vendor-report-item-head"><strong>{failure.source} · {failure.reference}</strong><span className="vendor-status vendor-status-rejected">{failure.status}</span></div><p>{failure.detail}</p><small>{new Date(failure.at).toLocaleString()}</small></div>)}</div>}
+        <div className="vendor-panel-head"><div><p className="vendor-eyebrow">Recent problems</p><h2 className="display text-lg mt-1">Service errors</h2></div></div>
+        {failures.length === 0 ? <p className="vendor-empty">No recent service errors.</p> : <div className="vendor-report-list">{failures.map((failure) => <div key={failure.id} className="vendor-report-item"><div className="vendor-report-item-head"><strong>{failure.source} · {failure.reference}</strong><span className="vendor-status vendor-status-rejected">{failure.status}</span></div><p>{failure.detail}</p><small>{new Date(failure.at).toLocaleString()}</small></div>)}</div>}
       </section>
     </>
   );

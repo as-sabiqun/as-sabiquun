@@ -6,8 +6,8 @@ import { createClient } from "@/lib/supabase/server";
 const queueKeys = Object.keys(queueMeta) as AdminQueueKey[];
 const stageMeta: Record<AdminJobStage, { label: string; color: string }> = {
   payment: { label: "Payment", color: "#A27C47" },
-  fulfilment: { label: "Fulfilment", color: "#1D737F" },
-  review: { label: "Review & delivery", color: "#758F96" },
+  fulfilment: { label: "Work in progress", color: "#1D737F" },
+  review: { label: "Review and send", color: "#758F96" },
   completed: { label: "Completed", color: "#5E826F" },
   cancelled: { label: "Cancelled / refunded", color: "#A64B3C" },
 };
@@ -68,12 +68,12 @@ export default async function AdminJobsPage({ searchParams }: { searchParams: Pr
   return (
     <>
       <div className="vendor-page-head">
-        <div><p className="vendor-eyebrow">Operations register</p><h1 className="display vendor-page-title">Jobs</h1><p className="vendor-page-lead">Work from the next action, then open the full record for payment, fulfilment, delivery, and settlement.</p></div>
+        <div><p className="vendor-eyebrow">All projects</p><h1 className="display vendor-page-title">Jobs</h1><p className="vendor-page-lead">Start with your next actions, or open any job to see its full history.</p></div>
       </div>
 
       <section className="admin-jobs-dashboard" aria-label="Job overview">
         <div className="admin-jobs-mix">
-          <header><div><span className="vendor-eyebrow">Portfolio</span><h2>Where work stands</h2></div><Link href={queueHref()} className={!queue ? "is-active" : ""}>View all</Link></header>
+          <header><div><span className="vendor-eyebrow">Status</span><h2>Where projects stand</h2></div><Link href={queueHref()} className={!queue ? "is-active" : ""}>View all</Link></header>
           <div className="admin-jobs-mix-body">
             <div className="admin-jobs-donut">
               <svg viewBox="0 0 100 100" role="img" aria-label={`${all.length} jobs grouped by lifecycle stage`}>
@@ -88,7 +88,7 @@ export default async function AdminJobsPage({ searchParams }: { searchParams: Pr
 
         <div className="admin-jobs-attention">
           <header><div><span className="vendor-eyebrow">To do</span><h2>Your next actions</h2></div><strong className="display numeral">{attentionTotal}</strong></header>
-          {activeQueueKeys.length ? <div>{activeQueueKeys.map((key) => <Link key={key} href={queueHref(key)} className={queue === key ? "is-active" : ""} data-queue={key}><i /><span><strong>{queueMeta[key].label}</strong><small>{queueMeta[key].help}</small></span><b>{queueCounts[key]}</b></Link>)}</div> : <div className="admin-jobs-clear"><span aria-hidden="true">✓</span><strong>No intervention needed</strong><p>There are no operational exceptions waiting for an administrator.</p></div>}
+          {activeQueueKeys.length ? <div>{activeQueueKeys.map((key) => <Link key={key} href={queueHref(key)} className={queue === key ? "is-active" : ""} data-queue={key}><i /><span><strong>{queueMeta[key].label}</strong><small>{queueMeta[key].help}</small></span><b>{queueCounts[key]}</b></Link>)}</div> : <div className="admin-jobs-clear"><span aria-hidden="true">✓</span><strong>All caught up</strong><p>There are no admin tasks waiting.</p></div>}
         </div>
       </section>
 

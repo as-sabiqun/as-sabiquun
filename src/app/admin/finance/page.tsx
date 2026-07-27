@@ -82,21 +82,21 @@ export default async function AdminFinancePage() {
 
   return (
     <>
-      <div className="vendor-page-head"><div><p className="vendor-eyebrow">Finance</p><h1 className="display vendor-page-title">Payments and settlement</h1><p className="vendor-page-lead">Provider-confirmed customer money and an append-only SGD partner ledger stay separate from fulfilment.</p></div></div>
-      {financeError && <p className="auth-error">Some finance records could not be loaded. Settlement controls are disabled until the record is complete. {financeError.message}</p>}
+      <div className="vendor-page-head"><div><p className="vendor-eyebrow">Finance</p><h1 className="display vendor-page-title">Payments and payouts</h1><p className="vendor-page-lead">Track customer payments, refunds, and the amounts owed to vendors.</p></div></div>
+      {financeError && <p className="auth-error">Some payment records could not be loaded. Payment controls are unavailable until the data loads correctly. {financeError.message}</p>}
       <section className="admin-finance-overview" aria-label="Finance summary">
-        <div className="admin-finance-exposure"><span>Settlement exposure</span><strong className="display">{formatCents(outstanding)}</strong><p>Owed across verified work</p></div>
+        <div className="admin-finance-exposure"><span>Vendor payments due</span><strong className="display">{formatCents(outstanding)}</strong><p>Owed for approved work</p></div>
         <dl className="admin-finance-summary">
-          <div><dt>Open settlements</dt><dd>{settlements.length}</dd><small>Needs action</small></div>
-          <div><dt>Ledger entries</dt><dd>{vendorLedger.length}</dd><small>Append-only</small></div>
+          <div><dt>Vendors to pay</dt><dd>{settlements.length}</dd><small>Needs action</small></div>
+          <div><dt>Payment records</dt><dd>{vendorLedger.length}</dd><small>Vendor payments</small></div>
           <div><dt>Confirmed refunds</dt><dd>{formatCents(refunds)}</dd><small>HitPay confirmed</small></div>
         </dl>
       </section>
       <DashboardBarChart
         id="admin-money-movement"
         eyebrow="Six-month movement"
-        title="Customer money and partner settlement"
-        description="Confirmed HitPay collections and refunds compared with the net vendor ledger for each month."
+        title="Money in and vendor payments"
+        description="Customer payments and refunds compared with payments recorded for vendors each month."
         points={moneyMovement}
         format="currency"
         series={[

@@ -29,7 +29,7 @@ export default async function CustomerAccountPage({ searchParams }: PageProps<"/
 
   return (
     <div className={styles.subpage}>
-      <header className={styles.subpageHeader}><div><p>Account</p><h1>Your identity and delivery channels.</h1></div></header>
+      <header className={styles.subpageHeader}><div><p>Account</p><h1>Your account and report delivery.</h1></div></header>
       <div className={styles.accountGrid}>
         <section className={styles.accountPanel}>
           <header><span><UserRound aria-hidden="true" /></span><div><p>Personal details</p><h2>{profile?.display_name || "Customer"}</h2></div></header>

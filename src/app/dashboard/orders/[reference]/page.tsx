@@ -2,7 +2,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
 import { Check, CircleDollarSign, Download, ExternalLink, FileBadge2, ImageIcon, MapPin, MessageCircle, Video } from "lucide-react";
-import { deriveOrderMilestone, isPaid, type DeliveryStatus, type FulfilmentStatus, type PaymentStatus, type SettlementStatus } from "@/lib/order-lifecycle";
+import { deriveOrderMilestone, isPaid, milestoneLabels, type DeliveryStatus, type FulfilmentStatus, type PaymentStatus, type SettlementStatus } from "@/lib/order-lifecycle";
 import { formatCents, orderTitle, type OrderRow } from "@/lib/orders";
 import { createClient, getCurrentUser, getProfile } from "@/lib/supabase/server";
 import { isGoogleCustomer } from "@/lib/auth";
@@ -53,23 +53,6 @@ const paymentLabels: Record<PaymentStatus, string> = {
   cancelled: "Cancelled",
 };
 
-const milestoneLabels = {
-  awaiting_payment: "Awaiting payment",
-  payment_issue: "Payment needs attention",
-  ready: "Preparing fulfilment",
-  broadcasting: "Finding a partner",
-  assigned: "Partner assigned",
-  in_progress: "In fulfilment",
-  under_review: "Evidence under review",
-  revision_required: "Evidence being corrected",
-  verified: "Verified",
-  delivery_failed: "Report delivery needs attention",
-  completed: "Completed",
-  closed: "Closed",
-  cancelled: "Cancelled",
-  refunded: "Refunded",
-} as const;
-
 const eventLabels: Record<string, string> = {
   "order.created": "Order received",
   "payment.paid": "Payment confirmed",
@@ -78,15 +61,15 @@ const eventLabels: Record<string, string> = {
   "payment.failed": "Payment attempt failed",
   "payment.expired": "Payment request expired",
   "payment.cancelled": "Payment cancelled",
-  "fulfilment.ready": "Ready for fulfilment",
-  "fulfilment.broadcasting": "Shared with approved partners",
-  "fulfilment.assigned": "Fulfilment partner assigned",
-  "vendor.accepted": "Fulfilment partner accepted",
+  "fulfilment.ready": "Project received",
+  "fulfilment.broadcasting": "Shared with approved vendors",
+  "fulfilment.assigned": "Vendor assigned",
+  "vendor.accepted": "Vendor accepted the project",
   "fulfilment.in_progress": "Project work started",
-  "fulfilment.proof_submitted": "Completion evidence submitted",
-  "fulfilment.revision_required": "Evidence correction requested",
-  "fulfilment.verified": "Project evidence verified",
-  "fulfilment.cancelled": "Fulfilment cancelled",
+  "fulfilment.proof_submitted": "Completed work submitted",
+  "fulfilment.revision_required": "Changes requested",
+  "fulfilment.verified": "Project approved",
+  "fulfilment.cancelled": "Project cancelled",
   "delivery.queued": "Completion report queued",
   "delivery.partial": "One report channel succeeded",
   "delivery.delivered": "Completion report delivered",
@@ -151,8 +134,8 @@ export default async function OrderDetailPage({ params, searchParams }: PageProp
 
   const journey = [
     { label: "Payment confirmed", done: paid },
-    { label: "Partner fulfilment", done: fulfilmentStarted },
-    { label: "Evidence verified", done: verified },
+    { label: "Work in progress", done: fulfilmentStarted },
+    { label: "Work approved", done: verified },
     { label: "Report delivered", done: delivered },
   ];
 
@@ -172,7 +155,7 @@ export default async function OrderDetailPage({ params, searchParams }: PageProp
       </header>
 
       {typeof paymentQuery === "string" && paymentQuery === "processing" && !paid && (
-        <p className={styles.notice} role="status">Your payment is still being confirmed by HitPay. This page updates only after the verified payment webhook arrives.</p>
+        <p className={styles.notice} role="status">HitPay is still confirming your payment. This page will update automatically.</p>
       )}
       {["failed", "expired", "cancelled"].includes(row.payment_status) && (
         <p className={styles.alert}>Payment was not completed. Your order is safe and can be paid again.</p>
@@ -220,7 +203,7 @@ export default async function OrderDetailPage({ params, searchParams }: PageProp
                 <div><dt>Village / locality</dt><dd>{record.project_village}</dd></div>
                 <div><dt>Exact location</dt><dd>{record.project_address}</dd></div>
                 <div><dt>Coordinates</dt><dd>{record.project_lat}, {record.project_lng}</dd></div>
-                <div><dt>Verified</dt><dd>{date(record.reviewed_at, true)}</dd></div>
+                <div><dt>Approved</dt><dd>{date(record.reviewed_at, true)}</dd></div>
               </dl>
               {record.project_maps_link && <a className={styles.secondaryAction} href={record.project_maps_link} target="_blank" rel="noreferrer">Open map <ExternalLink aria-hidden="true" /></a>}
             </section>
@@ -250,13 +233,13 @@ export default async function OrderDetailPage({ params, searchParams }: PageProp
             <header><div><p>Documents</p><h2>Your completion record</h2></div><Download aria-hidden="true" /></header>
             {report ? (
               <div className={styles.documentList}>
-                {paid && <Link href={`/receipts/${row.reference}`}><CircleDollarSign aria-hidden="true" /><span><strong>Payment receipt</strong><small>Provider-confirmed PDF</small></span><Download aria-hidden="true" /></Link>}
+                {paid && <Link href={`/receipts/${row.reference}`}><CircleDollarSign aria-hidden="true" /><span><strong>Payment receipt</strong><small>Confirmed payment · PDF</small></span><Download aria-hidden="true" /></Link>}
                 <Link href={`/reports/${report.id}`}><FileBadge2 aria-hidden="true" /><span><strong>Completion report</strong><small>PDF · Version {report.version}</small></span><Download aria-hidden="true" /></Link>
                 {verified && <Link href={`/nameplates/${row.id}`} target="_blank"><ImageIcon aria-hidden="true" /><span><strong>Certificate / nameplate</strong><small>Branded PNG</small></span><ExternalLink aria-hidden="true" /></Link>}
               </div>
             ) : paid ? (
-              <div className={styles.documentList}><Link href={`/receipts/${row.reference}`}><CircleDollarSign aria-hidden="true" /><span><strong>Payment receipt</strong><small>Provider-confirmed PDF</small></span><Download aria-hidden="true" /></Link></div>
-            ) : <p className={styles.emptyDetail}>Your report will appear after evidence is verified and the document is generated.</p>}
+              <div className={styles.documentList}><Link href={`/receipts/${row.reference}`}><CircleDollarSign aria-hidden="true" /><span><strong>Payment receipt</strong><small>Confirmed payment · PDF</small></span><Download aria-hidden="true" /></Link></div>
+            ) : <p className={styles.emptyDetail}>Your report will appear after the completed work is approved.</p>}
           </section>
 
           <section className={styles.detailPanel}>

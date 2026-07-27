@@ -168,16 +168,16 @@ export function FinanceReal({ settlements, vendorLedger, providerTransactions, r
       {notice && <p className="vendor-empty" role="status">{notice}</p>}
 
       <nav className="admin-finance-index" aria-label="Finance sections">
-        <a href="#settlements"><span>{settlements.length}</span>Settlements</a>
+        <a href="#settlements"><span>{settlements.length}</span>Vendor payouts</a>
         <a href="#refunds"><span>{refundableOrders.length}</span>Refunds</a>
-        <a href="#vendor-ledger"><span>{vendorLedger.length}</span>Vendor ledger</a>
-        <a href="#hitpay-ledger"><span>{providerTransactions.length}</span>HitPay ledger</a>
+        <a href="#vendor-ledger"><span>{vendorLedger.length}</span>Vendor payments</a>
+        <a href="#hitpay-ledger"><span>{providerTransactions.length}</span>Customer payments</a>
       </nav>
 
       <div className="admin-finance-layout">
       <section id="settlements" className="card vendor-panel admin-finance-panel admin-finance-settlements">
-        <div className="vendor-panel-head"><div><p className="vendor-eyebrow">Partner settlement</p><h2 className="display text-lg mt-1">Outstanding payouts</h2></div><span className="vendor-status vendor-status-pending">{settlements.length} open</span></div>
-        {settlements.length === 0 ? <p className="vendor-empty">Every verified job is fully settled.</p> : (
+        <div className="vendor-panel-head"><div><p className="vendor-eyebrow">Vendor payments</p><h2 className="display text-lg mt-1">Payments still due</h2></div><span className="vendor-status vendor-status-pending">{settlements.length} open</span></div>
+        {settlements.length === 0 ? <p className="vendor-empty">Every approved job has been paid in full.</p> : (
           <div className="vendor-report-list">
             {settlements.map((order) => (
               <article key={order.id} className="vendor-report-item">
@@ -194,7 +194,7 @@ export function FinanceReal({ settlements, vendorLedger, providerTransactions, r
                       <label className="label">Unique reference<input className="input" name="reference" required maxLength={200} placeholder="Bank transaction reference" /></label>
                     </div>
                     <label className="label">Notes<textarea className="input vendor-textarea" name="notes" rows={2} maxLength={2000} /></label>
-                    <div className="flex gap-3"><button className="btn btn-small" disabled={pending}>Record settlement</button><button className="btn btn-secondary btn-small" type="button" onClick={() => setPaying(null)}>Cancel</button></div>
+                    <div className="flex gap-3"><button className="btn btn-small" disabled={pending}>Record payment</button><button className="btn btn-secondary btn-small" type="button" onClick={() => setPaying(null)}>Cancel</button></div>
                   </form>
                 ) : <button className="btn btn-secondary btn-small mt-4" type="button" onClick={() => setPaying(order.id)}>Record payment</button>}
               </article>
@@ -204,7 +204,7 @@ export function FinanceReal({ settlements, vendorLedger, providerTransactions, r
       </section>
 
       <section id="vendor-ledger" className="card vendor-panel admin-finance-panel admin-finance-vendor-ledger">
-        <div className="vendor-panel-head"><div><p className="vendor-eyebrow">Append-only ledger</p><h2 className="display text-lg mt-1">Vendor payments</h2></div></div>
+        <div className="vendor-panel-head"><div><p className="vendor-eyebrow">Payment history</p><h2 className="display text-lg mt-1">Vendor payments</h2></div></div>
         {vendorLedger.length === 0 ? <p className="vendor-empty">No vendor payments recorded.</p> : (
           <div className="admin-payment-list">
             {vendorLedger.map((payment) => (
@@ -250,8 +250,8 @@ export function FinanceReal({ settlements, vendorLedger, providerTransactions, r
       </section>
 
       <section id="hitpay-ledger" className="card vendor-panel admin-finance-panel admin-finance-hitpay-ledger">
-        <div className="vendor-panel-head"><div><p className="vendor-eyebrow">HitPay truth</p><h2 className="display text-lg mt-1">Customer transactions</h2></div></div>
-        <p className="admin-record-help mb-4">Payment and refund rows reflect provider events; pending refunds remain visibly separate until confirmation.</p>
+        <div className="vendor-panel-head"><div><p className="vendor-eyebrow">Payment history</p><h2 className="display text-lg mt-1">Customer payments</h2></div></div>
+        <p className="admin-record-help mb-4">Payments and refunds appear here after HitPay confirms them.</p>
         {providerTransactions.length === 0 ? <p className="vendor-empty">No HitPay transactions recorded.</p> : (
           <div className="admin-payment-list">
             {providerTransactions.map((transaction) => <div key={transaction.id}><strong className="numeral">{formatCents(transaction.transaction_type === "refund" ? -transaction.amount : transaction.amount)}</strong><span>{transaction.order_reference} · {transaction.transaction_type}</span><small>{transaction.status} · {new Date(transaction.created_at).toLocaleString()}{["pending", "reconciliation_required"].includes(transaction.status) && <button type="button" className="btn btn-secondary btn-small ml-3" disabled={pending} onClick={() => reconcileProviderTransaction(transaction)}>{reconciling === transaction.id ? "Checking…" : "Check HitPay"}</button>}</small></div>)}

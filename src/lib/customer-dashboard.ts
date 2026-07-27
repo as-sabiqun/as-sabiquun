@@ -14,13 +14,13 @@ export const customerBoardColumns: ReadonlyArray<{
   },
   {
     key: "active",
-    label: "In fulfilment",
-    description: "A partner is carrying it out",
+    label: "Work in progress",
+    description: "A vendor is carrying it out",
   },
   {
     key: "review",
-    label: "Being verified",
-    description: "Evidence and reports are checked",
+    label: "Under review",
+    description: "We are checking the submitted work",
   },
   {
     key: "completed",

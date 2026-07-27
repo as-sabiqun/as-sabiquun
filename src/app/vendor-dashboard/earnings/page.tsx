@@ -49,7 +49,7 @@ export default async function VendorEarningsPage() {
   return (
     <>
       <div className="vendor-page-head">
-        <div><p className="vendor-eyebrow">Finance</p><h1 className="display vendor-page-title">Earnings</h1><p className="vendor-page-lead">A transparent SGD ledger for assigned, verified, payable, and paid work.</p></div>
+        <div><p className="vendor-eyebrow">Finance</p><h1 className="display vendor-page-title">Earnings</h1><p className="vendor-page-lead">See what is still in progress, ready to be paid, and already paid.</p></div>
       </div>
 
       <section className="vendor-earnings-grid" aria-label="Earnings analytics">
@@ -63,14 +63,14 @@ export default async function VendorEarningsPage() {
           series={[{ key: "paid", label: "Net paid", color: "#1d737f" }]}
         />
         <aside className="vendor-earnings-position">
-          <header><span className="vendor-eyebrow">Current position</span><h2>Settlement breakdown</h2></header>
-          <div className="vendor-earnings-focus"><span>Ready to be paid</span><strong>{formatCents(payable)}</strong><small>Verified and outstanding</small></div>
+          <header><span className="vendor-eyebrow">Payment status</span><h2>Where your earnings stand</h2></header>
+          <div className="vendor-earnings-focus"><span>Ready to be paid</span><strong>{formatCents(payable)}</strong><small>Approved and unpaid</small></div>
           <DashboardDistribution
-            label="Committed earnings"
+            label="Total earnings"
             totalLabel={formatCents(committed)}
             segments={[
-              { label: "Pending review", value: pendingVerification, valueLabel: formatCents(pendingVerification), color: "#a27c47" },
-              { label: "Payable", value: payable, valueLabel: formatCents(payable), color: "#1d737f" },
+              { label: "Work in progress", value: pendingVerification, valueLabel: formatCents(pendingVerification), color: "#a27c47" },
+              { label: "Ready to pay", value: payable, valueLabel: formatCents(payable), color: "#1d737f" },
               { label: "Paid", value: Math.max(0, paid), valueLabel: formatCents(paid), color: "#5e826f" },
             ]}
           />
@@ -78,7 +78,7 @@ export default async function VendorEarningsPage() {
       </section>
 
       <section className="card vendor-panel mt-5">
-        <div className="vendor-panel-head"><div><p className="vendor-eyebrow">By project</p><h2 className="display text-lg">Settlement ledger</h2></div></div>
+        <div className="vendor-panel-head"><div><p className="vendor-eyebrow">By project</p><h2 className="display text-lg">Payments by project</h2></div></div>
         {orders.length === 0 ? <p className="vendor-empty">No assigned jobs yet.</p> : (
           <div className="vendor-job-table">
             {orders.map((order) => {
@@ -88,7 +88,7 @@ export default async function VendorEarningsPage() {
                 <div key={order.id} className="vendor-job-table-row">
                   <Link href={`/vendor-dashboard/jobs/${order.id}`} className="vendor-job-table-main"><strong>{order.offering_title || "Service project"}</strong><small>{order.reference}</small></Link>
                   <div className="vendor-job-table-price"><strong className="numeral">{formatCents(order.vendor_payout_amount)}</strong></div>
-                  <div className="vendor-job-table-status"><span className={`vendor-status ${outstanding === 0 ? "vendor-status-completed" : order.fulfilment_status === "verified" ? "vendor-status-accepted" : "vendor-status-pending"}`}>{outstanding === 0 ? "Paid" : order.fulfilment_status === "verified" ? "Payable" : "Pending verification"}</span></div>
+                  <div className="vendor-job-table-status"><span className={`vendor-status ${outstanding === 0 ? "vendor-status-completed" : order.fulfilment_status === "verified" ? "vendor-status-accepted" : "vendor-status-pending"}`}>{outstanding === 0 ? "Paid" : order.fulfilment_status === "verified" ? "Ready to pay" : "Work in progress"}</span></div>
                   <div className="admin-list-stats"><span>{formatCents(orderPaid)} paid</span><span>{formatCents(outstanding)} outstanding</span></div>
                 </div>
               );

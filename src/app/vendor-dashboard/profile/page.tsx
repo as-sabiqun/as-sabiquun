@@ -40,7 +40,7 @@ export default async function VendorProfilePage() {
         </div>
 
         <dl className="vendor-profile-facts">
-          <div><dt>Role</dt><dd>{vendorType || "Fulfilment vendor"}</dd></div>
+          <div><dt>Role</dt><dd>{vendorType || "Service vendor"}</dd></div>
           <div><dt>Onboarding</dt><dd className="capitalize">{onboarding.replaceAll("_", " ")}</dd></div>
           {contactPerson && <div><dt>Contact person</dt><dd>{contactPerson}</dd></div>}
           {phone && <div><dt>Phone</dt><dd>{phone}</dd></div>}

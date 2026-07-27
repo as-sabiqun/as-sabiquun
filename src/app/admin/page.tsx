@@ -42,32 +42,32 @@ export default async function AdminOverviewPage() {
         <div>
           <p className="vendor-eyebrow">Amanah operations</p>
           <h1 className="display vendor-page-title">Overview</h1>
-          <p className="vendor-page-lead">Work from the exception queue. Every state below is derived from provider results and controlled lifecycle transitions.</p>
+          <p className="vendor-page-lead">See what needs your action, what vendors are handling, and what has been completed.</p>
         </div>
         <Link href="/admin/jobs" className="btn btn-small">View all jobs <span aria-hidden="true">→</span></Link>
       </div>
 
-      {error && <p className="auth-error">Operational data could not be loaded: {error.message}</p>}
+      {error && <p className="auth-error">Dashboard data could not be loaded: {error.message}</p>}
 
       <section className="admin-overview-grid" aria-label="Operational performance">
         <DashboardLineChart
           id="admin-throughput"
           eyebrow="Six-month movement"
-          title="Paid work moving into verification"
-          description="Monthly provider-confirmed orders compared with projects approved after evidence review."
+          title="Paid projects and approved work"
+          description="Customer payments compared with projects approved each month."
           points={throughput}
           series={[
             { key: "paid", label: "Paid orders", color: "#1d737f" },
-            { key: "verified", label: "Verified projects", color: "#a27c47" },
+            { key: "verified", label: "Approved projects", color: "#a27c47" },
           ]}
         />
         <aside className="admin-overview-pulse">
-          <header><span className="vendor-eyebrow">Live position</span><h2>Operational pulse</h2></header>
+          <header><span className="vendor-eyebrow">Today</span><h2>At a glance</h2></header>
           <dl>
-            <div><dt>Needs action</dt><dd>{actionCount}</dd><small>Exceptions to resolve</small></div>
-            <div><dt>In fulfilment</dt><dd>{queues.fulfilment.length}</dd><small>Currently with partners</small></div>
-            <div><dt>Gross paid value</dt><dd>S${(paidVolume / 100).toLocaleString()}</dd><small>Before any refund</small></div>
-            <div><dt>Closed</dt><dd>{closedCount}</dd><small>Delivered and settled</small></div>
+            <div><dt>Your tasks</dt><dd>{actionCount}</dd><small>Waiting for you</small></div>
+            <div><dt>Ongoing projects</dt><dd>{queues.fulfilment.length}</dd><small>Currently with vendors</small></div>
+            <div><dt>Customer payments</dt><dd>S${(paidVolume / 100).toLocaleString()}</dd><small>Before refunds</small></div>
+            <div><dt>Fully completed</dt><dd>{closedCount}</dd><small>Customer notified and vendor paid</small></div>
           </dl>
         </aside>
       </section>
@@ -78,12 +78,12 @@ export default async function AdminOverviewPage() {
           <Link key={key} href={`/admin/jobs?queue=${key}`} data-queue={key}>
             <i /><span><strong>{queueMeta[key].label}</strong><small>{queueMeta[key].help}</small></span><b>{queues[key].length}</b>
           </Link>
-        ))}</div> : <div className="admin-overview-clear"><span aria-hidden="true">✓</span><strong>No intervention needed</strong><small>Every operational exception is clear.</small></div>}
+        ))}</div> : <div className="admin-overview-clear"><span aria-hidden="true">✓</span><strong>All caught up</strong><small>There are no admin tasks waiting.</small></div>}
       </section>
 
       <section>
         <div className="vendor-panel-head"><div><p className="vendor-eyebrow">Priority</p><h2 className="display text-lg mt-1">Newest actions</h2></div><Link href="/admin/jobs">Open job register</Link></div>
-        <AdminJobsTable orders={queueOrder.flatMap((key) => queues[key]).slice(0, 8)} empty="No operational actions are waiting." />
+        <AdminJobsTable orders={queueOrder.flatMap((key) => queues[key]).slice(0, 8)} empty="No jobs need attention." />
       </section>
     </>
   );
