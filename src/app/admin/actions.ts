@@ -1,7 +1,7 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import { getAal2Admin } from "@/lib/auth";
+import { getAal2AdminAtLeast } from "@/lib/auth";
 import { generateCompletionReportsForAdmin, ReportGenerationError } from "@/lib/reports/service";
 import { createClient } from "@/lib/supabase/server";
 
@@ -9,7 +9,13 @@ const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-
 
 async function getAdminClient() {
   const supabase = await createClient();
-  const admin = await getAal2Admin(supabase);
+  const admin = await getAal2AdminAtLeast(supabase, "operations");
+  return admin ? { supabase, user: admin.user } : null;
+}
+
+async function getFinanceAdminClient() {
+  const supabase = await createClient();
+  const admin = await getAal2AdminAtLeast(supabase, "administrator");
   return admin ? { supabase, user: admin.user } : null;
 }
 
@@ -202,8 +208,8 @@ export async function recordVendorPaymentAction(input: {
   if (!input.vendorId || !input.orderId) return { ok: false, error: "Select the verified job this payment settles." };
   if (!/^\d{4}-\d{2}-\d{2}$/.test(input.paymentDate)) return { ok: false, error: "Enter a valid payment date." };
   if (!input.reference.trim()) return { ok: false, error: "A unique payment reference is required." };
-  const admin = await getAdminClient();
-  if (!admin) return { ok: false, error: "Admin access required." };
+  const admin = await getFinanceAdminClient();
+  if (!admin) return { ok: false, error: "Administrator finance access required." };
   const { error } = await admin.supabase.rpc("record_vendor_payment", {
     p_vendor_id: input.vendorId,
     p_order_id: input.orderId,
@@ -229,8 +235,8 @@ export async function reverseVendorPaymentAction(input: {
   notes: string;
 }): Promise<{ ok: boolean; error?: string }> {
   if (!input.paymentId || !input.reference.trim()) return { ok: false, error: "A payment and unique reversal reference are required." };
-  const admin = await getAdminClient();
-  if (!admin) return { ok: false, error: "Admin access required." };
+  const admin = await getFinanceAdminClient();
+  if (!admin) return { ok: false, error: "Administrator finance access required." };
   const { data: payment, error: lookupError } = await admin.supabase
     .from("vendor_payments")
     .select("id, vendor_id, order_id, amount")

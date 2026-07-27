@@ -3,7 +3,7 @@ import "server-only";
 import type { SupabaseClient, User } from "@supabase/supabase-js";
 import { cache } from "react";
 import { isAdminMfaBypassActive } from "@/lib/auth-policy";
-import { getCurrentUser, getProfile, type Profile } from "@/lib/supabase/server";
+import { getCurrentUser, getProfile, type AdminAccessLevel, type Profile } from "@/lib/supabase/server";
 
 export type AdminMfaState = "verified" | "challenge" | "enroll" | "error";
 
@@ -39,6 +39,25 @@ export const getAal2Admin = cache(async (supabase: SupabaseClient) => {
   const admin = await getActiveAdmin(supabase);
   if (!admin || (await getAdminMfaState(supabase)) !== "verified") return null;
   return admin;
+});
+
+const adminAccessRank: Record<AdminAccessLevel, number> = {
+  operations: 1,
+  administrator: 2,
+  owner: 3,
+};
+
+export function adminAccessLevel(profile: Profile): AdminAccessLevel {
+  return profile.admin_access_level ?? (profile.admin_owner ? "owner" : "administrator");
+}
+
+export function adminHasAccess(profile: Profile, required: AdminAccessLevel): boolean {
+  return adminAccessRank[adminAccessLevel(profile)] >= adminAccessRank[required];
+}
+
+export const getAal2AdminAtLeast = cache(async (supabase: SupabaseClient, required: AdminAccessLevel) => {
+  const admin = await getAal2Admin(supabase);
+  return admin && adminHasAccess(admin.profile, required) ? admin : null;
 });
 
 export function isApprovedVendor(profile: Profile | null): profile is Profile {

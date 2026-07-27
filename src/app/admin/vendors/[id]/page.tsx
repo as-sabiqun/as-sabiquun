@@ -1,5 +1,5 @@
 import { notFound, redirect } from "next/navigation";
-import { getAal2Admin } from "@/lib/auth";
+import { adminHasAccess, getAal2AdminAtLeast } from "@/lib/auth";
 import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { VendorDetailReal, type VendorDetail, type VendorPaymentRow, type VendorOrderRow } from "@/components/admin/vendor-detail-real";
@@ -8,7 +8,9 @@ export default async function AdminVendorDetailPage({ params }: { params: Promis
   const { id } = await params;
 
   const supabase = await createClient();
-  if (!(await getAal2Admin(supabase))) redirect("/admin/sign-in");
+  const currentAdmin = await getAal2AdminAtLeast(supabase, "operations");
+  if (!currentAdmin) redirect("/admin/sign-in");
+  const canManageFinance = adminHasAccess(currentAdmin.profile, "administrator");
   const admin = createAdminClient();
   const [{ data: profile }, { data: authUser }, { data: orders }, { data: paymentsData }] = await Promise.all([
     supabase
@@ -53,5 +55,5 @@ export default async function AdminVendorDetailPage({ params }: { params: Promis
 
   const vendor: VendorDetail = { ...profile, email: authUser.user?.email ?? "—" };
 
-  return <VendorDetailReal vendor={vendor} orders={ordersList} payments={payments} totalPayable={totalPayable} />;
+  return <VendorDetailReal vendor={vendor} orders={ordersList} payments={payments} totalPayable={totalPayable} canManageFinance={canManageFinance} />;
 }

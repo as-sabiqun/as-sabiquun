@@ -54,11 +54,12 @@ export interface RefundableOrder {
   refund_pending: boolean;
 }
 
-export function FinanceReal({ settlements, vendorLedger, providerTransactions, refundableOrders }: {
+export function FinanceReal({ settlements, vendorLedger, providerTransactions, refundableOrders, canManageFinance }: {
   settlements: SettlementOrder[];
   vendorLedger: VendorLedgerRow[];
   providerTransactions: ProviderTransactionRow[];
   refundableOrders: RefundableOrder[];
+  canManageFinance: boolean;
 }) {
   const router = useRouter();
   const [pending, startTransition] = useTransition();
@@ -166,6 +167,7 @@ export function FinanceReal({ settlements, vendorLedger, providerTransactions, r
     <>
       {error && <p className="auth-error" role="alert">{error}</p>}
       {notice && <p className="vendor-empty" role="status">{notice}</p>}
+      {!canManageFinance && <p className="vendor-empty" role="status">Finance is read-only for Operations Staff.</p>}
 
       <nav className="admin-finance-index" aria-label="Finance sections">
         <a href="#settlements"><span>{settlements.length}</span>Vendor payouts</a>
@@ -185,7 +187,7 @@ export function FinanceReal({ settlements, vendorLedger, providerTransactions, r
                   <div><Link href={`/admin/jobs/${order.id}`}><strong>{order.reference}</strong></Link><small>{order.assigned_vendor.display_name} · {order.customer_name}</small></div>
                   <div className="text-right"><strong className="numeral">{formatCents(order.outstanding_amount)}</strong><small>of {formatCents(order.vendor_payout_amount)}</small></div>
                 </div>
-                {paying === order.id ? (
+                {canManageFinance && (paying === order.id ? (
                   <form className="grid gap-4 mt-4" onSubmit={(event) => recordPayment(event, order)}>
                     <div className="admin-form-grid">
                       <label className="label">Amount (SGD)<input className="input" name="amount" type="number" min="0.01" max={(order.outstanding_amount / 100).toFixed(2)} step="0.01" defaultValue={(order.outstanding_amount / 100).toFixed(2)} required /></label>
@@ -196,7 +198,7 @@ export function FinanceReal({ settlements, vendorLedger, providerTransactions, r
                     <label className="label">Notes<textarea className="input vendor-textarea" name="notes" rows={2} maxLength={2000} /></label>
                     <div className="flex gap-3"><button className="btn btn-small" disabled={pending}>Record payment</button><button className="btn btn-secondary btn-small" type="button" onClick={() => setPaying(null)}>Cancel</button></div>
                   </form>
-                ) : <button className="btn btn-secondary btn-small mt-4" type="button" onClick={() => setPaying(order.id)}>Record payment</button>}
+                ) : <button className="btn btn-secondary btn-small mt-4" type="button" onClick={() => setPaying(order.id)}>Record payment</button>)}
               </article>
             ))}
           </div>
@@ -211,7 +213,7 @@ export function FinanceReal({ settlements, vendorLedger, providerTransactions, r
               <div key={payment.id}>
                 <strong className="numeral">{formatCents(payment.amount)}</strong>
                 <span>{payment.vendor_name} · {payment.order_reference || "No job"} · {new Date(payment.payment_date).toLocaleDateString()}<small className="block">{payment.entry_type} · {payment.reference || "No reference"}</small></span>
-                {payment.entry_type === "payment" && !payment.reversed && (reversing === payment.id ? (
+                {canManageFinance && payment.entry_type === "payment" && !payment.reversed && (reversing === payment.id ? (
                   <form className="grid gap-2" onSubmit={(event) => reversePayment(event, payment.id)}>
                     <input className="input" name="reference" required maxLength={200} placeholder="Reversal reference" />
                     <input className="input" name="notes" maxLength={2000} placeholder="Reason" />
@@ -235,14 +237,14 @@ export function FinanceReal({ settlements, vendorLedger, providerTransactions, r
                   <div><Link href={`/admin/jobs/${order.id}`}><strong>{order.reference}</strong></Link><small>{order.customer_name}</small></div>
                   <div className="text-right"><strong className="numeral">{formatCents(order.refundable_amount)}</strong><small>maximum refundable</small></div>
                 </div>
-                {order.refund_pending ? <p className="vendor-empty mt-4">A refund is awaiting HitPay confirmation.</p> : refunding === order.id ? (
+                {order.refund_pending ? <p className="vendor-empty mt-4">A refund is awaiting HitPay confirmation.</p> : canManageFinance && (refunding === order.id ? (
                   <form className="grid gap-4 mt-4" onSubmit={(event) => refundCustomer(event, order)}>
                     <label className="label">Amount (SGD)<input className="input" name="amount" type="number" min="0.01" max={(order.refundable_amount / 100).toFixed(2)} step="0.01" defaultValue={(order.refundable_amount / 100).toFixed(2)} required /></label>
                     <label className="label">Refund reason<textarea className="input vendor-textarea" name="reason" rows={3} maxLength={1000} required /></label>
                     {order.fulfilment_started && <label className="flex gap-3 items-start"><input name="confirmFulfilmentStarted" type="checkbox" required /><span><strong>Fulfilment has started.</strong><small className="block">I have reviewed the operational impact and still want to request this refund.</small></span></label>}
                     <div className="flex gap-3"><button className="btn btn-small" disabled={pending}>Request HitPay refund</button><button className="btn btn-secondary btn-small" type="button" onClick={() => setRefunding(null)}>Cancel</button></div>
                   </form>
-                ) : <button className="btn btn-secondary btn-small mt-4" type="button" onClick={() => setRefunding(order.id)}>Refund customer</button>}
+                ) : <button className="btn btn-secondary btn-small mt-4" type="button" onClick={() => setRefunding(order.id)}>Refund customer</button>)}
               </article>
             ))}
           </div>
@@ -254,7 +256,7 @@ export function FinanceReal({ settlements, vendorLedger, providerTransactions, r
         <p className="admin-record-help mb-4">Payments and refunds appear here after HitPay confirms them.</p>
         {providerTransactions.length === 0 ? <p className="vendor-empty">No HitPay transactions recorded.</p> : (
           <div className="admin-payment-list">
-            {providerTransactions.map((transaction) => <div key={transaction.id}><strong className="numeral">{formatCents(transaction.transaction_type === "refund" ? -transaction.amount : transaction.amount)}</strong><span>{transaction.order_reference} · {transaction.transaction_type}</span><small>{transaction.status} · {new Date(transaction.created_at).toLocaleString()}{["pending", "reconciliation_required"].includes(transaction.status) && <button type="button" className="btn btn-secondary btn-small ml-3" disabled={pending} onClick={() => reconcileProviderTransaction(transaction)}>{reconciling === transaction.id ? "Checking…" : "Check HitPay"}</button>}</small></div>)}
+            {providerTransactions.map((transaction) => <div key={transaction.id}><strong className="numeral">{formatCents(transaction.transaction_type === "refund" ? -transaction.amount : transaction.amount)}</strong><span>{transaction.order_reference} · {transaction.transaction_type}</span><small>{transaction.status} · {new Date(transaction.created_at).toLocaleString()}{canManageFinance && ["pending", "reconciliation_required"].includes(transaction.status) && <button type="button" className="btn btn-secondary btn-small ml-3" disabled={pending} onClick={() => reconcileProviderTransaction(transaction)}>{reconciling === transaction.id ? "Checking…" : "Check HitPay"}</button>}</small></div>)}
           </div>
         )}
       </section>

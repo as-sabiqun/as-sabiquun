@@ -3,15 +3,17 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { BrandMark } from "@/components/brand";
+import { adminAccessLabels } from "@/lib/admin-users";
+import type { AdminAccessLevel } from "@/lib/supabase/server";
 
-const navItems: { href: string; label: string; icon: () => React.JSX.Element; exact: boolean }[] = [
+const navItems: { href: string; label: string; icon: () => React.JSX.Element; exact: boolean; minimum?: AdminAccessLevel }[] = [
   { href: "/admin", label: "Overview", icon: OverviewIcon, exact: true },
   { href: "/admin/jobs", label: "Jobs", icon: JobsIcon, exact: false },
   { href: "/admin/vendors", label: "Vendors", icon: VendorsIcon, exact: false },
   { href: "/admin/customers", label: "Customers", icon: CustomersIcon, exact: false },
   { href: "/admin/finance", label: "Finance", icon: FinanceIcon, exact: false },
   { href: "/admin/support", label: "Support", icon: SupportIcon, exact: false },
-  { href: "/admin/settings", label: "Settings", icon: SettingsIcon, exact: false },
+  { href: "/admin/settings", label: "Settings", icon: SettingsIcon, exact: false, minimum: "administrator" },
 ];
 
 function OverviewIcon() {
@@ -39,8 +41,9 @@ function ProfileIcon() {
   return <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8" r="4" /><path d="M4 21c1.6-4.2 5-6 8-6s6.4 1.8 8 6" /></svg>;
 }
 
-export function AdminSidebar({ adminName, adminEmail }: { adminName: string; adminEmail: string }) {
+export function AdminSidebar({ adminName, adminEmail, accessLevel }: { adminName: string; adminEmail: string; accessLevel: AdminAccessLevel }) {
   const pathname = usePathname();
+  const visibleItems = navItems.filter((item) => !item.minimum || accessLevel !== "operations");
 
   return (
     <aside className="vendor-sidebar admin-sidebar">
@@ -51,7 +54,7 @@ export function AdminSidebar({ adminName, adminEmail }: { adminName: string; adm
 
       <nav className="vendor-sidebar-nav" aria-label="Admin navigation">
         <span className="vendor-sidebar-heading">Operations</span>
-        {navItems.map(({ href, label, icon: Icon, exact }) => {
+        {visibleItems.map(({ href, label, icon: Icon, exact }) => {
           const isActive = exact ? pathname === href : pathname === href || pathname.startsWith(`${href}/`);
           return <Link key={href} href={href} className={`vendor-sidebar-link ${isActive ? "is-active" : ""}`}><Icon />{label}</Link>;
         })}
@@ -61,7 +64,7 @@ export function AdminSidebar({ adminName, adminEmail }: { adminName: string; adm
         <Link href="/admin/profile" className={`vendor-sidebar-link ${pathname === "/admin/profile" ? "is-active" : ""}`}><ProfileIcon />Profile</Link>
         <div className="vendor-sidebar-identity">
           <span className="vendor-sidebar-avatar">{adminName.charAt(0)}</span>
-          <div><strong>{adminName}</strong><small>{adminEmail}</small></div>
+          <div><strong>{adminName}</strong><small>{adminAccessLabels[accessLevel]} · {adminEmail}</small></div>
         </div>
       </div>
     </aside>

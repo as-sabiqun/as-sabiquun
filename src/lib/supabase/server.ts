@@ -12,12 +12,14 @@ export const isSupabaseAdminConfigured = Boolean(
 );
 
 export type UserRole = "customer" | "vendor" | "admin";
+export type AdminAccessLevel = "owner" | "administrator" | "operations";
 
 export interface Profile {
   id: string;
   display_name: string;
   role: UserRole;
   admin_owner?: boolean;
+  admin_access_level?: AdminAccessLevel | null;
   phone: string | null;
   vendor_type: string | null;
   services: string[];

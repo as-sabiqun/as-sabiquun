@@ -49,3 +49,14 @@ test("vendor portal separates redacted offers from assigned job records", async 
   assert.match(combined, /\.from\(["']vendor_job_offers["']\)/);
   assert.match(combined, /\.from\(["']vendor_assigned_orders["']\)/);
 });
+
+test("vendor revisions show only the latest submission and cancelled work is not payable", async () => {
+  const [detail, earnings] = await sources([
+    "src/app/vendor-dashboard/jobs/[id]/page.tsx",
+    "src/app/vendor-dashboard/earnings/page.tsx",
+  ]);
+
+  assert.match(detail.source, /\.from\(["']completion_submissions["']\)/);
+  assert.match(detail.source, /\.eq\(["']submission_id["'], submission\.id\)/);
+  assert.match(earnings.source, /fulfilment_status !== ["']cancelled["']/);
+});

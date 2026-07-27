@@ -1,5 +1,5 @@
 import { createHash } from "node:crypto";
-import { getAal2Admin } from "@/lib/auth";
+import { getAal2AdminAtLeast } from "@/lib/auth";
 import { getHitPayCharge, parseJson, ProviderError, readBody } from "@/lib/integrations/providers";
 import { processHitPayWebhook, releaseHitPayRefundReconciliation } from "@/lib/integrations/store";
 import { createAdminClient } from "@/lib/supabase/admin";
@@ -16,7 +16,7 @@ function one<T>(value: T | T[] | null): T | null {
 export async function POST(request: Request) {
   try {
     const session = await createClient();
-    if (!(await getAal2Admin(session))) return Response.json({ error: "A verified administrator session is required." }, { status: 403 });
+    if (!(await getAal2AdminAtLeast(session, "administrator"))) return Response.json({ error: "Administrator finance access is required." }, { status: 403 });
     const apiKey = process.env.HITPAY_API_KEY;
     if (!apiKey) return Response.json({ error: "HitPay reconciliation is not configured." }, { status: 503 });
     if (!request.headers.get("content-type")?.toLowerCase().startsWith("application/json")) {

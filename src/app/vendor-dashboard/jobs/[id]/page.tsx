@@ -41,7 +41,17 @@ export default async function VendorJobDetailPage({ params }: { params: Promise<
 
   let proofs: ProofRow[] = [];
   if (!isOffer && ["proof_submitted", "revision_required", "verified"].includes(order.fulfilment_status)) {
-    const { data, error } = await supabase.from("proofs").select("id, storage_path, media_type, category").eq("order_id", id);
+    const { data: submission, error: submissionError } = await supabase
+      .from("completion_submissions")
+      .select("id")
+      .eq("order_id", id)
+      .order("version", { ascending: false })
+      .limit(1)
+      .maybeSingle();
+    if (submissionError) throw new Error("The latest submission could not be loaded.");
+    const { data, error } = submission
+      ? await supabase.from("proofs").select("id, storage_path, media_type, category").eq("submission_id", submission.id)
+      : { data: [], error: null };
     if (error) throw new Error("Submitted evidence could not be loaded.");
     const { data: signed } = await supabase.storage.from("proofs").createSignedUrls((data ?? []).map((p) => p.storage_path), 3600);
     proofs = (data ?? []).map((p, index) => ({

@@ -11,7 +11,7 @@ export function DashboardOverviewReal({ jobs }: { jobs: VendorJobRow[] }) {
   const review = jobs.filter((job) => !job.isOffer && job.fulfilment_status === "proof_submitted");
   const completed = jobs.filter((job) => !job.isOffer && job.fulfilment_status === "verified");
   const active = [...inProgress, ...review];
-  const earnings = jobs.filter((job) => !job.isOffer).reduce((sum, job) => sum + job.vendor_payout_amount, 0);
+  const earnings = jobs.filter((job) => !job.isOffer && job.fulfilment_status !== "cancelled").reduce((sum, job) => sum + job.vendor_payout_amount, 0);
   const assignedFlow = buildMonthlyMetricSeries(["assigned"], jobs.filter((job) => !job.isOffer).map((job) => ({ metric: "assigned", occurredAt: job.created_at })));
   const recent = [...jobs].sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime()).slice(0, 5);
 

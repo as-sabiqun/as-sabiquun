@@ -14,7 +14,7 @@
     "check:evidence": "node --test --experimental-strip-types src/lib/proof-evidence.test.ts src/lib/supabase/resumable-upload.test.ts",
     "check:checkout": "node --test --experimental-strip-types src/lib/checkout-validation.test.ts",
     "check:providers": "node --test --experimental-strip-types src/lib/integrations/providers.test.ts",
-    "check:admin": "node --test --experimental-strip-types src/app/admin/operations.test.ts src/lib/customer-directory.test.ts src/lib/vendor-directory.test.ts",
+    "check:admin": "node --test --experimental-strip-types src/app/admin/operations.test.ts src/lib/admin-users.test.ts src/lib/customer-directory.test.ts src/lib/vendor-directory.test.ts",
     "check:access": "node --test --experimental-strip-types src/lib/access-boundaries.test.ts",
     "check:reports": "node --test --experimental-strip-types src/lib/reports/model.test.ts"
   },

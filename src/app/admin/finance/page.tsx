@@ -1,11 +1,13 @@
 import { FinanceReal, type ProviderTransactionRow, type RefundableOrder, type SettlementOrder, type VendorLedgerRow } from "@/components/admin/finance-real";
 import { DashboardBarChart } from "@/components/dashboard/dashboard-charts";
 import { buildMonthlyMetricSeries } from "@/lib/dashboard-analytics";
+import { getAal2AdminAtLeast } from "@/lib/auth";
 import { createClient } from "@/lib/supabase/server";
 import { formatCents } from "@/lib/orders";
 
 export default async function AdminFinancePage() {
   const supabase = await createClient();
+  const canManageFinance = Boolean(await getAal2AdminAtLeast(supabase, "administrator"));
   const [
     { data: orderData, error: orderError },
     { data: paymentData, error: paymentError },
@@ -105,7 +107,7 @@ export default async function AdminFinancePage() {
           { key: "refunds", label: "Refunds", color: "#a64b3c" },
         ]}
       />
-      {!financeError && <FinanceReal settlements={settlements} vendorLedger={vendorLedger} providerTransactions={providerTransactions} refundableOrders={refundableOrders} />}
+      {!financeError && <FinanceReal settlements={settlements} vendorLedger={vendorLedger} providerTransactions={providerTransactions} refundableOrders={refundableOrders} canManageFinance={canManageFinance} />}
     </>
   );
 }

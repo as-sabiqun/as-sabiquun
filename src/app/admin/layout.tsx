@@ -1,7 +1,7 @@
 import { redirect } from "next/navigation";
 import Link from "next/link";
 import { AdminSidebar } from "@/components/admin/admin-sidebar";
-import { getActiveAdmin, getAdminMfaState } from "@/lib/auth";
+import { adminAccessLevel, getActiveAdmin, getAdminMfaState } from "@/lib/auth";
 import { isAdminMfaBypassActive } from "@/lib/auth-policy";
 import { createClient, isSupabaseConfigured } from "@/lib/supabase/server";
 
@@ -25,7 +25,7 @@ export default async function AdminLayout({ children }: { children: React.ReactN
 
   return (
     <div className="vendor-shell">
-      <AdminSidebar adminName={adminName} adminEmail={adminEmail} />
+      <AdminSidebar adminName={adminName} adminEmail={adminEmail} accessLevel={adminAccessLevel(admin.profile)} />
       <div className="vendor-main">
         <header className="vendor-topbar">
           <form className="vendor-topbar-search" action="/admin/search" role="search">

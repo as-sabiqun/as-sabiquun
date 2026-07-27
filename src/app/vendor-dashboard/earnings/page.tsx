@@ -36,14 +36,15 @@ export default async function VendorEarningsPage() {
   ]);
   if (orderError || paymentError) throw new Error("Earnings could not be loaded.");
   const orders = (orderData ?? []) as unknown as EarningsOrder[];
+  const earningOrders = orders.filter((order) => order.fulfilment_status !== "cancelled");
   const payments = (paymentData ?? []) as PaymentRow[];
   const paidByOrder = new Map<string, number>();
   payments.forEach((payment) => paidByOrder.set(payment.order_id, (paidByOrder.get(payment.order_id) ?? 0) + payment.amount));
 
-  const committed = orders.reduce((sum, order) => sum + order.vendor_payout_amount, 0);
-  const pendingVerification = orders.filter((order) => order.fulfilment_status !== "verified").reduce((sum, order) => sum + order.vendor_payout_amount, 0);
+  const committed = earningOrders.reduce((sum, order) => sum + order.vendor_payout_amount, 0);
+  const pendingVerification = earningOrders.filter((order) => order.fulfilment_status !== "verified").reduce((sum, order) => sum + order.vendor_payout_amount, 0);
   const paid = payments.reduce((sum, payment) => sum + payment.amount, 0);
-  const payable = orders.filter((order) => order.fulfilment_status === "verified").reduce((sum, order) => sum + Math.max(0, order.vendor_payout_amount - (paidByOrder.get(order.id) ?? 0)), 0);
+  const payable = earningOrders.filter((order) => order.fulfilment_status === "verified").reduce((sum, order) => sum + Math.max(0, order.vendor_payout_amount - (paidByOrder.get(order.id) ?? 0)), 0);
   const payoutFlow = buildMonthlyMetricSeries(["paid"], payments.map((payment) => ({ metric: "paid", occurredAt: payment.payment_date, value: payment.amount })));
 
   return (
@@ -79,9 +80,9 @@ export default async function VendorEarningsPage() {
 
       <section className="card vendor-panel mt-5">
         <div className="vendor-panel-head"><div><p className="vendor-eyebrow">By project</p><h2 className="display text-lg">Payments by project</h2></div></div>
-        {orders.length === 0 ? <p className="vendor-empty">No assigned jobs yet.</p> : (
+        {earningOrders.length === 0 ? <p className="vendor-empty">No payable jobs yet.</p> : (
           <div className="vendor-job-table">
-            {orders.map((order) => {
+            {earningOrders.map((order) => {
               const orderPaid = paidByOrder.get(order.id) ?? 0;
               const outstanding = Math.max(0, order.vendor_payout_amount - orderPaid);
               return (

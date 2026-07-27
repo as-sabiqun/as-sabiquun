@@ -1,8 +1,10 @@
+import { redirect } from "next/navigation";
 import { formatCents } from "@/lib/orders";
-import { getAal2Admin } from "@/lib/auth";
+import { adminAccessLevel, getAal2AdminAtLeast } from "@/lib/auth";
+import { adminAccessLabels, canManageAdminAccess } from "@/lib/admin-users";
 import { createAdminClient } from "@/lib/supabase/admin";
-import { createClient } from "@/lib/supabase/server";
-import { inviteAdminAction, resendAdminInvitationAction, setAdminStatusAction } from "./actions";
+import { createClient, type AdminAccessLevel } from "@/lib/supabase/server";
+import { inviteAdminAction, resendAdminInvitationAction, setAdminAccessLevelAction, setAdminStatusAction } from "./actions";
 
 function Health({ label, configured, help }: { label: string; configured: boolean; help: string }) {
   return (
@@ -16,8 +18,9 @@ function Health({ label, configured, help }: { label: string; configured: boolea
 export default async function AdminSettingsPage({ searchParams }: { searchParams: Promise<{ admin_message?: string; admin_error?: string }> }) {
   const params = await searchParams;
   const supabase = await createClient();
-  const currentAdmin = await getAal2Admin(supabase);
-  const canManageAdmins = Boolean(currentAdmin?.profile.admin_owner);
+  const currentAdmin = await getAal2AdminAtLeast(supabase, "administrator");
+  if (!currentAdmin) redirect("/admin");
+  const currentLevel = adminAccessLevel(currentAdmin.profile);
   const [{ data: offerings, error: offeringsError }, { data: settings, error: settingsError }, { data: deliveryFailures, error: deliveryError }, { data: paymentFailures, error: paymentError }, { count: overdueQueue, error: queueError }, { data: integrationFailures, error: integrationError }, { data: cronHealth, error: cronError }] = await Promise.all([
     supabase.from("offerings").select("id, title, slug, category_slug, unit_amount, min_amount, active, sort_order").order("sort_order"),
     supabase.from("platform_settings").select("commission_rate, default_claim_window_hours, updated_at").eq("id", true).maybeSingle(),
@@ -68,33 +71,31 @@ export default async function AdminSettingsPage({ searchParams }: { searchParams
     id: string;
     name: string;
     email: string;
-    owner: boolean;
+    accessLevel: AdminAccessLevel;
     status: string;
     invited: boolean;
     mfa: boolean;
   }[] = [];
 
-  if (canManageAdmins) {
-    const service = createAdminClient();
-    const [{ data: adminProfiles }, { data: authUsers }] = await Promise.all([
-      service.from("profiles").select("id, display_name, status, admin_owner").eq("role", "admin").order("created_at"),
-      service.auth.admin.listUsers({ page: 1, perPage: 1000 }),
-    ]);
-    const usersById = new Map((authUsers.users ?? []).map((user) => [user.id, user]));
-    administrators = await Promise.all((adminProfiles ?? []).map(async (profile) => {
-      const user = usersById.get(profile.id);
-      const { data: factors } = await service.auth.admin.mfa.listFactors({ userId: profile.id });
-      return {
-        id: profile.id,
-        name: profile.display_name,
-        email: user?.email ?? "Email unavailable",
-        owner: Boolean(profile.admin_owner),
-        status: profile.status,
-        invited: !user?.last_sign_in_at,
-        mfa: Boolean(factors?.factors.some((factor) => factor.status === "verified")),
-      };
-    }));
-  }
+  const service = createAdminClient();
+  const [{ data: adminProfiles }, { data: authUsers }] = await Promise.all([
+    service.from("profiles").select("id, display_name, status, admin_owner, admin_access_level").eq("role", "admin").order("created_at"),
+    service.auth.admin.listUsers({ page: 1, perPage: 1000 }),
+  ]);
+  const usersById = new Map((authUsers.users ?? []).map((user) => [user.id, user]));
+  administrators = await Promise.all((adminProfiles ?? []).map(async (profile) => {
+    const user = usersById.get(profile.id);
+    const { data: factors } = await service.auth.admin.mfa.listFactors({ userId: profile.id });
+    return {
+      id: profile.id,
+      name: profile.display_name,
+      email: user?.email ?? "Email unavailable",
+      accessLevel: (profile.admin_access_level ?? (profile.admin_owner ? "owner" : "administrator")) as AdminAccessLevel,
+      status: profile.status,
+      invited: !user?.last_sign_in_at,
+      mfa: Boolean(factors?.factors.some((factor) => factor.status === "verified")),
+    };
+  }));
 
   return (
     <>
@@ -125,13 +126,12 @@ export default async function AdminSettingsPage({ searchParams }: { searchParams
         </div>
       </section>
 
-      {canManageAdmins && (
-        <section className="card vendor-panel admin-users-panel">
+      <section className="card vendor-panel admin-users-panel">
           <div className="vendor-panel-head">
-            <div><p className="vendor-eyebrow">Owner access</p><h2 className="display text-lg mt-1">Admin users</h2></div>
-            <span className="vendor-status vendor-status-accepted">{administrators.length} administrator{administrators.length === 1 ? "" : "s"}</span>
+            <div><p className="vendor-eyebrow">Authority</p><h2 className="display text-lg mt-1">Team access</h2></div>
+            <span className="vendor-status vendor-status-accepted">{administrators.length} team member{administrators.length === 1 ? "" : "s"}</span>
           </div>
-          <p className="admin-record-help">Invited administrators choose their own password and must enrol an authenticator before entering the console.</p>
+          <p className="admin-record-help">Owners control the platform, administrators manage staff and operations, and operations staff handle daily work. Every invited member chooses a password and enrols MFA.</p>
           {params.admin_message && <p className="auth-message mt-4" role="status">{params.admin_message}</p>}
           {params.admin_error && <p className="auth-error mt-4" role="alert">{params.admin_error}</p>}
 
@@ -142,6 +142,13 @@ export default async function AdminSettingsPage({ searchParams }: { searchParams
             <label className="label">Email
               <input className="input" name="email" type="email" required maxLength={254} autoComplete="email" />
             </label>
+            <label className="label">Access level
+              <select className="input" name="accessLevel" required defaultValue={currentLevel === "owner" ? "administrator" : "operations"}>
+                {currentLevel === "owner" && <option value="owner">Owner</option>}
+                {currentLevel === "owner" && <option value="administrator">Administrator</option>}
+                <option value="operations">Operations Staff</option>
+              </select>
+            </label>
             <button className="btn admin-users-invite" type="submit">Send secure invitation</button>
           </form>
 
@@ -151,13 +158,13 @@ export default async function AdminSettingsPage({ searchParams }: { searchParams
                 <span className="vendor-sidebar-avatar" aria-hidden="true">{administrator.name.charAt(0)}</span>
                 <div className="admin-user-identity"><strong>{administrator.name}</strong><small>{administrator.email}</small></div>
                 <div className="admin-user-states">
-                  {administrator.owner && <span className="vendor-status vendor-status-pending">Owner</span>}
+                  <span className="vendor-status vendor-status-pending">{adminAccessLabels[administrator.accessLevel]}</span>
                   <span className={`vendor-status ${administrator.status === "active" ? "vendor-status-accepted" : "vendor-status-rejected"}`}>
                     {administrator.status === "active" ? administrator.invited ? "Invited" : "Active" : "Suspended"}
                   </span>
                   <span className={`vendor-status ${administrator.mfa ? "vendor-status-accepted" : "vendor-status-pending"}`}>{administrator.mfa ? "MFA ready" : "MFA pending"}</span>
                 </div>
-                {!administrator.owner && (
+                {administrator.id !== currentAdmin.user.id && canManageAdminAccess(currentLevel, administrator.accessLevel) && (
                   <div className="admin-user-actions">
                     {administrator.invited && administrator.status === "active" && (
                       <form action={resendAdminInvitationAction}>
@@ -170,13 +177,23 @@ export default async function AdminSettingsPage({ searchParams }: { searchParams
                       <input type="hidden" name="status" value={administrator.status === "active" ? "suspended" : "active"} />
                       <button className="btn btn-secondary btn-small" type="submit">{administrator.status === "active" ? "Suspend" : "Restore"}</button>
                     </form>
+                    {currentLevel === "owner" && (
+                      <form action={setAdminAccessLevelAction} className="admin-user-authority">
+                        <input type="hidden" name="adminId" value={administrator.id} />
+                        <select className="input" name="accessLevel" defaultValue={administrator.accessLevel} aria-label={`Authority for ${administrator.name}`}>
+                          <option value="owner">Owner</option>
+                          <option value="administrator">Administrator</option>
+                          <option value="operations">Operations Staff</option>
+                        </select>
+                        <button className="btn btn-secondary btn-small" type="submit">Update role</button>
+                      </form>
+                    )}
                   </div>
                 )}
               </div>
             ))}
           </div>
-        </section>
-      )}
+      </section>
 
       <section className="card vendor-panel">
         <div className="vendor-panel-head"><div><p className="vendor-eyebrow">Recent problems</p><h2 className="display text-lg mt-1">Service errors</h2></div></div>

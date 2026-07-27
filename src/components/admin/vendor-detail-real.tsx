@@ -59,11 +59,13 @@ export function VendorDetailReal({
   orders,
   payments,
   totalPayable,
+  canManageFinance,
 }: {
   vendor: VendorDetail;
   orders: VendorOrderRow[];
   payments: VendorPaymentRow[];
   totalPayable: number;
+  canManageFinance: boolean;
 }) {
   const router = useRouter();
   const [pending, startTransition] = useTransition();
@@ -250,9 +252,9 @@ export function VendorDetailReal({
           <div className="mt-8">
             <div className="vendor-panel-head">
               <span className="label">Payment history</span>
-              <button type="button" className="btn-secondary btn btn-small" onClick={() => setShowPaymentForm((v) => !v)}>
+              {canManageFinance && <button type="button" className="btn-secondary btn btn-small" onClick={() => setShowPaymentForm((v) => !v)}>
                 {showPaymentForm ? "Cancel" : "Record payment"}
-              </button>
+              </button>}
             </div>
 
             <div className="vendor-stat-grid admin-vendor-stats" style={{ gridTemplateColumns: "repeat(3, 1fr)" }}>
@@ -261,7 +263,7 @@ export function VendorDetailReal({
               <div className="admin-inline-stat"><span>Outstanding</span><strong className="numeral" style={outstanding > 0 ? { color: "#b3402f" } : undefined}>{formatCents(outstanding)}</strong></div>
             </div>
 
-            {showPaymentForm && (
+            {canManageFinance && showPaymentForm && (
               <form className="grid gap-4 mt-5" onSubmit={submitPayment}>
                 {paymentError && <p className="auth-error">{paymentError}</p>}
                 <div className="admin-form-grid">
