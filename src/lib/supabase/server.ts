@@ -17,6 +17,7 @@ export interface Profile {
   id: string;
   display_name: string;
   role: UserRole;
+  admin_owner?: boolean;
   phone: string | null;
   vendor_type: string | null;
   services: string[];

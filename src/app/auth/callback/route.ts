@@ -45,6 +45,11 @@ export async function GET(request: NextRequest) {
       await supabase.auth.signOut();
       return loginError(request, "Password recovery is available only to invited staff and partners.");
     }
+  } else if (intent === "admin") {
+    if (oauthSession || profile.role !== "admin") {
+      await supabase.auth.signOut();
+      return loginError(request, "This administrator invitation is not valid for this account.");
+    }
   } else {
     await supabase.auth.signOut();
     return loginError(request, "This sign-in link is invalid or has expired.");

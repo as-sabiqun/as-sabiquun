@@ -759,6 +759,14 @@ button, a, summary { -webkit-tap-highlight-color: transparent; }
 .admin-form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
 .admin-password-row { display: flex; gap: 10px; }
 .admin-password-row .input { flex: 1; font-family: var(--font-sans); }
+.admin-users-invite { grid-column: 1 / -1; justify-self: start; }
+.admin-users-list { display: grid; border-top: 1px solid var(--line); }
+.admin-user-row { min-width: 0; display: grid; grid-template-columns: 42px minmax(180px, 1fr) auto auto; align-items: center; gap: 14px; padding: 15px 0; border-bottom: 1px solid var(--line); }
+.admin-user-row:last-child { border-bottom: 0; }
+.admin-user-row > .vendor-sidebar-avatar { width: 42px; height: 42px; }
+.admin-user-identity { min-width: 0; display: grid; gap: 3px; }
+.admin-user-identity small { overflow: hidden; color: var(--muted); text-overflow: ellipsis; white-space: nowrap; }
+.admin-user-states, .admin-user-actions { display: flex; align-items: center; justify-content: flex-end; gap: 7px; flex-wrap: wrap; }
 
 .admin-checkbox-group { display: flex; flex-wrap: wrap; gap: 8px; }
 .admin-checkbox-pill {
@@ -1094,6 +1102,8 @@ button, a, summary { -webkit-tap-highlight-color: transparent; }
   .admin-jobs-toolbar .admin-directory-search { max-width: none; flex-basis: 100%; }
   .admin-jobs-toolbar .btn { flex: 1; }
   .admin-form-grid { grid-template-columns: 1fr; }
+  .admin-user-row { grid-template-columns: 42px minmax(0, 1fr); }
+  .admin-user-states, .admin-user-actions { grid-column: 2; justify-content: flex-start; }
   .admin-vendor-stats { grid-template-columns: 1fr; }
   .admin-record-hero { align-items: flex-start; flex-direction: column; padding: 24px; }
   .admin-state-rail { grid-template-columns: 1fr; }
