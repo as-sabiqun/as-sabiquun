@@ -167,7 +167,15 @@ export function FinanceReal({ settlements, vendorLedger, providerTransactions, r
       {error && <p className="auth-error" role="alert">{error}</p>}
       {notice && <p className="vendor-empty" role="status">{notice}</p>}
 
-      <section className="card vendor-panel">
+      <nav className="admin-finance-index" aria-label="Finance sections">
+        <a href="#settlements"><span>{settlements.length}</span>Settlements</a>
+        <a href="#refunds"><span>{refundableOrders.length}</span>Refunds</a>
+        <a href="#vendor-ledger"><span>{vendorLedger.length}</span>Vendor ledger</a>
+        <a href="#hitpay-ledger"><span>{providerTransactions.length}</span>HitPay ledger</a>
+      </nav>
+
+      <div className="admin-finance-layout">
+      <section id="settlements" className="card vendor-panel admin-finance-panel admin-finance-settlements">
         <div className="vendor-panel-head"><div><p className="vendor-eyebrow">Partner settlement</p><h2 className="display text-lg mt-1">Outstanding payouts</h2></div><span className="vendor-status vendor-status-pending">{settlements.length} open</span></div>
         {settlements.length === 0 ? <p className="vendor-empty">Every verified job is fully settled.</p> : (
           <div className="vendor-report-list">
@@ -195,12 +203,12 @@ export function FinanceReal({ settlements, vendorLedger, providerTransactions, r
         )}
       </section>
 
-      <section className="card vendor-panel">
+      <section id="vendor-ledger" className="card vendor-panel admin-finance-panel admin-finance-vendor-ledger">
         <div className="vendor-panel-head"><div><p className="vendor-eyebrow">Append-only ledger</p><h2 className="display text-lg mt-1">Vendor payments</h2></div></div>
         {vendorLedger.length === 0 ? <p className="vendor-empty">No vendor payments recorded.</p> : (
           <div className="admin-payment-list">
             {vendorLedger.map((payment) => (
-              <div key={payment.id} style={{ gridTemplateColumns: "110px minmax(0, 1fr) auto" }}>
+              <div key={payment.id}>
                 <strong className="numeral">{formatCents(payment.amount)}</strong>
                 <span>{payment.vendor_name} · {payment.order_reference || "No job"} · {new Date(payment.payment_date).toLocaleDateString()}<small className="block">{payment.entry_type} · {payment.reference || "No reference"}</small></span>
                 {payment.entry_type === "payment" && !payment.reversed && (reversing === payment.id ? (
@@ -216,7 +224,7 @@ export function FinanceReal({ settlements, vendorLedger, providerTransactions, r
         )}
       </section>
 
-      <section className="card vendor-panel">
+      <section id="refunds" className="card vendor-panel admin-finance-panel admin-finance-refunds">
         <div className="vendor-panel-head"><div><p className="vendor-eyebrow">Customer refunds</p><h2 className="display text-lg mt-1">Refundable HitPay orders</h2></div></div>
         <p className="admin-record-help mb-4">HitPay accepts the request here; only its signed webhook changes the confirmed customer balance.</p>
         {refundableOrders.length === 0 ? <p className="vendor-empty">No customer payment is currently refundable.</p> : (
@@ -241,7 +249,7 @@ export function FinanceReal({ settlements, vendorLedger, providerTransactions, r
         )}
       </section>
 
-      <section className="card vendor-panel">
+      <section id="hitpay-ledger" className="card vendor-panel admin-finance-panel admin-finance-hitpay-ledger">
         <div className="vendor-panel-head"><div><p className="vendor-eyebrow">HitPay truth</p><h2 className="display text-lg mt-1">Customer transactions</h2></div></div>
         <p className="admin-record-help mb-4">Payment and refund rows reflect provider events; pending refunds remain visibly separate until confirmation.</p>
         {providerTransactions.length === 0 ? <p className="vendor-empty">No HitPay transactions recorded.</p> : (
@@ -250,6 +258,7 @@ export function FinanceReal({ settlements, vendorLedger, providerTransactions, r
           </div>
         )}
       </section>
+      </div>
     </>
   );
 }

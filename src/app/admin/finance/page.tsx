@@ -74,12 +74,14 @@ export default async function AdminFinancePage() {
     <>
       <div className="vendor-page-head"><div><p className="vendor-eyebrow">Finance</p><h1 className="display vendor-page-title">Payments and settlement</h1><p className="vendor-page-lead">Provider-confirmed customer money and an append-only SGD partner ledger stay separate from fulfilment.</p></div></div>
       {financeError && <p className="auth-error">Some finance records could not be loaded. Settlement controls are disabled until the record is complete. {financeError.message}</p>}
-      <div className="vendor-stat-grid">
-        <div className="card vendor-stat-card"><span className="vendor-stat-label">Vendor outstanding</span><strong className="display vendor-stat-value">{formatCents(outstanding)}</strong><span className="vendor-stat-note">Across verified jobs</span></div>
-        <div className="card vendor-stat-card"><span className="vendor-stat-label">Open settlements</span><strong className="display vendor-stat-value">{settlements.length}</strong><span className="vendor-stat-note">Unpaid or partially paid</span></div>
-        <div className="card vendor-stat-card"><span className="vendor-stat-label">Vendor ledger entries</span><strong className="display vendor-stat-value">{vendorLedger.length}</strong><span className="vendor-stat-note">Payments, reversals, adjustments</span></div>
-        <div className="card vendor-stat-card"><span className="vendor-stat-label">Confirmed refunds</span><strong className="display vendor-stat-value">{formatCents(refunds)}</strong><span className="vendor-stat-note">HitPay webhook-confirmed</span></div>
-      </div>
+      <section className="admin-finance-overview" aria-label="Finance summary">
+        <div className="admin-finance-exposure"><span>Settlement exposure</span><strong className="display">{formatCents(outstanding)}</strong><p>Owed across verified work</p></div>
+        <dl className="admin-finance-summary">
+          <div><dt>Open settlements</dt><dd>{settlements.length}</dd><small>Needs action</small></div>
+          <div><dt>Ledger entries</dt><dd>{vendorLedger.length}</dd><small>Append-only</small></div>
+          <div><dt>Confirmed refunds</dt><dd>{formatCents(refunds)}</dd><small>HitPay confirmed</small></div>
+        </dl>
+      </section>
       {!financeError && <FinanceReal settlements={settlements} vendorLedger={vendorLedger} providerTransactions={providerTransactions} refundableOrders={refundableOrders} />}
     </>
   );
