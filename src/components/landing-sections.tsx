@@ -37,23 +37,27 @@ export function Hero() {
       </div>
       <div className="lp-hero-inner">
         <p className="lp-arabic" lang="ar" dir="rtl">السَّابِقُونَ إِلَى الْخَيْرِ</p>
-        <p className="lp-kicker">Islamic services, thoughtfully coordinated</p>
-        <h1 id="landing-title">Good intentions deserve clear follow-through.</h1>
+        <p className="lp-kicker">Give with confidence</p>
+        <h1 id="landing-title">Choose a service. We handle the rest.</h1>
         <p className="lp-hero-copy">
-          Arrange Korban and Wakaf through one trusted service. From payment to verified proof,
-          every handoff stays visible in your Amanah record.
+          Pay online. We arrange the work, check the photos and videos,
+          and send you a report when it is done.
         </p>
         <div className="lp-actions">
-          <Link className="lp-button lp-button-primary" href="/services">
-            Choose a service <span aria-hidden="true">→</span>
-          </Link>
+          <a className="lp-button lp-button-primary" href="#services">
+            Pick a service <span aria-hidden="true">→</span>
+          </a>
           <a className="lp-button lp-button-quiet" href="#how">
-            See how it works
+            How it works
           </a>
         </div>
       </div>
-      <div className="lp-service-ribbon" aria-label="Available services">
-        {services.map((service) => <span key={service.slug}>{service.title}</span>)}
+      <div className="lp-service-ribbon" aria-label="Pick a service">
+        {services.map((service) => (
+          <Link href={service.href} key={service.slug}>
+            {service.title} <span aria-hidden="true">→</span>
+          </Link>
+        ))}
       </div>
     </section>
   );
@@ -65,9 +69,9 @@ export function ServicesOutline() {
       <div className="lp-container">
         <SectionHeading
           id="services-title"
-          eyebrow="Choose a service"
-          title="One careful process, shaped for each act of giving."
-          copy="Start with the service you need. You will see the scope, provide the right details, and review everything before payment."
+          eyebrow="Pick one"
+          title="What would you like to give?"
+          copy="Pick a service. We will show you the price and what happens next."
         />
         <div className="lp-service-list">
           {services.map((service) => (
@@ -75,7 +79,7 @@ export function ServicesOutline() {
               <span className="lp-service-number">{service.number}</span>
               <span className="lp-service-name">{service.title}</span>
               <span className="lp-service-copy">{service.description}</span>
-              <span className="lp-service-action">View service <span aria-hidden="true">↗</span></span>
+              <span className="lp-service-action">Choose <span aria-hidden="true">→</span></span>
             </Link>
           ))}
         </div>
@@ -86,10 +90,10 @@ export function ServicesOutline() {
 
 export function AmanahShowcase() {
   const steps = [
-    ["01", "Request received", "Your service, dedication, and payment are recorded together."],
-    ["02", "Partner assigned", "An approved partner accepts the work and begins fulfilment."],
-    ["03", "Evidence reviewed", "Location and required media are checked by our team."],
-    ["04", "Report delivered", "Your completion record is sent by email and Telegram."],
+    ["01", "We receive your order", "Your payment and details are saved."],
+    ["02", "A trusted partner starts", "We send the job to an approved partner."],
+    ["03", "We check the work", "We review the location, photos, and videos."],
+    ["04", "You get the report", "We send it by email and Telegram."],
   ];
 
   return (
@@ -98,9 +102,9 @@ export function AmanahShowcase() {
         <div>
           <SectionHeading
             id="amanah-title"
-            eyebrow="The Amanah trail"
-            title="Every request leaves a record you can follow."
-            copy="The same four-stage trail guides every service. It makes the work clear for you, the fulfilment partner, and the team reviewing it."
+            eyebrow="What happens next"
+            title="See what happens after you pay."
+            copy="You can check your project at every step."
           />
           <ol className="lp-trail">
             {steps.map(([number, title, copy]) => (
@@ -140,10 +144,10 @@ export function AmanahShowcase() {
 
 export function Accountability() {
   const proof = [
-    ["Exact location", "Country, locality, address, and coordinates"],
-    ["9 photographs", "Before, during, and after the project"],
-    ["4 videos", "Before, during, after, and a dua video"],
-    ["Admin review", "Evidence approved before your report is sent"],
+    ["Exact location", "See where the project happened"],
+    ["9 photos", "Before, during, and after the work"],
+    ["4 videos", "Before, during, after, and a dua"],
+    ["Checked by our team", "We approve the proof before you receive it"],
   ];
 
   return (
@@ -151,12 +155,12 @@ export function Accountability() {
       <div className="lp-container lp-proof-layout">
         <div>
           <p className="lp-eyebrow lp-eyebrow-light"><span aria-hidden="true" />Accountability by design</p>
-          <h2 id="proof-title">Completion means more than changing a status.</h2>
+          <h2 id="proof-title">We check the proof before you get it.</h2>
           <p>
-            A partner cannot submit a project without its required location and evidence.
-            Our team reviews that record before it reaches you.
+            The partner must send the location, photos, and videos.
+            Our team checks everything first.
           </p>
-          <Link href="/about" className="lp-text-link">How As-Sabiqun works <span aria-hidden="true">→</span></Link>
+          <Link href="/about" className="lp-text-link">Learn about us <span aria-hidden="true">→</span></Link>
         </div>
         <dl className="lp-proof-list">
           {proof.map(([label, copy], index) => (
@@ -173,10 +177,10 @@ export function Accountability() {
 
 export function FAQ() {
   const faqs = [
-    ["What happens after payment?", "Payment must be confirmed securely before the request is made available to a fulfilment partner. You can then follow the project from your dashboard."],
-    ["How will I receive completion proof?", "After admin verification, your completion report is sent by email and Telegram. A secure copy also remains available from your project page."],
-    ["Who carries out the project?", "An approved partner accepts the assignment. As-Sabiqun coordinates the handoff, checks the required evidence, and keeps the operational record."],
-    ["What if something needs correcting?", "The reviewer returns the submission to the partner with a reason. A corrected submission is reviewed as a new version, so the history remains clear."],
+    ["What happens after I pay?", "We send your order to an approved partner. You can follow the project from your dashboard."],
+    ["How do I get the proof?", "We send your report by email and Telegram. You can also download it from your project page."],
+    ["Who does the work?", "One of our approved partners carries out the project. Our team checks their work."],
+    ["What if something is wrong?", "We ask the partner to fix it and send the proof again."],
   ];
 
   return (
@@ -184,9 +188,9 @@ export function FAQ() {
       <div className="lp-container lp-faq-layout">
         <SectionHeading
           id="faq-title"
-          eyebrow="Before you begin"
-          title="Questions, answered plainly."
-          copy="The service is designed to make each handoff understandable. Here are the details customers ask about most often."
+          eyebrow="Need help?"
+          title="Common questions."
+          copy="Here are simple answers about your order."
         />
         <div className="lp-faq-list">
           {faqs.map(([question, answer]) => (
@@ -207,10 +211,10 @@ export function FinalCTA() {
       <div className="lp-container">
         <AmanahStar className="lp-final-star" />
         <p className="lp-arabic" lang="ar" dir="rtl">بِسْمِ اللَّهِ</p>
-        <h2 id="final-title">Begin with clarity.</h2>
-        <p>Choose a service, review the details, and keep its Amanah record with you through completion.</p>
+        <h2 id="final-title">Ready to begin?</h2>
+        <p>Pick a service and fill in the short form.</p>
         <Link className="lp-button lp-button-primary" href="/services">
-          Explore all services <span aria-hidden="true">→</span>
+          Pick a service <span aria-hidden="true">→</span>
         </Link>
       </div>
     </section>

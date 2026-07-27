@@ -40,7 +40,7 @@ export function Header() {
           <Link href="/login" className="nav-link">Login</Link>
         </nav>
         <div className="desktop-cta">
-          <Link className="btn btn-small" href="/services">Choose a service <span aria-hidden="true">→</span></Link>
+          <Link className="btn btn-small" href="/services">Pick a service <span aria-hidden="true">→</span></Link>
         </div>
         <details className="mobile-menu">
           <summary aria-label="Open navigation"><span /><span /></summary>
@@ -64,7 +64,7 @@ export function Footer() {
           <div>
             <Brand inverse />
             <p className="mt-6 max-w-sm text-sm leading-7 text-white/60">
-              Islamic services coordinated with clarity, human care, and documented fulfilment.
+              Choose an Islamic service. We arrange the work and send you proof when it is done.
             </p>
             <a className="mt-6 inline-block font-bold text-white" href="tel:+6589933786">+65 8993 3786</a>
           </div>
@@ -95,7 +95,7 @@ export function Footer() {
         </div>
         <div className="footer-bottom">
           <span>© 2026 As-Sabiqun Association Consultancy</span>
-          <span>Islamic services with a documented completion trail</span>
+          <span>Islamic services with clear proof of completion</span>
         </div>
       </div>
     </footer>

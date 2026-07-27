@@ -121,17 +121,23 @@
   background: color-mix(in srgb, var(--cream) 92%, white);
 }
 
-.lp-service-ribbon span {
+.lp-service-ribbon > a {
+  display: flex;
   min-width: 0;
+  align-items: center;
+  justify-content: center;
+  gap: 9px;
   padding: 17px 20px;
   border-right: 1px solid var(--line);
   color: var(--muted);
   font-size: .68rem;
   font-weight: 750;
   text-align: center;
+  transition: background-color .18s ease, color .18s ease;
 }
 
-.lp-service-ribbon span:last-child { border-right: 0; }
+.lp-service-ribbon > a:hover { background: var(--white); color: var(--teal); }
+.lp-service-ribbon > a:last-child { border-right: 0; }
 
 .lp-section { padding: 126px 0; }
 .lp-services { background: var(--white); }
@@ -443,8 +449,8 @@
   .lp-hero { padding-top: 128px; }
   .lp-hero h1 { font-size: clamp(3.1rem, 10vw, 5.8rem); }
   .lp-service-ribbon { grid-template-columns: 1fr 1fr; }
-  .lp-service-ribbon span:nth-child(2) { border-right: 0; }
-  .lp-service-ribbon span:nth-child(-n+2) { border-bottom: 1px solid var(--line); }
+  .lp-service-ribbon > a:nth-child(2) { border-right: 0; }
+  .lp-service-ribbon > a:nth-child(-n+2) { border-bottom: 1px solid var(--line); }
   .lp-service-row { grid-template-columns: 45px minmax(170px, .75fr) minmax(240px, 1.25fr); }
   .lp-service-action { grid-column: 2; }
   .lp-amanah-layout,
@@ -466,7 +472,7 @@
   .lp-actions { display: grid; width: 100%; }
   .lp-button { width: 100%; }
   .lp-service-ribbon { width: 100%; margin-top: 70px; }
-  .lp-service-ribbon span { padding: 14px 8px; font-size: .59rem; }
+  .lp-service-ribbon > a { padding: 14px 8px; font-size: .59rem; }
   .lp-section-heading h2,
   .lp-proof h2,
   .lp-final h2 { font-size: clamp(2.25rem, 12vw, 3.4rem); }
