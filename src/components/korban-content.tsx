@@ -12,7 +12,7 @@ export interface KorbanPackage {
 }
 
 const details = {
-  description: "Book a Korban, coordinated overseas with an approved fulfilment partner. Every order stays connected to your participant names from request through completion.",
+  description: "Book a Korban carried out overseas by an approved partner. Your participant names stay attached to the order from request to completion.",
   facts: [
     ["Fulfilment location", "Coordinated overseas with an approved partner"],
     ["Documented completion", "Photos or video reviewed before being returned to you"],

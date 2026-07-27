@@ -16,7 +16,7 @@ function LoginForm() {
       <p className="auth-arabic" lang="ar" dir="rtl">السَّابِقُونَ</p>
       <p className="auth-eyebrow">Customer access</p>
       <h1 className="display auth-title">Your deeds, kept together.</h1>
-      <p className="auth-lead">Continue an order, follow a Wakaf contribution, or review its fulfilment record.</p>
+      <p className="auth-lead">Continue an order, follow a Wakaf project, or view its completion record.</p>
 
       {error && <p className="auth-error" role="alert">{error}</p>}
 

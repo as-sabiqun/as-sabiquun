@@ -12,7 +12,7 @@ export function DashboardOverviewReal({ jobs }: { jobs: VendorJobRow[] }) {
   const completed = jobs.filter((job) => !job.isOffer && job.fulfilment_status === "verified");
   const active = [...inProgress, ...review];
   const earnings = jobs.filter((job) => !job.isOffer && job.fulfilment_status !== "cancelled").reduce((sum, job) => sum + job.vendor_payout_amount, 0);
-  const assignedFlow = buildMonthlyMetricSeries(["assigned"], jobs.filter((job) => !job.isOffer).map((job) => ({ metric: "assigned", occurredAt: job.created_at })));
+  const assignedFlow = buildMonthlyMetricSeries(["assigned"], jobs.filter((job) => !job.isOffer).map((job) => ({ metric: "assigned", occurredAt: job.accepted_at })));
   const recent = [...jobs].sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime()).slice(0, 5);
 
   return (
@@ -21,41 +21,10 @@ export function DashboardOverviewReal({ jobs }: { jobs: VendorJobRow[] }) {
         <div>
           <p className="vendor-eyebrow">Overview</p>
           <h1 className="display vendor-page-title">Welcome back</h1>
-          <p className="vendor-page-lead">See new offers, ongoing projects, and work already approved by As-Sābiqūn.</p>
+          <p className="vendor-page-lead">Respond to new jobs, track active work, and see what has been approved.</p>
         </div>
         <Link href="/vendor-dashboard/jobs" className="btn btn-small">View all jobs <span aria-hidden="true">→</span></Link>
       </div>
-
-      <section className="vendor-dashboard-analytics" aria-label="Vendor work analytics">
-        <DashboardLineChart
-          id="vendor-assignment-flow"
-          eyebrow="Six-month movement"
-          title="Work assigned over time"
-          description="New projects allocated to your organisation each month."
-          points={assignedFlow}
-          series={[{ key: "assigned", label: "Assigned projects", color: "#1d737f" }]}
-        />
-        <DashboardDonut
-          id="vendor-work-mix"
-          eyebrow="Project status"
-          title="Where your projects stand"
-          description="New offers and assigned projects grouped by their current status."
-          centerLabel="projects"
-          segments={[
-            { label: "Offers", value: pending.length, color: "#a27c47" },
-            { label: "In progress", value: inProgress.length, color: "#1d737f" },
-            { label: "In review", value: review.length, color: "#ad90c7" },
-            { label: "Approved", value: completed.length, color: "#5e826f" },
-          ]}
-        />
-      </section>
-
-      <dl className="vendor-dashboard-ledger" aria-label="Vendor summary">
-        <div><dt>Awaiting response</dt><dd>{pending.length}</dd><small>{pending.length ? "Respond before expiry" : "All caught up"}</small></div>
-        <div><dt>Active work</dt><dd>{active.length}</dd><small>In progress or review</small></div>
-        <div><dt>Approved</dt><dd>{completed.length}</dd><small>Work accepted by admin</small></div>
-        <div><dt>Total earnings</dt><dd>{formatCents(earnings)}</dd><small>Across assigned projects</small></div>
-      </dl>
 
       <div className="vendor-split">
         <div className="card vendor-panel">
@@ -96,6 +65,37 @@ export function DashboardOverviewReal({ jobs }: { jobs: VendorJobRow[] }) {
           )}
         </div>
       </div>
+
+      <dl className="vendor-dashboard-ledger" aria-label="Vendor summary">
+        <div><dt>Awaiting response</dt><dd>{pending.length}</dd><small>{pending.length ? "Respond before expiry" : "All caught up"}</small></div>
+        <div><dt>Active work</dt><dd>{active.length}</dd><small>In progress or review</small></div>
+        <div><dt>Approved</dt><dd>{completed.length}</dd><small>Work accepted by admin</small></div>
+        <div><dt>Total earnings</dt><dd>{formatCents(earnings)}</dd><small>Across assigned projects</small></div>
+      </dl>
+
+      <section className="vendor-dashboard-analytics" aria-label="Vendor work analytics">
+        <DashboardLineChart
+          id="vendor-assignment-flow"
+          eyebrow="Six-month movement"
+          title="Jobs accepted over time"
+          description="Projects your organisation accepted each month."
+          points={assignedFlow}
+          series={[{ key: "assigned", label: "Accepted jobs", color: "#1d737f" }]}
+        />
+        <DashboardDonut
+          id="vendor-work-mix"
+          eyebrow="Project status"
+          title="Where your projects stand"
+          description="New offers and assigned projects grouped by their current status."
+          centerLabel="projects"
+          segments={[
+            { label: "Offers", value: pending.length, color: "#a27c47" },
+            { label: "In progress", value: inProgress.length, color: "#1d737f" },
+            { label: "In review", value: review.length, color: "#ad90c7" },
+            { label: "Approved", value: completed.length, color: "#5e826f" },
+          ]}
+        />
+      </section>
     </>
   );
 }

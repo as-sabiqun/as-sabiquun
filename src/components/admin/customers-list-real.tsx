@@ -59,12 +59,15 @@ export function CustomersListReal({ customers }: { customers: CustomerRow[] }) {
         </div>
         <div className="admin-customer-readiness">
           <div className="admin-customer-summary-head"><span>Account readiness</span><small>Required before payment</small></div>
-          {readiness.map((item) => (
-            <div className="admin-customer-readiness-row" key={item.label}>
-              <div><span>{item.label}</span><strong>{item.value}/{customers.length}</strong></div>
-              <span className="admin-customer-readiness-track" aria-hidden="true"><span style={{ width: `${customers.length ? (item.value / customers.length) * 100 : 0}%` }} /></span>
-            </div>
-          ))}
+          <div className="admin-customer-readiness-facts">
+            {readiness.map((item) => (
+              <div key={item.label}>
+                <span>{item.label}</span>
+                <strong>{item.value}</strong>
+                <small>of {customers.length}</small>
+              </div>
+            ))}
+          </div>
         </div>
         <div className="admin-customer-activity">
           <div className="admin-customer-summary-head"><span>Customer activity</span><small>Confirmed HitPay projects only</small></div>

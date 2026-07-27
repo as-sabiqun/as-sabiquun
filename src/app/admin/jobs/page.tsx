@@ -68,12 +68,17 @@ export default async function AdminJobsPage({ searchParams }: { searchParams: Pr
   return (
     <>
       <div className="vendor-page-head">
-        <div><p className="vendor-eyebrow">All projects</p><h1 className="display vendor-page-title">Jobs</h1><p className="vendor-page-lead">Start with your next actions, or open any job to see its full history.</p></div>
+        <div><p className="vendor-eyebrow">All projects</p><h1 className="display vendor-page-title">Jobs</h1><p className="vendor-page-lead">Handle the jobs that need you, or search for any project.</p></div>
       </div>
 
       <section className="admin-jobs-dashboard" aria-label="Job overview">
+        <div className="admin-jobs-attention">
+          <header><div><span className="vendor-eyebrow">To do</span><h2>What needs your attention</h2></div><strong className="display numeral">{attentionTotal}</strong></header>
+          {activeQueueKeys.length ? <div>{activeQueueKeys.map((key) => <Link key={key} href={queueHref(key)} className={queue === key ? "is-active" : ""} data-queue={key}><i /><span><strong>{queueMeta[key].label}</strong><small>{queueMeta[key].help}</small></span><b>{queueCounts[key]}</b></Link>)}</div> : <div className="admin-jobs-clear"><span aria-hidden="true">✓</span><strong>All caught up</strong><p>There are no admin tasks waiting.</p></div>}
+        </div>
+
         <div className="admin-jobs-mix">
-          <header><div><span className="vendor-eyebrow">Status</span><h2>Where projects stand</h2></div><Link href={queueHref()} className={!queue ? "is-active" : ""}>View all</Link></header>
+          <header><div><span className="vendor-eyebrow">All projects</span><h2>Where projects stand</h2></div><Link href={queueHref()} className={!queue ? "is-active" : ""}>View all</Link></header>
           <div className="admin-jobs-mix-body">
             <div className="admin-jobs-donut">
               <svg viewBox="0 0 100 100" role="img" aria-label={`${all.length} jobs grouped by lifecycle stage`}>
@@ -84,11 +89,6 @@ export default async function AdminJobsPage({ searchParams }: { searchParams: Pr
             </div>
             <dl className="admin-jobs-legend">{stageKeys.map((key) => <div key={key}><dt><i style={{ background: stageMeta[key].color }} />{stageMeta[key].label}</dt><dd>{stageCounts[key]}</dd></div>)}</dl>
           </div>
-        </div>
-
-        <div className="admin-jobs-attention">
-          <header><div><span className="vendor-eyebrow">To do</span><h2>Your next actions</h2></div><strong className="display numeral">{attentionTotal}</strong></header>
-          {activeQueueKeys.length ? <div>{activeQueueKeys.map((key) => <Link key={key} href={queueHref(key)} className={queue === key ? "is-active" : ""} data-queue={key}><i /><span><strong>{queueMeta[key].label}</strong><small>{queueMeta[key].help}</small></span><b>{queueCounts[key]}</b></Link>)}</div> : <div className="admin-jobs-clear"><span aria-hidden="true">✓</span><strong>All caught up</strong><p>There are no admin tasks waiting.</p></div>}
         </div>
       </section>
 

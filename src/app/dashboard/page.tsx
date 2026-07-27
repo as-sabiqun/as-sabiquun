@@ -75,11 +75,11 @@ export default async function DashboardPage() {
       <header className={styles.pageIntro}>
         <div>
           <p className={styles.salam}>Assalamu alaikum, {firstName}</p>
-          <h1>Every contribution, one clear journey.</h1>
-          <p>See what you have supported, where each service is now, and when the work has been approved.</p>
+          <h1>See every project in one place.</h1>
+          <p>Check what you supported, what is happening now, and what has been completed.</p>
         </div>
         <Link href="/services" className={styles.primaryAction}>
-          <Plus aria-hidden="true" /> Support another service
+          <Plus aria-hidden="true" /> Choose another service
         </Link>
       </header>
 
@@ -89,7 +89,7 @@ export default async function DashboardPage() {
             <div>
               <p className={styles.arabicEyebrow} lang="ar" dir="rtl">رِحْلَةُ الْعَطَاءِ</p>
               <h2 id="journey-heading">Your giving journey</h2>
-              <p>Services supported and completed work approved through As-Sābiqūn.</p>
+              <p>Paid services started and projects approved through As-Sābiqūn.</p>
             </div>
             <div className={styles.chartLegend} aria-label="Chart legend">
               <span><i className={styles.legendStarted} /> Services started</span>
@@ -110,7 +110,7 @@ export default async function DashboardPage() {
         <aside className={styles.impactLedger} aria-label="Impact summary">
           <div className={styles.ledgerHeading}>
             <span><Sparkles aria-hidden="true" /> Your impact</span>
-            <small>Updated live</small>
+            <small>Paid projects only</small>
           </div>
           <div className={styles.completionRing} style={{ "--completion": `${completionPercent * 3.6}deg` } as CSSProperties}>
             <div>

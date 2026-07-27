@@ -81,7 +81,7 @@ export default async function CheckoutPage({ params }: PageProps<"/checkout/[ref
           </div>
 
           {paid ? (
-            <div className={styles.paidState}><Check aria-hidden="true" /><div><strong>Payment confirmed</strong><p>Your project is now in the fulfilment queue.</p><Link href={`/dashboard/orders/${order.reference}`}>View project</Link></div></div>
+            <div className={styles.paidState}><Check aria-hidden="true" /><div><strong>Payment confirmed</strong><p>Your project is ready for our team.</p><Link href={`/dashboard/orders/${order.reference}`}>View project</Link></div></div>
           ) : refunded ? (
             <div className={styles.terminalState}><div><strong>Payment refunded</strong><p>This order is retained in your project history. Start a new service if you would like to proceed again.</p><Link href="/services">Browse services</Link></div></div>
           ) : telegramLinked ? (
@@ -92,7 +92,7 @@ export default async function CheckoutPage({ params }: PageProps<"/checkout/[ref
 
           <ol className={styles.nextSteps}>
             <li><span>1</span><p><strong>Pay securely</strong> on HitPay’s hosted checkout.</p></li>
-            <li><span>2</span><p><strong>Track fulfilment</strong> from your customer portal.</p></li>
+            <li><span>2</span><p><strong>Track the work</strong> from your customer portal.</p></li>
             <li><span>3</span><p><strong>Receive your report</strong> by email and Telegram after verification.</p></li>
           </ol>
         </aside>

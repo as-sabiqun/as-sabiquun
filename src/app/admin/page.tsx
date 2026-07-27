@@ -42,12 +42,21 @@ export default async function AdminOverviewPage() {
         <div>
           <p className="vendor-eyebrow">Amanah operations</p>
           <h1 className="display vendor-page-title">Overview</h1>
-          <p className="vendor-page-lead">See what needs your action, what vendors are handling, and what has been completed.</p>
+          <p className="vendor-page-lead">Start with jobs that need you. Then check progress, payments, and completed work.</p>
         </div>
         <Link href="/admin/jobs" className="btn btn-small">View all jobs <span aria-hidden="true">→</span></Link>
       </div>
 
       {error && <p className="auth-error">Dashboard data could not be loaded: {error.message}</p>}
+
+      <section className="admin-overview-actions">
+        <header><div><p className="vendor-eyebrow">To do</p><h2 className="display text-lg mt-1">What needs your attention</h2></div><Link href="/admin/jobs">See all jobs →</Link></header>
+        {activeQueues.length ? <div>{activeQueues.map((key) => (
+          <Link key={key} href={`/admin/jobs?queue=${key}`} data-queue={key}>
+            <i /><span><strong>{queueMeta[key].label}</strong><small>{queueMeta[key].help}</small></span><b>{queues[key].length}</b>
+          </Link>
+        ))}</div> : <div className="admin-overview-clear"><span aria-hidden="true">✓</span><strong>All caught up</strong><small>There are no admin tasks waiting.</small></div>}
+      </section>
 
       <section className="admin-overview-grid" aria-label="Operational performance">
         <DashboardLineChart
@@ -70,15 +79,6 @@ export default async function AdminOverviewPage() {
             <div><dt>Fully completed</dt><dd>{closedCount}</dd><small>Customer notified and vendor paid</small></div>
           </dl>
         </aside>
-      </section>
-
-      <section className="admin-overview-actions">
-        <header><div><p className="vendor-eyebrow">To do</p><h2 className="display text-lg mt-1">Your next actions</h2></div><Link href="/admin/jobs">See all jobs →</Link></header>
-        {activeQueues.length ? <div>{activeQueues.map((key) => (
-          <Link key={key} href={`/admin/jobs?queue=${key}`} data-queue={key}>
-            <i /><span><strong>{queueMeta[key].label}</strong><small>{queueMeta[key].help}</small></span><b>{queues[key].length}</b>
-          </Link>
-        ))}</div> : <div className="admin-overview-clear"><span aria-hidden="true">✓</span><strong>All caught up</strong><small>There are no admin tasks waiting.</small></div>}
       </section>
 
       <section>

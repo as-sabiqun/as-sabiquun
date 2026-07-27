@@ -9,7 +9,7 @@ export const metadata: Metadata = {
 };
 
 const projects = [
-  { slug: "water-pump", category: "water", number: "02", title: "Wakaf Water Pump", description: "A clean-water project coordinated with a fulfilment partner and documented after completion." },
+  { slug: "water-pump", category: "water", number: "02", title: "Wakaf Water Pump", description: "A clean-water project carried out by an approved partner, with proof after completion." },
   { slug: "quran", category: "quran", number: "03", title: "Wakaf Quran", description: "Quran distribution arranged through one clear request and completion record." },
   { slug: "food-for-orphans", category: "orphans", number: "04", title: "Food for Orphans", description: "A community food programme supported through responsible coordination and available proof." },
 ] as const;

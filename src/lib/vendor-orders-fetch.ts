@@ -32,6 +32,7 @@ interface VendorAssignedViewRow {
   fulfilment_status: VendorJobRow["fulfilment_status"];
   delivery_status: VendorJobRow["delivery_status"];
   settlement_status: VendorJobRow["settlement_status"];
+  accepted_at: string | null;
   created_at: string;
   customer_name: string;
   customer_phone: string;
@@ -47,7 +48,7 @@ export async function fetchVendorJobs(supabase: SupabaseClient): Promise<VendorJ
       .gt("expires_at", new Date().toISOString()),
     supabase
       .from("vendor_assigned_orders")
-      .select("id, reference, offering_title, service_type, category_slug, quantity, participant_names, dedication, vendor_payout_amount, payment_status, fulfilment_status, delivery_status, settlement_status, created_at, customer_name, customer_phone")
+      .select("id, reference, offering_title, service_type, category_slug, quantity, participant_names, dedication, vendor_payout_amount, payment_status, fulfilment_status, delivery_status, settlement_status, accepted_at, created_at, customer_name, customer_phone")
       .order("created_at", { ascending: false }),
   ]);
   if (offersError || assignedError) throw new Error("Vendor jobs could not be loaded.");
@@ -87,6 +88,7 @@ export async function fetchVendorJobs(supabase: SupabaseClient): Promise<VendorJ
     fulfilment_status: order.fulfilment_status,
     delivery_status: order.delivery_status,
     settlement_status: order.settlement_status,
+    accepted_at: order.accepted_at,
     created_at: order.created_at,
     customer_name: order.customer_name,
     customer_phone: order.customer_phone,

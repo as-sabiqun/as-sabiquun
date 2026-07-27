@@ -127,12 +127,12 @@ export function AmanahShowcase() {
           </header>
           <div className="lp-record-summary">
             <div><span>Project</span><strong>Quran distribution</strong></div>
-            <div><span>Current step</span><strong>Evidence review</strong></div>
+            <div><span>Current step</span><strong>Checking the proof</strong></div>
           </div>
           <ol className="lp-record-progress">
             <li className="is-done"><span>1</span><strong>Payment confirmed</strong><small>Complete</small></li>
-            <li className="is-done"><span>2</span><strong>Partner fulfilment</strong><small>Complete</small></li>
-            <li className="is-current"><span>3</span><strong>Admin verification</strong><small>In progress</small></li>
+            <li className="is-done"><span>2</span><strong>Partner completed the work</strong><small>Complete</small></li>
+            <li className="is-current"><span>3</span><strong>We check the proof</strong><small>In progress</small></li>
             <li><span>4</span><strong>Customer report</strong><small>Next</small></li>
           </ol>
           <p className="lp-record-note">Illustrative record. Your dashboard reflects the live state of your own project.</p>

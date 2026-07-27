@@ -42,7 +42,7 @@ export function PartnerOnboardingForm({ initialName }: { initialName: string }) 
 
       <fieldset>
         <legend><span>03</span> Settlement details</legend>
-        <p className="partner-onboarding-note">Vendor settlements are recorded in SGD. These details are visible only to authorised operations staff.</p>
+        <p className="partner-onboarding-note">Vendor payments are recorded in SGD. These details are visible only to authorised staff.</p>
         <div className="admin-form-grid mt-4">
           <label className="label">Bank name<input className="input" name="bankName" required maxLength={200} /></label>
           <label className="label">Account name<input className="input" name="bankAccountName" required maxLength={200} /></label>

@@ -34,7 +34,7 @@ export default async function AdminLayout({ children }: { children: React.ReactN
           </form>
           <div className="vendor-topbar-right">
             <Link href="/admin/search" className="vendor-topbar-badge">Search</Link>
-            <span className="vendor-topbar-badge">{mfaBypassed ? "Temporary MFA bypass" : "AAL2 secured"}</span>
+            <span className="vendor-topbar-badge">{mfaBypassed ? "Temporary MFA bypass" : "MFA secured"}</span>
             <span className="vendor-sidebar-avatar vendor-topbar-avatar">{adminName.charAt(0)}</span>
           </div>
         </header>

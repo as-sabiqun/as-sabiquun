@@ -19,7 +19,7 @@ export default async function PartnerOnboardingPage() {
           <p lang="ar" dir="rtl">أَهْلًا وَسَهْلًا</p>
           <span>Fulfilment partner onboarding</span>
           <h1>Complete your operating profile.</h1>
-          <p>Your password is set. Add the details the operations team needs to approve assignments and record settlement correctly.</p>
+          <p>Your password is set. Add the details our team needs to assign jobs and record payments correctly.</p>
         </header>
         <PartnerOnboardingForm initialName={profile.display_name === "Customer" ? "" : profile.display_name} />
       </div>

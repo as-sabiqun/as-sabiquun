@@ -17,6 +17,7 @@ export interface VendorJobRow {
   delivery_status: DeliveryStatus;
   settlement_status: SettlementStatus;
   expires_at?: string;
+  accepted_at?: string | null;
   created_at: string;
   customer_name?: string;
   customer_phone?: string;

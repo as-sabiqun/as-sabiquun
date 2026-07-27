@@ -116,7 +116,7 @@ export function WakafProjectContent({ initialRequestId, projectId, project, offe
         </div>
         <div className="pt-5">
           {tab === "details" ? (
-            <p className="text-sm leading-6 text-[var(--muted)]">Project scope, minimums, and fulfilment evidence are placeholders pending confirmation with the relevant partners.</p>
+            <p className="text-sm leading-6 text-[var(--muted)]">Project scope, minimums, and required proof are placeholders until the relevant partners confirm them.</p>
           ) : (
             <div className="grid gap-3">
               {project.impact.map(([amt, body]) => (

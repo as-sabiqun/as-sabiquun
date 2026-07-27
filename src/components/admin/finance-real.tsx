@@ -241,7 +241,7 @@ export function FinanceReal({ settlements, vendorLedger, providerTransactions, r
                   <form className="grid gap-4 mt-4" onSubmit={(event) => refundCustomer(event, order)}>
                     <label className="label">Amount (SGD)<input className="input" name="amount" type="number" min="0.01" max={(order.refundable_amount / 100).toFixed(2)} step="0.01" defaultValue={(order.refundable_amount / 100).toFixed(2)} required /></label>
                     <label className="label">Refund reason<textarea className="input vendor-textarea" name="reason" rows={3} maxLength={1000} required /></label>
-                    {order.fulfilment_started && <label className="flex gap-3 items-start"><input name="confirmFulfilmentStarted" type="checkbox" required /><span><strong>Fulfilment has started.</strong><small className="block">I have reviewed the operational impact and still want to request this refund.</small></span></label>}
+                    {order.fulfilment_started && <label className="flex gap-3 items-start"><input name="confirmFulfilmentStarted" type="checkbox" required /><span><strong>Project work has started.</strong><small className="block">I have reviewed what this refund affects and still want to request it.</small></span></label>}
                     <div className="flex gap-3"><button className="btn btn-small" disabled={pending}>Request HitPay refund</button><button className="btn btn-secondary btn-small" type="button" onClick={() => setRefunding(null)}>Cancel</button></div>
                   </form>
                 ) : <button className="btn btn-secondary btn-small mt-4" type="button" onClick={() => setRefunding(order.id)}>Refund customer</button>)}
