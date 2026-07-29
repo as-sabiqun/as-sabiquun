@@ -118,18 +118,9 @@ button, a, summary { -webkit-tap-highlight-color: transparent; }
   -webkit-backdrop-filter: blur(22px); backdrop-filter: blur(22px);
   box-shadow: 0 8px 28px -16px rgba(49,35,27,.35), inset 0 1px 0 rgba(255,255,255,.5);
 }
-.nav-link, .services-menu > summary { display: flex; min-height: 42px; cursor: pointer; list-style: none; align-items: center; gap: 6px; border-radius: 999px; padding: 0 14px; color: var(--muted); transition: background-color .15s ease, color .15s ease; }
-.services-menu > summary::-webkit-details-marker, .mobile-menu > summary::-webkit-details-marker { display: none; }
-.nav-link:hover, .services-menu > summary:hover, .services-menu[open] > summary { background: var(--teal-soft); color: var(--teal); }
-.services-menu { position: relative; }
-.services-menu-panel { position: absolute; top: calc(100% + 15px); left: 0; width: 360px; border: 1px solid var(--line); border-radius: 18px; background: white; padding: 10px; }
-.services-menu-heading { display: flex; align-items: center; justify-content: space-between; padding: 11px 11px 14px; color: var(--muted); font-size: .65rem; font-weight: 800; letter-spacing: .11em; text-transform: uppercase; }
-.services-menu-heading a { color: var(--teal); }
-.services-menu-panel > a { display: grid; grid-template-columns: 36px 1fr; gap: 10px; align-items: center; border-top: 1px solid var(--line); padding: 12px 10px; transition: background-color .15s ease; }
-.services-menu-panel > a:hover { background: var(--cream); }
-.services-menu-panel > a > .numeral { color: var(--teal); font-size: .72rem; }
-.services-menu-panel strong { display: block; font-size: .8rem; }
-.services-menu-panel small { display: block; margin-top: 2px; color: var(--muted); font-size: .72rem; font-weight: 600; }
+.nav-link { display: flex; min-height: 42px; cursor: pointer; align-items: center; border-radius: 999px; padding: 0 14px; color: var(--muted); transition: background-color .15s ease, color .15s ease; }
+.mobile-menu > summary::-webkit-details-marker { display: none; }
+.nav-link:hover { background: var(--teal-soft); color: var(--teal); }
 .mobile-menu { display: none; }
 
 .site-footer { background: var(--ink); padding: 76px 0 25px; color: white; }

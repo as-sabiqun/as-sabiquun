@@ -9,33 +9,13 @@ const mainNav = [
   ["Contact", "/contact"],
 ] as const;
 
-function ServicesMenu() {
-  return (
-    <details className="services-menu">
-      <summary>Services <span aria-hidden="true">⌄</span></summary>
-      <div className="services-menu-panel">
-        <div className="services-menu-heading">
-          <span>Islamic services</span>
-          <Link href="/services">View all <span aria-hidden="true">→</span></Link>
-        </div>
-        {services.map((service) => (
-          <Link key={service.slug} href={service.href}>
-            <span className="numeral">{service.number}</span>
-            <span><strong>{service.title}</strong><small>{service.description}</small></span>
-          </Link>
-        ))}
-      </div>
-    </details>
-  );
-}
-
 export function Header() {
   return (
     <header className="site-header">
       <div className="container site-nav-shell flex h-16 items-center justify-between gap-5">
         <Brand compact />
         <nav className="desktop-nav flex items-center gap-1 text-sm font-semibold" aria-label="Main navigation">
-          <ServicesMenu />
+          <Link href="/services" className="nav-link">Services</Link>
           {mainNav.map(([label, href]) => <Link key={href} href={href} className="nav-link">{label}</Link>)}
           <Link href="/login" className="nav-link">Login</Link>
         </nav>
