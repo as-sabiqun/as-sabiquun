@@ -21,11 +21,12 @@ export async function POST(request: NextRequest) {
     return loginRedirect(request, { error: "Too many email requests. Please wait a few minutes and try again.", next });
   }
 
-  const callback = new URL("/auth/callback", request.nextUrl.origin);
-  callback.searchParams.set("next", next);
-  callback.searchParams.set("intent", "customer");
   const supabase = await createClient();
-  const { error } = await supabase.auth.signInWithOtp({ email, options: { emailRedirectTo: callback.toString() } });
-  if (error) return loginRedirect(request, { error: "We could not send that sign-in link. Please try again.", next });
-  return loginRedirect(request, { sent: "email", next });
+  const { error } = await supabase.auth.signInWithOtp({ email });
+  if (error) return loginRedirect(request, { error: "We could not send a sign-in code. Please try again.", next });
+  const response = loginRedirect(request, { sent: "otp" });
+  const cookieOptions = { httpOnly: true, sameSite: "lax" as const, secure: request.nextUrl.protocol === "https:", maxAge: 600, path: "/" };
+  response.cookies.set("as_customer_email", email, cookieOptions);
+  response.cookies.set("as_customer_next", next, cookieOptions);
+  return response;
 }

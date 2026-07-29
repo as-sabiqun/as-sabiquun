@@ -2,7 +2,7 @@
 
 ## Goal
 
-Let a customer understand why an account is needed before payment, keep the service form they have completed, and continue automatically into the secure checkout after Google or passwordless email sign-in.
+Let a customer understand why an account is needed before payment, keep the service form they have completed, and continue automatically into the secure checkout after Google or six-digit email code sign-in.
 
 ## Reference & rationale
 
@@ -16,14 +16,14 @@ Let a customer understand why an account is needed before payment, keep the serv
 | # | Screen / state | User’s job | Entry condition | Exit / next | Project route or component |
 |---|---|---|---|---|---|
 | 1 | Service details | Choose service and enter order details | `/korban` or `/wakaf/[project]` | Valid Continue | `KorbanContent`, `WakafProjectContent` |
-| 2 | Account explanation | Understand why an account is needed and choose a method | Valid form, no customer session | Google, email link, or close | In-place account modal |
-| 3 | Customer authentication | Sign in or create an account | Customer chooses Google or email | Callback to original service with resume intent | `/auth/google`, `/auth/email`, `/auth/callback` |
+| 2 | Account explanation | Understand why an account is needed and choose a method | Valid form, no customer session | Google, email code, or close | In-place account modal |
+| 3 | Customer authentication | Sign in or create an account | Customer chooses Google or email | Return to original service with resume intent | `/auth/google`, `/auth/email`, `/auth/email/verify` |
 | 4 | Creating checkout | Keep the customer oriented while the saved form becomes an order | Authenticated return with saved valid draft | `/checkout/[reference]` | Existing Server Action form submit |
 | 5 | Secure checkout | Connect Telegram if needed, then pay with HitPay | Order exists | Hosted HitPay payment | `/checkout/[reference]` |
 
 ## Transitions & branches
 
-- Happy path: valid service form → account explanation → Google or email link → auto-create order → checkout → Telegram link if needed → HitPay.
+- Happy path: valid service form → account explanation → Google or email code → auto-create order → checkout → Telegram link if needed → HitPay.
 - Invalid form: browser and server validation keep the customer on the service form.
 - Modal closed: no navigation and no order created.
 - Returning Google customer: the same Google button signs them in, restores the draft, and continues.
@@ -50,7 +50,7 @@ Let a customer understand why an account is needed before payment, keep the serv
 
 - [ ] An unauthenticated valid submission opens an explanation modal instead of displaying an account error or silently redirecting.
 - [ ] The modal explains that an account is for saving the order, tracking work, and receiving the completion report.
-- [ ] New and returning customers can use Google or passwordless email.
+- [ ] New and returning customers can use Google or a six-digit email code.
 - [ ] After successful authentication, the original valid draft automatically creates one order and reaches checkout.
 - [ ] No order exists if the modal is dismissed or authentication is abandoned.
 - [ ] Checkout still requires Telegram before the HitPay action.

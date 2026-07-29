@@ -20,7 +20,7 @@ export function CustomerAccountGate({ next, onClose }: { next: string; onClose: 
           <label className="label">Email address
             <input className="input" type="email" name="email" autoComplete="email" required placeholder="you@example.com" />
           </label>
-          <button type="submit" className="btn">Email me a sign-in link</button>
+          <button type="submit" className="btn">Email me a six-digit code</button>
         </form>
         <div className="account-gate-divider"><span>or</span></div>
         <a className="auth-google" href={`/auth/google?next=${encodeURIComponent(next)}`}><GoogleMark /> Continue with Google</a>

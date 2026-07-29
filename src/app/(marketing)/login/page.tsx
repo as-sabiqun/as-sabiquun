@@ -20,14 +20,23 @@ function LoginForm() {
       <p className="auth-lead">Continue an order, follow a Wakaf project, or view its completion record.</p>
 
       {error && <p className="auth-error" role="alert">{error}</p>}
-      {sent === "email" && <p className="auth-message" role="status">Check your email for a one-time sign-in link.</p>}
+      {sent === "otp" ? (
+        <form action="/auth/email/verify" method="post" className="auth-form">
+          <p className="auth-message" role="status">Check your email for a six-digit sign-in code.</p>
+          <label className="label">Sign-in code
+            <input className="input" type="text" name="token" inputMode="numeric" autoComplete="one-time-code" pattern="[0-9]{6}" maxLength={6} required placeholder="123456" />
+          </label>
+          <button type="submit" className="btn">Continue securely</button>
+          <Link className="auth-code-change" href="/login">Use a different email</Link>
+        </form>
+      ) : <>
 
       <form action="/auth/email" method="post" className="auth-form">
         <input type="hidden" name="next" value={next} />
         <label className="label">Email address
           <input className="input" type="email" name="email" autoComplete="email" required placeholder="you@example.com" />
         </label>
-        <button type="submit" className="btn">Email me a sign-in link</button>
+        <button type="submit" className="btn">Email me a six-digit code</button>
       </form>
 
       <div className="auth-divider"><span>or</span></div>
@@ -36,6 +45,7 @@ function LoginForm() {
         <input type="hidden" name="next" value={next} />
         <button type="submit" className="auth-google"><GoogleMark /> Continue with Google</button>
       </form>
+      </>}
 
       <div className="auth-staff-note">
         <strong>Fulfilment partner?</strong>
