@@ -4,7 +4,6 @@ import { services } from "@/components/service-card";
 
 const mainNav = [
   ["About", "/about"],
-  ["Wakaf", "/wakaf"],
   ["How it works", "/#how"],
   ["Contact", "/contact"],
 ] as const;
