@@ -1,7 +1,7 @@
 "use server";
 
 import { createClient, getProfile } from "@/lib/supabase/server";
-import { isGoogleCustomer } from "@/lib/auth";
+import { isCustomerAccount } from "@/lib/auth";
 
 export type TelegramLinkState = { url?: string; expiresAt?: string; error?: string } | undefined;
 
@@ -10,7 +10,7 @@ export async function createTelegramLink(): Promise<TelegramLinkState> {
   const { data: userData } = await supabase.auth.getUser();
   if (!userData.user) return { error: "Sign in with Google before linking Telegram." };
   const profile = await getProfile(supabase, userData.user.id);
-  if (!await isGoogleCustomer(supabase, userData.user, profile)) return { error: "Sign in with a verified Google customer account." };
+  if (!await isCustomerAccount(supabase, userData.user, profile)) return { error: "Sign in with a verified customer account." };
 
   const username = process.env.TELEGRAM_BOT_USERNAME?.replace(/^@/, "");
   if (!username || !/^[A-Za-z0-9_]{5,}$/.test(username)) return { error: "Telegram linking is not configured yet." };

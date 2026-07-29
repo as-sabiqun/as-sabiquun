@@ -2,7 +2,7 @@ import "server-only";
 
 import { createHash } from "node:crypto";
 import type { SupabaseClient } from "@supabase/supabase-js";
-import { getAal2Admin, isGoogleCustomer } from "@/lib/auth";
+import { getAal2Admin, isCustomerAccount } from "@/lib/auth";
 import { getSiteUrl } from "@/lib/site-url";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { getProfile } from "@/lib/supabase/server";
@@ -324,7 +324,7 @@ export async function downloadCompletionReportForViewer(sessionClient: SupabaseC
   const customerProfile = aal2Admin ? null : await getProfile(sessionClient, authData.user.id);
   const ownsCustomerReport = data.kind === "customer"
     && order.customer_id === authData.user.id
-    && await isGoogleCustomer(sessionClient, authData.user, customerProfile);
+    && await isCustomerAccount(sessionClient, authData.user, customerProfile);
   if (!aal2Admin && !ownsCustomerReport) throw new ReportGenerationError("Report not found.", "not_found");
 
   const { data: file, error: downloadError } = await admin.storage.from(REPORT_BUCKET).download(data.storage_path);

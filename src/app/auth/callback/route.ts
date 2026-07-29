@@ -28,24 +28,25 @@ export async function GET(request: NextRequest) {
   }
 
   const intent = request.nextUrl.searchParams.get("intent");
-  const oauthSession = await sessionUsesAuthMethod(supabase, "oauth");
   if (intent === "customer") {
-    const providers = Array.isArray(data.user.app_metadata.providers) ? data.user.app_metadata.providers : [];
-    if (!oauthSession || profile.role !== "customer" || !providers.includes("google") || !data.user.email_confirmed_at) {
+    if (profile.role !== "customer" || !data.user.email_confirmed_at) {
       await supabase.auth.signOut();
-      return loginError(request, "Customer access requires a verified Google account.");
+      return loginError(request, "Customer access requires a verified email address.");
     }
   } else if (intent === "vendor") {
+    const oauthSession = await sessionUsesAuthMethod(supabase, "oauth");
     if (oauthSession || profile.role !== "vendor") {
       await supabase.auth.signOut();
       return loginError(request, "This partner invitation is not valid for this account.");
     }
   } else if (intent === "recovery") {
+    const oauthSession = await sessionUsesAuthMethod(supabase, "oauth");
     if (oauthSession || !["vendor", "admin"].includes(profile.role)) {
       await supabase.auth.signOut();
       return loginError(request, "Password recovery is available only to invited staff and partners.");
     }
   } else if (intent === "admin") {
+    const oauthSession = await sessionUsesAuthMethod(supabase, "oauth");
     if (oauthSession || profile.role !== "admin") {
       await supabase.auth.signOut();
       return loginError(request, "This administrator invitation is not valid for this account.");

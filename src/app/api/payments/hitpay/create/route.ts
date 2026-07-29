@@ -1,5 +1,5 @@
 import { createHitPayPaymentRequest, parseJson, ProviderError, readBody, type HitPayPaymentRequest } from "@/lib/integrations/providers";
-import { isGoogleCustomer } from "@/lib/auth";
+import { isCustomerAccount } from "@/lib/auth";
 import {
   failHitPayPaymentCreation,
   markHitPayPaymentReconciliationRequired,
@@ -36,8 +36,8 @@ export async function POST(request: Request) {
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) return Response.json({ error: "Sign in to continue." }, { status: 401 });
     const profile = await getProfile(supabase, user.id);
-    if (!await isGoogleCustomer(supabase, user, profile)) {
-      return Response.json({ error: "A verified Google customer account is required." }, { status: 403 });
+    if (!await isCustomerAccount(supabase, user, profile)) {
+      return Response.json({ error: "A verified customer account is required." }, { status: 403 });
     }
     if (!await consumeRateLimit("checkout", `${user.id}:${orderId}`, 10, 600)) {
       return Response.json({ error: "Too many checkout attempts. Please wait before trying again." }, {

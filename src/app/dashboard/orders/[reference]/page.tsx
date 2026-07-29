@@ -5,7 +5,7 @@ import { Check, CircleDollarSign, Download, ExternalLink, FileBadge2, ImageIcon,
 import { deriveOrderMilestone, isPaid, milestoneLabels, type DeliveryStatus, type FulfilmentStatus, type PaymentStatus, type SettlementStatus } from "@/lib/order-lifecycle";
 import { formatCents, orderTitle, type OrderRow } from "@/lib/orders";
 import { createClient, getCurrentUser, getProfile } from "@/lib/supabase/server";
-import { isGoogleCustomer } from "@/lib/auth";
+import { isCustomerAccount } from "@/lib/auth";
 import styles from "../../dashboard.module.css";
 
 interface CustomerOrder extends OrderRow {
@@ -95,7 +95,7 @@ export default async function OrderDetailPage({ params, searchParams }: PageProp
   if (!user) redirect(`/login?next=/dashboard/orders/${encodeURIComponent(reference)}`);
 
   const profile = await getProfile(supabase, user.id);
-  if (!await isGoogleCustomer(supabase, user, profile)) {
+  if (!await isCustomerAccount(supabase, user, profile)) {
     redirect(profile?.status === "suspended" ? "/login?error=This account is suspended." : "/");
   }
 

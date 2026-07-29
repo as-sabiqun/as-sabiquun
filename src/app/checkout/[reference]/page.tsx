@@ -2,7 +2,7 @@ import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
 import { Check, ChevronLeft, CircleCheck, MessageCircle } from "lucide-react";
 import { Brand } from "@/components/brand";
-import { isGoogleCustomer } from "@/lib/auth";
+import { isCustomerAccount } from "@/lib/auth";
 import { formatCents } from "@/lib/orders";
 import { createClient, getCurrentUser, getProfile, type Profile } from "@/lib/supabase/server";
 import { CheckoutButton } from "./checkout-button";
@@ -30,7 +30,7 @@ export default async function CheckoutPage({ params }: PageProps<"/checkout/[ref
   const user = await getCurrentUser(supabase);
   if (!user) redirect(`/login?next=/checkout/${encodeURIComponent(reference)}`);
   const profile = await getProfile(supabase, user.id) as (Profile & { telegram_linked_at?: string | null }) | null;
-  if (!await isGoogleCustomer(supabase, user, profile)) redirect("/");
+  if (!await isCustomerAccount(supabase, user, profile)) redirect("/");
 
   const { data, error } = await supabase
     .from("customer_orders")
@@ -76,7 +76,7 @@ export default async function CheckoutPage({ params }: PageProps<"/checkout/[ref
           <small>{order.currency || "SGD"}</small>
 
           <div className={styles.readiness}>
-            <div><CircleCheck aria-hidden="true" /><span><strong>Google account verified</strong><small>{user.email}</small></span></div>
+            <div><CircleCheck aria-hidden="true" /><span><strong>Customer account verified</strong><small>{user.email}</small></span></div>
             <div className={telegramLinked ? "" : styles.missing}><MessageCircle aria-hidden="true" /><span><strong>Telegram {telegramLinked ? "connected" : "required"}</strong><small>{telegramLinked ? "Ready for report delivery" : "Connect before payment"}</small></span></div>
           </div>
 

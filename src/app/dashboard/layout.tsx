@@ -1,5 +1,5 @@
 import { redirect } from "next/navigation";
-import { isGoogleCustomer } from "@/lib/auth";
+import { isCustomerAccount } from "@/lib/auth";
 import { createClient, getCurrentUser, getProfile, isSupabaseConfigured } from "@/lib/supabase/server";
 
 export const metadata = { robots: { index: false, follow: false } };
@@ -14,7 +14,7 @@ export default async function CustomerDashboardLayout({ children }: { children: 
   if (!user) redirect("/login?next=/dashboard");
 
   const profile = await getProfile(supabase, user.id);
-  if (!await isGoogleCustomer(supabase, user, profile)) {
+  if (!await isCustomerAccount(supabase, user, profile)) {
     redirect(profile?.status === "suspended" ? "/login?error=This account is suspended." : "/");
   }
 

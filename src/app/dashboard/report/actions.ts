@@ -1,7 +1,7 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import { isGoogleCustomer } from "@/lib/auth";
+import { isCustomerAccount } from "@/lib/auth";
 import { consumeRateLimit } from "@/lib/rate-limit";
 import { createClient, getProfile } from "@/lib/supabase/server";
 
@@ -23,7 +23,7 @@ export async function submitCustomerReport(_previous: CustomerReportState, formD
   const { data } = await supabase.auth.getUser();
   if (!data.user) return { error: "Your session has expired. Log in and try again." };
   const profile = await getProfile(supabase, data.user.id);
-  if (!await isGoogleCustomer(supabase, data.user, profile)) return { error: "This account cannot submit customer reports." };
+  if (!await isCustomerAccount(supabase, data.user, profile)) return { error: "This account cannot submit customer reports." };
   try {
     if (!await consumeRateLimit("customer-support", data.user.id, 5, 3600)) {
       return { error: "You have sent several reports recently. Please wait before sending another." };

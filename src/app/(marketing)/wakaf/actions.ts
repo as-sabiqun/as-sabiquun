@@ -6,7 +6,7 @@ import { dollarsToCents, isContactNumber } from "@/lib/checkout-validation";
 import { createClient, getProfile, isSupabaseConfigured } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { formatCents } from "@/lib/orders";
-import { isGoogleCustomer } from "@/lib/auth";
+import { isCustomerAccount } from "@/lib/auth";
 
 const PROJECT_MAP = {
   "water-pump": { slug: "wakaf-water-pump", category: "water" },
@@ -64,7 +64,7 @@ export async function submitWakafContribution(_prevState: SubmitWakafState, form
     return { ok: false, requiresLogin: true };
   }
   const profile = await getProfile(supabase, userData.user.id);
-  if (!await isGoogleCustomer(supabase, userData.user, profile)) {
+  if (!await isCustomerAccount(supabase, userData.user, profile)) {
     return { ok: false, error: profile?.status === "suspended" ? "This account is suspended." : "Use a customer account to make a contribution." };
   }
 

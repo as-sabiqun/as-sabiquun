@@ -64,17 +64,12 @@ export function isApprovedVendor(profile: Profile | null): profile is Profile {
   return Boolean(profile && profile.role === "vendor" && profile.status === "active" && profile.vendor_onboarding_status === "approved");
 }
 
-export async function isGoogleCustomer(supabase: SupabaseClient, user: User, profile: Profile | null): Promise<boolean> {
-  const providers = Array.isArray(user.app_metadata.providers)
-    ? user.app_metadata.providers
-    : [user.app_metadata.provider];
+export async function isCustomerAccount(_supabase: SupabaseClient, user: User, profile: Profile | null): Promise<boolean> {
   return Boolean(
     user.email
     && user.email_confirmed_at
-    && providers.includes("google")
     && profile?.role === "customer"
     && profile.status === "active"
-    && await sessionUsesAuthMethod(supabase, "oauth"),
   );
 }
 

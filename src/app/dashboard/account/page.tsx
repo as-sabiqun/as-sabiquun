@@ -37,7 +37,7 @@ export default async function CustomerAccountPage({ searchParams }: PageProps<"/
             <div><dt><Mail aria-hidden="true" /> Google email</dt><dd>{user.email}</dd></div>
             <div><dt>Phone</dt><dd>{profile?.phone || "Not provided"}</dd></div>
           </dl>
-          <p className={styles.accountNote}>Customer access is protected by your verified Google account.</p>
+          <p className={styles.accountNote}>Customer access is protected by your verified email or Google account.</p>
         </section>
 
         <section className={styles.accountPanel}>
