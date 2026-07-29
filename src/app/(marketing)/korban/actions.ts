@@ -5,7 +5,7 @@ import { redirect } from "next/navigation";
 import { isContactNumber } from "@/lib/checkout-validation";
 import { createClient, getProfile, isSupabaseConfigured } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
-import { isCustomerAccount } from "@/lib/auth";
+import { customerAccessMessage, isCustomerAccount } from "@/lib/auth";
 
 const PACKAGE_SLUGS = { share: "korban-share", goat: "korban-goat", cow: "korban-cow" } as const;
 type PackageId = keyof typeof PACKAGE_SLUGS;
@@ -61,7 +61,7 @@ export async function submitKorbanOrder(_prevState: SubmitKorbanState, formData:
   }
   const profile = await getProfile(supabase, userData.user.id);
   if (!await isCustomerAccount(supabase, userData.user, profile)) {
-    return { ok: false, error: profile?.status === "suspended" ? "This account is suspended." : "Use a customer account to place an order." };
+    return { ok: false, error: customerAccessMessage(profile) };
   }
 
   const admin = createAdminClient();

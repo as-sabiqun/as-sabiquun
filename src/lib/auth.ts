@@ -73,6 +73,12 @@ export async function isCustomerAccount(_supabase: SupabaseClient, user: User, p
   );
 }
 
+export function customerAccessMessage(profile: Profile | null) {
+  if (profile?.status === "suspended") return "This customer account is suspended. Contact As-Sabiqun for help.";
+  if (profile && profile.role !== "customer") return "This is a staff or partner account. Sign out and use a customer email to place an order.";
+  return "This account is not ready for customer orders yet. Sign out and try again with your customer email.";
+}
+
 export function vendorAccessMessage(profile: Profile | null) {
   if (!profile || profile.role !== "vendor") return "This account is not a fulfilment-partner account.";
   if (profile.status === "suspended") return "This partner account is suspended. Contact As-Sabiquun for help.";
