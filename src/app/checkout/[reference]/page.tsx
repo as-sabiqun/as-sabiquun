@@ -1,10 +1,10 @@
 import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
-import { Check, ChevronLeft, CircleCheck, MessageCircle } from "lucide-react";
+import { Check, ChevronLeft, CircleCheck } from "lucide-react";
 import { Brand } from "@/components/brand";
 import { isCustomerAccount } from "@/lib/auth";
 import { formatCents } from "@/lib/orders";
-import { createClient, getCurrentUser, getProfile, type Profile } from "@/lib/supabase/server";
+import { createClient, getCurrentUser, getProfile } from "@/lib/supabase/server";
 import { CheckoutButton } from "./checkout-button";
 import styles from "./checkout.module.css";
 
@@ -29,7 +29,7 @@ export default async function CheckoutPage({ params }: PageProps<"/checkout/[ref
   const supabase = await createClient();
   const user = await getCurrentUser(supabase);
   if (!user) redirect(`/login?next=/checkout/${encodeURIComponent(reference)}`);
-  const profile = await getProfile(supabase, user.id) as (Profile & { telegram_linked_at?: string | null }) | null;
+  const profile = await getProfile(supabase, user.id);
   if (!await isCustomerAccount(supabase, user, profile)) redirect("/");
 
   const { data, error } = await supabase
@@ -42,7 +42,6 @@ export default async function CheckoutPage({ params }: PageProps<"/checkout/[ref
   const order = data as unknown as CheckoutOrder;
   const paid = ["paid", "partially_refunded"].includes(order.payment_status);
   const refunded = order.payment_status === "refunded";
-  const telegramLinked = Boolean(profile?.telegram_linked_at);
 
   return (
     <main className={styles.page}>
@@ -77,23 +76,18 @@ export default async function CheckoutPage({ params }: PageProps<"/checkout/[ref
 
           <div className={styles.readiness}>
             <div><CircleCheck aria-hidden="true" /><span><strong>Customer account verified</strong><small>{user.email}</small></span></div>
-            <div className={telegramLinked ? "" : styles.missing}><MessageCircle aria-hidden="true" /><span><strong>Telegram {telegramLinked ? "connected" : "required"}</strong><small>{telegramLinked ? "Ready for report delivery" : "Connect before payment"}</small></span></div>
           </div>
 
           {paid ? (
             <div className={styles.paidState}><Check aria-hidden="true" /><div><strong>Payment confirmed</strong><p>Your project is ready for our team.</p><Link href={`/dashboard/orders/${order.reference}`}>View project</Link></div></div>
           ) : refunded ? (
             <div className={styles.terminalState}><div><strong>Payment refunded</strong><p>This order is retained in your project history. Start a new service if you would like to proceed again.</p><Link href="/services">Browse services</Link></div></div>
-          ) : telegramLinked ? (
-            <CheckoutButton orderId={order.id} />
-          ) : (
-            <Link href={`/dashboard/account?next=${encodeURIComponent(`/checkout/${order.reference}`)}`} className={styles.connectButton}>Connect Telegram to continue</Link>
-          )}
+          ) : <CheckoutButton orderId={order.id} />}
 
           <ol className={styles.nextSteps}>
             <li><span>1</span><p><strong>Pay securely</strong> on HitPay’s hosted checkout.</p></li>
             <li><span>2</span><p><strong>Track the work</strong> from your customer portal.</p></li>
-            <li><span>3</span><p><strong>Receive your report</strong> by email and Telegram after verification.</p></li>
+            <li><span>3</span><p><strong>Receive your report</strong> by email after verification.</p></li>
           </ol>
         </aside>
       </div>

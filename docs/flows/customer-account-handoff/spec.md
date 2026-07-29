@@ -19,11 +19,11 @@ Let a customer understand why an account is needed before payment, keep the serv
 | 2 | Account explanation | Understand why an account is needed and choose a method | Valid form, no customer session | Google, email code, or close | In-place account modal |
 | 3 | Customer authentication | Sign in or create an account | Customer chooses Google or email | Return to original service with resume intent | `/auth/google`, `/auth/email`, `/auth/email/verify` |
 | 4 | Creating checkout | Keep the customer oriented while the saved form becomes an order | Authenticated return with saved valid draft | `/checkout/[reference]` | Existing Server Action form submit |
-| 5 | Secure checkout | Connect Telegram if needed, then pay with HitPay | Order exists | Hosted HitPay payment | `/checkout/[reference]` |
+| 5 | Secure checkout | Pay with HitPay | Order exists | Hosted HitPay payment | `/checkout/[reference]` |
 
 ## Transitions & branches
 
-- Happy path: valid service form → account explanation → Google or email code → auto-create order → checkout → Telegram link if needed → HitPay.
+- Happy path: valid service form → account explanation → Google or email code → auto-create order → checkout → HitPay.
 - Invalid form: browser and server validation keep the customer on the service form.
 - Modal closed: no navigation and no order created.
 - Returning Google customer: the same Google button signs them in, restores the draft, and continues.
@@ -53,5 +53,5 @@ Let a customer understand why an account is needed before payment, keep the serv
 - [ ] New and returning customers can use Google or a six-digit email code.
 - [ ] After successful authentication, the original valid draft automatically creates one order and reaches checkout.
 - [ ] No order exists if the modal is dismissed or authentication is abandoned.
-- [ ] Checkout still requires Telegram before the HitPay action.
+- [ ] Checkout shows the HitPay action immediately after customer authentication.
 - [ ] Korban and all Wakaf service forms use the same behaviour and existing design tokens.
