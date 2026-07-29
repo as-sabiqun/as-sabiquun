@@ -1,9 +1,9 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
-import { useActionState } from "react";
+import { useActionState, useEffect, useRef, useState } from "react";
 import { submitKorbanOrder } from "@/app/(marketing)/korban/actions";
+import { CustomerAccountGate } from "@/components/customer-account-gate";
+import { shouldResumeCheckout } from "@/lib/customer-account-handoff";
 
 export interface KorbanPackage {
   id: "share" | "goat" | "cow";
@@ -29,10 +29,12 @@ interface Draft {
   names: string[];
   customerName: string;
   customerPhone: string;
+  resumeCheckout?: boolean;
 }
 
 export function KorbanContent({ initialRequestId, packages }: { initialRequestId: string; packages: KorbanPackage[] }) {
-  const router = useRouter();
+  const formRef = useRef<HTMLFormElement>(null);
+  const resumed = useRef(false);
   const [requestId, setRequestId] = useState(initialRequestId);
   const [packageId, setPackageId] = useState(packages[0].id);
   const [quantity, setQuantity] = useState(1);
@@ -40,6 +42,8 @@ export function KorbanContent({ initialRequestId, packages }: { initialRequestId
   const [customerName, setCustomerName] = useState("");
   const [customerPhone, setCustomerPhone] = useState("");
   const [tab, setTab] = useState<"details" | "faq">("details");
+  const [accountGateOpen, setAccountGateOpen] = useState(false);
+  const [resumeCheckout, setResumeCheckout] = useState(false);
   const [state, action, pending] = useActionState(submitKorbanOrder, undefined);
 
   const selected = packages.find((item) => item.id === packageId) ?? packages[0];
@@ -59,6 +63,7 @@ export function KorbanContent({ initialRequestId, packages }: { initialRequestId
       setNames(draft.names);
       setCustomerName(draft.customerName);
       setCustomerPhone(draft.customerPhone);
+      setResumeCheckout(shouldResumeCheckout(draft.resumeCheckout, window.location.search));
     } catch {
       // ignore malformed draft
     }
@@ -66,11 +71,19 @@ export function KorbanContent({ initialRequestId, packages }: { initialRequestId
 
   useEffect(() => {
     if (state && !state.ok && "requiresLogin" in state && state.requiresLogin) {
-      const draft: Draft = { requestId, packageId, quantity, names, customerName, customerPhone };
+      const draft: Draft = { requestId, packageId, quantity, names, customerName, customerPhone, resumeCheckout: true };
       sessionStorage.setItem(DRAFT_KEY, JSON.stringify(draft));
-      router.push("/login?next=/korban");
+      // This external Server Action result is the only source that may open the account gate.
+      // eslint-disable-next-line react-hooks/set-state-in-effect
+      setAccountGateOpen(true);
     }
   }, [state]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  useEffect(() => {
+    if (!resumeCheckout || resumed.current) return;
+    resumed.current = true;
+    formRef.current?.requestSubmit();
+  }, [resumeCheckout]);
 
   function updateQuantity(next: number) {
     const bounded = Math.max(1, Math.min(7, next));
@@ -93,7 +106,7 @@ export function KorbanContent({ initialRequestId, packages }: { initialRequestId
         </div>
         <p className="product-lead">{details.description}</p>
 
-        <form className="mt-6 grid gap-5" action={action}>
+        <form ref={formRef} className="mt-6 grid gap-5" action={action}>
             {state && "error" in state && <p className="auth-error">{state.error}</p>}
             <input type="hidden" name="packageId" value={packageId} />
             <input type="hidden" name="quantity" value={quantity} />
@@ -154,8 +167,10 @@ export function KorbanContent({ initialRequestId, packages }: { initialRequestId
             </div>
 
             <button type="submit" className="btn" disabled={pending}>{pending ? "Submitting…" : "Continue"} <span aria-hidden="true">→</span></button>
-            <p className="text-xs leading-5 text-[var(--muted)]">You’ll be asked to log in before continuing to secure payment.</p>
+            <p className="text-xs leading-5 text-[var(--muted)]">We will save your details before secure payment.</p>
         </form>
+
+        {accountGateOpen && <CustomerAccountGate next="/korban?resume=checkout" onClose={() => setAccountGateOpen(false)} />}
 
         <div className="detail-tabs">
           <button type="button" className={tab === "details" ? "is-active" : ""} onClick={() => setTab("details")}>Details</button>

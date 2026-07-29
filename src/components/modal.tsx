@@ -1,17 +1,18 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { useEffect, useRef } from "react";
+import { useCallback, useEffect, useRef } from "react";
 
-export function Modal({ children }: { children: React.ReactNode }) {
+export function Modal({ children, label = "Dialog", onClose }: { children: React.ReactNode; label?: string; onClose?: () => void }) {
   const router = useRouter();
   const panelRef = useRef<HTMLDivElement>(null);
   const closeRef = useRef<HTMLButtonElement>(null);
+  const close = useCallback(() => onClose ? onClose() : router.back(), [onClose, router]);
 
   useEffect(() => {
     const previousFocus = document.activeElement instanceof HTMLElement ? document.activeElement : null;
     function onKeyDown(event: KeyboardEvent) {
-      if (event.key === "Escape") router.back();
+      if (event.key === "Escape") close();
       if (event.key === "Tab" && panelRef.current) {
         const focusable = [...panelRef.current.querySelectorAll<HTMLElement>('a[href], button:not([disabled]), input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])')];
         if (!focusable.length) return;
@@ -29,12 +30,12 @@ export function Modal({ children }: { children: React.ReactNode }) {
       document.body.style.overflow = "";
       previousFocus?.focus();
     };
-  }, [router]);
+  }, [close]);
 
   return (
-    <div className="modal-overlay" onClick={() => router.back()}>
-      <div ref={panelRef} className="modal-panel" role="dialog" aria-modal="true" aria-label="Service order" onClick={(event) => event.stopPropagation()}>
-        <button ref={closeRef} type="button" className="modal-close" onClick={() => router.back()} aria-label="Close dialog">
+    <div className="modal-overlay" onClick={close}>
+      <div ref={panelRef} className="modal-panel" role="dialog" aria-modal="true" aria-label={label} onClick={(event) => event.stopPropagation()}>
+        <button ref={closeRef} type="button" className="modal-close" onClick={close} aria-label="Close dialog">
           ✕
         </button>
         {children}

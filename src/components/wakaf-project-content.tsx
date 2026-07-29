@@ -1,10 +1,10 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
-import { useActionState } from "react";
+import { useActionState, useEffect, useRef, useState } from "react";
 import { submitWakafContribution } from "@/app/(marketing)/wakaf/actions";
 import { wakafProjects, type WakafProjectSlug } from "@/lib/wakaf-projects";
+import { CustomerAccountGate } from "@/components/customer-account-gate";
+import { shouldResumeCheckout } from "@/lib/customer-account-handoff";
 
 const draftKey = (slug: string) => `wakaf-draft-${slug}`;
 
@@ -14,6 +14,7 @@ interface Draft {
   dedication: string;
   customerName: string;
   customerPhone: string;
+  resumeCheckout?: boolean;
 }
 
 export function WakafProjectContent({ initialRequestId, projectId, project, offering }: {
@@ -22,7 +23,8 @@ export function WakafProjectContent({ initialRequestId, projectId, project, offe
   project: (typeof wakafProjects)[WakafProjectSlug];
   offering: { title: string; detail: string; minimumCents: number };
 }) {
-  const router = useRouter();
+  const formRef = useRef<HTMLFormElement>(null);
+  const resumed = useRef(false);
   const [requestId, setRequestId] = useState(initialRequestId);
   const minimum = offering.minimumCents / 100;
   const presets = [...new Set([minimum, 25, 50, 100, 250])].filter((value) => value >= minimum);
@@ -31,6 +33,8 @@ export function WakafProjectContent({ initialRequestId, projectId, project, offe
   const [customerName, setCustomerName] = useState("");
   const [customerPhone, setCustomerPhone] = useState("");
   const [tab, setTab] = useState<"details" | "impact">("details");
+  const [accountGateOpen, setAccountGateOpen] = useState(false);
+  const [resumeCheckout, setResumeCheckout] = useState(false);
   const [state, action, pending] = useActionState(submitWakafContribution, undefined);
 
   useEffect(() => {
@@ -46,6 +50,7 @@ export function WakafProjectContent({ initialRequestId, projectId, project, offe
       setDedication(draft.dedication);
       setCustomerName(draft.customerName);
       setCustomerPhone(draft.customerPhone);
+      setResumeCheckout(shouldResumeCheckout(draft.resumeCheckout, window.location.search));
     } catch {
       // ignore malformed draft
     }
@@ -53,11 +58,19 @@ export function WakafProjectContent({ initialRequestId, projectId, project, offe
 
   useEffect(() => {
     if (state && !state.ok && "requiresLogin" in state && state.requiresLogin) {
-      const draft: Draft = { requestId, amount, dedication, customerName, customerPhone };
+      const draft: Draft = { requestId, amount, dedication, customerName, customerPhone, resumeCheckout: true };
       sessionStorage.setItem(draftKey(projectId), JSON.stringify(draft));
-      router.push(`/login?next=/wakaf/${projectId}`);
+      // This external Server Action result is the only source that may open the account gate.
+      // eslint-disable-next-line react-hooks/set-state-in-effect
+      setAccountGateOpen(true);
     }
   }, [state]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  useEffect(() => {
+    if (!resumeCheckout || resumed.current) return;
+    resumed.current = true;
+    formRef.current?.requestSubmit();
+  }, [resumeCheckout]);
 
   return (
     <div className="product-layout">
@@ -74,7 +87,7 @@ export function WakafProjectContent({ initialRequestId, projectId, project, offe
         </div>
         <p className="product-lead">{offering.detail}</p>
 
-        <form className="mt-6 grid gap-5" action={action}>
+        <form ref={formRef} className="mt-6 grid gap-5" action={action}>
             {state && "error" in state && <p className="auth-error">{state.error}</p>}
             <input type="hidden" name="projectId" value={projectId} />
             <input type="hidden" name="requestId" value={requestId} />
@@ -107,8 +120,10 @@ export function WakafProjectContent({ initialRequestId, projectId, project, offe
             </div>
 
             <button type="submit" className="btn" disabled={pending}>{pending ? "Submitting…" : "Continue"} <span aria-hidden="true">→</span></button>
-            <p className="text-xs leading-5 text-[var(--muted)]">You’ll be asked to log in before continuing to secure payment.</p>
+            <p className="text-xs leading-5 text-[var(--muted)]">We will save your details before secure payment.</p>
         </form>
+
+        {accountGateOpen && <CustomerAccountGate next={`/wakaf/${projectId}?resume=checkout`} onClose={() => setAccountGateOpen(false)} />}
 
         <div className="detail-tabs">
           <button type="button" className={tab === "details" ? "is-active" : ""} onClick={() => setTab("details")}>Details</button>
