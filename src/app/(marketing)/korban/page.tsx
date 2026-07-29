@@ -12,7 +12,7 @@ export default async function KorbanPage() {
     return id && offering.unit_amount ? [{ id, label: offering.title.replace(/^Korban\s*—\s*/i, ""), priceCents: offering.unit_amount } satisfies KorbanPackage] : [];
   });
   return (
-    <section className="py-10 lg:py-14">
+    <section className="product-page">
       <div className="container">
         <div>
           {packages.length ? (

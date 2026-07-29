@@ -19,7 +19,7 @@ export default async function WakafProjectPage({ params }: { params: Promise<{ p
   const offering = (await getActiveOfferings()).find((item) => item.slug === offeringSlugs[slug as WakafProjectSlug]);
 
   return (
-    <section className="py-10 lg:py-14">
+    <section className="product-page">
       <div className="container">
         <nav className="breadcrumb">
           <Link href="/wakaf">Wakaf</Link>
