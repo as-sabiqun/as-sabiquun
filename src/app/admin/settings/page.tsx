@@ -166,10 +166,12 @@ export default async function AdminSettingsPage({ searchParams }: { searchParams
                 </div>
                 {administrator.id !== currentAdmin.user.id && canManageAdminAccess(currentLevel, administrator.accessLevel) && (
                   <div className="admin-user-actions">
-                    {administrator.invited && administrator.status === "active" && (
+                    {administrator.status === "active" && (
                       <form action={resendAdminInvitationAction}>
                         <input type="hidden" name="adminId" value={administrator.id} />
-                        <button className="btn btn-secondary btn-small" type="submit">Resend setup</button>
+                        <button className="btn btn-secondary btn-small" type="submit">
+                          {administrator.invited ? "Resend setup" : "Send password reset"}
+                        </button>
                       </form>
                     )}
                     <form action={setAdminStatusAction}>
