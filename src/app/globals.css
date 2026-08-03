@@ -1012,6 +1012,10 @@ button, a, summary { -webkit-tap-highlight-color: transparent; }
 .admin-customer-value strong { font-family: var(--font-display); font-size: .82rem; }
 .admin-customer-value small { color: var(--muted); font-size: .6rem; }
 .admin-vendor-invite { border-color: color-mix(in srgb, var(--teal) 45%, var(--line)); }
+.admin-manual-job-panel { margin-top: 22px; padding: 26px; border-color: color-mix(in srgb, var(--teal) 45%, var(--line)); }
+.admin-manual-job-panel > header { max-width: 68ch; margin-bottom: 24px; }
+.admin-manual-job-panel > header h2 { margin-bottom: 7px; }
+.admin-manual-job-panel > header p { color: var(--muted); font-size: .78rem; line-height: 1.55; }
 .admin-list-row {
   display: grid; grid-template-columns: auto 1.4fr auto 1fr auto; align-items: center; gap: 18px;
   padding: 14px 18px; border-bottom: 1px solid var(--line); transition: background-color .15s ease;

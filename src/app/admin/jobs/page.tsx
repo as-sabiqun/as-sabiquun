@@ -2,6 +2,7 @@ import Link from "next/link";
 import { AdminJobsTable, type AdminLifecycleOrder } from "@/components/admin/operations-jobs";
 import { adminActionQueueKeys, jobStageForOrder, queueForOrder, queueMeta, type AdminJobStage, type AdminQueueKey } from "@/app/admin/operations";
 import { createClient } from "@/lib/supabase/server";
+import { ManualJobForm, type ManualJobOffering } from "@/components/admin/manual-job-form";
 
 const queueKeys = Object.keys(queueMeta) as AdminQueueKey[];
 const stageMeta: Record<AdminJobStage, { label: string; color: string }> = {
@@ -22,6 +23,12 @@ export default async function AdminJobsPage({ searchParams }: { searchParams: Pr
   const requestedQueue = one(params.queue);
   const queue = queueKeys.includes(requestedQueue as AdminQueueKey) ? requestedQueue as AdminQueueKey : null;
   const supabase = await createClient();
+  const { data: offeringData } = await supabase
+    .from("offerings")
+    .select("id, title, service_type, category_slug, unit_amount, min_amount")
+    .eq("active", true)
+    .order("sort_order");
+  const offerings = (offeringData ?? []) as ManualJobOffering[];
 
   let ids: string[] | null = null;
   if (query) {
@@ -69,6 +76,7 @@ export default async function AdminJobsPage({ searchParams }: { searchParams: Pr
     <>
       <div className="vendor-page-head">
         <div><p className="vendor-eyebrow">All projects</p><h1 className="display vendor-page-title">Jobs</h1><p className="vendor-page-lead">Handle the jobs that need you, or search for any project.</p></div>
+        <ManualJobForm offerings={offerings} />
       </div>
 
       <section className="admin-jobs-dashboard" aria-label="Job overview">

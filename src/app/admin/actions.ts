@@ -1,11 +1,15 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
+import { redirect } from "next/navigation";
 import { getAal2AdminAtLeast } from "@/lib/auth";
+import { dollarsToCents, isContactNumber } from "@/lib/checkout-validation";
 import { generateCompletionReportsForAdmin, ReportGenerationError } from "@/lib/reports/service";
 import { createClient } from "@/lib/supabase/server";
 
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+
+export type ManualJobState = { error: string } | undefined;
 
 async function getAdminClient() {
   const supabase = await createClient();
@@ -17,6 +21,50 @@ async function getFinanceAdminClient() {
   const supabase = await createClient();
   const admin = await getAal2AdminAtLeast(supabase, "administrator");
   return admin ? { supabase, user: admin.user } : null;
+}
+
+export async function createManualJobAction(_previous: ManualJobState, formData: FormData): Promise<ManualJobState> {
+  const offeringId = String(formData.get("offeringId") ?? "").trim();
+  const customerName = String(formData.get("customerName") ?? "").trim();
+  const customerPhone = String(formData.get("customerPhone") ?? "").trim();
+  const customerEmail = String(formData.get("customerEmail") ?? "").trim();
+  const paymentReference = String(formData.get("paymentReference") ?? "").trim();
+  const quantity = Number(formData.get("quantity") ?? 1);
+  const amount = String(formData.get("amount") ?? "").trim();
+  const totalAmount = amount ? dollarsToCents(Number(amount)) : null;
+  const participantNames = String(formData.get("participantNames") ?? "").split(/\r?\n/).map((name) => name.trim()).filter(Boolean);
+  const deadline = String(formData.get("completionDeadline") ?? "").trim();
+
+  if (!UUID.test(offeringId) || !customerName || !isContactNumber(customerPhone) || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(customerEmail) || !paymentReference) {
+    return { error: "Complete the customer, service, and payment details." };
+  }
+  if (!Number.isInteger(quantity) || quantity < 1 || quantity > 7 || (amount && totalAmount === null)) {
+    return { error: "Check the quantity or contribution amount." };
+  }
+  if (deadline && Number.isNaN(Date.parse(deadline))) return { error: "Enter a valid target completion date." };
+
+  const admin = await getAdminClient();
+  if (!admin) return { error: "Operations-admin access is required." };
+  const { data, error } = await admin.supabase.rpc("create_admin_manual_order", {
+    p_offering_id: offeringId,
+    p_quantity: quantity,
+    p_total_amount: totalAmount,
+    p_customer_name: customerName,
+    p_customer_phone: customerPhone,
+    p_customer_email: customerEmail,
+    p_participant_names: participantNames,
+    p_dedication: String(formData.get("dedication") ?? "").trim() || null,
+    p_payment_reference: paymentReference,
+    p_payment_method: String(formData.get("paymentMethod") ?? "").trim() || null,
+    p_notes: String(formData.get("notes") ?? "").trim() || null,
+    p_beneficiary_country: String(formData.get("beneficiaryCountry") ?? "").trim() || null,
+    p_completion_deadline: deadline ? new Date(`${deadline}T12:00:00`).toISOString() : null,
+  });
+  const job = Array.isArray(data) ? data[0] : null;
+  if (error || !job?.id) return { error: error?.message ?? "The manual job could not be created." };
+  revalidatePath("/admin");
+  revalidatePath("/admin/jobs");
+  redirect(`/admin/jobs/${job.id}`);
 }
 
 // These call the SECURITY DEFINER RPC functions from the migrations using the
