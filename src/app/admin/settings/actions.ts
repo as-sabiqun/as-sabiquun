@@ -3,7 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { adminAccessLevel, getAal2AdminAtLeast } from "@/lib/auth";
-import { adminInviteFields, canAssignAdminAccess, canManageAdminAccess, isUnusedAdminInvitation } from "@/lib/admin-users";
+import { adminInviteFields, canAssignAdminAccess, canManageAdminAccess, canRemoveAdminUser, isUnusedAdminInvitation } from "@/lib/admin-users";
 import { getSiteUrl } from "@/lib/site-url";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { createClient, isSupabaseAdminConfigured } from "@/lib/supabase/server";
@@ -108,6 +108,39 @@ export async function retractAdminInvitationAction(formData: FormData) {
 
   revalidatePath("/admin/settings");
   settingsRedirect("admin_message", "Invitation revoked. You can now invite that email again.");
+}
+
+export async function removeAdminAction(formData: FormData) {
+  const actor = await teamContext();
+  if (!actor || actor.level !== "owner") settingsRedirect("admin_error", "Only an owner can remove a team member.");
+
+  const targetId = String(formData.get("adminId") ?? "");
+  if (!canRemoveAdminUser(actor.level, targetId === actor.admin.user.id)) {
+    settingsRedirect("admin_error", "You cannot remove your own account.");
+  }
+  const { data: target } = await actor.service
+    .from("profiles")
+    .select("role, status, admin_access_level")
+    .eq("id", targetId)
+    .maybeSingle();
+  if (target?.role !== "admin" || !target.admin_access_level) {
+    settingsRedirect("admin_error", "That team member was not found.");
+  }
+  if (target.admin_access_level === "owner" && target.status === "active") {
+    const { count } = await actor.service
+      .from("profiles")
+      .select("id", { count: "exact", head: true })
+      .eq("role", "admin")
+      .eq("admin_access_level", "owner")
+      .eq("status", "active");
+    if ((count ?? 0) <= 1) settingsRedirect("admin_error", "The final active owner cannot be removed.");
+  }
+
+  const { error } = await actor.service.auth.admin.deleteUser(targetId);
+  if (error) settingsRedirect("admin_error", "This member has operational activity on record. Suspend them instead to preserve the audit trail.");
+
+  revalidatePath("/admin/settings");
+  settingsRedirect("admin_message", "Team member removed. You can send them a new invitation whenever needed.");
 }
 
 export async function setAdminStatusAction(formData: FormData) {

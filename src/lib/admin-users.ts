@@ -14,6 +14,10 @@ export function canManageAdminAccess(actor: AdminAccessLevel, target: AdminAcces
   return actor === "owner" || (actor === "administrator" && target === "operations");
 }
 
+export function canRemoveAdminUser(actor: AdminAccessLevel, isSelf: boolean) {
+  return actor === "owner" && !isSelf;
+}
+
 export function isUnusedAdminInvitation(lastSignInAt: string | null | undefined) {
   return !lastSignInAt;
 }

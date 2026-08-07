@@ -1,10 +1,10 @@
 import { redirect } from "next/navigation";
 import { formatCents } from "@/lib/orders";
 import { adminAccessLevel, getAal2AdminAtLeast } from "@/lib/auth";
-import { adminAccessLabels, canManageAdminAccess, isUnusedAdminInvitation } from "@/lib/admin-users";
+import { adminAccessLabels, canManageAdminAccess, canRemoveAdminUser, isUnusedAdminInvitation } from "@/lib/admin-users";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { createClient, type AdminAccessLevel } from "@/lib/supabase/server";
-import { inviteAdminAction, resendAdminInvitationAction, retractAdminInvitationAction, setAdminAccessLevelAction, setAdminStatusAction } from "./actions";
+import { inviteAdminAction, removeAdminAction, resendAdminInvitationAction, retractAdminInvitationAction, setAdminAccessLevelAction, setAdminStatusAction } from "./actions";
 
 function Health({ label, configured, help }: { label: string; configured: boolean; help: string }) {
   return (
@@ -178,6 +178,12 @@ export default async function AdminSettingsPage({ searchParams }: { searchParams
                       <form action={retractAdminInvitationAction}>
                         <input type="hidden" name="adminId" value={administrator.id} />
                         <button className="btn btn-secondary btn-small" type="submit">Revoke invitation</button>
+                      </form>
+                    )}
+                    {canRemoveAdminUser(currentLevel, administrator.id === currentAdmin.user.id) && (
+                      <form action={removeAdminAction}>
+                        <input type="hidden" name="adminId" value={administrator.id} />
+                        <button className="btn btn-secondary btn-small" type="submit">Remove from team</button>
                       </form>
                     )}
                     <form action={setAdminStatusAction}>
