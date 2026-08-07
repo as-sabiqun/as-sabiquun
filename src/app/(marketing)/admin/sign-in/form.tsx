@@ -1,6 +1,5 @@
 "use client";
 
-import Link from "next/link";
 import { useActionState } from "react";
 import { adminLogin } from "./actions";
 
@@ -24,7 +23,7 @@ export function AdminSignInForm({ next, initialError }: { next: string; initialE
         <label className="label">Password
           <input className="input" type="password" name="password" required maxLength={1024} autoComplete="current-password" />
         </label>
-        <Link href="/forgot-password?returnTo=/admin/sign-in" className="auth-forgot">Forgot password?</Link>
+        <p className="auth-form-help">Forgot your password? Ask an owner to set a new one in Team access.</p>
         <button type="submit" className="btn" disabled={pending}>{pending ? "Checking…" : "Continue securely"}</button>
       </form>
     </div>

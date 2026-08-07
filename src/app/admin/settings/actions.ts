@@ -3,8 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { adminAccessLevel, getAal2AdminAtLeast } from "@/lib/auth";
-import { adminInviteFields, canAssignAdminAccess, canManageAdminAccess, canRemoveAdminUser, isUnusedAdminInvitation } from "@/lib/admin-users";
-import { getSiteUrl } from "@/lib/site-url";
+import { adminAccountFields, adminPasswordFields, canAssignAdminAccess, canManageAdminAccess, canRemoveAdminUser } from "@/lib/admin-users";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { createClient, isSupabaseAdminConfigured } from "@/lib/supabase/server";
 
@@ -18,21 +17,26 @@ async function teamContext() {
   return admin ? { admin, level: adminAccessLevel(admin.profile), service: createAdminClient() } : null;
 }
 
-export async function inviteAdminAction(formData: FormData) {
+export async function createAdminAccountAction(formData: FormData) {
   const actor = await teamContext();
-  if (!actor) settingsRedirect("admin_error", "Administrator access is required to invite team members.");
+  if (!actor) settingsRedirect("admin_error", "Administrator access is required to create team accounts.");
 
-  const input = adminInviteFields(formData);
+  const input = adminAccountFields(formData);
   if (!input.ok) settingsRedirect("admin_error", input.error);
   if (!canAssignAdminAccess(actor.level, input.accessLevel)) {
     settingsRedirect("admin_error", "You cannot grant that access level.");
   }
 
-  const { data, error } = await actor.service.auth.admin.inviteUserByEmail(input.email, {
-    data: { full_name: input.name },
-    redirectTo: `${await getSiteUrl()}/auth/callback?intent=admin&next=/update-password`,
+  const { data, error } = await actor.service.auth.admin.createUser({
+    email: input.email,
+    password: input.password,
+    email_confirm: true,
+    user_metadata: { full_name: input.name },
   });
-  if (error || !data.user) settingsRedirect("admin_error", error?.message ?? "The invitation could not be sent.");
+  if (error || !data.user) {
+    const duplicate = error?.message.toLowerCase().includes("already") || error?.message.toLowerCase().includes("registered");
+    settingsRedirect("admin_error", duplicate ? "That email already has an account. Set its password below or remove the old account first." : "The administrator account could not be created.");
+  }
 
   const { error: profileError } = await actor.service
     .from("profiles")
@@ -47,67 +51,43 @@ export async function inviteAdminAction(formData: FormData) {
 
   if (profileError) {
     await actor.service.auth.admin.deleteUser(data.user.id);
-    settingsRedirect("admin_error", "The invitation was not completed. No administrator account was created.");
+    settingsRedirect("admin_error", "The administrator profile was not completed. No account was created.");
   }
 
   revalidatePath("/admin/settings");
-  settingsRedirect("admin_message", `Invitation sent to ${input.email}.`);
+  settingsRedirect("admin_message", `Account ready for ${input.email}. Share the sign-in details securely.`);
 }
 
-export async function resendAdminInvitationAction(formData: FormData) {
+export async function setAdminPasswordAction(formData: FormData) {
   const actor = await teamContext();
-  if (!actor) settingsRedirect("admin_error", "Administrator access is required to manage team invitations.");
+  if (!actor) settingsRedirect("admin_error", "Administrator access is required to manage team passwords.");
 
   const targetId = String(formData.get("adminId") ?? "");
-  if (targetId === actor.admin.user.id) settingsRedirect("admin_error", "You cannot resend setup for your own account.");
-  const [{ data: profile }, { data: authData, error: authError }] = await Promise.all([
-    actor.service.from("profiles").select("role, admin_access_level").eq("id", targetId).maybeSingle(),
-    actor.service.auth.admin.getUserById(targetId),
-  ]);
+  if (targetId === actor.admin.user.id) settingsRedirect("admin_error", "Ask another owner to change your password.");
+  const input = adminPasswordFields(formData);
+  if (!input.ok) settingsRedirect("admin_error", input.error);
+
+  const { data: profile } = await actor.service
+    .from("profiles")
+    .select("role, admin_access_level")
+    .eq("id", targetId)
+    .maybeSingle();
   if (
-    authError
-    || profile?.role !== "admin"
+    profile?.role !== "admin"
     || !profile.admin_access_level
     || !canManageAdminAccess(actor.level, profile.admin_access_level)
-    || !authData.user?.email
   ) {
-    settingsRedirect("admin_error", "That administrator invitation cannot be resent.");
+    settingsRedirect("admin_error", "You cannot change that team member’s password.");
   }
 
-  const { error } = await actor.service.auth.resetPasswordForEmail(authData.user.email, {
-    redirectTo: `${await getSiteUrl()}/auth/callback?intent=admin&next=/update-password`,
+  const { error } = await actor.service.auth.admin.updateUserById(targetId, {
+    password: input.password,
+    email_confirm: true,
   });
-  if (error) settingsRedirect("admin_error", "The secure setup email could not be resent.");
-
-  settingsRedirect("admin_message", `A fresh setup email was sent to ${authData.user.email}.`);
-}
-
-export async function retractAdminInvitationAction(formData: FormData) {
-  const actor = await teamContext();
-  if (!actor) settingsRedirect("admin_error", "Administrator access is required to manage team invitations.");
-
-  const targetId = String(formData.get("adminId") ?? "");
-  if (targetId === actor.admin.user.id) settingsRedirect("admin_error", "You cannot revoke your own account.");
-  const [{ data: profile }, { data: authData, error: authError }] = await Promise.all([
-    actor.service.from("profiles").select("role, admin_access_level").eq("id", targetId).maybeSingle(),
-    actor.service.auth.admin.getUserById(targetId),
-  ]);
-  if (
-    authError
-    || profile?.role !== "admin"
-    || !profile.admin_access_level
-    || !canManageAdminAccess(actor.level, profile.admin_access_level)
-    || !authData.user
-    || !isUnusedAdminInvitation(authData.user?.last_sign_in_at)
-  ) {
-    settingsRedirect("admin_error", "Only an unused invitation can be revoked.");
-  }
-
-  const { error } = await actor.service.auth.admin.deleteUser(targetId);
-  if (error) settingsRedirect("admin_error", "The invitation could not be revoked. Please try again.");
+  if (error) settingsRedirect("admin_error", "The password could not be updated. Please try again.");
 
   revalidatePath("/admin/settings");
-  settingsRedirect("admin_message", "Invitation revoked. You can now invite that email again.");
+  settingsRedirect("admin_message", "Password updated. The administrator can sign in directly now.");
 }
 
 export async function removeAdminAction(formData: FormData) {
@@ -140,7 +120,7 @@ export async function removeAdminAction(formData: FormData) {
   if (error) settingsRedirect("admin_error", "This member has operational activity on record. Suspend them instead to preserve the audit trail.");
 
   revalidatePath("/admin/settings");
-  settingsRedirect("admin_message", "Team member removed. You can send them a new invitation whenever needed.");
+  settingsRedirect("admin_message", "Team member removed. You can create their account again whenever needed.");
 }
 
 export async function setAdminStatusAction(formData: FormData) {
