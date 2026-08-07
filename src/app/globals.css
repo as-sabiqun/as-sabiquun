@@ -766,21 +766,35 @@ button, a, summary { -webkit-tap-highlight-color: transparent; }
 .admin-form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
 .admin-password-row { display: flex; gap: 10px; }
 .admin-password-row .input { flex: 1; font-family: var(--font-sans); }
-.admin-users-invite { grid-column: 1 / -1; justify-self: start; }
-.admin-users-list { display: grid; border-top: 1px solid var(--line); }
-.admin-user-row { min-width: 0; display: grid; grid-template-columns: 42px minmax(180px, 1fr) auto auto; align-items: center; gap: 14px; padding: 15px 0; border-bottom: 1px solid var(--line); }
-.admin-user-row:last-child { border-bottom: 0; }
-.admin-user-row > .vendor-sidebar-avatar { width: 42px; height: 42px; }
-.admin-user-identity { min-width: 0; display: grid; gap: 3px; }
-.admin-user-identity small { overflow: hidden; color: var(--muted); text-overflow: ellipsis; white-space: nowrap; }
-.admin-user-states, .admin-user-actions { display: flex; align-items: center; justify-content: flex-end; gap: 7px; flex-wrap: wrap; }
-.admin-password-control { position: relative; }
-.admin-password-control > summary { list-style: none; cursor: pointer; }
-.admin-password-control > summary::-webkit-details-marker { display: none; }
-.admin-password-form { position: absolute; z-index: 20; top: calc(100% + 8px); right: 0; width: min(320px, calc(100vw - 48px)); display: grid; gap: 12px; padding: 18px; border-radius: 14px; background: var(--white); box-shadow: 0 16px 34px rgba(49, 35, 27, .16); }
-.admin-password-form .btn { justify-self: start; }
-.admin-user-authority { max-width: 100%; display: flex; align-items: center; gap: 7px; flex-wrap: wrap; }
-.admin-user-authority .input { width: auto; min-width: 150px; }
+.admin-team-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 20px; }
+.admin-team-head > div { display: grid; gap: 5px; }
+.admin-team-head p { max-width: 560px; color: var(--muted); font-size: .8rem; line-height: 1.5; }
+.admin-team-head > span { color: var(--muted); font-size: .72rem; white-space: nowrap; }
+.admin-team-create > summary, .admin-team-manage > summary { width: max-content; list-style: none; cursor: pointer; }
+.admin-team-create > summary::-webkit-details-marker, .admin-team-manage > summary::-webkit-details-marker { display: none; }
+.admin-team-create-form { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; margin-top: 16px; padding: 20px; border-radius: 14px; background: var(--cream); }
+.admin-team-create-submit { grid-column: 1 / -1; display: flex; align-items: center; gap: 14px; }
+.admin-team-create-submit small { color: var(--muted); font-size: .68rem; }
+.admin-team-list { display: grid; border-top: 1px solid var(--line); }
+.admin-team-row { min-width: 0; display: grid; grid-template-columns: 42px minmax(180px, 1fr) minmax(150px, auto) auto; align-items: center; gap: 14px; padding: 16px 0; border-bottom: 1px solid var(--line); }
+.admin-team-row:last-child { border-bottom: 0; }
+.admin-team-row > .vendor-sidebar-avatar { width: 42px; height: 42px; }
+.admin-team-identity, .admin-team-access { min-width: 0; display: grid; gap: 3px; }
+.admin-team-identity small { overflow: hidden; color: var(--muted); text-overflow: ellipsis; white-space: nowrap; }
+.admin-team-access strong { color: var(--ink); font-size: .75rem; }
+.admin-account-state { display: inline-flex; align-items: center; gap: 7px; color: var(--muted); font-size: .66rem; }
+.admin-account-state::before { content: ""; width: 7px; height: 7px; flex: none; border-radius: 50%; background: var(--teal); }
+.admin-account-state[data-state="suspended"]::before { background: #a64b3c; }
+.admin-team-manage { justify-self: end; }
+.admin-team-manage[open] { width: 100%; grid-column: 1 / -1; justify-self: stretch; }
+.admin-team-manage[open] > summary { margin-left: auto; }
+.admin-team-manage-panel { max-width: 680px; display: grid; gap: 20px; margin: 14px 0 0 auto; padding: 20px; border-radius: 14px; background: var(--cream); }
+.admin-team-password-form { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+.admin-team-password-form > strong, .admin-team-password-form > .btn { grid-column: 1 / -1; justify-self: start; }
+.admin-team-role-form { display: flex; align-items: end; gap: 10px; }
+.admin-team-role-form .label { flex: 1; }
+.admin-team-account-actions { display: flex; gap: 8px; flex-wrap: wrap; padding-top: 18px; border-top: 1px solid var(--line); }
+.admin-team-self { color: var(--muted); font-size: .7rem; font-weight: 700; }
 
 .admin-checkbox-group { display: flex; flex-wrap: wrap; gap: 8px; }
 .admin-checkbox-pill {
@@ -1120,8 +1134,15 @@ button, a, summary { -webkit-tap-highlight-color: transparent; }
   .admin-jobs-toolbar .admin-directory-search { max-width: none; flex-basis: 100%; }
   .admin-jobs-toolbar .btn { flex: 1; }
   .admin-form-grid { grid-template-columns: 1fr; }
-  .admin-user-row { grid-template-columns: 42px minmax(0, 1fr); }
-  .admin-user-states, .admin-user-actions { grid-column: 2; justify-content: flex-start; }
+  .admin-team-head { flex-direction: column; gap: 8px; }
+  .admin-team-create-form, .admin-team-password-form { grid-template-columns: 1fr; }
+  .admin-team-create-submit, .admin-team-password-form > strong, .admin-team-password-form > .btn { grid-column: 1; }
+  .admin-team-create-submit { align-items: flex-start; flex-direction: column; }
+  .admin-team-row { grid-template-columns: 42px minmax(0, 1fr) auto; }
+  .admin-team-access { grid-column: 2; }
+  .admin-team-manage { grid-column: 3; grid-row: 1; }
+  .admin-team-manage[open] { grid-column: 1 / -1; grid-row: auto; }
+  .admin-team-role-form { align-items: stretch; flex-direction: column; }
   .admin-vendor-stats { grid-template-columns: 1fr; }
   .admin-record-hero { align-items: flex-start; flex-direction: column; padding: 24px; }
   .admin-state-rail { grid-template-columns: 1fr; }

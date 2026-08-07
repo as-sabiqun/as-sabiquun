@@ -41,15 +41,9 @@ export async function GET(request: NextRequest) {
     }
   } else if (intent === "recovery") {
     const oauthSession = await sessionUsesAuthMethod(supabase, "oauth");
-    if (oauthSession || !["vendor", "admin"].includes(profile.role)) {
+    if (oauthSession || profile.role !== "vendor") {
       await supabase.auth.signOut();
-      return loginError(request, "Password recovery is available only to invited staff and partners.");
-    }
-  } else if (intent === "admin") {
-    const oauthSession = await sessionUsesAuthMethod(supabase, "oauth");
-    if (oauthSession || profile.role !== "admin") {
-      await supabase.auth.signOut();
-      return loginError(request, "This administrator invitation is not valid for this account.");
+      return loginError(request, "Password recovery is available only to invited partners.");
     }
   } else {
     await supabase.auth.signOut();

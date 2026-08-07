@@ -24,7 +24,11 @@ export async function updatePassword(_state: UpdatePasswordState, formData: Form
   }
   if (profile.role === "customer") {
     await supabase.auth.signOut();
-    redirect("/login?error=Customer access uses Google sign-in and does not use a password.");
+    redirect("/login?error=Customer access uses an email code or Google and does not use a password.");
+  }
+  if (profile.role === "admin") {
+    await supabase.auth.signOut();
+    redirect("/admin/sign-in?error=Ask a team administrator to set a new password.");
   }
 
   let hasValidInvitation = false;
@@ -74,10 +78,8 @@ export async function updatePassword(_state: UpdatePasswordState, formData: Form
 
   if (profile.status !== "active") {
     await supabase.auth.signOut();
-    redirect(profile.role === "admin" ? "/admin/sign-in?error=This account is suspended." : profile.role === "vendor" ? "/partner-login?error=This account is suspended." : "/login?error=This account is suspended.");
+    redirect("/partner-login?error=This account is suspended.");
   }
   await supabase.auth.signOut();
-  redirect(profile.role === "admin"
-    ? "/admin/sign-in?message=Password updated. Sign in again to continue."
-    : "/partner-login?message=Password updated. Sign in again to continue.");
+  redirect("/partner-login?message=Password updated. Sign in again to continue.");
 }

@@ -24,7 +24,7 @@ See `reference-board.png` for the captured access and onboarding flow.
 | `/vendor-dashboard` | Assigned work, proof, and reports | Prototype built; active approved vendors |
 | `/dashboard` | Customer orders and proof history | Prototype built; active customers after the customer migration |
 | `/admin` | Orders, vendors, reports | Prototype built; active admins; AAL2 enforcement still planned |
-| `/admin/sign-in` | Unlinked staff entrance | Prototype built; invited admins only |
+| `/admin/sign-in` | Private staff entrance | Active administrator accounts only |
 | `/onboarding` | Role-aware setup and pending states | UI prototype built; persistence still planned |
 | `/auth/callback` | OAuth PKCE callback | Planned production route |
 | `/auth/confirm` | Email OTP/invitation confirmation | Planned production route |
@@ -53,7 +53,7 @@ The role selected on `/login` is presentation context only. It never assigns or 
 
 1. Visit the unlinked `/admin` route.
 2. If signed out, continue to the unlinked `/admin/sign-in` route.
-3. Sign in with an invited staff account and complete TOTP MFA.
+3. Sign in with the email and password created by an owner, then complete TOTP MFA.
 4. Enter the admin workspace.
 
 The prototype can demonstrate role selection and screen states. Production OAuth, OTP, invitations, profile persistence, and MFA remain disabled until Supabase provider credentials, SMTP, migrations, and RLS are configured. Portal demos require the explicit `ENABLE_PORTAL_DEMOS=true` flag outside local development, so an incomplete production deployment fails closed.
@@ -115,7 +115,7 @@ Production enforcement must include:
 - a server-only data access layer with active-role guards;
 - independent authorization in pages, Server Actions, and Route Handlers;
 - RLS for customer-owned orders, vendor-assigned orders, and admin access at MFA assurance level 2;
-- trusted invitations for vendor/admin promotion;
+- trusted invitations for vendor promotion and server-created administrator accounts;
 - no authorization from the login selector or editable user metadata;
 - no public admin navigation and `noindex` on admin sign-in pages.
 

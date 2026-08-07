@@ -126,56 +126,65 @@ export default async function AdminSettingsPage({ searchParams }: { searchParams
         </div>
       </section>
 
-      <section className="card vendor-panel admin-users-panel">
-          <div className="vendor-panel-head">
-            <div><p className="vendor-eyebrow">Authority</p><h2 className="display text-lg mt-1">Team access</h2></div>
-            <span className="vendor-status vendor-status-accepted">{administrators.length} team member{administrators.length === 1 ? "" : "s"}</span>
+      <section className="card vendor-panel admin-team-panel">
+        <div className="admin-team-head">
+          <div>
+            <h2 className="display text-lg">Team access</h2>
+            <p>Create accounts and control who can use the admin console.</p>
           </div>
-          <p className="admin-record-help">Create an account, choose its starting password, then share the email and password securely. The administrator signs in directly—no invitation link is required.</p>
-          {params.admin_message && <p className="auth-message mt-4" role="status">{params.admin_message}</p>}
-          {params.admin_error && <p className="auth-error mt-4" role="alert">{params.admin_error}</p>}
+          <span>{administrators.length} member{administrators.length === 1 ? "" : "s"}</span>
+        </div>
+        {params.admin_message && <p className="auth-message mt-4" role="status">{params.admin_message}</p>}
+        {params.admin_error && <p className="auth-error mt-4" role="alert">{params.admin_error}</p>}
 
-          <form action={createAdminAccountAction} className="admin-form-grid mt-5">
+        <details className="admin-team-create mt-5">
+          <summary className="btn">Add team member</summary>
+          <form action={createAdminAccountAction} className="admin-team-create-form">
             <label className="label">Full name
               <input className="input" name="name" required minLength={2} maxLength={100} autoComplete="name" />
             </label>
             <label className="label">Email
               <input className="input" name="email" type="email" required maxLength={254} autoComplete="email" />
             </label>
-            <label className="label">Access level
+            <label className="label">Role
               <select className="input" name="accessLevel" required defaultValue={currentLevel === "owner" ? "administrator" : "operations"}>
                 {currentLevel === "owner" && <option value="owner">Owner</option>}
                 {currentLevel === "owner" && <option value="administrator">Administrator</option>}
                 <option value="operations">Operations Staff</option>
               </select>
             </label>
-            <label className="label">Starting password
+            <label className="label">Password
               <input className="input" name="password" type="password" required minLength={12} maxLength={72} autoComplete="new-password" />
             </label>
             <label className="label">Confirm password
               <input className="input" name="confirmation" type="password" required minLength={12} maxLength={72} autoComplete="new-password" />
             </label>
-            <button className="btn admin-users-invite" type="submit">Create administrator</button>
+            <div className="admin-team-create-submit">
+              <button className="btn" type="submit">Create account</button>
+              <small>Use at least 12 characters, then share it privately.</small>
+            </div>
           </form>
+        </details>
 
-          <div className="admin-users-list mt-6">
-            {administrators.map((administrator) => (
-              <div className="admin-user-row" key={administrator.id}>
+        <div className="admin-team-list mt-6">
+          {administrators.map((administrator) => {
+            const accountState = administrator.status === "active" ? administrator.signedIn ? "Active" : "Ready to sign in" : "Suspended";
+            const canManage = administrator.id !== currentAdmin.user.id && canManageAdminAccess(currentLevel, administrator.accessLevel);
+            return (
+              <div className="admin-team-row" key={administrator.id}>
                 <span className="vendor-sidebar-avatar" aria-hidden="true">{administrator.name.charAt(0)}</span>
-                <div className="admin-user-identity"><strong>{administrator.name}</strong><small>{administrator.email}</small></div>
-                <div className="admin-user-states">
-                  <span className="vendor-status vendor-status-pending">{adminAccessLabels[administrator.accessLevel]}</span>
-                  <span className={`vendor-status ${administrator.status === "active" ? "vendor-status-accepted" : "vendor-status-rejected"}`}>
-                    {administrator.status === "active" ? administrator.signedIn ? "Active" : "Ready" : "Suspended"}
-                  </span>
-                  <span className={`vendor-status ${administrator.mfa ? "vendor-status-accepted" : "vendor-status-pending"}`}>{administrator.mfa ? "MFA ready" : "MFA pending"}</span>
+                <div className="admin-team-identity"><strong>{administrator.name}</strong><small>{administrator.email}</small></div>
+                <div className="admin-team-access">
+                  <strong>{adminAccessLabels[administrator.accessLevel]}</strong>
+                  <small className="admin-account-state" data-state={administrator.status}>{accountState} · {administrator.mfa ? "MFA ready" : "MFA pending"}</small>
                 </div>
-                {administrator.id !== currentAdmin.user.id && canManageAdminAccess(currentLevel, administrator.accessLevel) && (
-                  <div className="admin-user-actions">
-                    <details className="admin-password-control">
-                      <summary className="btn btn-secondary btn-small">Set password</summary>
-                      <form action={setAdminPasswordAction} className="admin-password-form">
+                {canManage ? (
+                  <details className="admin-team-manage">
+                    <summary className="btn btn-secondary btn-small">Manage</summary>
+                    <div className="admin-team-manage-panel">
+                      <form action={setAdminPasswordAction} className="admin-team-password-form">
                         <input type="hidden" name="adminId" value={administrator.id} />
+                        <strong>Set password</strong>
                         <label className="label">New password
                           <input className="input" name="password" type="password" required minLength={12} maxLength={72} autoComplete="new-password" />
                         </label>
@@ -184,34 +193,39 @@ export default async function AdminSettingsPage({ searchParams }: { searchParams
                         </label>
                         <button className="btn btn-small" type="submit">Save password</button>
                       </form>
-                    </details>
-                    {canRemoveAdminUser(currentLevel, administrator.id === currentAdmin.user.id) && (
-                      <form action={removeAdminAction}>
-                        <input type="hidden" name="adminId" value={administrator.id} />
-                        <button className="btn btn-secondary btn-small" type="submit">Remove from team</button>
-                      </form>
-                    )}
-                    <form action={setAdminStatusAction}>
-                      <input type="hidden" name="adminId" value={administrator.id} />
-                      <input type="hidden" name="status" value={administrator.status === "active" ? "suspended" : "active"} />
-                      <button className="btn btn-secondary btn-small" type="submit">{administrator.status === "active" ? "Suspend" : "Restore"}</button>
-                    </form>
-                    {currentLevel === "owner" && (
-                      <form action={setAdminAccessLevelAction} className="admin-user-authority">
-                        <input type="hidden" name="adminId" value={administrator.id} />
-                        <select className="input" name="accessLevel" defaultValue={administrator.accessLevel} aria-label={`Authority for ${administrator.name}`}>
-                          <option value="owner">Owner</option>
-                          <option value="administrator">Administrator</option>
-                          <option value="operations">Operations Staff</option>
-                        </select>
-                        <button className="btn btn-secondary btn-small" type="submit">Update role</button>
-                      </form>
-                    )}
-                  </div>
-                )}
+                      {currentLevel === "owner" && (
+                        <form action={setAdminAccessLevelAction} className="admin-team-role-form">
+                          <input type="hidden" name="adminId" value={administrator.id} />
+                          <label className="label">Role
+                            <select className="input" name="accessLevel" defaultValue={administrator.accessLevel}>
+                              <option value="owner">Owner</option>
+                              <option value="administrator">Administrator</option>
+                              <option value="operations">Operations Staff</option>
+                            </select>
+                          </label>
+                          <button className="btn btn-secondary btn-small" type="submit">Save role</button>
+                        </form>
+                      )}
+                      <div className="admin-team-account-actions">
+                        <form action={setAdminStatusAction}>
+                          <input type="hidden" name="adminId" value={administrator.id} />
+                          <input type="hidden" name="status" value={administrator.status === "active" ? "suspended" : "active"} />
+                          <button className="btn btn-secondary btn-small" type="submit">{administrator.status === "active" ? "Suspend account" : "Restore account"}</button>
+                        </form>
+                        {canRemoveAdminUser(currentLevel, false) && (
+                          <form action={removeAdminAction}>
+                            <input type="hidden" name="adminId" value={administrator.id} />
+                            <button className="btn btn-secondary btn-small" type="submit">Remove account</button>
+                          </form>
+                        )}
+                      </div>
+                    </div>
+                  </details>
+                ) : <span className="admin-team-self">You</span>}
               </div>
-            ))}
-          </div>
+            );
+          })}
+        </div>
       </section>
 
       <section className="card vendor-panel">

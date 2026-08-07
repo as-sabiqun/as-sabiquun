@@ -11,7 +11,7 @@ Both operations run through `POST /api/internal/process-notifications`. The publ
 
 1. Apply all committed Supabase migrations in order, from `001_platform_foundation.sql` through `014_financial_reconciliation.sql`.
 2. Configure the Vercel variables listed in `.env.example`. Generate the real values outside the repository. In particular, `INTERNAL_CRON_SECRET` must be a strong, private value.
-3. In Supabase Auth, keep Google sign-up enabled, disable public email and phone sign-up, disable anonymous sign-in and manual identity linking, and leave email password recovery available for invited partners and administrators. Register only the production and local callback URLs used by this application.
+3. In Supabase Auth, keep Google sign-up enabled, disable public email and phone sign-up, disable anonymous sign-in and manual identity linking, and leave email password recovery available for invited partners. Administrators are created with passwords in Team access. Register only the production and local callback URLs used by this application.
 4. Redeploy the application after changing Vercel variables.
 5. In Supabase, enable the `pg_cron` and `pg_net` extensions. Vault must also be available.
 6. In **Database > Vault**, create these named entries:
