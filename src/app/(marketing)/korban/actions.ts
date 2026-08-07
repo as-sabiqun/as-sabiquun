@@ -7,8 +7,7 @@ import { createClient, getProfile, isSupabaseConfigured } from "@/lib/supabase/s
 import { createAdminClient } from "@/lib/supabase/admin";
 import { customerAccessMessage, isCustomerAccount } from "@/lib/auth";
 
-const PACKAGE_SLUGS = { share: "korban-share", goat: "korban-goat", cow: "korban-cow" } as const;
-type PackageId = keyof typeof PACKAGE_SLUGS;
+const LEGACY_PACKAGE_SLUGS: Record<string, string> = { share: "korban-share", goat: "korban-goat", cow: "korban-cow" };
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 
 export type SubmitKorbanState =
@@ -23,14 +22,15 @@ function reference() {
 }
 
 export async function submitKorbanOrder(_prevState: SubmitKorbanState, formData: FormData): Promise<SubmitKorbanState> {
-  const packageId = String(formData.get("packageId") ?? "") as PackageId;
+  const packageId = String(formData.get("packageId") ?? "");
+  const packageSlug = LEGACY_PACKAGE_SLUGS[packageId] ?? packageId;
   const requestId = String(formData.get("requestId") ?? "");
   const quantity = Number(formData.get("quantity") ?? 1);
   const names = formData.getAll("participantName").map((name) => String(name).trim()).filter(Boolean);
   const customerName = String(formData.get("customerName") ?? "").trim();
   const customerPhone = String(formData.get("customerPhone") ?? "").trim();
 
-  if (!PACKAGE_SLUGS[packageId]) {
+  if (!/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(packageSlug) || packageSlug.length > 80) {
     return { ok: false, error: "Choose a package." };
   }
   if (!UUID.test(requestId)) return { ok: false, error: "This checkout draft expired. Refresh and try again." };
@@ -69,7 +69,9 @@ export async function submitKorbanOrder(_prevState: SubmitKorbanState, formData:
   const { data: offering, error: offeringError } = await admin
     .from("offerings")
     .select("id, title, detail, unit_amount")
-    .eq("slug", PACKAGE_SLUGS[packageId])
+    .eq("slug", packageSlug)
+    .eq("service_type", "korban")
+    .eq("category_slug", "korban")
     .eq("active", true)
     .single();
 

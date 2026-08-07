@@ -1,5 +1,4 @@
 import { redirect } from "next/navigation";
-import { formatCents } from "@/lib/orders";
 import { adminAccessLevel, getAal2AdminAtLeast } from "@/lib/auth";
 import { adminAccessLabels, canManageAdminAccess, canRemoveAdminUser } from "@/lib/admin-users";
 import { createAdminClient } from "@/lib/supabase/admin";
@@ -21,8 +20,7 @@ export default async function AdminSettingsPage({ searchParams }: { searchParams
   const currentAdmin = await getAal2AdminAtLeast(supabase, "administrator");
   if (!currentAdmin) redirect("/admin");
   const currentLevel = adminAccessLevel(currentAdmin.profile);
-  const [{ data: offerings, error: offeringsError }, { data: settings, error: settingsError }, { data: deliveryFailures, error: deliveryError }, { data: paymentFailures, error: paymentError }, { count: overdueQueue, error: queueError }, { data: integrationFailures, error: integrationError }, { data: cronHealth, error: cronError }] = await Promise.all([
-    supabase.from("offerings").select("id, title, slug, category_slug, unit_amount, min_amount, active, sort_order").order("sort_order"),
+  const [{ data: settings, error: settingsError }, { data: deliveryFailures, error: deliveryError }, { data: paymentFailures, error: paymentError }, { count: overdueQueue, error: queueError }, { data: integrationFailures, error: integrationError }, { data: cronHealth, error: cronError }] = await Promise.all([
     supabase.from("platform_settings").select("commission_rate, default_claim_window_hours, updated_at").eq("id", true).maybeSingle(),
     supabase.from("notification_deliveries").select("id, channel, status, error_code, error_message, updated_at, orders(reference)").in("status", ["deferred", "bounced", "blocked", "failed"]).order("updated_at", { ascending: false }).limit(10),
     supabase.from("payment_transactions").select("id, transaction_type, status, updated_at, orders(reference)").in("status", ["failed", "expired", "cancelled"]).order("updated_at", { ascending: false }).limit(10),
@@ -101,7 +99,7 @@ export default async function AdminSettingsPage({ searchParams }: { searchParams
   return (
     <>
       <div className="vendor-page-head"><div><p className="vendor-eyebrow">System</p><h1 className="display vendor-page-title">Settings and system status</h1><p className="vendor-page-lead">Check connected services, business settings, and anything that needs fixing.</p></div></div>
-      {(offeringsError || settingsError || deliveryError || paymentError || queueError || integrationError || cronError) && <p className="auth-error">Some health data could not be loaded. {(offeringsError || settingsError || deliveryError || paymentError || queueError || integrationError || cronError)?.message}</p>}
+      {(settingsError || deliveryError || paymentError || queueError || integrationError || cronError) && <p className="auth-error">Some health data could not be loaded. {(settingsError || deliveryError || paymentError || queueError || integrationError || cronError)?.message}</p>}
 
       <div className="vendor-split">
         <section className="card vendor-panel">
@@ -119,13 +117,6 @@ export default async function AdminSettingsPage({ searchParams }: { searchParams
           <p className="admin-record-help">Changes remain database-controlled; this page intentionally does not expose raw state editors.</p>
         </section>
       </div>
-
-      <section className="card vendor-panel">
-        <div className="vendor-panel-head"><div><p className="vendor-eyebrow">Services</p><h2 className="display text-lg mt-1">Services and prices</h2></div></div>
-        <div className="admin-payment-list">
-          {(offerings ?? []).map((offering) => <div key={offering.id}><strong>{offering.title}</strong><span>{offering.category_slug} · {offering.slug}</span><small>{offering.unit_amount ? formatCents(offering.unit_amount) : offering.min_amount ? `From ${formatCents(offering.min_amount)}` : "Price missing"} · {offering.active ? "Active" : "Inactive"}</small></div>)}
-        </div>
-      </section>
 
       <section className="card vendor-panel admin-team-panel">
         <div className="admin-team-head">

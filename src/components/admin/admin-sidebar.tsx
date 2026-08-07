@@ -9,6 +9,7 @@ import type { AdminAccessLevel } from "@/lib/supabase/server";
 const navItems: { href: string; label: string; icon: () => React.JSX.Element; exact: boolean; minimum?: AdminAccessLevel }[] = [
   { href: "/admin", label: "Overview", icon: OverviewIcon, exact: true },
   { href: "/admin/jobs", label: "Jobs", icon: JobsIcon, exact: false },
+  { href: "/admin/services", label: "Services", icon: ServicesIcon, exact: false, minimum: "administrator" },
   { href: "/admin/vendors", label: "Vendors", icon: VendorsIcon, exact: false },
   { href: "/admin/customers", label: "Customers", icon: CustomersIcon, exact: false },
   { href: "/admin/finance", label: "Finance", icon: FinanceIcon, exact: false },
@@ -21,6 +22,9 @@ function OverviewIcon() {
 }
 function JobsIcon() {
   return <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="7" width="18" height="13" rx="2" /><path d="M8 7V5a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2M3 12h18" /></svg>;
+}
+function ServicesIcon() {
+  return <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5h16v5H4zM4 14h7v5H4zM15 14h5v5h-5z" /></svg>;
 }
 function VendorsIcon() {
   return <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="10" width="7" height="11" rx="1.2" /><rect x="14" y="4" width="7" height="17" rx="1.2" /><path d="M6 14h1M6 17h1M17 8h1M17 11h1M17 14h1" /></svg>;

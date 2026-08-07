@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { services } from "@/components/service-card";
+import type { CatalogService } from "@/components/service-card";
 
 function AmanahStar({ className = "" }: { className?: string }) {
   return (
@@ -29,7 +29,7 @@ function SectionHeading({
   );
 }
 
-export function Hero() {
+export function Hero({ services }: { services: CatalogService[] }) {
   return (
     <section className="lp-hero" aria-labelledby="landing-title">
       <div className="lp-hero-mark" aria-hidden="true">
@@ -63,7 +63,7 @@ export function Hero() {
   );
 }
 
-export function ServicesOutline() {
+export function ServicesOutline({ services }: { services: CatalogService[] }) {
   return (
     <section className="lp-section lp-services" id="services" aria-labelledby="services-title">
       <div className="lp-container">

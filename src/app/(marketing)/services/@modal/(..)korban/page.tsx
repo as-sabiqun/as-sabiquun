@@ -1,17 +1,13 @@
 import { randomUUID } from "node:crypto";
 import Link from "next/link";
 import { Modal } from "@/components/modal";
-import { KorbanContent, type KorbanPackage } from "@/components/korban-content";
+import { KorbanContent } from "@/components/korban-content";
 import { getActiveOfferings } from "@/lib/offerings";
-
-const packageIds = { "korban-share": "share", "korban-goat": "goat", "korban-cow": "cow" } as const;
 
 export default async function KorbanModal() {
   const offerings = await getActiveOfferings();
-  const packages = offerings.flatMap((offering) => {
-    const id = packageIds[offering.slug as keyof typeof packageIds];
-    return id && offering.unit_amount ? [{ id, label: offering.title.replace(/^Korban\s*—\s*/i, ""), priceCents: offering.unit_amount } satisfies KorbanPackage] : [];
-  });
+  const packages = offerings.filter((offering) => offering.service_type === "korban" && offering.unit_amount)
+    .map((offering) => ({ id: offering.slug, label: offering.title.replace(/^Korban\s*[—–-]\s*/i, ""), priceCents: offering.unit_amount! }));
   return (
     <Modal>
       {packages.length ? (

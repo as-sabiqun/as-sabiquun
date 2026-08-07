@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { Brand } from "@/components/brand";
-import { services } from "@/components/service-card";
+import { catalogServicesFrom } from "@/components/service-card";
+import { getActiveOfferings } from "@/lib/offerings";
 
 const mainNav = [
   ["About", "/about"],
@@ -8,7 +9,8 @@ const mainNav = [
   ["Contact", "/contact"],
 ] as const;
 
-export function Header() {
+export async function Header() {
+  const services = catalogServicesFrom(await getActiveOfferings());
   return (
     <header className="site-header">
       <div className="container site-nav-shell flex h-16 items-center justify-between gap-5">
@@ -35,7 +37,8 @@ export function Header() {
   );
 }
 
-export function Footer() {
+export async function Footer() {
+  const services = catalogServicesFrom(await getActiveOfferings());
   return (
     <footer className="site-footer">
       <div className="container">

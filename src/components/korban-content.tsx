@@ -6,7 +6,7 @@ import { CustomerAccountGate } from "@/components/customer-account-gate";
 import { shouldResumeCheckout } from "@/lib/customer-account-handoff";
 
 export interface KorbanPackage {
-  id: "share" | "goat" | "cow";
+  id: string;
   label: string;
   priceCents: number;
 }

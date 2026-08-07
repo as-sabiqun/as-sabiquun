@@ -1,6 +1,16 @@
 import Link from "next/link";
 
-export const services = [
+export interface CatalogService {
+  number: string;
+  slug: "korban" | "water" | "quran" | "orphans";
+  title: string;
+  description: string;
+  href: string;
+  price: string;
+  priceLabel: string;
+}
+
+export const services: CatalogService[] = [
   {
     number: "01",
     slug: "korban",
@@ -37,9 +47,19 @@ export const services = [
     price: "From S$50",
     priceLabel: "minimum",
   },
-] as const;
+];
 
-function ServiceIcon({ type }: { type: (typeof services)[number]["slug"] }) {
+export function catalogServicesFrom(offerings: { category_slug: CatalogService["slug"]; unit_amount: number | null; min_amount: number | null }[]) {
+  return services.flatMap((service) => {
+    const amounts = offerings.filter((offering) => offering.category_slug === service.slug)
+      .map((offering) => offering.unit_amount ?? offering.min_amount).filter((amount): amount is number => amount !== null);
+    if (!amounts.length) return [];
+    const price = `From S$${(Math.min(...amounts) / 100).toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 2 })}`;
+    return [{ ...service, price, priceLabel: service.slug === "korban" ? "starting price" : "minimum" }];
+  });
+}
+
+function ServiceIcon({ type }: { type: CatalogService["slug"] }) {
   if (type === "water") {
     return <svg viewBox="0 0 64 64" aria-hidden="true"><path d="M32 9C25 20 17 29 17 40a15 15 0 0 0 30 0C47 29 39 20 32 9Z" /><path d="M24 42c2 5 6 7 11 7" /></svg>;
   }
@@ -52,7 +72,7 @@ function ServiceIcon({ type }: { type: (typeof services)[number]["slug"] }) {
   return <svg viewBox="0 0 64 64" aria-hidden="true"><path d="M15 42c2-11 9-19 17-19 9 0 16 8 17 19" /><path d="M20 24c-3-1-6-4-7-8 6 0 10 2 13 6M44 24c3-1 6-4 7-8-6 0-10 2-13 6M23 42v7M41 42v7M27 32h.1M37 32h.1" /></svg>;
 }
 
-export function CatalogCard({ service }: { service: (typeof services)[number] }) {
+export function CatalogCard({ service }: { service: CatalogService }) {
   return (
     <Link href={service.href} className="card catalog-card">
       <div className="catalog-card-media">
