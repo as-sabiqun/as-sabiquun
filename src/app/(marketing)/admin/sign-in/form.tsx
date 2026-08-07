@@ -13,7 +13,7 @@ export function AdminSignInForm({ next, initialError }: { next: string; initialE
       <p className="auth-arabic" lang="ar" dir="rtl">الأمانة</p>
       <p className="auth-eyebrow">Private operations</p>
       <h1 className="display auth-title">Administrator sign in</h1>
-      <p className="auth-lead">This console requires your password and authenticator code.</p>
+      <p className="auth-lead">Sign in with your administrator password. Authenticator checks resume on 22 August.</p>
 
       <form className="auth-form" action={action}>
         {error && <p className="auth-error" role="alert">{error}</p>}

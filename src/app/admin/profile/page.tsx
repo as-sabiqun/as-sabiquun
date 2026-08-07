@@ -31,7 +31,7 @@ export default async function AdminProfilePage() {
 
         <dl className="vendor-profile-facts">
           <div><dt>Role</dt><dd>Administrator</dd></div>
-          <div><dt>Console access</dt><dd>{mfaBypassed ? "Password only until 2:00 AM SGT" : "Signed in with MFA"}</dd></div>
+          <div><dt>Console access</dt><dd>{mfaBypassed ? "Password only until 22 August 2026" : "Signed in with MFA"}</dd></div>
         </dl>
 
         <form action={logout}>
