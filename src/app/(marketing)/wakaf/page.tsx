@@ -16,7 +16,11 @@ const projects = [
 
 export default async function WakafPage() {
   const offerings = await getActiveOfferings();
-  const minimumByCategory = new Map(offerings.filter((offering) => offering.service_type === "wakaf").map((offering) => [offering.category_slug, offering.min_amount ?? offering.unit_amount]));
+  const minimumByCategory = new Map<string, number>();
+  for (const offering of offerings.filter((item) => item.service_type === "wakaf")) {
+    const amount = offering.min_amount ?? offering.unit_amount;
+    if (amount && amount < (minimumByCategory.get(offering.category_slug) ?? Infinity)) minimumByCategory.set(offering.category_slug, amount);
+  }
   return (
     <>
       <section className="catalog-header">

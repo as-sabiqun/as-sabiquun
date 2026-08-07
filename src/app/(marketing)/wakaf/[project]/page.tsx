@@ -5,7 +5,7 @@ import { WakafProjectContent } from "@/components/wakaf-project-content";
 import { getActiveOfferings } from "@/lib/offerings";
 import { wakafProjects, type WakafProjectSlug } from "@/lib/wakaf-projects";
 
-const offeringSlugs: Record<WakafProjectSlug, string> = { "water-pump": "wakaf-water-pump", quran: "wakaf-quran", "food-for-orphans": "wakaf-food-for-orphans" };
+const offeringCategories: Record<WakafProjectSlug, "water" | "quran" | "orphans"> = { "water-pump": "water", quran: "quran", "food-for-orphans": "orphans" };
 
 export const dynamicParams = false;
 export function generateStaticParams() {
@@ -16,7 +16,9 @@ export default async function WakafProjectPage({ params }: { params: Promise<{ p
   const { project: slug } = await params;
   const project = wakafProjects[slug as WakafProjectSlug];
   if (!project) notFound();
-  const offering = (await getActiveOfferings()).find((item) => item.slug === offeringSlugs[slug as WakafProjectSlug]);
+  const offerings = (await getActiveOfferings()).filter((item) =>
+    item.service_type === "wakaf" && item.category_slug === offeringCategories[slug as WakafProjectSlug] && item.min_amount
+  );
 
   return (
     <section className="product-page">
@@ -28,12 +30,12 @@ export default async function WakafProjectPage({ params }: { params: Promise<{ p
         </nav>
 
         <div className="mt-6">
-          {offering?.min_amount ? (
+          {offerings.length ? (
             <WakafProjectContent
               initialRequestId={randomUUID()}
               projectId={slug as WakafProjectSlug}
               project={project}
-              offering={{ title: offering.title, detail: offering.detail, minimumCents: offering.min_amount }}
+              offerings={offerings.map((offering) => ({ id: offering.id, title: offering.title, detail: offering.detail, minimumCents: offering.min_amount! }))}
             />
           ) : (
             <div className="panel p-8 text-center">

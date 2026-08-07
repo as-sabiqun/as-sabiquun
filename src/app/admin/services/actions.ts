@@ -2,7 +2,7 @@
 
 import { updateTag } from "next/cache";
 import { redirect } from "next/navigation";
-import { offeringFields, korbanOfferingSlug, type OfferingPricing } from "@/lib/admin-offerings";
+import { offeringCategory, offeringFields, offeringSlug, type OfferingPricing } from "@/lib/admin-offerings";
 import { getAal2AdminAtLeast } from "@/lib/auth";
 import { createClient } from "@/lib/supabase/server";
 
@@ -26,31 +26,33 @@ export async function updateOfferingAction(formData: FormData) {
   const input = offeringFields(formData, offering.service_type as OfferingPricing);
   if (!input.ok) servicesRedirect("error", input.error);
   const { error } = await supabase.from("offerings").update(input.values).eq("id", id);
-  if (error) servicesRedirect("error", "The service could not be updated. Run the latest database migration, then try again.");
+  if (error) servicesRedirect("error", "The service could not be updated. Refresh and try again, or contact the platform owner.");
 
   updateTag("offerings");
   servicesRedirect("message", `${input.values.title} was updated.`);
 }
 
-export async function addKorbanOfferingAction(formData: FormData) {
+export async function addOfferingAction(formData: FormData) {
   const supabase = await catalogContext();
   if (!supabase) servicesRedirect("error", "Administrator access is required to add packages.");
 
-  const input = offeringFields(formData, "korban");
+  const category = offeringCategory(formData.get("category"));
+  if (!category) servicesRedirect("error", "Choose a supported service.");
+  const input = offeringFields(formData, category.pricing);
   if (!input.ok) servicesRedirect("error", input.error);
-  const slug = korbanOfferingSlug(input.values.title);
+  const slug = offeringSlug(category.category, input.values.title);
   if (!slug) servicesRedirect("error", "Use a package title containing letters or numbers.");
 
   const { data: last } = await supabase.from("offerings").select("sort_order").order("sort_order", { ascending: false }).limit(1).maybeSingle();
   const { error } = await supabase.from("offerings").insert({
     ...input.values,
     slug,
-    service_type: "korban",
-    category_slug: "korban",
+    service_type: category.serviceType,
+    category_slug: category.category,
     sort_order: (last?.sort_order ?? 0) + 1,
   });
   if (error) {
-    servicesRedirect("error", error.code === "23505" ? "A Korban package with that title already exists." : "The package could not be added. Run the latest database migration, then try again.");
+    servicesRedirect("error", error.code === "23505" ? "A package with that title already exists for this service." : "The package could not be added. Refresh and try again, or contact the platform owner.");
   }
 
   updateTag("offerings");

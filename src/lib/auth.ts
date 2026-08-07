@@ -2,7 +2,6 @@ import "server-only";
 
 import type { SupabaseClient, User } from "@supabase/supabase-js";
 import { cache } from "react";
-import { isAdminMfaBypassActive } from "@/lib/auth-policy";
 import { getCurrentUser, getProfile, type AdminAccessLevel, type Profile } from "@/lib/supabase/server";
 
 export type AdminMfaState = "verified" | "challenge" | "enroll" | "error";
@@ -28,7 +27,6 @@ export const getActiveAdmin = cache(async (supabase: SupabaseClient): Promise<{ 
 });
 
 export const getAdminMfaState = cache(async (supabase: SupabaseClient): Promise<AdminMfaState> => {
-  if (isAdminMfaBypassActive()) return "verified";
   const { data, error } = await supabase.auth.mfa.getAuthenticatorAssuranceLevel();
   if (error || !data) return "error";
   if (data.currentLevel === "aal2") return "verified";

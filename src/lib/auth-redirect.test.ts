@@ -1,13 +1,6 @@
 import assert from "node:assert/strict";
 import test from "node:test";
-import { ADMIN_MFA_BYPASS_UNTIL, isAdminMfaBypassActive } from "./auth-policy.ts";
 import { safeAdminRedirectPath, safeRedirectPath, safeVendorRedirectPath } from "./auth-redirect.ts";
-
-test("temporary admin MFA bypass expires at the fixed cutoff", () => {
-  assert.equal(isAdminMfaBypassActive(Date.parse("2026-08-21T15:59:59Z")), true);
-  assert.equal(isAdminMfaBypassActive(ADMIN_MFA_BYPASS_UNTIL - 1), true);
-  assert.equal(isAdminMfaBypassActive(ADMIN_MFA_BYPASS_UNTIL), false);
-});
 
 test("auth redirects stay on this site", () => {
   assert.equal(safeRedirectPath("/dashboard?tab=orders"), "/dashboard?tab=orders");

@@ -10,6 +10,7 @@ const draftKey = (slug: string) => `wakaf-draft-${slug}`;
 
 interface Draft {
   requestId: string;
+  offeringId: string;
   amount: number;
   dedication: string;
   customerName: string;
@@ -17,15 +18,17 @@ interface Draft {
   resumeCheckout?: boolean;
 }
 
-export function WakafProjectContent({ initialRequestId, projectId, project, offering }: {
+export function WakafProjectContent({ initialRequestId, projectId, project, offerings }: {
   initialRequestId: string;
   projectId: WakafProjectSlug;
   project: (typeof wakafProjects)[WakafProjectSlug];
-  offering: { title: string; detail: string; minimumCents: number };
+  offerings: { id: string; title: string; detail: string; minimumCents: number }[];
 }) {
   const formRef = useRef<HTMLFormElement>(null);
   const resumed = useRef(false);
   const [requestId, setRequestId] = useState(initialRequestId);
+  const [offeringId, setOfferingId] = useState(offerings[0].id);
+  const offering = offerings.find((item) => item.id === offeringId) ?? offerings[0];
   const minimum = offering.minimumCents / 100;
   const presets = [...new Set([minimum, 25, 50, 100, 250])].filter((value) => value >= minimum);
   const [amount, setAmount] = useState(presets[0] ?? minimum);
@@ -46,7 +49,9 @@ export function WakafProjectContent({ initialRequestId, projectId, project, offe
       // Restoring a browser-only draft is the external synchronization this effect owns.
       // eslint-disable-next-line react-hooks/set-state-in-effect
       setRequestId(draft.requestId || initialRequestId);
-      setAmount(draft.amount);
+      const restoredOffering = offerings.find((item) => item.id === draft.offeringId) ?? offerings[0];
+      setOfferingId(restoredOffering.id);
+      setAmount(Math.max(draft.amount, restoredOffering.minimumCents / 100));
       setDedication(draft.dedication);
       setCustomerName(draft.customerName);
       setCustomerPhone(draft.customerPhone);
@@ -54,11 +59,11 @@ export function WakafProjectContent({ initialRequestId, projectId, project, offe
     } catch {
       // ignore malformed draft
     }
-  }, [initialRequestId, projectId]);
+  }, [initialRequestId, projectId, offerings]);
 
   useEffect(() => {
     if (state && !state.ok && "requiresLogin" in state && state.requiresLogin) {
-      const draft: Draft = { requestId, amount, dedication, customerName, customerPhone, resumeCheckout: true };
+      const draft: Draft = { requestId, offeringId, amount, dedication, customerName, customerPhone, resumeCheckout: true };
       sessionStorage.setItem(draftKey(projectId), JSON.stringify(draft));
       // This external Server Action result is the only source that may open the account gate.
       // eslint-disable-next-line react-hooks/set-state-in-effect
@@ -91,6 +96,17 @@ export function WakafProjectContent({ initialRequestId, projectId, project, offe
             {state && "error" in state && <p className="auth-error">{state.error}</p>}
             <input type="hidden" name="projectId" value={projectId} />
             <input type="hidden" name="requestId" value={requestId} />
+            <input type="hidden" name="offeringId" value={offering.id} />
+
+            {offerings.length > 1 && <label className="label">Package
+              <select className="input" value={offering.id} onChange={(event) => {
+                const next = offerings.find((item) => item.id === event.target.value) ?? offerings[0];
+                setOfferingId(next.id);
+                setAmount(next.minimumCents / 100);
+              }}>
+                {offerings.map((item) => <option key={item.id} value={item.id}>{item.title} — from S${item.minimumCents / 100}</option>)}
+              </select>
+            </label>}
 
             <div>
               <span className="label mb-2 block">Contribution</span>

@@ -1,5 +1,19 @@
 export type OfferingPricing = "korban" | "wakaf";
 
+export const offeringCategoryConfig = {
+  korban: { label: "Korban", serviceType: "korban", pricing: "korban" },
+  water: { label: "Wakaf Water Pump", serviceType: "wakaf", pricing: "wakaf" },
+  quran: { label: "Wakaf Quran", serviceType: "wakaf", pricing: "wakaf" },
+  orphans: { label: "Food for Orphans", serviceType: "wakaf", pricing: "wakaf" },
+} as const;
+
+export type OfferingCategory = keyof typeof offeringCategoryConfig;
+
+export function offeringCategory(value: FormDataEntryValue | null) {
+  const category = String(value ?? "") as OfferingCategory;
+  return offeringCategoryConfig[category] ? { category, ...offeringCategoryConfig[category] } : null;
+}
+
 export function sgdCents(value: FormDataEntryValue | null): number | null {
   const raw = String(value ?? "").trim();
   if (!/^\d{1,7}(?:\.\d{1,2})?$/.test(raw)) return null;
@@ -30,9 +44,9 @@ export function offeringFields(formData: FormData, pricing: OfferingPricing) {
   } as const;
 }
 
-export function korbanOfferingSlug(title: string) {
-  const name = title.replace(/^korban\s*[—–-]?\s*/i, "").toLowerCase()
+export function offeringSlug(category: OfferingCategory, title: string) {
+  const name = title.replace(/^(?:korban|wakaf)\s*[—–-]?\s*/i, "").toLowerCase()
     .normalize("NFKD").replace(/[\u0300-\u036f]/g, "")
     .replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "").slice(0, 60);
-  return name ? `korban-${name}` : null;
+  return name ? `${category}-${name}` : null;
 }

@@ -9,9 +9,9 @@ import { formatCents } from "@/lib/orders";
 import { customerAccessMessage, isCustomerAccount } from "@/lib/auth";
 
 const PROJECT_MAP = {
-  "water-pump": { slug: "wakaf-water-pump", category: "water" },
-  quran: { slug: "wakaf-quran", category: "quran" },
-  "food-for-orphans": { slug: "wakaf-food-for-orphans", category: "orphans" },
+  "water-pump": { category: "water" },
+  quran: { category: "quran" },
+  "food-for-orphans": { category: "orphans" },
 } as const;
 type ProjectId = keyof typeof PROJECT_MAP;
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
@@ -29,6 +29,7 @@ function reference() {
 
 export async function submitWakafContribution(_prevState: SubmitWakafState, formData: FormData): Promise<SubmitWakafState> {
   const projectId = String(formData.get("projectId") ?? "") as ProjectId;
+  const offeringId = String(formData.get("offeringId") ?? "");
   const requestId = String(formData.get("requestId") ?? "");
   const amountDollars = Number(formData.get("amount") ?? 0);
   const dedication = String(formData.get("dedication") ?? "").trim() || null;
@@ -40,6 +41,7 @@ export async function submitWakafContribution(_prevState: SubmitWakafState, form
     return { ok: false, error: "Choose a project." };
   }
   if (!UUID.test(requestId)) return { ok: false, error: "This checkout draft expired. Refresh and try again." };
+  if (!UUID.test(offeringId)) return { ok: false, error: "Choose an available package." };
   const totalAmount = dollarsToCents(amountDollars);
   if (totalAmount === null) {
     return { ok: false, error: "Enter a valid contribution amount." };
@@ -73,7 +75,9 @@ export async function submitWakafContribution(_prevState: SubmitWakafState, form
   const { data: offering, error: offeringError } = await admin
     .from("offerings")
     .select("id, title, detail, min_amount")
-    .eq("slug", project.slug)
+    .eq("id", offeringId)
+    .eq("service_type", "wakaf")
+    .eq("category_slug", project.category)
     .eq("active", true)
     .single();
 
