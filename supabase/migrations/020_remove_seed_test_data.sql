@@ -83,6 +83,7 @@ $$;
 select set_config('app.demo_reset', 'on', true);
 
 alter table public.vendor_payments disable trigger vendor_payments_validate;
+alter table public.vendor_payments disable trigger vendor_payments_finance_access;
 alter table public.payment_transactions disable trigger payment_transactions_refund_access;
 
 delete from public.vendor_payments where order_id in (
@@ -106,6 +107,7 @@ delete from public.payment_transactions where order_id in (
 );
 
 alter table public.vendor_payments enable trigger vendor_payments_validate;
+alter table public.vendor_payments enable trigger vendor_payments_finance_access;
 alter table public.payment_transactions enable trigger payment_transactions_refund_access;
 
 delete from public.orders where id in (
