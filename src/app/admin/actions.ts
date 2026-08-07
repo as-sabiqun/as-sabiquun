@@ -32,14 +32,31 @@ export async function createManualJobAction(_previous: ManualJobState, formData:
   const quantity = Number(formData.get("quantity") ?? 1);
   const amount = String(formData.get("amount") ?? "").trim();
   const totalAmount = amount ? dollarsToCents(Number(amount)) : null;
-  const participantNames = String(formData.get("participantNames") ?? "").split(/\r?\n/).map((name) => name.trim()).filter(Boolean);
+  const participantNames = formData.getAll("participantName").map(String).map((name) => name.trim()).filter(Boolean);
+  const beneficiaryNames = String(formData.get("beneficiaryNames") ?? "").split(/\r?\n/).map((name) => name.trim()).filter(Boolean);
+  const beneficiaryCountry = String(formData.get("beneficiaryCountry") ?? "").trim();
+  const beneficiaryState = String(formData.get("beneficiaryState") ?? "").trim();
+  const beneficiaryVillage = String(formData.get("beneficiaryVillage") ?? "").trim();
+  const partnerOrganisation = String(formData.get("partnerOrganisation") ?? "").trim();
+  const dedication = String(formData.get("dedication") ?? "").trim();
+  const dedicationArabic = String(formData.get("dedicationArabic") ?? "").trim();
+  const dedicationRemarks = String(formData.get("dedicationRemarks") ?? "").trim();
+  const paymentMethod = String(formData.get("paymentMethod") ?? "").trim();
+  const notes = String(formData.get("notes") ?? "").trim();
   const deadline = String(formData.get("completionDeadline") ?? "").trim();
 
-  if (!UUID.test(offeringId) || !customerName || !isContactNumber(customerPhone) || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(customerEmail) || !paymentReference) {
+  if (!UUID.test(offeringId) || !customerName || customerName.length > 120 || !isContactNumber(customerPhone) || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(customerEmail) || customerEmail.length > 254 || !paymentReference || paymentReference.length > 200) {
     return { error: "Complete the customer, service, and payment details." };
   }
   if (!Number.isInteger(quantity) || quantity < 1 || quantity > 7 || (amount && totalAmount === null)) {
     return { error: "Check the quantity or contribution amount." };
+  }
+  if (!beneficiaryCountry || beneficiaryCountry.length > 100 || beneficiaryState.length > 120 || beneficiaryVillage.length > 160 || partnerOrganisation.length > 200) {
+    return { error: "Add the service country and check the beneficiary location details." };
+  }
+  if (beneficiaryNames.length > 50 || beneficiaryNames.some((name) => name.length > 200)) return { error: "Check the beneficiary names." };
+  if (dedication.length > 300 || dedicationArabic.length > 500 || dedicationRemarks.length > 2000 || paymentMethod.length > 80 || notes.length > 2000) {
+    return { error: "One or more job details are too long." };
   }
   if (deadline && Number.isNaN(Date.parse(deadline))) return { error: "Enter a valid target completion date." };
 
@@ -53,12 +70,18 @@ export async function createManualJobAction(_previous: ManualJobState, formData:
     p_customer_phone: customerPhone,
     p_customer_email: customerEmail,
     p_participant_names: participantNames,
-    p_dedication: String(formData.get("dedication") ?? "").trim() || null,
+    p_dedication: dedication || null,
     p_payment_reference: paymentReference,
-    p_payment_method: String(formData.get("paymentMethod") ?? "").trim() || null,
-    p_notes: String(formData.get("notes") ?? "").trim() || null,
-    p_beneficiary_country: String(formData.get("beneficiaryCountry") ?? "").trim() || null,
-    p_completion_deadline: deadline ? new Date(`${deadline}T12:00:00`).toISOString() : null,
+    p_payment_method: paymentMethod || null,
+    p_notes: notes || null,
+    p_beneficiary_country: beneficiaryCountry,
+    p_completion_deadline: deadline ? new Date(`${deadline}T12:00:00.000Z`).toISOString() : null,
+    p_beneficiary_state: beneficiaryState || null,
+    p_beneficiary_village: beneficiaryVillage || null,
+    p_partner_organisation: partnerOrganisation || null,
+    p_beneficiary_names: beneficiaryNames,
+    p_dedication_arabic: dedicationArabic || null,
+    p_dedication_remarks: dedicationRemarks || null,
   });
   const job = Array.isArray(data) ? data[0] : null;
   if (error || !job?.id) return { error: error?.message ?? "The manual job could not be created." };

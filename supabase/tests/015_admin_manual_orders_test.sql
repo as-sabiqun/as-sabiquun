@@ -24,14 +24,18 @@ begin
 
   select id into v_order from public.create_admin_manual_order(
     v_offering, 1, null, 'Walk-in Customer', '+6500000000', 'walk-in@example.test',
-    array['Walk-in Customer'], null, 'MANUAL-015-RECEIPT', 'Cash', 'Created at the counter.', 'Indonesia', now() + interval '7 days'
+    array['Walk-in Customer'], 'For Haji Ahmad', 'MANUAL-015-RECEIPT', 'Cash', 'Created at the counter.', 'Indonesia', now() + interval '7 days',
+    'Aceh', 'Banda Aceh', 'Trusted Partner', array['Beneficiary One'], 'الحاج أحمد', 'Use the approved nameplate template.'
   );
 
   if not exists (
     select 1 from public.orders
     where id = v_order and customer_id is null and entry_source = 'admin_manual'
       and payment_provider = 'manual' and payment_status = 'paid' and fulfilment_status = 'ready'
-      and beneficiary_country = 'Indonesia'
+      and beneficiary_country = 'Indonesia' and beneficiary_state = 'Aceh' and beneficiary_village = 'Banda Aceh'
+      and partner_organisation = 'Trusted Partner' and beneficiary_names = array['Beneficiary One']
+      and dedication = 'For Haji Ahmad' and dedication_arabic = 'الحاج أحمد'
+      and dedication_remarks = 'Use the approved nameplate template.'
   ) then raise exception 'Manual order did not enter the paid ready-to-dispatch state'; end if;
 
   if not exists (

@@ -16,12 +16,14 @@ export interface AdminOrderDetail extends OrderRow {
   customer_name: string;
   customer_phone: string;
   customer_email: string;
-  customer_id: string;
+  customer_id: string | null;
   currency: string;
   unit_amount: number;
   commission_amount: number;
   vendor_payout_amount: number;
   payment_reference: string | null;
+  payment_provider: "hitpay" | "manual" | "demo";
+  entry_source: "customer" | "admin_manual";
   notes: string | null;
   assigned_vendor: { id: string; display_name: string; phone: string | null } | null;
   beneficiary_country: string | null;
@@ -127,12 +129,14 @@ export interface CompletionReportRow {
 
 export interface ProviderTransactionRow {
   id: string;
+  provider: "hitpay" | "manual";
   transaction_type: "payment" | "refund";
   provider_request_id: string;
   provider_payment_id: string | null;
   amount: number;
   currency: string;
   status: string;
+  reason: string | null;
   provider_event_at: string | null;
   created_at: string;
 }
@@ -317,6 +321,7 @@ export function JobDetailReal({ order, offers, submissions, proofs, notification
             <Facts>
               <Fact label="Job ID">{order.id}</Fact><Fact label="Service type">{order.service_type}</Fact>
               <Fact label="Package purchased">{orderTitle(order)}</Fact><Fact label="Order number">{order.reference}</Fact>
+              <Fact label="Order source">{order.entry_source === "admin_manual" ? "Entered by admin" : "Customer checkout"}</Fact><Fact label="Payment route">{order.payment_provider === "manual" ? "Paid offline" : humanize(order.payment_provider)}</Fact>
               <Fact label="Created">{formatDate(order.created_at, true)}</Fact><Fact label="Assigned">{formatDate(order.accepted_at, true)}</Fact>
               <Fact label="Completed for customer">{formatDate(order.completed_at, true)}</Fact><Fact label="Total processing time">{processingTime(order)}</Fact>
             </Facts>
@@ -397,7 +402,7 @@ export function JobDetailReal({ order, offers, submissions, proofs, notification
 
           <RecordSection id="payment-tracking" number="11" title="Payment tracking">
             <Facts><Fact label="Package price">{formatCents(order.total_amount)}</Fact><Fact label="Payment state">{humanize(order.payment_status)}</Fact><Fact label="Vendor cost">{formatCents(order.vendor_payout_amount)}</Fact><Fact label="Vendor paid">{formatCents(paid)}</Fact><Fact label="Vendor outstanding">{formatCents(outstanding)}</Fact><Fact label="Currency">{order.currency}</Fact></Facts>
-            {transactions.length > 0 && <><p className="vendor-eyebrow mt-5 mb-2">HitPay transactions</p><div className="admin-payment-list">{transactions.map((transaction) => <div key={transaction.id}><strong>{formatCents(transaction.transaction_type === "refund" ? -transaction.amount : transaction.amount)}</strong><span>{humanize(transaction.transaction_type)} · {humanize(transaction.status)}</span><small>{transaction.provider_payment_id || transaction.provider_request_id}</small></div>)}</div></>}
+            {transactions.length > 0 && <><p className="vendor-eyebrow mt-5 mb-2">Payment transactions</p><div className="admin-payment-list">{transactions.map((transaction) => <div key={transaction.id}><strong>{formatCents(transaction.transaction_type === "refund" ? -transaction.amount : transaction.amount)}</strong><span>{humanize(transaction.provider)} · {humanize(transaction.transaction_type)} · {humanize(transaction.status)}</span><small>{transaction.provider_payment_id || transaction.provider_request_id}{transaction.reason ? ` · ${transaction.reason}` : ""}</small></div>)}</div></>}
             {payments.length > 0 && <><p className="vendor-eyebrow mt-5 mb-2">Vendor settlement ledger</p><div className="admin-payment-list">{payments.map((payment) => <div key={payment.id}><strong>{formatCents(payment.amount)}</strong><span>{humanize(payment.entry_type)} · {formatDate(payment.payment_date)} · {payment.method || "Method not recorded"}</span><small>{payment.reference || "No reference"}</small></div>)}</div></>}
             <Link href="/admin/finance" className="vendor-job-table-view mt-4 inline-block">Open finance →</Link>
           </RecordSection>

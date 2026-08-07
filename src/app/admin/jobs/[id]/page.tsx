@@ -20,7 +20,7 @@ export default async function AdminJobDetailPage({ params }: { params: Promise<{
     .from("orders")
     .select(`id, reference, service_type, category_slug, quantity, participant_names, dedication, notes,
       unit_amount, total_amount, commission_amount, vendor_payout_amount, currency, offering_title, offering_detail, status,
-      payment_status, fulfilment_status, delivery_status, settlement_status, payment_reference,
+      payment_provider, payment_status, fulfilment_status, delivery_status, settlement_status, payment_reference, entry_source,
       created_at, updated_at, customer_id, customer_name, customer_phone, customer_email,
       beneficiary_country, beneficiary_state, beneficiary_village, partner_organisation, beneficiary_names,
       dedication_arabic, dedication_remarks, project_country, project_state, project_village,
@@ -44,7 +44,7 @@ export default async function AdminJobDetailPage({ params }: { params: Promise<{
     supabase.from("proofs").select("id, submission_id, storage_path, media_type, category, evidence_slot, mime_type, size_bytes, created_at").eq("order_id", id).order("created_at"),
     supabase.from("notification_deliveries").select("id, report_id, channel, recipient, attempt, status, provider_message_id, error_code, error_message, next_retry_at, attempted_at, sent_at, delivered_at, created_at, updated_at").eq("order_id", id).order("created_at", { ascending: false }),
     supabase.from("completion_reports").select("id, submission_id, kind, version, storage_path, checksum, generated_at").eq("order_id", id).order("generated_at", { ascending: false }),
-    supabase.from("payment_transactions").select("id, transaction_type, provider_request_id, provider_payment_id, amount, currency, status, provider_event_at, created_at").eq("order_id", id).order("created_at", { ascending: false }),
+    supabase.from("payment_transactions").select("id, provider, transaction_type, provider_request_id, provider_payment_id, amount, currency, status, reason, provider_event_at, created_at").eq("order_id", id).order("created_at", { ascending: false }),
     supabase.from("vendor_payments").select("id, amount, currency, payment_date, method, reference, notes, entry_type, reverses_payment_id, created_at").eq("order_id", id).order("created_at", { ascending: false }),
     supabase.from("order_events").select("id, actor_id, actor_role, event_type, source, previous_state, new_state, metadata, created_at").eq("order_id", id).order("created_at", { ascending: true }).order("id", { ascending: true }),
     order.admin_verified_by ? supabase.from("profiles").select("display_name").eq("id", order.admin_verified_by).maybeSingle() : Promise.resolve({ data: null }),

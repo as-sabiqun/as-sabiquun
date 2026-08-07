@@ -1032,10 +1032,24 @@ button, a, summary { -webkit-tap-highlight-color: transparent; }
 .admin-customer-value strong { font-family: var(--font-display); font-size: .82rem; }
 .admin-customer-value small { color: var(--muted); font-size: .6rem; }
 .admin-vendor-invite { border-color: color-mix(in srgb, var(--teal) 45%, var(--line)); }
-.admin-manual-job-panel { margin-top: 22px; padding: 26px; border-color: color-mix(in srgb, var(--teal) 45%, var(--line)); }
-.admin-manual-job-panel > header { max-width: 68ch; margin-bottom: 24px; }
+.admin-manual-job { margin-inline-start: auto; }
+.admin-manual-job.is-open { flex: 1 0 100%; margin-inline-start: 0; min-width: 0; }
+.admin-manual-job-toggle { display: flex; justify-content: flex-end; }
+.admin-manual-job-panel { margin-top: 22px; padding: 28px; border-color: color-mix(in srgb, var(--teal) 45%, var(--line)); }
+.admin-manual-job-panel > header { max-width: 68ch; margin-bottom: 6px; }
 .admin-manual-job-panel > header h2 { margin-bottom: 7px; }
 .admin-manual-job-panel > header p { color: var(--muted); font-size: .78rem; line-height: 1.55; }
+.admin-manual-job-form { display: grid; gap: 0; }
+.admin-manual-job-section { display: grid; gap: 16px; min-width: 0; padding-block: 24px; border-top: 1px solid var(--line); }
+.admin-manual-job-section:first-of-type { margin-top: 20px; }
+.admin-manual-job-section legend { padding-inline-end: 16px; color: var(--ink); font-family: var(--font-display); font-size: 1rem; font-weight: 750; }
+.admin-manual-job-section .label > span { color: var(--muted); font-weight: 500; }
+.admin-manual-job-section .label > small { display: block; margin-top: 6px; color: var(--muted); font-size: .68rem; font-weight: 500; }
+.admin-manual-participants { display: grid; gap: 10px; }
+.admin-manual-job-submit { display: flex; align-items: center; justify-content: space-between; gap: 24px; padding-top: 24px; border-top: 1px solid var(--line); }
+.admin-manual-job-submit > div { display: grid; gap: 2px; }
+.admin-manual-job-submit span, .admin-manual-job-submit small { color: var(--muted); font-size: .68rem; }
+.admin-manual-job-submit strong { color: var(--teal-dark); font-size: 1.4rem; }
 .admin-list-row {
   display: grid; grid-template-columns: auto 1.4fr auto 1fr auto; align-items: center; gap: 18px;
   padding: 14px 18px; border-bottom: 1px solid var(--line); transition: background-color .15s ease;
@@ -1134,6 +1148,8 @@ button, a, summary { -webkit-tap-highlight-color: transparent; }
   .admin-jobs-toolbar .admin-directory-search { max-width: none; flex-basis: 100%; }
   .admin-jobs-toolbar .btn { flex: 1; }
   .admin-form-grid { grid-template-columns: 1fr; }
+  .admin-manual-job-panel { padding: 20px; }
+  .admin-manual-job-submit { align-items: stretch; flex-direction: column; }
   .admin-team-head { flex-direction: column; gap: 8px; }
   .admin-team-create-form, .admin-team-password-form { grid-template-columns: 1fr; }
   .admin-team-create-submit, .admin-team-password-form > strong, .admin-team-password-form > .btn { grid-column: 1; }
