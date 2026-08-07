@@ -14,6 +14,10 @@ export function canManageAdminAccess(actor: AdminAccessLevel, target: AdminAcces
   return actor === "owner" || (actor === "administrator" && target === "operations");
 }
 
+export function isUnusedAdminInvitation(lastSignInAt: string | null | undefined) {
+  return !lastSignInAt;
+}
+
 export function adminInviteFields(formData: FormData) {
   const name = String(formData.get("name") ?? "").trim();
   const email = String(formData.get("email") ?? "").trim().toLowerCase();

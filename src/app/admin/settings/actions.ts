@@ -3,7 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { adminAccessLevel, getAal2AdminAtLeast } from "@/lib/auth";
-import { adminInviteFields, canAssignAdminAccess, canManageAdminAccess } from "@/lib/admin-users";
+import { adminInviteFields, canAssignAdminAccess, canManageAdminAccess, isUnusedAdminInvitation } from "@/lib/admin-users";
 import { getSiteUrl } from "@/lib/site-url";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { createClient, isSupabaseAdminConfigured } from "@/lib/supabase/server";
@@ -80,6 +80,34 @@ export async function resendAdminInvitationAction(formData: FormData) {
   if (error) settingsRedirect("admin_error", "The secure setup email could not be resent.");
 
   settingsRedirect("admin_message", `A fresh setup email was sent to ${authData.user.email}.`);
+}
+
+export async function retractAdminInvitationAction(formData: FormData) {
+  const actor = await teamContext();
+  if (!actor) settingsRedirect("admin_error", "Administrator access is required to manage team invitations.");
+
+  const targetId = String(formData.get("adminId") ?? "");
+  if (targetId === actor.admin.user.id) settingsRedirect("admin_error", "You cannot revoke your own account.");
+  const [{ data: profile }, { data: authData, error: authError }] = await Promise.all([
+    actor.service.from("profiles").select("role, admin_access_level").eq("id", targetId).maybeSingle(),
+    actor.service.auth.admin.getUserById(targetId),
+  ]);
+  if (
+    authError
+    || profile?.role !== "admin"
+    || !profile.admin_access_level
+    || !canManageAdminAccess(actor.level, profile.admin_access_level)
+    || !authData.user
+    || !isUnusedAdminInvitation(authData.user?.last_sign_in_at)
+  ) {
+    settingsRedirect("admin_error", "Only an unused invitation can be revoked.");
+  }
+
+  const { error } = await actor.service.auth.admin.deleteUser(targetId);
+  if (error) settingsRedirect("admin_error", "The invitation could not be revoked. Please try again.");
+
+  revalidatePath("/admin/settings");
+  settingsRedirect("admin_message", "Invitation revoked. You can now invite that email again.");
 }
 
 export async function setAdminStatusAction(formData: FormData) {

@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import test from "node:test";
-import { adminInviteFields, canAssignAdminAccess, canManageAdminAccess } from "./admin-users.ts";
+import { adminInviteFields, canAssignAdminAccess, canManageAdminAccess, isUnusedAdminInvitation } from "./admin-users.ts";
 
 test("admin invitations normalize valid input and reject invalid email", () => {
   const valid = new FormData();
@@ -21,4 +21,10 @@ test("admin hierarchy only allows assignments below the actor except for owners"
   assert.equal(canAssignAdminAccess("administrator", "administrator"), false);
   assert.equal(canManageAdminAccess("administrator", "operations"), true);
   assert.equal(canManageAdminAccess("operations", "operations"), false);
+});
+
+test("only an admin who has not signed in can have their invitation revoked", () => {
+  assert.equal(isUnusedAdminInvitation(null), true);
+  assert.equal(isUnusedAdminInvitation(undefined), true);
+  assert.equal(isUnusedAdminInvitation("2026-08-07T08:00:00.000Z"), false);
 });

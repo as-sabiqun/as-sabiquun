@@ -1,10 +1,10 @@
 import { redirect } from "next/navigation";
 import { formatCents } from "@/lib/orders";
 import { adminAccessLevel, getAal2AdminAtLeast } from "@/lib/auth";
-import { adminAccessLabels, canManageAdminAccess } from "@/lib/admin-users";
+import { adminAccessLabels, canManageAdminAccess, isUnusedAdminInvitation } from "@/lib/admin-users";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { createClient, type AdminAccessLevel } from "@/lib/supabase/server";
-import { inviteAdminAction, resendAdminInvitationAction, setAdminAccessLevelAction, setAdminStatusAction } from "./actions";
+import { inviteAdminAction, resendAdminInvitationAction, retractAdminInvitationAction, setAdminAccessLevelAction, setAdminStatusAction } from "./actions";
 
 function Health({ label, configured, help }: { label: string; configured: boolean; help: string }) {
   return (
@@ -92,7 +92,7 @@ export default async function AdminSettingsPage({ searchParams }: { searchParams
       email: user?.email ?? "Email unavailable",
       accessLevel: (profile.admin_access_level ?? (profile.admin_owner ? "owner" : "administrator")) as AdminAccessLevel,
       status: profile.status,
-      invited: !user?.last_sign_in_at,
+      invited: Boolean(user && isUnusedAdminInvitation(user.last_sign_in_at)),
       mfa: Boolean(factors?.factors.some((factor) => factor.status === "verified")),
     };
   }));
@@ -131,7 +131,7 @@ export default async function AdminSettingsPage({ searchParams }: { searchParams
             <div><p className="vendor-eyebrow">Authority</p><h2 className="display text-lg mt-1">Team access</h2></div>
             <span className="vendor-status vendor-status-accepted">{administrators.length} team member{administrators.length === 1 ? "" : "s"}</span>
           </div>
-          <p className="admin-record-help">Owners control the platform, administrators manage staff and operations, and operations staff handle daily work. Every invited member chooses a password and enrols MFA.</p>
+          <p className="admin-record-help">Owners control the platform, administrators manage staff and operations, and operations staff handle daily work. Secure invitation and password-reset emails use the configured authentication sender.</p>
           {params.admin_message && <p className="auth-message mt-4" role="status">{params.admin_message}</p>}
           {params.admin_error && <p className="auth-error mt-4" role="alert">{params.admin_error}</p>}
 
@@ -172,6 +172,12 @@ export default async function AdminSettingsPage({ searchParams }: { searchParams
                         <button className="btn btn-secondary btn-small" type="submit">
                           {administrator.invited ? "Resend setup" : "Send password reset"}
                         </button>
+                      </form>
+                    )}
+                    {administrator.invited && (
+                      <form action={retractAdminInvitationAction}>
+                        <input type="hidden" name="adminId" value={administrator.id} />
+                        <button className="btn btn-secondary btn-small" type="submit">Revoke invitation</button>
                       </form>
                     )}
                     <form action={setAdminStatusAction}>
