@@ -18,12 +18,15 @@ export function OfferingEditorForm({
   children: React.ReactNode;
 }) {
   const formRef = useRef<HTMLFormElement>(null);
+  const submittingRef = useRef(false);
   const [dirty, setDirty] = useState(false);
 
   useEffect(() => {
     if (!dirty) return;
     const warning = "You have unsaved service changes.";
-    const beforeUnload = (event: BeforeUnloadEvent) => event.preventDefault();
+    const beforeUnload = (event: BeforeUnloadEvent) => {
+      if (!submittingRef.current) event.preventDefault();
+    };
     const followLink = (event: MouseEvent) => {
       const link = (event.target as Element | null)?.closest<HTMLAnchorElement>("a[href]");
       if (!link || link.target || link.download || new URL(link.href, location.href).origin !== location.origin) return;
@@ -52,6 +55,7 @@ export function OfferingEditorForm({
           event.preventDefault();
           return;
         }
+        submittingRef.current = true;
         setDirty(false);
       }}
     >
