@@ -3,9 +3,11 @@
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { adminAccessLevel, getAal2AdminAtLeast } from "@/lib/auth";
-import { adminAccountFields, adminPasswordFields, canAssignAdminAccess, canManageAdminAccess, canRemoveAdminUser } from "@/lib/admin-users";
+import { adminAccessLabels, adminAccountFields, adminPasswordFields, canAssignAdminAccess, canManageAdminAccess, canRemoveAdminUser } from "@/lib/admin-users";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { createClient, isSupabaseAdminConfigured } from "@/lib/supabase/server";
+import { sendResendAdminAccess } from "@/lib/integrations/providers";
+import { getSiteUrl } from "@/lib/site-url";
 
 function settingsRedirect(kind: "admin_message" | "admin_error", message: string): never {
   redirect(`/admin/settings?${kind}=${encodeURIComponent(message)}`);
@@ -26,6 +28,8 @@ export async function createAdminAccountAction(formData: FormData) {
   if (!canAssignAdminAccess(actor.level, input.accessLevel)) {
     settingsRedirect("admin_error", "You cannot grant that access level.");
   }
+  const resendApiKey = process.env.RESEND_API_KEY?.trim();
+  if (!resendApiKey) settingsRedirect("admin_error", "Admin login emails are not configured yet.");
 
   const { data, error } = await actor.service.auth.admin.createUser({
     email: input.email,
@@ -54,8 +58,28 @@ export async function createAdminAccountAction(formData: FormData) {
     settingsRedirect("admin_error", "The administrator profile was not completed. No account was created.");
   }
 
+  try {
+    await sendResendAdminAccess({
+      recipientEmail: input.email,
+      recipientName: input.name,
+      password: input.password,
+      accessLabel: adminAccessLabels[input.accessLevel],
+      loginUrl: `${await getSiteUrl()}/admin/sign-in`,
+      apiKey: resendApiKey,
+      idempotencyKey: data.user.id,
+    });
+  } catch {
+    const { error: cleanupError } = await actor.service.auth.admin.deleteUser(data.user.id);
+    settingsRedirect(
+      "admin_error",
+      cleanupError
+        ? "The login email failed and the account could not be cleaned up. Remove it before retrying."
+        : "The login email could not be sent. No account was created.",
+    );
+  }
+
   revalidatePath("/admin/settings");
-  settingsRedirect("admin_message", `Account ready for ${input.email}. Share the sign-in details securely.`);
+  settingsRedirect("admin_message", `Account created and login details emailed to ${input.email}.`);
 }
 
 export async function setAdminPasswordAction(formData: FormData) {

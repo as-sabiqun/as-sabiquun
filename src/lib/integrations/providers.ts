@@ -467,6 +467,42 @@ export async function sendBrevoReport(input: {
   return requiredString(payload.messageId, "Brevo message ID", 500);
 }
 
+export async function sendResendAdminAccess(input: {
+  recipientEmail: string;
+  recipientName: string;
+  password: string;
+  accessLabel: string;
+  loginUrl: string;
+  apiKey: string;
+  idempotencyKey: string;
+  fetcher?: typeof fetch;
+}): Promise<string> {
+  const greeting = escapeHtml(input.recipientName);
+  const email = escapeHtml(input.recipientEmail);
+  const password = escapeHtml(input.password);
+  const accessLabel = escapeHtml(input.accessLabel);
+  const loginUrl = escapeHtml(input.loginUrl);
+  const response = await (input.fetcher ?? fetch)("https://api.resend.com/emails", {
+    method: "POST",
+    headers: {
+      Authorization: `Bearer ${input.apiKey}`,
+      "Content-Type": "application/json",
+      "Idempotency-Key": input.idempotencyKey,
+      "User-Agent": "As-Sabiqun/1.0",
+    },
+    body: JSON.stringify({
+      from: "As-Sabiqun <no-reply@as-sabiqun.com>",
+      to: [input.recipientEmail],
+      subject: "Your As-Sabiqun admin login",
+      text: `Assalamu alaikum ${input.recipientName},\n\nYour As-Sabiqun ${input.accessLabel} account is ready.\n\nSign in: ${input.loginUrl}\nEmail: ${input.recipientEmail}\nPassword: ${input.password}\n\nKeep this email private. Contact an owner if you need a new password.`,
+      html: `<p>Assalamu alaikum ${greeting},</p><p>Your As-Sabiqun <strong>${accessLabel}</strong> account is ready.</p><p><a href="${loginUrl}">Sign in to the admin console</a></p><p><strong>Email:</strong> ${email}<br><strong>Password:</strong> ${password}</p><p>Keep this email private. Contact an owner if you need a new password.</p>`,
+    }),
+    signal: AbortSignal.timeout(15_000),
+  });
+  const payload = await providerJson(response);
+  return requiredString(payload.id, "Resend message ID", 500);
+}
+
 function escapeHtml(value: string): string {
   return value.replace(/[&<>"']/g, (character) => ({
     "&": "&amp;",

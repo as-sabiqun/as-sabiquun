@@ -15,6 +15,7 @@ import {
   parseHitPayWebhook,
   parseTelegramStart,
   sendBrevoReport,
+  sendResendAdminAccess,
   verifyHitPaySignature,
 } from "./providers.ts";
 
@@ -189,6 +190,30 @@ test("Brevo report retries use the report ID as an idempotency key", async () =>
     },
   });
   assert.deepEqual(body.headers, { "Idempotency-Key": "13000000-0000-4000-8000-000000000099" });
+});
+
+test("Resend receives an idempotent admin login email with escaped HTML", async () => {
+  let request: RequestInit | undefined;
+  const messageId = await sendResendAdminAccess({
+    recipientEmail: "admin@example.test",
+    recipientName: "Admin <Owner>",
+    password: "safe-password-123",
+    accessLabel: "Administrator",
+    loginUrl: "https://www.as-sabiqun.com/admin/sign-in",
+    apiKey: "re_secret",
+    idempotencyKey: "admin-user-id",
+    fetcher: async (_url, init) => {
+      request = init;
+      return Response.json({ id: "resend-message-id" });
+    },
+  });
+  const body = JSON.parse(String(request?.body)) as { html: string; text: string; to: string[] };
+  assert.equal(messageId, "resend-message-id");
+  assert.deepEqual(body.to, ["admin@example.test"]);
+  assert.match(body.text, /safe-password-123/);
+  assert.match(body.html, /Admin &lt;Owner&gt;/);
+  assert.equal((request?.headers as Record<string, string>)["Idempotency-Key"], "admin-user-id");
+  assert.equal((request?.headers as Record<string, string>)["User-Agent"], "As-Sabiqun/1.0");
 });
 
 test("Telegram linking accepts only a private /start token", () => {

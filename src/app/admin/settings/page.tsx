@@ -35,6 +35,7 @@ export default async function AdminSettingsPage({ searchParams }: { searchParams
   const providers = [
     { label: "Supabase", configured: Boolean(process.env.NEXT_PUBLIC_SUPABASE_URL && process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY && (process.env.SUPABASE_SECRET_KEY || process.env.SUPABASE_SERVICE_ROLE_KEY)), help: "Authentication, database, private storage, and server operations." },
     { label: "HitPay", configured: Boolean(process.env.HITPAY_API_KEY && process.env.HITPAY_WEBHOOK_SALT && process.env.HITPAY_ENV), help: "Hosted checkout and signed payment/refund webhooks." },
+    { label: "Resend", configured: Boolean(process.env.RESEND_API_KEY), help: "Administrator account login emails." },
     { label: "Brevo", configured: Boolean(process.env.BREVO_API_KEY && process.env.BREVO_SENDER_EMAIL && process.env.BREVO_SENDER_NAME && process.env.BREVO_WEBHOOK_SECRET), help: "Transactional completion email and delivery confirmation." },
     { label: "Telegram", configured: Boolean(process.env.TELEGRAM_BOT_TOKEN && process.env.TELEGRAM_BOT_USERNAME && process.env.TELEGRAM_WEBHOOK_SECRET), help: "Customer account linking and report document delivery." },
     { label: "Notification processor", configured: Boolean(process.env.INTERNAL_CRON_SECRET && cron.configured && cron.active), help: `${overdueQueue ?? 0} queued attempt${overdueQueue === 1 ? "" : "s"} overdue · ${cron.recent_failures ?? 0} cron failure${cron.recent_failures === 1 ? "" : "s"} in 24 hours${cron.last_run_at ? ` · last run ${new Date(cron.last_run_at).toLocaleString()}` : ""}.` },
@@ -161,7 +162,7 @@ export default async function AdminSettingsPage({ searchParams }: { searchParams
             </label>
             <div className="admin-team-create-submit">
               <button className="btn" type="submit">Create account</button>
-              <small>Use at least 12 characters, then share it privately.</small>
+              <small>We email the address and password to the new team member.</small>
             </div>
           </form>
         </details>
