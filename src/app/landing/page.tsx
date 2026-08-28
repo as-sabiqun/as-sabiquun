@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { ScrollGeometry } from "./scroll-geometry";
+import { StoryCarousel } from "./story-carousel";
 import "./landing.css";
 
 function Arrow() {
@@ -87,10 +88,6 @@ function PlatformArt({ type }: { type: PlatformService["art"] }) {
       </div>
     </div>
   );
-}
-
-function FooterMark() {
-  return <div className="asb-footer-mark" aria-label="As-Sabiquun"><i /><i /><i /><i /><i /><i /><i /><i /></div>;
 }
 
 function TrustMarkSet({ hidden = false }: { hidden?: boolean }) {
@@ -229,8 +226,8 @@ export default function LandingPage() {
 
         <section className="asb-services" id="services" aria-labelledby="services-title">
           <div className="asb-section-lead">
-            <p className="asb-label">Services</p>
-            <h2 id="services-title">Ways to give with care.</h2>
+            <p className="asb-label">the platform</p>
+            <h2 id="services-title">What we provide</h2>
             <p>Choose a way to give, follow its progress, or bring a bigger project into focus with our team.</p>
           </div>
           <ul className="asb-platform-grid" aria-label="Six service options">
@@ -299,7 +296,7 @@ export default function LandingPage() {
 
         <section className="asb-how" id="how" aria-labelledby="how-title">
           <div className="asb-section-lead asb-section-lead-centred asb-stories-lead">
-            <p className="asb-label">A closer look</p>
+            <p className="asb-label">Case Studies</p>
             <h2 id="how-title">Care is a practice, not a promise.<br />Every detail should show it.</h2>
             <p>These concept scenes show the kinds of moments a thoughtful service can hold.</p>
           </div>
@@ -324,51 +321,12 @@ export default function LandingPage() {
             </div>
           </div>
 
-          <div className="asb-stories" aria-label="Concept story collection">
-            <div className="asb-stories-viewport">
-              <div className="asb-story-rail">
-                <Link className="asb-story-card asb-story-card-water" href="/wakaf/water-pump">
-                  <div className="asb-story-mark"><span>01</span><b>FIELD NOTE</b></div>
-                  <span className="asb-story-type">Wakaf water</span>
-                  <h3>Start where daily life happens.</h3>
-                  <div className="asb-story-card-foot"><p>Why dependable access changes the rhythm of a community.</p><span className="asb-story-arrow"><Arrow /></span></div>
-                </Link>
-                <Link className="asb-story-card asb-story-card-quran" href="/wakaf/quran">
-                  <div className="asb-story-mark"><span>02</span><b>CONTINUITY</b></div>
-                  <span className="asb-story-type">Wakaf Quran</span>
-                  <h3>Make room for learning to continue.</h3>
-                  <div className="asb-story-card-foot"><p>A closer look at giving that keeps knowledge within reach.</p><span className="asb-story-arrow"><Arrow /></span></div>
-                </Link>
-                <Link className="asb-story-card asb-story-card-food" href="/wakaf/food-for-orphans">
-                  <div className="asb-story-mark"><span>03</span><b>SHARED TABLE</b></div>
-                  <span className="asb-story-type">Shared care</span>
-                  <h3>A simple act can gather people together.</h3>
-                  <div className="asb-story-card-foot"><p>What a meal can hold beyond the moment it is served.</p><span className="asb-story-arrow"><Arrow /></span></div>
-                </Link>
-                <Link className="asb-story-card asb-story-card-korban" href="/korban">
-                  <div className="asb-story-mark"><span>04</span><b>INTENTION</b></div>
-                  <span className="asb-story-type">Korban guide</span>
-                  <h3>Carry an intention through with care.</h3>
-                  <div className="asb-story-card-foot"><p>A practical path from choosing a service to receiving its report.</p><span className="asb-story-arrow"><Arrow /></span></div>
-                </Link>
-                <Link className="asb-story-card asb-story-card-updates" href="#amanah">
-                  <div className="asb-story-mark"><span>05</span><b>REVIEWED</b></div>
-                  <span className="asb-story-type">Giving updates</span>
-                  <h3>Stay close to work happening far away.</h3>
-                  <div className="asb-story-card-foot"><p>How field evidence becomes an update that is useful and clear.</p><span className="asb-story-arrow"><Arrow /></span></div>
-                </Link>
-              </div>
-            </div>
-            <div className="asb-story-controls">
-              <button type="button" aria-label="Previous stories">←</button>
-              <button type="button" aria-label="Next stories">→</button>
-            </div>
-          </div>
+          <StoryCarousel />
         </section>
 
         <div className="asb-final-stack">
           <section className="asb-closing" aria-labelledby="closing-title">
-            <div className="asb-closing-circles" aria-hidden="true"><i /><i /><i /><i /><i /></div>
+            <div className="asb-closing-orbit" aria-hidden="true"><i /><i /><i /></div>
             <div className="asb-closing-inner">
               <h2 id="closing-title">An Islamic giving platform built<br />with care for every intention<br />and clarity at every step.</h2>
               <Link href="/services" className="asb-button asb-button-dark">Explore services <Arrow /></Link>
@@ -377,7 +335,7 @@ export default function LandingPage() {
 
           <footer className="asb-footer">
             <div className="asb-footer-brand-panel">
-              <FooterMark />
+              <img className="asb-footer-logo" src="/brand/as-sabiquun-seal.png" alt="As-Sabiquun Association Consultancy" />
             </div>
             <div className="asb-footer-links-panel">
           <div>
@@ -417,16 +375,15 @@ export default function LandingPage() {
             <Link href="/about">FAQs</Link>
             <Link href="/about">Policies</Link>
           </div>
-              <small>© {new Date().getFullYear()} As-Sabiquun Association Consultancy</small>
-            </div>
-            <div className="asb-footer-handoff" aria-label="As-Sabiquun footer summary">
-              <small>© {new Date().getFullYear()} As-Sabiquun</small>
-              <div className="asb-footer-principles" aria-label="Our operating principles">
-                <span><i>✓</i><b>Amanah</b></span>
-                <span><i>•</i><b>Field-led</b></span>
-                <span><i>↗</i><b>Clear</b></span>
-              </div>
-              <span className="asb-footer-social" aria-label="Social links">in</span>
+              <section className="asb-footer-bottom" aria-label="Footer details">
+                <small>© {new Date().getFullYear()} As-Sabiquun Association Consultancy</small>
+                <nav className="asb-footer-socials" aria-label="Social links">
+                  <a href="https://www.linkedin.com/" target="_blank" rel="noreferrer">LinkedIn</a>
+                  <a href="https://www.instagram.com/" target="_blank" rel="noreferrer">Instagram</a>
+                  <a href="https://www.facebook.com/" target="_blank" rel="noreferrer">Facebook</a>
+                  <a href="https://telegram.org/" target="_blank" rel="noreferrer">Telegram</a>
+                </nav>
+              </section>
             </div>
           </footer>
         </div>

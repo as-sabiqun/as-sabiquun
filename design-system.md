@@ -21,8 +21,8 @@ An As-Sabiquun service site rendered with the approved August Health composition
 
 ## Typography
 
-- Editorial display: serif with normal letter spacing; desktop H1 is 64/64, section H2 is 48/52.8, trust heading is 32/35.2, story title is 32/35.2.
-- Interface/body: existing Inter at 16/25.6; hero body is 24/33.6.
+- Editorial display: one high-contrast display serif throughout, selected to match Reckless Neue's visible proportions without copying a proprietary font file; desktop H1 is 64/64, section H2 is 48/52.8, trust heading is 32/35.2, and story title is 32/35.2.
+- Interface/body: Inter as the Saans-like UI face at 16/25.6; hero body is 24/33.6.
 - Labels: 12–13px uppercase inside 1px outlined capsules.
 
 ## Surfaces and spacing
@@ -30,10 +30,10 @@ An As-Sabiquun service site rendered with the approved August Health composition
 - Desktop content width: 1160px.
 - Floating nav: 1138×66px at x63/y16, translucent and blurred.
 - Feature cards: two columns, three rows, 30px radius, interface art in lower half.
-- Values route frame: 832×588px, 48px radius, 2px low-contrast green outline.
-- Case video: 960×748px with a 538px stage and 210px white quote panel.
+- Values route frame: 832×588px, 48px radius, 2px low-contrast outline; the enclosing values section remains normal-flow so all three rows can be reached.
+- Case video: 960×748px with a separately rounded 538px stage and 210px white quote panel.
 - Story cards: 376×450px, ~32px gap, clipped neighbors.
-- Closing: one desktop viewport with a 720px floor. Footer: 829px sticky desktop reveal.
+- Closing: one desktop viewport with a 720px floor and one rotating orbit. Footer: 829px sticky desktop reveal with no detached top strip.
 
 ## Motion
 
@@ -44,6 +44,7 @@ An As-Sabiquun service site rendered with the approved August Health composition
 - Section leads and feature rows reveal only as they enter the viewport, with 500–700ms opacity/translate transitions.
 - Feature cards do not lift; only their arrow moves +10px.
 - Story cards lift -7px and their arrow moves +5–10px.
+- Story carousel buttons lock during each smooth step, move exactly one card, and wrap continuously in both directions.
 - Navigation surface changes to translucent lavender over indigo bands.
 - Reduced motion resolves all components to their final visible state.
 

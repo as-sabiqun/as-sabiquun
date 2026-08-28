@@ -9,8 +9,9 @@ export function ScrollGeometry() {
 
     const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
     const mobileMenu = root.querySelector<HTMLDetailsElement>(".asb-mobile-menu");
-    const storyViewport = root.querySelector<HTMLElement>(".asb-stories-viewport");
-    const storyButtons = root.querySelectorAll<HTMLButtonElement>(".asb-story-controls button");
+    const documentRoot = document.documentElement;
+    const previousScrollBehavior = documentRoot.style.scrollBehavior;
+    documentRoot.style.scrollBehavior = "auto";
     let frame = 0;
     let lastScrollY = window.scrollY;
     let upwardTravel = 0;
@@ -25,6 +26,10 @@ export function ScrollGeometry() {
     const update = () => {
       frame = 0;
       const scrollY = window.scrollY;
+      const hero = root.querySelector<HTMLElement>(".asb-hero");
+      const flattenDistance = Math.min(400, (hero?.offsetHeight ?? 720) * 0.56);
+      const heroFlatten = Math.min(1, Math.max(0, scrollY / flattenDistance));
+      root.style.setProperty("--asb-hero-wave-depth", `${Math.round(92 * (1 - heroFlatten))}px`);
       const navBandY = 49;
       const overDarkBand = [".asb-values", ".asb-closing"].some((selector) => {
         const band = root.querySelector<HTMLElement>(selector);
@@ -70,16 +75,6 @@ export function ScrollGeometry() {
     }, { threshold: 0.08, rootMargin: "0px 0px -8% 0px" });
     revealTargets.forEach((target) => revealObserver.observe(target));
 
-    const moveStories = (direction: number) => {
-      if (!storyViewport) return;
-      const card = storyViewport.querySelector<HTMLElement>(".asb-story-card");
-      storyViewport.scrollBy({ left: direction * ((card?.offsetWidth ?? 360) + 30), behavior: reduceMotion.matches ? "auto" : "smooth" });
-    };
-    const previousStories = () => moveStories(-1);
-    const nextStories = () => moveStories(1);
-    storyButtons[0]?.addEventListener("click", previousStories);
-    storyButtons[1]?.addEventListener("click", nextStories);
-
     update();
     window.addEventListener("scroll", schedule, { passive: true });
     window.addEventListener("resize", schedule);
@@ -91,11 +86,11 @@ export function ScrollGeometry() {
       window.removeEventListener("resize", schedule);
       reduceMotion.removeEventListener("change", schedule);
       mobileMenu?.removeEventListener("click", closeMobileMenu);
-      storyButtons[0]?.removeEventListener("click", previousStories);
-      storyButtons[1]?.removeEventListener("click", nextStories);
       revealObserver.disconnect();
       root.classList.remove("asb-motion-ready");
       root.classList.remove("asb-announcement-hidden");
+      root.style.removeProperty("--asb-hero-wave-depth");
+      documentRoot.style.scrollBehavior = previousScrollBehavior;
       if (frame) window.cancelAnimationFrame(frame);
     };
   }, []);

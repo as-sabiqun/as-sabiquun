@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Bricolage_Grotesque, Inter, Noto_Kufi_Arabic } from "next/font/google";
+import { Bricolage_Grotesque, Instrument_Serif, Inter, Noto_Kufi_Arabic } from "next/font/google";
 import "./globals.css";
 
 const inter = Inter({
@@ -10,6 +10,12 @@ const inter = Inter({
 const bricolage = Bricolage_Grotesque({
   subsets: ["latin"],
   variable: "--font-display",
+});
+
+const editorial = Instrument_Serif({
+  subsets: ["latin"],
+  variable: "--font-editorial",
+  weight: "400",
 });
 
 const kufi = Noto_Kufi_Arabic({
@@ -28,7 +34,7 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
-    <html lang="en" className={`${inter.variable} ${bricolage.variable} ${kufi.variable}`} data-scroll-behavior="smooth">
+    <html lang="en" className={`${inter.variable} ${bricolage.variable} ${editorial.variable} ${kufi.variable}`} data-scroll-behavior="smooth">
       <body>{children}</body>
     </html>
   );
