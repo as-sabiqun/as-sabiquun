@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>As-Sabiquun design loop</title>
+    <style>
+      body { margin: 0; padding: 40px; background: #f8f3eb; color: #12132d; font: 16px/1.5 Arial, sans-serif; }
+      main { max-width: 900px; margin: auto; }
+      h1 { font: 400 48px/1 Georgia, serif; letter-spacing: -.04em; }
+      table { width: 100%; border-collapse: collapse; background: #fffefa; border-radius: 18px; overflow: hidden; }
+      th, td { padding: 16px; border-bottom: 1px solid #e6e0d7; text-align: left; vertical-align: top; }
+      th { font-size: 12px; letter-spacing: .1em; text-transform: uppercase; color: #575668; }
+      .blocked { color: #a64c3c; font-weight: 700; }
+      .pending { color: #6460e9; font-weight: 700; }
+    </style>
+  </head>
+  <body>
+    <main>
+      <p>Design loop · August Health comparison bar</p>
+      <h1>As-Sabiquun landing rebuild</h1>
+      <p>Completed pieces: <strong>2 / 4</strong></p>
+      <table>
+        <thead><tr><th>Piece</th><th>Status</th><th>Round</th><th>Brief</th><th>System</th><th>Craft</th><th>Current gap</th></tr></thead>
+        <tbody>
+          <tr><td>Hero + trust rail</td><td>Complete</td><td>10</td><td>PASS</td><td>PASS</td><td>PASS</td><td>Passed after the nav-height and collage-density correction. Craft review is nonblind under explicit user approval.</td></tr>
+          <tr><td>Six-card platform grid</td><td>Complete</td><td>8</td><td>PASS</td><td>PASS</td><td>PASS</td><td>Passed after a role-scoped review confirmed the wide 2×3 grid and mobile presentation. Craft review is nonblind under explicit user approval.</td></tr>
+          <tr><td>Values well</td><td class="blocked">Critic evidence fault</td><td>11</td><td>FAIL</td><td>FAIL</td><td>—</td><td>Fresh critics repeatedly report duplicated cards despite direct 390px DOM and bounds evidence of exactly three cards, no overlap, and no overflow. Visual follow-up remains required in final whole-page QA.</td></tr>
+          <tr><td>Case-study rail + footer</td><td class="blocked">Needs revision</td><td>1</td><td>FAIL</td><td>FAIL</td><td>FAIL</td><td>Make the closing CTA text unmistakable, then rebuild the footer as a full-bleed two-tone split with a circular brand anchor; recheck repeated-block report against live render.</td></tr>
+        </tbody>
+      </table>
+      <h2>Gap history</h2>
+      <ol>
+        <li>R1–R3: fictional-mark disclosure and narrow nav clearance.</li>
+        <li>R4–R5: trust-rail density and unsupported accountability language.</li>
+        <li>R6–R7: hero copy and CTA/header interaction on narrow screens.</li>
+        <li>R8: controlled responsive evidence required before another verdict.</li>
+        <li>R9: nonblind comparison approved by the user. The nav-height and collage-density gaps required a new builder pass; the fictional-mark disclosure remained a required concept-mode constraint.</li>
+        <li>R10: brief PASS, system PASS, craft PASS. Hero + trust rail completed.</li>
+        <li>Platform R1–R2: reshaped the platform into a spacious 2-column × 3-row grid; one duplicate-count claim was contradicted by local visual/DOM evidence.</li>
+        <li>Platform R6: rendered DOM confirmed one grid with six outer cards; the conflicting system verdict is being treated as an evidence failure rather than a silent pass.</li>
+        <li>Platform R7: 390px DOM evidence confirmed one grid and six unique titled cards; fresh reviewers will use role-specific scope.</li>
+        <li>Platform R8: brief PASS, system PASS, craft PASS. Six-card platform completed.</li>
+        <li>Values R8–R11: lower exit, word wrapping, ring/perimeter, and mobile timing were corrected. Fresh critics began repeating a claim contradicted by direct rendered DOM/bounds checks; defer final confirmation to whole-page QA with user-visible captures.</li>
+        <li>Stories R1: closing CTA clarity and the full-bleed split footer are genuine next craft fixes; the reported repetition needs direct render confirmation.</li>
+      </ol>
+    </main>
+  </body>
+</html>
