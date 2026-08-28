@@ -1776,9 +1776,11 @@
   width: 100%;
   height: 100%;
   object-fit: cover;
-  object-position: center 42%;
-  filter: saturate(.62) contrast(.9);
+  object-position: center 38%;
+  filter: saturate(.82) contrast(.94) brightness(1.04);
 }
+
+.asb-concept-film-wash { background: linear-gradient(to top, rgba(8, 3, 49, .08), transparent 44%); }
 
 .asb-concept-film-stage > p {
   position: absolute;
@@ -1936,7 +1938,8 @@
   }
 
   .asb-concept-film-stage { min-height: 538px; }
-  .asb-concept-film-label { top: 24px; left: 26px; }
+  .asb-concept-film-label,
+  .asb-concept-film-stage > p { display: none; }
   .asb-concept-film-play { width: 80px; }
 
   .asb-stories {
@@ -2056,7 +2059,7 @@
     position: relative;
     display: block;
     width: 100%;
-    height: 720px;
+    height: max(720px, 100svh);
     min-height: 720px;
     overflow: hidden;
     padding: 0;
@@ -2109,6 +2112,74 @@
     background: var(--asb-deep-teal);
     box-shadow: none;
     color: var(--asb-paper);
+  }
+
+  .asb-footer-handoff {
+    position: absolute;
+    z-index: 6;
+    top: 0;
+    right: 0;
+    display: grid;
+    width: calc(100% - 524px);
+    height: 102px;
+    grid-template-columns: 150px minmax(0, 1fr) 48px;
+    align-items: center;
+    gap: 22px;
+    border-bottom: 1px solid rgba(255, 255, 255, .12);
+    padding: 0 62px;
+    background: var(--asb-deep-teal);
+    color: rgba(255, 255, 255, .88);
+  }
+
+  .asb-footer-handoff > small {
+    grid-column: auto;
+    margin: 0;
+    border: 0;
+    padding: 0;
+    font-size: 11px;
+    line-height: 1.35;
+    white-space: nowrap;
+  }
+
+  .asb-footer-principles {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+  }
+
+  .asb-footer-principles > span {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    color: rgba(255, 255, 255, .72);
+    font-size: 9px;
+    letter-spacing: .07em;
+    text-transform: uppercase;
+    white-space: nowrap;
+  }
+
+  .asb-footer-principles i {
+    display: grid;
+    width: 38px;
+    height: 38px;
+    place-items: center;
+    border: 1px solid rgba(255, 255, 255, .42);
+    border-radius: 50%;
+    color: var(--asb-sun);
+    font-size: 14px;
+    font-style: normal;
+  }
+
+  .asb-footer-social {
+    display: grid;
+    width: 42px;
+    height: 42px;
+    place-items: center;
+    border: 1px solid rgba(255, 255, 255, .38);
+    border-radius: 50%;
+    font-family: Georgia, "Times New Roman", serif;
+    font-size: 16px;
   }
 
   .asb-footer-brand-panel {
@@ -2452,11 +2523,13 @@
   .asb-landing .asb-closing h2 {
     font-size: 48px;
     line-height: 52.8px;
+    text-align: left;
+    transform: translateX(18px);
   }
 
   .asb-landing .asb-closing .asb-button-dark {
     display: flex;
-    width: max-content;
+    width: 276px;
     height: 46px;
     min-height: 46px;
     margin: 32px auto 0;
@@ -2771,8 +2844,8 @@
 /* Hero/nav/trust authority: one six-part perimeter field, aligned to the
    1280x720 comparison frame and kept independent from later page sections. */
 .asb-landing {
-  --asb-hero-orbit-angle: -172deg;
-  --asb-hero-orbit-counter: 172deg;
+  --asb-hero-orbit-angle: 0deg;
+  --asb-hero-orbit-counter: 0deg;
   --asb-hero-orbit-scale: 1;
   --asb-nav-surface: rgba(255, 255, 255, .7);
 }
@@ -2784,7 +2857,7 @@
 
 .asb-landing .asb-nav {
   width: calc(100% - 126px);
-  max-width: 1138px;
+  max-width: 1160px;
   height: 66px;
   min-height: 66px;
   gap: 20px;
@@ -2911,7 +2984,7 @@
   position: relative;
   display: block;
   width: 100%;
-  height: 720px;
+  height: max(720px, 100svh);
   min-height: 720px;
   overflow: hidden;
   padding: 0;
@@ -2935,10 +3008,10 @@
 
 .asb-landing .asb-hero-orbit {
   position: absolute;
-  top: -630px;
-  left: calc(50% - 754.5px);
-  width: 1509px;
-  height: 1980px;
+  top: -480px;
+  left: 0;
+  width: 100%;
+  height: 1820px;
   border-radius: 1600px;
   transform: rotate(var(--asb-hero-orbit-angle));
   transform-origin: 50% 50%;
@@ -2956,12 +3029,14 @@
   animation: asb-hero-orbit-counter-spin 300s linear infinite;
 }
 
-.asb-landing .asb-orbit-one { top: 296.5px; left: 24.8px; }
-.asb-landing .asb-orbit-two { top: 260.1px; left: 980.1px; }
-.asb-landing .asb-orbit-three { top: 730.3px; left: 1196.2px; }
-.asb-landing .asb-orbit-four { top: 1215.4px; left: 1016.5px; }
-.asb-landing .asb-orbit-five { top: 1251.8px; left: 61.2px; }
-.asb-landing .asb-orbit-six { top: 781.7px; left: -154.8px; }
+.asb-landing .asb-orbit-one { top: 1154px; left: calc(50% + 244px); }
+.asb-landing .asb-orbit-two { top: 1352px; left: calc(50% - 234px); }
+.asb-landing .asb-orbit-three { top: 1154px; left: calc(50% - 712px); }
+.asb-landing .asb-orbit-four { top: 676px; left: calc(50% - 910px); }
+.asb-landing .asb-orbit-five { top: 198px; left: calc(50% - 712px); }
+.asb-landing .asb-orbit-six { top: 0; left: calc(50% - 234px); }
+.asb-landing .asb-orbit-seven { top: 198px; left: calc(50% + 244px); }
+.asb-landing .asb-orbit-eight { top: 676px; left: calc(50% + 442px); }
 
 .asb-landing .asb-orbit-visual {
   position: relative;
@@ -2979,8 +3054,10 @@
 }
 
 .asb-landing .asb-orbit-photo-community img { object-position: 35% 50%; transform: scaleX(-1); }
-.asb-landing .asb-orbit-photo-coordinator img { object-position: 62% 50%; transform: translate(-92px, 220px) scale(1.12); }
+.asb-landing .asb-orbit-photo-coordinator img { object-position: 62% 50%; transform: scale(1.12); }
 .asb-landing .asb-orbit-photo-volunteers img { object-position: 50% 45%; }
+.asb-landing .asb-orbit-photo-quran img { object-position: 52% 50%; }
+.asb-landing .asb-orbit-photo-water img { object-position: 48% 50%; }
 
 .asb-landing .asb-orbit-abstract {
   background: #f5a0ef;
@@ -3216,7 +3293,7 @@
 .asb-landing .asb-hero-copy {
   position: absolute;
   z-index: 4;
-  top: 209px;
+  top: clamp(209px, calc(50svh - 151px), 299px);
   left: 50%;
   width: 560px;
   max-width: 560px;
@@ -3224,12 +3301,13 @@
   transform: translateX(-50%);
 }
 
-.asb-landing .asb-arabic {
-  position: absolute;
-  top: -117px;
+.asb-landing .asb-announcement {
+  position: fixed;
+  z-index: 19;
+  top: 91px;
   left: 50%;
   display: inline-flex;
-  width: max-content;
+  width: 279px;
   height: 43px;
   min-height: 43px;
   align-items: center;
@@ -3237,19 +3315,36 @@
   margin: 0 !important;
   border: 1px solid rgba(72, 101, 255, .24);
   border-radius: 999px;
-  padding: 0 16px;
+  padding: 0 8px 0 16px;
   background: rgba(255, 255, 255, .68);
   box-shadow: 0 8px 22px rgba(27, 20, 99, .045);
   color: #1b1463;
-  font-size: 11px;
-  letter-spacing: .08em;
+  font-size: 16px;
+  letter-spacing: normal;
+  line-height: 25.6px;
   transform: translateX(-50%);
   white-space: nowrap;
   backdrop-filter: blur(12px);
+  visibility: visible;
+  transition: opacity 280ms ease, transform 280ms ease, visibility 0s linear;
 }
 
-.asb-landing .asb-arabic > span {
+.asb-landing.asb-announcement-hidden .asb-announcement {
+  opacity: 0;
+  pointer-events: none;
+  transform: translate(-50%, -8px);
+  visibility: hidden;
+  transition-delay: 0s, 0s, 280ms;
+}
+
+.asb-landing .asb-announcement > span {
+  display: grid;
+  width: 30px;
+  height: 30px;
+  place-items: center;
   margin-left: 12px;
+  border: 1px solid rgba(72, 101, 255, .55);
+  border-radius: 50%;
   font-size: 18px;
   line-height: 1;
 }
@@ -3430,13 +3525,13 @@
 }
 
 @keyframes asb-hero-orbit-spin {
-  from { transform: rotate(-172deg) scale(var(--asb-hero-orbit-scale)); }
-  to { transform: rotate(188deg) scale(var(--asb-hero-orbit-scale)); }
+  from { transform: rotate(0deg) scale(var(--asb-hero-orbit-scale)); }
+  to { transform: rotate(360deg) scale(var(--asb-hero-orbit-scale)); }
 }
 
 @keyframes asb-hero-orbit-counter-spin {
-  from { transform: rotate(172deg); }
-  to { transform: rotate(-188deg); }
+  from { transform: rotate(0deg); }
+  to { transform: rotate(-360deg); }
 }
 
 @media (max-width: 1080px) and (min-width: 861px) {
@@ -3483,22 +3578,47 @@
 
   .asb-landing .asb-hero-orbit {
     --asb-hero-orbit-scale: .45;
-    top: -640px;
+    top: -500px;
     transform: rotate(var(--asb-hero-orbit-angle)) scale(var(--asb-hero-orbit-scale));
   }
 
+  .asb-landing .asb-orbit-five {
+    display: none;
+  }
+
   .asb-landing .asb-hero-copy {
+    isolation: isolate;
     top: 184px;
     width: min(340px, calc(100% - 34px));
     max-width: 340px;
   }
 
-  .asb-landing .asb-arabic {
-    top: -97px;
+  .asb-landing .asb-hero-copy::before {
+    position: absolute;
+    z-index: -1;
+    inset: -28px -18px -32px;
+    border-radius: 46%;
+    background: rgba(255, 255, 255, .97);
+    box-shadow: 0 0 38px 30px rgba(255, 255, 255, .97);
+    content: "";
+  }
+
+  .asb-landing .asb-announcement {
+    position: absolute;
+    top: 84px;
     display: inline-flex;
+    width: max-content;
     height: 36px;
     min-height: 36px;
     font-size: 9px;
+    line-height: 1.4;
+    letter-spacing: .08em;
+  }
+
+  .asb-landing .asb-announcement > span {
+    width: auto;
+    height: auto;
+    border: 0;
   }
 
   .asb-landing .asb-hero h1 {
@@ -3525,6 +3645,8 @@
   .asb-landing .asb-trust-rail h2 { top: 82px; font-size: 27px; line-height: 31px; }
   .asb-landing .asb-trust-marquee { top: 158px; }
   .asb-landing .asb-trust-note { top: 293px; max-width: calc(100% - 40px); white-space: normal; }
+
+  .asb-footer-handoff { display: none; }
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -3535,6 +3657,23 @@
 
 /* August parity pass: preserve the measured section geometry while making the
    rendered components, palette, and entrance behavior match the reference. */
+.asb-landing .asb-services {
+  position: relative;
+  isolation: isolate;
+}
+
+.asb-landing .asb-services::before {
+  position: absolute;
+  z-index: -1;
+  top: 0;
+  bottom: 0;
+  left: 50%;
+  width: 100vw;
+  background: #fff;
+  content: "";
+  transform: translateX(-50%);
+}
+
 @media (min-width: 861px) {
   .asb-landing .asb-platform-grid { gap: 20px; }
 
@@ -3555,11 +3694,11 @@
 
 .asb-landing .asb-platform-card {
   box-shadow: none;
-  transition: opacity 900ms cubic-bezier(.2,.8,.2,1), transform 500ms cubic-bezier(.2,.8,.2,1), filter 900ms cubic-bezier(.2,.8,.2,1);
+  transition: opacity 700ms cubic-bezier(.2,.8,.2,1), transform 500ms cubic-bezier(.2,.8,.2,1), translate 700ms cubic-bezier(.2,.8,.2,1);
 }
 
 .asb-landing .asb-platform-card:hover,
-.asb-landing .asb-platform-card:focus-visible { transform: translateY(-9px); }
+.asb-landing .asb-platform-card:focus-visible { transform: none; }
 .asb-landing .asb-platform-card:hover .asb-platform-arrow,
 .asb-landing .asb-platform-card:focus-visible .asb-platform-arrow { transform: translateX(8px); }
 
@@ -3811,12 +3950,10 @@
 .asb-landing.asb-motion-ready .asb-story-card,
 .asb-landing.asb-motion-ready .asb-closing-inner > * {
   opacity:0;
-  filter:blur(8px);
   translate:0 48px;
 }
 .asb-landing.asb-motion-ready .is-visible {
   opacity:1;
-  filter:blur(0);
   translate:0 0;
 }
 .asb-landing.asb-motion-ready .asb-platform-grid > li:nth-child(even) .asb-platform-card,
@@ -3839,7 +3976,7 @@
   .asb-landing.asb-motion-ready .asb-stories-lead > *,
   .asb-landing.asb-motion-ready .asb-concept-film,
   .asb-landing.asb-motion-ready .asb-story-card,
-  .asb-landing.asb-motion-ready .asb-closing-inner > * { opacity:1; filter:none; translate:none; transition:none; }
+  .asb-landing.asb-motion-ready .asb-closing-inner > * { opacity:1; translate:none; transition:none; }
 }
 
 /* Final choreography authority. */
@@ -3850,4 +3987,105 @@
   .asb-landing .asb-how::before { position:absolute; z-index:-1; top:0; bottom:0; left:50%; display:block; width:100vw; background:#f8f3eb; content:""; transform:translateX(-50%); }
   .asb-landing .asb-closing { position:sticky; top:0; z-index:1; }
   .asb-landing .asb-footer { position:relative; z-index:2; }
+}
+
+/* Round 11: keep the approved section anchors and restore the reference's
+   calmer lead-to-content rhythm inside the platform, values, and film frames. */
+@media (min-width:861px) {
+  .asb-landing .asb-services .asb-label {
+    visibility: hidden;
+  }
+
+  .asb-landing .asb-values-label {
+    top: 150px;
+  }
+
+  .asb-landing .asb-values-lead h2 {
+    top: 218px;
+  }
+
+  .asb-landing .asb-values-lead > p:last-child {
+    top: 346px;
+  }
+
+  .asb-landing .asb-platform-grid {
+    gap: 16px;
+    margin-top: 51px;
+  }
+
+  .asb-landing .asb-service-ui {
+    top: 60px;
+    border-color: rgba(8, 3, 49, .14);
+    background: #fff;
+    box-shadow: 0 18px 38px rgba(8, 3, 49, .09);
+  }
+
+  .asb-landing .asb-platform-art-korban .asb-service-ui {
+    width: calc(100% - 34px);
+  }
+
+  .asb-landing .asb-platform-art-water .asb-service-ui {
+    transform: translateY(18px) rotate(-.6deg);
+  }
+
+  .asb-landing .asb-service-ui-bar,
+  .asb-landing .asb-service-ui-head,
+  .asb-landing .asb-service-ui-summary,
+  .asb-landing .asb-ui-project-stats > span,
+  .asb-landing .asb-ui-calendar-grid,
+  .asb-landing .asb-ui-feed > div,
+  .asb-landing .asb-ui-brief {
+    border-color: rgba(8, 3, 49, .12);
+  }
+
+  .asb-landing .asb-service-ui-body {
+    filter: none;
+  }
+
+  .asb-landing .asb-ui-table-head,
+  .asb-landing .asb-ui-table-row small,
+  .asb-landing .asb-ui-table-row em,
+  .asb-landing .asb-ui-project-stats small,
+  .asb-landing .asb-ui-feed p small,
+  .asb-landing .asb-ui-feed > div > em {
+    color: rgba(8, 3, 49, .52);
+  }
+
+  .asb-landing .asb-values-list {
+    padding: 57px 34px 11px;
+  }
+
+  .asb-landing .asb-how .asb-stories-lead > p:last-child {
+    top: 319px;
+  }
+
+  .asb-landing .asb-how .asb-concept-film {
+    top: 419px;
+  }
+
+  .asb-landing .asb-values-card,
+  .asb-landing .asb-values-card-dignity,
+  .asb-landing .asb-values-card .asb-values-principle,
+  .asb-landing .asb-values-card .asb-values-explanation,
+  .asb-landing .asb-values-card .asb-values-index {
+    color: #080331;
+  }
+
+  .asb-landing .asb-values-card .asb-values-explanation {
+    font-size: 16px;
+    line-height: 20px;
+  }
+
+  .asb-landing .asb-values-perimeter-accent-care { stroke: #328a3b; }
+  .asb-landing .asb-values-perimeter-accent-dignity { stroke: #ff6b40; }
+  .asb-landing .asb-values-perimeter-accent-honesty { stroke: #f5a0ef; }
+
+  .asb-landing .asb-concept-film-stage > img {
+    object-position: center 12%;
+    filter: saturate(.84) contrast(1.02) brightness(1.04);
+  }
+
+  .asb-landing .asb-concept-film-wash {
+    background: linear-gradient(180deg, rgba(8, 3, 49, .015), rgba(8, 3, 49, .07));
+  }
 }

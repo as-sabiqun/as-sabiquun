@@ -33,11 +33,13 @@ An As-Sabiquun service site rendered with the approved August Health composition
 - Values route frame: 832×588px, 48px radius, 2px low-contrast green outline.
 - Case video: 960×748px with a 538px stage and 210px white quote panel.
 - Story cards: 376×450px, ~32px gap, clipped neighbors.
-- Closing: one 720px viewport. Footer: 829px sticky desktop reveal.
+- Closing: one desktop viewport with a 720px floor. Footer: 829px sticky desktop reveal.
 
 ## Motion
 
-- Hero perimeter field rotates with the first 620px of scroll; circle contents counter-rotate.
+- Desktop hero height tracks the viewport with a 720px floor; the headline shifts down between 720px and 900px viewports while the announcement wrapper remains fixed at y≈92px.
+- Hero perimeter field starts at the live reference's 0° arrangement and rotates one turn in about 300 seconds; circle contents counter-rotate at the exact inverse rate.
+- The announcement pill is visible on load, fades away on downward scrolling, and reappears after a meaningful upward scroll.
 - Trust marks move as a continuous slow marquee.
 - Section leads and feature rows reveal only as they enter the viewport, with 500–700ms opacity/translate transitions.
 - Feature cards do not lift; only their arrow moves +10px.

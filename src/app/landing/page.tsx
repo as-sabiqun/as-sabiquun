@@ -142,9 +142,13 @@ export default function LandingPage() {
         </div>
       </header>
 
+      <Link href="/dashboard" className="asb-announcement">
+        Explore latest field updates <Arrow />
+      </Link>
+
       <main>
         <section className="asb-hero" aria-labelledby="hero-title">
-          <div className="asb-hero-media" aria-label="Six original As-Sabiquun fieldwork and service compositions">
+          <div className="asb-hero-media" aria-label="Eight original As-Sabiquun fieldwork and service compositions">
             <div className="asb-hero-orbit" aria-hidden="true">
               <div className="asb-hero-orbit-item asb-orbit-one">
                 <div className="asb-orbit-visual asb-orbit-abstract">
@@ -153,6 +157,11 @@ export default function LandingPage() {
                 </div>
               </div>
               <div className="asb-hero-orbit-item asb-orbit-two">
+                <div className="asb-orbit-visual asb-orbit-photo asb-orbit-photo-quran">
+                  <img src="/landing-quran-table.png" alt="" />
+                </div>
+              </div>
+              <div className="asb-hero-orbit-item asb-orbit-three">
                 <div className="asb-orbit-visual asb-orbit-route">
                   <span className="asb-orbit-route-label">Project route</span>
                   <strong>48h</strong>
@@ -160,24 +169,29 @@ export default function LandingPage() {
                   <small>Field → review → update</small>
                 </div>
               </div>
-              <div className="asb-hero-orbit-item asb-orbit-three">
+              <div className="asb-hero-orbit-item asb-orbit-four">
                 <div className="asb-orbit-visual asb-orbit-photo asb-orbit-photo-community">
                   <img src="/landing-portrait-community.png" alt="" />
                 </div>
               </div>
-              <div className="asb-hero-orbit-item asb-orbit-four">
+              <div className="asb-hero-orbit-item asb-orbit-five">
                 <div className="asb-orbit-visual asb-orbit-seal">
                   <span className="asb-orbit-seal-ring" />
                   <img src="/brand/as-sabiquun-seal.png" alt="" />
                   <strong>Care,<br />carried<br />forward.</strong>
                 </div>
               </div>
-              <div className="asb-hero-orbit-item asb-orbit-five">
+              <div className="asb-hero-orbit-item asb-orbit-six">
+                <div className="asb-orbit-visual asb-orbit-photo asb-orbit-photo-water">
+                  <img src="/landing-water-point.png" alt="" />
+                </div>
+              </div>
+              <div className="asb-hero-orbit-item asb-orbit-seven">
                 <div className="asb-orbit-visual asb-orbit-photo asb-orbit-photo-coordinator">
                   <img src="/landing-portrait-coordinator.png" alt="" />
                 </div>
               </div>
-              <div className="asb-hero-orbit-item asb-orbit-six">
+              <div className="asb-hero-orbit-item asb-orbit-eight">
                 <div className="asb-orbit-visual asb-orbit-update">
                   <div className="asb-orbit-update-card">
                     <span>ASB / 0248</span>
@@ -191,7 +205,6 @@ export default function LandingPage() {
             </div>
           </div>
           <div className="asb-hero-copy">
-            <Link href="/dashboard" className="asb-arabic">Explore latest field updates <Arrow /></Link>
             <h1 id="hero-title">Give with care.<br />Let good travel.</h1>
             <p>Islamic services, organised with care for the people and places at the heart of every act of giving.</p>
             <div className="asb-hero-actions">
@@ -293,7 +306,7 @@ export default function LandingPage() {
 
           <div className="asb-concept-film" aria-label="Concept video placeholder">
             <div className="asb-concept-film-stage">
-              <img src="/landing-hero-volunteers.png" alt="" />
+              <img src="/landing-portrait-community.png" alt="" />
               <div className="asb-concept-film-wash" aria-hidden="true" />
               <span className="asb-concept-film-label">Concept video placeholder</span>
               <span className="asb-concept-film-play" aria-hidden="true">▶</span>
@@ -357,7 +370,7 @@ export default function LandingPage() {
           <section className="asb-closing" aria-labelledby="closing-title">
             <div className="asb-closing-circles" aria-hidden="true"><i /><i /><i /><i /><i /></div>
             <div className="asb-closing-inner">
-              <h2 id="closing-title">Every intention<br />deserves care, clarity,<br />and a path forward.</h2>
+              <h2 id="closing-title">An Islamic giving platform built<br />with care for every intention<br />and clarity at every step.</h2>
               <Link href="/services" className="asb-button asb-button-dark">Explore services <Arrow /></Link>
             </div>
           </section>
@@ -405,6 +418,15 @@ export default function LandingPage() {
             <Link href="/about">Policies</Link>
           </div>
               <small>© {new Date().getFullYear()} As-Sabiquun Association Consultancy</small>
+            </div>
+            <div className="asb-footer-handoff" aria-label="As-Sabiquun footer summary">
+              <small>© {new Date().getFullYear()} As-Sabiquun</small>
+              <div className="asb-footer-principles" aria-label="Our operating principles">
+                <span><i>✓</i><b>Amanah</b></span>
+                <span><i>•</i><b>Field-led</b></span>
+                <span><i>↗</i><b>Clear</b></span>
+              </div>
+              <span className="asb-footer-social" aria-label="Social links">in</span>
             </div>
           </footer>
         </div>

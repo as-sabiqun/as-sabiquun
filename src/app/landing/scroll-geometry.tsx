@@ -12,6 +12,8 @@ export function ScrollGeometry() {
     const storyViewport = root.querySelector<HTMLElement>(".asb-stories-viewport");
     const storyButtons = root.querySelectorAll<HTMLButtonElement>(".asb-story-controls button");
     let frame = 0;
+    let lastScrollY = window.scrollY;
+    let upwardTravel = 0;
 
     const closeMobileMenu = (event: Event) => {
       const target = event.target;
@@ -22,6 +24,7 @@ export function ScrollGeometry() {
 
     const update = () => {
       frame = 0;
+      const scrollY = window.scrollY;
       const navBandY = 49;
       const overDarkBand = [".asb-values", ".asb-closing"].some((selector) => {
         const band = root.querySelector<HTMLElement>(selector);
@@ -34,6 +37,19 @@ export function ScrollGeometry() {
         "--asb-nav-surface",
         overDarkBand ? "rgba(229, 227, 242, .78)" : "rgba(255, 255, 255, .7)",
       );
+
+      const delta = scrollY - lastScrollY;
+      if (scrollY <= 12) {
+        upwardTravel = 0;
+        root.classList.remove("asb-announcement-hidden");
+      } else if (delta > 3) {
+        upwardTravel = 0;
+        root.classList.add("asb-announcement-hidden");
+      } else if (delta < -2) {
+        upwardTravel += -delta;
+        if (upwardTravel >= 72) root.classList.remove("asb-announcement-hidden");
+      }
+      lastScrollY = scrollY;
     };
 
     const schedule = () => {
@@ -79,6 +95,7 @@ export function ScrollGeometry() {
       storyButtons[1]?.removeEventListener("click", nextStories);
       revealObserver.disconnect();
       root.classList.remove("asb-motion-ready");
+      root.classList.remove("asb-announcement-hidden");
       if (frame) window.cancelAnimationFrame(frame);
     };
   }, []);
