@@ -1,5 +1,4 @@
 import Link from "next/link";
-import type { ReactNode } from "react";
 import { ScrollGeometry } from "./scroll-geometry";
 import "./landing.css";
 
@@ -34,39 +33,75 @@ const platformServices = [
 ] satisfies PlatformServiceList;
 
 function PlatformArt({ type }: { type: PlatformService["art"] }) {
-  if (type === "water") {
-    return <div className="asb-platform-art asb-platform-art-water" aria-hidden="true"><img src="/landing-water-point.png" alt="" /><span>FIELD / WATER</span><i /></div>;
-  }
-  if (type === "quran") {
-    return <div className="asb-platform-art asb-platform-art-quran" aria-hidden="true"><img src="/landing-quran-table.png" alt="" /><span><b>01</b> CONTINUES</span></div>;
-  }
-  if (type === "food") {
-    return <div className="asb-platform-art asb-platform-art-food" aria-hidden="true"><img src="/landing-hero-volunteers.png" alt="" /><span>CARE, SHARED</span><i><b /><b /><b /></i></div>;
-  }
-  if (type === "updates") {
-    return <div className="asb-platform-art asb-platform-art-updates" aria-hidden="true"><div className="asb-update-panel"><span>ASB / 0248</span><strong>Evidence received</strong><p><i /><i /><i /></p><small><b>✓</b> reviewed for you</small></div><img src="/brand/as-sabiquun-seal.png" alt="" /></div>;
-  }
-  if (type === "support") {
-    return <div className="asb-platform-art asb-platform-art-support" aria-hidden="true"><span className="asb-support-node asb-support-node-one" /><span className="asb-support-node asb-support-node-two" /><span className="asb-support-node asb-support-node-three" /><svg viewBox="0 0 280 134"><path d="M29 102C70 102 67 35 120 35s52 67 100 67" /><path d="M120 35h80" /></svg><div>IDEA<br /><b>→</b> FIELD</div></div>;
-  }
-  return <div className="asb-platform-art asb-platform-art-korban" aria-hidden="true"><div className="asb-korban-tag"><span>INTENTION</span><b>KORBAN<br />2026</b><i /></div><div className="asb-korban-orb"><span /><span /><span /></div></div>;
+  const labels = {
+    korban: ["Korban request", "Intention confirmed"],
+    water: ["Water project", "Field location reviewed"],
+    quran: ["Quran wakaf", "Distribution planned"],
+    food: ["Shared meal", "Community list ready"],
+    updates: ["Giving update", "Evidence received"],
+    support: ["Project brief", "Next step prepared"],
+  } as const;
+
+  const body = type === "korban" ? (
+    <div className="asb-ui-requests">
+      <div className="asb-ui-toolbar"><span>All requests</span><i>Search by name or reference…</i><b>＋ New</b></div>
+      <div className="asb-ui-table-head"><span>Household</span><span>Service</span><span>Status</span><span>Updated</span></div>
+      {["Nur Hidayah", "Muhammad Irfan", "Siti Mariam", "Abdul Rahman"].map((name, index) => <div className="asb-ui-table-row" key={name}><i>{name.slice(0, 1)}</i><span>{name}<small>ASB-024{index + 4}</small></span><span>{index % 2 ? "Korban share" : "Family Korban"}</span><b>{index === 3 ? "Preparing" : "Confirmed"}</b><em>{index + 2}h ago</em></div>)}
+    </div>
+  ) : type === "water" ? (
+    <div className="asb-ui-project">
+      <div className="asb-ui-project-map"><span /><span /><span /><svg viewBox="0 0 320 150"><path d="M18 122C74 96 93 126 142 82s92-29 160-68" /></svg><b>FIELD SITE 03</b></div>
+      <div className="asb-ui-project-stats"><span><small>Stage</small><b>Site review</b></span><span><small>Evidence</small><b>12 files</b></span><span><small>Next check</small><b>Friday</b></span></div>
+    </div>
+  ) : type === "quran" ? (
+    <div className="asb-ui-calendar">
+      <div className="asb-ui-calendar-head"><b>Distribution plan</b><span>June 2026⌄</span></div>
+      <div className="asb-ui-calendar-grid">{["M","T","W","T","F","S","S"].map((day, index) => <span key={`${day}-${index}`}><b>{day}</b><i className={index === 3 ? "is-active" : ""}>{16 + index}</i><em /><em /></span>)}</div>
+      <div className="asb-ui-calendar-note"><i>✓</i><span><b>Learning centre delivery</b><small>Coordinator and recipient list confirmed</small></span><em>240 copies</em></div>
+    </div>
+  ) : type === "food" ? (
+    <div className="asb-ui-meals">
+      <div className="asb-ui-meal-summary"><span><small>Meals planned</small><b>420</b><em>↑ 18%</em></span><span><small>Locations</small><b>06</b><em>All reviewed</em></span></div>
+      <div className="asb-ui-bars"><i style={{ height: "42%" }} /><i style={{ height: "65%" }} /><i style={{ height: "54%" }} /><i style={{ height: "86%" }} /><i style={{ height: "70%" }} /><i style={{ height: "94%" }} /><i style={{ height: "78%" }} /></div>
+      <div className="asb-ui-meal-legend"><span><i />Prepared</span><span><i />Reviewed</span><span>Mon — Sun</span></div>
+    </div>
+  ) : type === "updates" ? (
+    <div className="asb-ui-feed">
+      {["Evidence uploaded", "Field note reviewed", "Update prepared"].map((title, index) => <div key={title}><span className={`asb-ui-feed-thumb asb-ui-feed-thumb-${index + 1}`}><i /></span><p><b>{title}</b><small>{index === 0 ? "8 photos · water point" : index === 1 ? "Coordinator check complete" : "Ready for your dashboard"}</small></p><em>{index === 0 ? "09:42" : index === 1 ? "Yesterday" : "2d"}</em></div>)}
+    </div>
+  ) : (
+    <div className="asb-ui-brief">
+      <div className="asb-ui-brief-nav"><b>Project space</b><span className="is-active">Overview</span><span>People</span><span>Files</span><span>Notes</span></div>
+      <div className="asb-ui-brief-main"><span className="asb-ui-brief-status">BRIEF / OPEN</span><h4>Bring the next project into focus.</h4><p><i /><i /><i /></p><div><span><b>01</b> Define the intention</span><span><b>02</b> Review the route</span><span><b>03</b> Begin together</span></div></div>
+    </div>
+  );
+
+  return (
+    <div className={`asb-platform-art asb-platform-art-${type}`} aria-hidden="true">
+      <div className={`asb-service-ui asb-service-ui-${type}`}>
+        <div className="asb-service-ui-bar"><i /><i /><i /><span>AS-SABIQUUN</span></div>
+        <div className="asb-service-ui-head">
+          <span>{labels[type][0]}</span><b>•••</b>
+        </div>
+        <div className="asb-service-ui-body">{body}</div>
+      </div>
+    </div>
+  );
 }
 
-function ProofFragment({
-  className,
-  src,
-  alt,
-  children,
-}: {
-  className: string;
-  src?: string;
-  alt?: string;
-  children?: ReactNode;
-}) {
+function FooterMark() {
+  return <div className="asb-footer-mark" aria-label="As-Sabiquun"><i /><i /><i /><i /><i /><i /><i /><i /></div>;
+}
+
+function TrustMarkSet({ hidden = false }: { hidden?: boolean }) {
   return (
-    <div className={`asb-proof-fragment ${className}`}>
-      {src ? <img src={src} alt={alt ?? ""} /> : null}
-      {children}
+    <div className="asb-trust-mark-set" aria-hidden={hidden || undefined}>
+      <span className="asb-mark asb-mark-arch"><i /><span>Amanah<b>FIELDWORKS</b></span></span>
+      <span className="asb-mark asb-mark-sun"><i /><span>NUR<b>COLLECTIVE</b></span></span>
+      <span className="asb-mark asb-mark-crescent"><i /><span>Titipan<b>NETWORK</b></span></span>
+      <span className="asb-mark asb-mark-line"><i /><span>Sadaqa<b>STUDIO</b></span></span>
+      <span className="asb-mark asb-mark-grid"><i /><span>TANDA<b>COMMONS</b></span></span>
+      <span className="asb-mark asb-mark-star"><i /><span>Bina<b>WORKSHOP</b></span></span>
     </div>
   );
 }
@@ -76,7 +111,7 @@ export default function LandingPage() {
     <div className="asb-landing">
       <ScrollGeometry />
       <header className="asb-nav-wrap">
-        <div className="asb-nav">
+        <div className="asb-nav" style={{ backdropFilter: "blur(40px)", WebkitBackdropFilter: "blur(40px)" }}>
           <Link href="/landing" className="asb-brand" aria-label="As-Sabiquun home">
             <img src="/brand/as-sabiquun-seal.png" alt="" />
             <span>As-Sabiquun</span>
@@ -85,59 +120,98 @@ export default function LandingPage() {
             <a href="#services">Services</a>
             <a href="#amanah">Our amanah</a>
             <a href="#how">How it works</a>
+            <Link href="/dashboard">Giving updates</Link>
+            <Link href="/about">About</Link>
           </nav>
-          <Link href="/services" className="asb-nav-cta">Choose a service</Link>
+          <div className="asb-nav-actions">
+            <Link href="/contact" className="asb-nav-text-link">Contact</Link>
+            <Link href="/services" className="asb-nav-cta">Choose a service</Link>
+            <details className="asb-mobile-menu">
+              <summary className="asb-nav-menu" aria-label="Open navigation menu"><i /><i /></summary>
+              <div className="asb-mobile-menu-panel">
+                <a href="#services">Services</a>
+                <a href="#amanah">Our amanah</a>
+                <a href="#how">How it works</a>
+                <Link href="/dashboard">Giving updates</Link>
+                <Link href="/about">About</Link>
+                <Link href="/contact">Contact</Link>
+                <Link href="/services" className="asb-mobile-menu-cta">Choose a service</Link>
+              </div>
+            </details>
+          </div>
         </div>
       </header>
 
       <main>
         <section className="asb-hero" aria-labelledby="hero-title">
-          <div className="asb-hero-halo" aria-hidden="true" />
-          <div className="asb-hero-media" aria-label="A collage of original As-Sabiquun fieldwork imagery">
-            <ProofFragment className="asb-media-volunteers" src="/landing-hero-volunteers.png" alt="Volunteers preparing supplies together" />
-            <ProofFragment className="asb-media-quran" src="/landing-quran-table.png" alt="Qurans arranged on a table" />
-            <ProofFragment className="asb-media-water" src="/landing-water-point.png" alt="A completed community water point" />
-            <ProofFragment className="asb-media-receipt">
-              <span>FIELD NOTE</span><b>01</b><i>Project card</i>
-            </ProofFragment>
-            <ProofFragment className="asb-media-coordinate">
-              <span>01°18&apos;N</span><i>service map</i>
-            </ProofFragment>
-            <ProofFragment className="asb-media-evidence">
-              <span>REVIEWED</span><b>03</b><div><i /><i /><i /></div><em>evidence clips</em>
-            </ProofFragment>
-            <ProofFragment className="asb-media-route">
-              <span>REPORT ROUTE</span><b>48h</b><i>from field to you</i>
-            </ProofFragment>
-            <ProofFragment className="asb-media-stamp">
-              <span>ON SITE</span><b>✓</b><i>location logged</i>
-            </ProofFragment>
-            <ProofFragment className="asb-media-seal">
-              <img src="/brand/as-sabiquun-seal.png" alt="" />
-            </ProofFragment>
-            <ProofFragment className="asb-media-dot" />
+          <div className="asb-hero-media" aria-label="Six original As-Sabiquun fieldwork and service compositions">
+            <div className="asb-hero-orbit" aria-hidden="true">
+              <div className="asb-hero-orbit-item asb-orbit-one">
+                <div className="asb-orbit-visual asb-orbit-abstract">
+                  <img src="/landing-hero-volunteers.png" alt="" />
+                  <i /><i />
+                </div>
+              </div>
+              <div className="asb-hero-orbit-item asb-orbit-two">
+                <div className="asb-orbit-visual asb-orbit-route">
+                  <span className="asb-orbit-route-label">Project route</span>
+                  <strong>48h</strong>
+                  <span className="asb-orbit-route-line"><i /><i /><i /><i /></span>
+                  <small>Field → review → update</small>
+                </div>
+              </div>
+              <div className="asb-hero-orbit-item asb-orbit-three">
+                <div className="asb-orbit-visual asb-orbit-photo asb-orbit-photo-community">
+                  <img src="/landing-portrait-community.png" alt="" />
+                </div>
+              </div>
+              <div className="asb-hero-orbit-item asb-orbit-four">
+                <div className="asb-orbit-visual asb-orbit-seal">
+                  <span className="asb-orbit-seal-ring" />
+                  <img src="/brand/as-sabiquun-seal.png" alt="" />
+                  <strong>Care,<br />carried<br />forward.</strong>
+                </div>
+              </div>
+              <div className="asb-hero-orbit-item asb-orbit-five">
+                <div className="asb-orbit-visual asb-orbit-photo asb-orbit-photo-coordinator">
+                  <img src="/landing-portrait-coordinator.png" alt="" />
+                </div>
+              </div>
+              <div className="asb-hero-orbit-item asb-orbit-six">
+                <div className="asb-orbit-visual asb-orbit-update">
+                  <div className="asb-orbit-update-card">
+                    <span>ASB / 0248</span>
+                    <strong>Evidence received</strong>
+                    <p><i /><i /><i /></p>
+                    <small><b>✓</b> Reviewed for you</small>
+                  </div>
+                  <span className="asb-orbit-update-date">03<br /><b>updates</b></span>
+                </div>
+              </div>
+            </div>
           </div>
           <div className="asb-hero-copy">
-            <p className="asb-arabic" lang="ar" dir="rtl">السَّابِقُونَ إِلَى الْخَيْرِ</p>
+            <Link href="/dashboard" className="asb-arabic">Explore latest field updates <Arrow /></Link>
             <h1 id="hero-title">Give with care.<br />Let good travel.</h1>
             <p>Islamic services, organised with care for the people and places at the heart of every act of giving.</p>
             <div className="asb-hero-actions">
               <Link href="#services" className="asb-button asb-button-primary">Explore services <Arrow /></Link>
             </div>
           </div>
+          <svg className="asb-hero-wave" viewBox="0 0 1280 92" preserveAspectRatio="none" aria-hidden="true">
+            <path d="M0 12C172 55 354 77 578 78C836 80 1050 49 1280 8V92H0Z" />
+          </svg>
         </section>
 
         <section className="asb-trust-rail" aria-label="Fictional example organization marks">
-          <p className="asb-trust-note">Fictional examples · not partners, endorsements, or accreditations</p>
-          <h2>Care moves through people.</h2>
-          <div className="asb-trust-marks" aria-label="Original fictional organization marks">
-            <span className="asb-mark asb-mark-arch"><i />Amanah<br /><b>FIELDWORKS</b></span>
-            <span className="asb-mark asb-mark-sun"><i />NUR<br /><b>COLLECTIVE</b></span>
-            <span className="asb-mark asb-mark-crescent"><i />TITIPAN<br /><b>NETWORK</b></span>
-            <span className="asb-mark asb-mark-line"><i />SADAQA<br /><b>STUDIO</b></span>
-            <span className="asb-mark asb-mark-grid"><i />TANDA<br /><b>COMMONS</b></span>
-            <span className="asb-mark asb-mark-star"><i />BINA<br /><b>WORKSHOP</b></span>
+          <h2>Trusted by communities built around care</h2>
+          <div className="asb-trust-marquee" aria-label="Original fictional organization marks">
+            <div className="asb-trust-marks">
+              <TrustMarkSet />
+              <TrustMarkSet hidden />
+            </div>
           </div>
+          <p className="asb-trust-note">Illustrative organization marks · not partners, endorsements, or accreditations</p>
         </section>
 
         <section className="asb-services" id="services" aria-labelledby="services-title">
@@ -222,7 +296,7 @@ export default function LandingPage() {
               <img src="/landing-hero-volunteers.png" alt="" />
               <div className="asb-concept-film-wash" aria-hidden="true" />
               <span className="asb-concept-film-label">Concept video placeholder</span>
-              <span className="asb-concept-film-play" aria-hidden="true">→</span>
+              <span className="asb-concept-film-play" aria-hidden="true">▶</span>
               <p>How care moves from an intention to a shared act.</p>
             </div>
             <div className="asb-concept-film-quote">
@@ -279,20 +353,20 @@ export default function LandingPage() {
           </div>
         </section>
 
-        <section className="asb-closing" aria-labelledby="closing-title">
-          <div className="asb-closing-circles" aria-hidden="true"><i /><i /><i /><i /><i /></div>
-          <div className="asb-closing-inner">
-            <h2 id="closing-title">Every intention<br />deserves care, clarity,<br />and a path forward.</h2>
-            <Link href="/services" className="asb-button asb-button-dark">Explore services <Arrow /></Link>
-          </div>
-        </section>
-      </main>
+        <div className="asb-final-stack">
+          <section className="asb-closing" aria-labelledby="closing-title">
+            <div className="asb-closing-circles" aria-hidden="true"><i /><i /><i /><i /><i /></div>
+            <div className="asb-closing-inner">
+              <h2 id="closing-title">Every intention<br />deserves care, clarity,<br />and a path forward.</h2>
+              <Link href="/services" className="asb-button asb-button-dark">Explore services <Arrow /></Link>
+            </div>
+          </section>
 
-      <footer className="asb-footer">
-        <div className="asb-footer-brand-panel">
-          <img src="/brand/as-sabiquun-seal.png" alt="" />
-        </div>
-        <div className="asb-footer-links-panel">
+          <footer className="asb-footer">
+            <div className="asb-footer-brand-panel">
+              <FooterMark />
+            </div>
+            <div className="asb-footer-links-panel">
           <div>
             <p>Explore</p>
             <Link href="/services">Services</Link>
@@ -330,9 +404,11 @@ export default function LandingPage() {
             <Link href="/about">FAQs</Link>
             <Link href="/about">Policies</Link>
           </div>
-          <small>© {new Date().getFullYear()} As-Sabiquun Association Consultancy</small>
+              <small>© {new Date().getFullYear()} As-Sabiquun Association Consultancy</small>
+            </div>
+          </footer>
         </div>
-      </footer>
+      </main>
     </div>
   );
 }

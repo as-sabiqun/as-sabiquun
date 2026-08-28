@@ -14,7 +14,7 @@ The seven checkable mechanisms in [`bar.md`](../bar.md) are the acceptance crite
 
 1. **Hero + trust rail** — fixed capsule nav, circular-media hero, short proof/mark rail.
 2. **Service platform** — `Get to know us`-style editorial lead-in and six-card 2×3 service grid.
-3. **Values well** — circular-entry dark band, centered values message, stacked statements, flattening scroll geometry.
+3. **Values well** — full-width August-indigo band, centered values message, stacked statements, and matched scroll geometry.
 4. **Stories + close** — 16:9 placeholder, clipped three-card story rail, dot/arrow controls, dark closing transition, and split footer.
 
 ## Build order
@@ -39,7 +39,7 @@ The seven checkable mechanisms in [`bar.md`](../bar.md) are the acceptance crite
 
 ### 3. Values well
 
-- Transition into a full-width dark deep-teal/ink band at the measured reference position; a brief circular entrance overlay may resolve before the headline reaches the viewport.
+- Transition into a full-width `#1B1463` band at the measured reference position.
 - Build three large, readable value statements with one thin connecting line and intentional staggered color.
 - Ensure the shape is static and legible under reduced motion and does not create horizontal scroll on mobile.
 
@@ -49,7 +49,7 @@ The seven checkable mechanisms in [`bar.md`](../bar.md) are the acceptance crite
 
 - Use the generated water-point image in a clear 16:9 placeholder with an explicit `concept placeholder` treatment.
 - Build an oversized, horizontally clipped three-story rail with partial neighboring cards, hover lift/arrow movement, and compact dot/arrow controls.
-- Pin the dark closing statement for one viewport while the two-panel footer rises into/over it; keep the original nav as the only header.
+- Hold the indigo closing statement for one viewport while the two-panel green footer rises into it; keep the original nav as the only header.
 - On mobile, return the footer to normal flow, remove the desktop seal panel, and expose the navigation immediately as a compact two-column grid.
 
 **Exit proof:** rail clips intentionally at desktop, degrades to swipe/stack layout on mobile, and footer closes the page without introducing a second header.

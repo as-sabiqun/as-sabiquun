@@ -1,37 +1,52 @@
-# As-Sabiquun concept landing system
+# As-Sabiquun landing design system
 
-## Purpose
+## Direction
 
-An original concept-demo for an Islamic service and accountability platform. It borrows the **interaction grammar** of the approved August Health reference—not its branding, copy, logos, images, or proprietary UI assets.
+An As-Sabiquun service site rendered with the approved August Health composition and motion grammar. Content, project imagery, and the brand lockup remain As-Sabiquun; the visible spatial system is judged directly against the reference screenshots.
 
-## Tokens
+## Palette
 
-| Role | Value | Use |
-| --- | --- | --- |
-| Paper | `#F8F3EB` | primary canvas |
-| Ink | `#12132D` | headings and outlines |
-| Amanah teal | `#197B7D` | primary action and proof signals |
-| Deep teal | `#0B4E50` | values well and footer |
-| Evidence violet | `#6460E9` | secondary action and data accents |
-| Delivery coral | `#FF896D` | warm graphic punctuation |
-| Trust gold | `#F4CA61` | light emphasis and wayfinding |
+| Role | Value |
+| --- | --- |
+| White canvas | `#FFFFFF` |
+| Cream case-study field | `#F8F3EB` |
+| Ink | `#080331` |
+| Indigo values/closing | `#1B1463` |
+| Action blue | `#4865FF` |
+| Footer green | `#328A3B` |
+| Footer deep green | `#0D5238` |
+| Coral | `#FF6B40` |
+| Pink | `#F5A0EF` |
+| Lavender nav state | `rgba(229,227,242,.78)` |
 
 ## Typography
 
-- Display: editorial serif, regular, tight tracking (`Georgia` fallback until a licensed project font is supplied).
-- Body: existing `Inter` variable, regular to semibold.
-- Utility labels: Inter 11–12px, uppercase, 0.12em tracking.
+- Editorial display: serif with normal letter spacing; desktop H1 is 64/64, section H2 is 48/52.8, trust heading is 32/35.2, story title is 32/35.2.
+- Interface/body: existing Inter at 16/25.6; hero body is 24/33.6.
+- Labels: 12–13px uppercase inside 1px outlined capsules.
 
-## Layout and interaction
+## Surfaces and spacing
 
-- Max content width: 1160px; all page edges breathe at least 28px on desktop and 20px on mobile.
-- Navigation: fixed 64px white capsule, 17px from top, 999px radius.
-- Cards: 28–32px radius; no dense borders; surface tint establishes grouping.
-- Arrow affordance: 46–48px circular button. Platform cards stay stationary and translate only the arrow `+10px`; story cards may lift while their arrows translate.
-- Scroll geometry: the hero uses a scroll-driven rotating/scaling superellipse whose curved chord resolves to a flat trust boundary. The closing statement is a relative one-viewport layer; the following footer is `position: sticky; bottom: 0` on desktop and reveals from behind it. Mobile uses normal footer flow for legibility. Reduced motion falls back to the settled geometry.
-- Concept-mode trust marks: six original monochrome fictional marks, never third-party logos.
+- Desktop content width: 1160px.
+- Floating nav: 1138×66px at x63/y16, translucent and blurred.
+- Feature cards: two columns, three rows, 30px radius, interface art in lower half.
+- Values route frame: 832×588px, 48px radius, 2px low-contrast green outline.
+- Case video: 960×748px with a 538px stage and 210px white quote panel.
+- Story cards: 376×450px, ~32px gap, clipped neighbors.
+- Closing: one 720px viewport. Footer: 829px sticky desktop reveal.
 
-## Asset policy
+## Motion
 
-- Generated assets must be original, contain no external brand marks or text, and be named as concept graphics.
-- Case-study imagery is clearly a placeholder until verified media is supplied.
+- Hero perimeter field rotates with the first 620px of scroll; circle contents counter-rotate.
+- Trust marks move as a continuous slow marquee.
+- Section leads and feature rows reveal only as they enter the viewport, with 500–700ms opacity/translate transitions.
+- Feature cards do not lift; only their arrow moves +10px.
+- Story cards lift -7px and their arrow moves +5–10px.
+- Navigation surface changes to translucent lavender over indigo bands.
+- Reduced motion resolves all components to their final visible state.
+
+## Asset and trust policy
+
+- Use original As-Sabiquun content and visuals; do not copy August Health’s logo, customer marks, copy, or proprietary screenshots.
+- Any showcase organization marks must be original concepts or visibly disclosed as illustrative; no false partnership claim.
+- Generated photography contains no text, watermark, or third-party brand marks.
