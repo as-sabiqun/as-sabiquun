@@ -25,10 +25,10 @@ An original concept-demo for an Islamic service and accountability platform. It 
 ## Layout and interaction
 
 - Max content width: 1160px; all page edges breathe at least 28px on desktop and 20px on mobile.
-- Navigation: fixed 66px white capsule, 28px from top, 999px radius.
+- Navigation: fixed 64px white capsule, 17px from top, 999px radius.
 - Cards: 28–32px radius; no dense borders; surface tint establishes grouping.
-- Arrow affordance: 46px circular button; card hover translates card `-7px` and arrow `+5px` over 260ms.
-- Scroll geometry: the values section begins inside a 50% elliptical top edge, which flattens to a rectangular band at its lower third; reduce motion falls back to static geometry.
+- Arrow affordance: 46–48px circular button. Platform cards stay stationary and translate only the arrow `+10px`; story cards may lift while their arrows translate.
+- Scroll geometry: the hero uses a scroll-driven rotating/scaling superellipse whose curved chord resolves to a flat trust boundary. The closing statement is a relative one-viewport layer; the following footer is `position: sticky; bottom: 0` on desktop and reveals from behind it. Mobile uses normal footer flow for legibility. Reduced motion falls back to the settled geometry.
 - Concept-mode trust marks: six original monochrome fictional marks, never third-party logos.
 
 ## Asset policy

@@ -23,7 +23,7 @@ The seven checkable mechanisms in [`bar.md`](../bar.md) are the acceptance crite
 
 - Keep the hero’s central type block clear at desktop and narrow mobile.
 - Use the three original Higgsfield images only as cropped editorial fragments around the edge, alongside original abstract UI fragments.
-- Retain the 66px floating nav; validate every CTA and trust mark clears it at all breakpoints.
+- Retain the measured 64px floating nav; validate every CTA and trust mark clears it at all breakpoints.
 - Keep six marks original and label the concept status without turning the rail into an endorsement claim.
 
 **Exit proof:** desktop + mobile renders; brief critic verifies As-Sabiquun’s giving entry point, system critic verifies tokens/geometry, and blind craft critic chooses our render over the reference on the explicit bar.
@@ -39,7 +39,7 @@ The seven checkable mechanisms in [`bar.md`](../bar.md) are the acceptance crite
 
 ### 3. Values well
 
-- Transition from paper into a dark deep-teal/ink elliptical well, then flatten it through the section.
+- Transition into a full-width dark deep-teal/ink band at the measured reference position; a brief circular entrance overlay may resolve before the headline reaches the viewport.
 - Build three large, readable value statements with one thin connecting line and intentional staggered color.
 - Ensure the shape is static and legible under reduced motion and does not create horizontal scroll on mobile.
 
@@ -49,7 +49,8 @@ The seven checkable mechanisms in [`bar.md`](../bar.md) are the acceptance crite
 
 - Use the generated water-point image in a clear 16:9 placeholder with an explicit `concept placeholder` treatment.
 - Build an oversized, horizontally clipped three-story rail with partial neighboring cards, hover lift/arrow movement, and compact dot/arrow controls.
-- Flow into the dark closing statement with outline circles, then the two-panel footer; keep the original nav as the only header.
+- Pin the dark closing statement for one viewport while the two-panel footer rises into/over it; keep the original nav as the only header.
+- On mobile, return the footer to normal flow, remove the desktop seal panel, and expose the navigation immediately as a compact two-column grid.
 
 **Exit proof:** rail clips intentionally at desktop, degrades to swipe/stack layout on mobile, and footer closes the page without introducing a second header.
 
