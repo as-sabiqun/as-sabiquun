@@ -102,8 +102,8 @@ export async function GET(_req: Request, { params }: { params: Promise<{ id: str
   if (!order) return NextResponse.json({ error: "Order not found" }, { status: 404 });
 
   const fonts = await loadFonts();
-  const seal = await readFile(join(process.cwd(), "public", "brand", "as-sabiquun-seal.png"));
-  const sealSrc = `data:image/png;base64,${seal.toString("base64")}`;
+  const seal = await readFile(join(process.cwd(), "public", "brand", "as-sabiquun-seal.svg"));
+  const sealSrc = `data:image/svg+xml;base64,${seal.toString("base64")}`;
 
   const title = order.offering_title ?? "As-Sabiqun Project";
   const donorFlag = flagUrl("sg");
@@ -156,7 +156,7 @@ export async function GET(_req: Request, { params }: { params: Promise<{ id: str
             border: `4px solid ${TEAL}`,
           }}
         >
-          <img src={sealSrc} width={160} height={160} alt="" style={{ objectFit: "contain", transform: "scale(2.2)" }} />
+          <img src={sealSrc} width={160} height={160} alt="" style={{ objectFit: "contain" }} />
         </div>
         {flagBox(beneficiaryFlag)}
       </div>
