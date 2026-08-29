@@ -6072,16 +6072,13 @@
 }
 
 .asb-landing .asb-brand-seal img {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  width: 300%;
-  height: 300%;
-  max-width: none;
+  display: block;
+  width: 100%;
+  height: 100%;
   border-radius: 0;
   object-fit: contain;
-  filter: saturate(1.24) contrast(1.18) brightness(.8);
-  transform: translate(-50%, -50%);
+  filter: none;
+  transform: none;
 }
 
 .asb-landing .asb-nav .asb-desktop-nav {
