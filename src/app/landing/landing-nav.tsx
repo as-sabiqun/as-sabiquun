@@ -122,9 +122,6 @@ export function LandingNav() {
                   );
                 })}
               </div>
-              <div className="asb-platform-dropdown-note">
-                One thoughtful platform for Islamic services today—and practical business systems next.
-              </div>
             </div>
           </div>
           <a href="#amanah">Our amanah</a>
