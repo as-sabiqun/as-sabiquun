@@ -41,6 +41,19 @@ function Arrow() {
   return <svg viewBox="0 0 32 24" aria-hidden="true"><path d="M2 12h26M20 4l8 8-8 8" /></svg>;
 }
 
+function ServiceGlyph({ type }: { type: CatalogService["slug"] }) {
+  if (type === "water") {
+    return <svg viewBox="0 0 32 32" aria-hidden="true"><path d="M16 4.5c-3.6 5.8-7.4 10.2-7.4 16a7.4 7.4 0 0 0 14.8 0c0-5.8-3.8-10.2-7.4-16Z" /><path d="M12.4 21.2c.7 2 2 3 4.1 3.4" /></svg>;
+  }
+  if (type === "quran") {
+    return <svg viewBox="0 0 32 32" aria-hidden="true"><path d="M4.5 7.5c4.6-1.4 8.4-.4 11.5 2.6v16c-3.1-3-6.9-4-11.5-2.6v-16Z" /><path d="M27.5 7.5c-4.6-1.4-8.4-.4-11.5 2.6v16c3.1-3 6.9-4 11.5-2.6v-16Z" /></svg>;
+  }
+  if (type === "orphans") {
+    return <svg viewBox="0 0 32 32" aria-hidden="true"><path d="M6 17h20M8 17a8 8 0 0 0 16 0M16 8v5M11.5 10.5 14 13M20.5 10.5 18 13" /></svg>;
+  }
+  return <svg viewBox="0 0 32 32" aria-hidden="true"><path d="M7.5 21c.8-5.5 4-9 8.5-9s7.7 3.5 8.5 9M10.5 12.5C8.7 12 7.2 10.6 6.5 8.2c3.1 0 5.3 1.1 6.7 3.2M21.5 12.5c1.8-.5 3.3-1.9 4-4.3-3.1 0-5.3 1.1-6.7 3.2M11 21v4M21 21v4" /></svg>;
+}
+
 function ServicePreview({
   service,
   panelId,
@@ -126,7 +139,7 @@ export function ServiceSelector({ services }: { services: CatalogService[] }) {
               onClick={() => setActiveSlug(service.slug)}
               onKeyDown={(event) => selectByKeyboard(event, index)}
             >
-              <span className={`asb-service-directory-mark is-${serviceMedia[service.slug].tone}`} aria-hidden="true" />
+              <span className={`asb-service-directory-mark is-${serviceMedia[service.slug].tone}`} aria-hidden="true"><ServiceGlyph type={service.slug} /></span>
               <span className="asb-service-directory-name">{service.title}</span>
               <span className="asb-service-directory-price">{service.price}</span>
               <Arrow />
@@ -154,7 +167,7 @@ export function ServiceSelector({ services }: { services: CatalogService[] }) {
                 aria-controls={`service-preview-mobile-${service.slug}`}
                 onClick={() => setActiveSlug(service.slug)}
               >
-                <span className={`asb-service-directory-mark is-${serviceMedia[service.slug].tone}`} aria-hidden="true" />
+                <span className={`asb-service-directory-mark is-${serviceMedia[service.slug].tone}`} aria-hidden="true"><ServiceGlyph type={service.slug} /></span>
                 <span className="asb-service-directory-name">{service.title}</span>
                 <span className="asb-service-directory-price">{service.price}</span>
                 <Arrow />

@@ -133,20 +133,17 @@
 .asb-service-directory-list button.is-active > svg { opacity: 1; transform: translateX(3px); }
 
 .asb-service-directory-mark {
-  display: block;
-  width: 25px;
-  height: 25px;
-  background-image: radial-gradient(circle, currentColor 0 1.6px, transparent 1.95px);
-  background-position: center;
-  background-size: 6px 6px;
-  -webkit-mask-image: radial-gradient(circle at center, #000 0 53%, transparent 55%);
-  mask-image: radial-gradient(circle at center, #000 0 53%, transparent 55%);
+  display: grid;
+  width: 27px;
+  height: 27px;
+  place-items: center;
 }
+.asb-service-directory-mark svg { width: 25px; height: 25px; stroke-width: 1.25; }
 .asb-service-directory-mark.is-coral { color: #ff6b40; }
 .asb-service-directory-mark.is-blue { color: #4865ff; }
 .asb-service-directory-mark.is-green { color: #328a3b; }
 .asb-service-directory-mark.is-pink { color: #d96bd2; }
-.asb-service-directory-list button.is-active .asb-service-directory-mark { color: #f5a0ef; }
+.asb-service-directory-list button.is-active .asb-service-directory-mark { color: #fff; }
 
 .asb-service-directory-name {
   overflow: hidden;
@@ -309,7 +306,7 @@
     text-align: left;
   }
   .asb-service-directory-mobile > .is-active > button { background: #1b1463; color: #fff; }
-  .asb-service-directory-mobile > .is-active > button .asb-service-directory-mark { color: #f5a0ef; }
+  .asb-service-directory-mobile > .is-active > button .asb-service-directory-mark { color: #fff; }
   .asb-service-directory-mobile > .is-active > button .asb-service-directory-price { color: rgba(255, 255, 255, .7); }
   .asb-service-directory-mobile > .is-active > button > svg { transform: rotate(90deg); }
   .asb-service-directory-price { display: block; font-size: 10px; }
