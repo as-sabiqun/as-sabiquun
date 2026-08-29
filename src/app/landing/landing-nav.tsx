@@ -64,7 +64,9 @@ export function LandingNav() {
     <header className="asb-nav-wrap">
       <div className="asb-nav">
         <Link href="/" className="asb-brand" aria-label="As-Sabiquun home">
-          <Image src="/brand/as-sabiquun-seal.png" width={2000} height={2000} sizes="34px" alt="" />
+          <span className="asb-brand-seal" aria-hidden="true">
+            <Image src="/brand/as-sabiquun-seal.png" width={2000} height={2000} sizes="36px" alt="" />
+          </span>
           <span>As-Sabiquun</span>
         </Link>
 
