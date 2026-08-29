@@ -6018,3 +6018,22 @@
     display: none;
   }
 }
+
+/* Use geometrically centred arrow artwork instead of font glyphs, whose
+   asymmetric side bearings made the controls look subtly off-centre. */
+.asb-landing .asb-arrow-icon {
+  display: block;
+  width: 26px;
+  height: 24px;
+  overflow: visible;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.35;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.asb-landing .asb-story-controls .asb-arrow-icon {
+  width: 32px;
+  height: 24px;
+}

@@ -83,8 +83,16 @@ function middleSetIndex(index: number) {
   return START_INDEX + logicalIndex(index);
 }
 
-function Arrow() {
-  return <span aria-hidden="true">→</span>;
+function Arrow({ direction = "next" }: { direction?: "previous" | "next" }) {
+  const path = direction === "previous"
+    ? "M22 12H4m7-7-7 7 7 7"
+    : "M4 12h18m-7-7 7 7-7 7";
+
+  return (
+    <svg className="asb-arrow-icon" viewBox="0 0 26 24" aria-hidden="true" focusable="false">
+      <path d={path} />
+    </svg>
+  );
 }
 
 export function StoryCarousel() {
@@ -274,7 +282,7 @@ export function StoryCarousel() {
           data-carousel-direction="previous"
           onClick={() => move(-1)}
         >
-          <span aria-hidden="true">←</span>
+          <Arrow direction="previous" />
         </button>
         <button
           type="button"
@@ -284,7 +292,7 @@ export function StoryCarousel() {
           data-carousel-direction="next"
           onClick={() => move(1)}
         >
-          <span aria-hidden="true">→</span>
+          <Arrow />
         </button>
       </div>
     </div>
