@@ -1828,7 +1828,7 @@
 .asb-landing .asb-orbit-one .asb-orbit-visual { transform:scale(1.04); }
 .asb-landing .asb-orbit-two .asb-orbit-visual { transform:translateY(28px); }
 .asb-landing .asb-orbit-three .asb-orbit-visual { transform:translateY(39px) scale(.97); }
-.asb-landing .asb-orbit-four .asb-orbit-visual { transform:scale(1.04); }
+.asb-landing .asb-orbit-four .asb-orbit-visual { transform:translateY(38px) scale(.99); }
 .asb-landing .asb-orbit-five .asb-orbit-visual { transform:translateY(-37px); }
 .asb-landing .asb-orbit-six .asb-orbit-visual { transform:translateY(-57px) scale(.95); }
 .asb-landing .asb-orbit-photo img { filter:saturate(.84) brightness(1.08); }
@@ -4123,6 +4123,7 @@
 }
 
 .asb-landing .asb-platform-water .asb-platform-copy h3::before { color: #f5a0ef; }
+.asb-landing .asb-platform-water .asb-platform-copy h3 { word-spacing: .14em; }
 .asb-landing .asb-platform-quran .asb-platform-copy h3::before { color: #4865ff; }
 .asb-landing .asb-platform-food .asb-platform-copy h3::before { color: #ff6b40; }
 .asb-landing .asb-platform-updates .asb-platform-copy h3::before { color: #328a3b; }
@@ -4655,4 +4656,1046 @@
   .asb-landing .asb-closing-orbit { width: min(1100px, 92vw); border: 1.5px solid rgba(50, 138, 59, .76); }
   .asb-landing .asb-closing-orbit::before { border: 1.5px solid rgba(245, 160, 239, .68); }
   .asb-landing .asb-closing-orbit::after { border: 1.5px solid rgba(72, 101, 255, .8); }
+}
+
+/* Round 17: optical and compositional parity authority. The interaction
+   geometry above remains unchanged; these rules correct the rendered frame. */
+.asb-landing img {
+  height: auto;
+}
+
+.asb-landing .asb-hero h1,
+.asb-landing .asb-trust-rail h2,
+.asb-landing .asb-section-lead h2,
+.asb-landing .asb-platform-copy h3,
+.asb-landing .asb-values-lead h2,
+.asb-landing .asb-values-principle,
+.asb-landing .asb-concept-film-quote > p,
+.asb-landing .asb-story-card h3,
+.asb-landing .asb-story-stat,
+.asb-landing .asb-closing h2 {
+  font-optical-sizing: auto;
+  font-variation-settings: "opsz" 72;
+}
+
+.asb-landing .asb-orbit-photo::after,
+.asb-landing .asb-orbit-abstract::after {
+  position: absolute;
+  z-index: 2;
+  inset: 0;
+  border-radius: inherit;
+  background: rgba(255, 255, 255, .045);
+  content: "";
+  pointer-events: none;
+}
+
+@media (min-width: 861px) {
+  .asb-landing .asb-hero-copy {
+    width: 610px;
+    max-width: 610px;
+  }
+
+  .asb-landing .asb-hero h1 {
+    width: 610px;
+    max-width: 610px;
+    letter-spacing: -.018em;
+  }
+
+  .asb-landing .asb-hero-copy > p:not(.asb-arabic) {
+    width: 570px;
+    max-width: 570px;
+    letter-spacing: -.012em;
+  }
+
+  .asb-landing .asb-orbit-photo img {
+    filter: saturate(.78) brightness(1.07) contrast(.98);
+  }
+
+  .asb-landing .asb-trust-rail h2 {
+    letter-spacing: -.012em;
+  }
+
+  .asb-landing .asb-services .asb-section-lead h2 {
+    width: 620px;
+    letter-spacing: -.015em;
+  }
+
+  .asb-landing .asb-platform-copy h3 {
+    letter-spacing: -.012em;
+  }
+
+  .asb-landing .asb-platform-water .asb-platform-copy h3,
+  .asb-landing .asb-platform-food .asb-platform-copy h3 {
+    max-width: 285px;
+  }
+
+  .asb-landing .asb-platform-quran .asb-platform-copy h3,
+  .asb-landing .asb-platform-updates .asb-platform-copy h3 {
+    max-width: 320px;
+  }
+
+  .asb-landing .asb-values-lead h2 {
+    width: 790px;
+    letter-spacing: -.018em;
+  }
+
+  .asb-landing .asb-values-card,
+  .asb-landing .asb-values-card-dignity {
+    grid-template-columns: 39% minmax(0, 1fr);
+    gap: 32px;
+    padding-inline: 42px;
+  }
+
+  .asb-landing .asb-values-card .asb-values-principle {
+    font-size: 35px;
+    letter-spacing: -.018em;
+    line-height: 36px;
+    text-wrap: balance;
+  }
+
+  .asb-landing .asb-values-entry-care .asb-values-principle { max-width: 220px; }
+  .asb-landing .asb-values-entry-dignity .asb-values-principle { max-width: 295px; }
+  .asb-landing .asb-values-entry-honesty .asb-values-principle { max-width: 305px; }
+
+  .asb-landing .asb-values-card .asb-values-explanation {
+    max-width: 340px;
+    padding-right: 0;
+    font-size: 16px;
+    line-height: 20px;
+  }
+
+  /* Restore the reference's breathing room after the support sentence. */
+  .asb-landing .asb-how .asb-concept-film {
+    top: 410px;
+  }
+
+  /* Hold the quote-panel handoff behind the sticky nav while preserving the
+     approved rail position in the viewport. */
+  .asb-landing .asb-stories {
+    top: 1230px;
+  }
+
+  .asb-landing .asb-story-controls {
+    margin-top: 4px;
+  }
+}
+
+.asb-landing .asb-story-mark-unumbered::before {
+  display: none;
+}
+
+.asb-landing .asb-story-mark-unumbered {
+  min-height: 68px;
+  justify-content: space-between !important;
+}
+
+.asb-landing .asb-story-symbol {
+  display: block;
+  width: 64px;
+  height: 64px;
+  flex: 0 0 64px;
+  border: 0;
+  border-radius: 50%;
+  background-image: radial-gradient(currentColor 2.4px, transparent 2.8px);
+  background-position: center;
+  background-size: 11px 11px;
+  opacity: .9;
+  -webkit-mask-image: radial-gradient(circle, #000 0 62%, transparent 64%);
+  mask-image: radial-gradient(circle, #000 0 62%, transparent 64%);
+}
+
+.asb-landing .asb-story-card-stat .asb-story-symbol {
+  background: none;
+  -webkit-mask-image: none;
+  mask-image: none;
+}
+
+.asb-landing .asb-story-stat {
+  display: block;
+  margin-top: 9px;
+  font-family: var(--font-editorial), Georgia, "Times New Roman", serif;
+  font-size: 96px;
+  font-weight: 400;
+  letter-spacing: -.045em;
+  line-height: .86;
+}
+
+.asb-landing .asb-story-editorial-body {
+  margin-top: 22px;
+}
+
+.asb-landing .asb-story-card-stat .asb-story-editorial-body {
+  margin-top: 10px;
+}
+
+.asb-landing .asb-story-card-stat h3 {
+  max-width: 286px;
+  font-size: 35px;
+  line-height: 38px;
+}
+
+.asb-landing .asb-story-card-symbol h3 {
+  max-width: 300px;
+  font-size: 42px;
+  line-height: 43px;
+}
+
+.asb-landing .asb-story-card-editorial .asb-story-symbol {
+  width: 42px;
+  height: 42px;
+  flex-basis: 42px;
+  border: 1px solid currentColor;
+  background: none;
+  -webkit-mask-image: none;
+  mask-image: none;
+  opacity: .34;
+}
+
+.asb-landing .asb-story-card-editorial h3 {
+  max-width: 306px;
+  font-size: 45px;
+  line-height: 43px;
+}
+
+/* One orbital system, clipped into quiet peripheral arcs instead of a target
+   behind the statement. */
+.asb-landing .asb-closing-orbit {
+  inset: 0;
+  width: auto;
+  height: auto;
+  border: 0;
+  border-radius: 0;
+  transform: none;
+  animation: none;
+}
+
+.asb-landing .asb-closing::before {
+  display: none;
+}
+
+.asb-landing .asb-closing-orbit::before,
+.asb-landing .asb-closing-orbit::after,
+.asb-landing .asb-closing-orbit > i {
+  position: absolute;
+  display: block;
+  border: 1.5px solid rgba(72, 101, 255, .62);
+  border-radius: 50%;
+  content: "";
+}
+
+.asb-landing .asb-closing-orbit::before {
+  top: -560px;
+  left: -210px;
+  width: 920px;
+  height: 920px;
+  border-color: rgba(50, 138, 59, .72);
+}
+
+.asb-landing .asb-closing-orbit::after {
+  right: -285px;
+  bottom: -590px;
+  width: 980px;
+  height: 980px;
+  border-color: rgba(245, 160, 239, .58);
+}
+
+.asb-landing .asb-closing-orbit > i:nth-child(1) {
+  top: -410px;
+  right: -360px;
+  width: 720px;
+  height: 720px;
+}
+
+.asb-landing .asb-closing-orbit > i:nth-child(2) {
+  bottom: -500px;
+  left: -290px;
+  width: 760px;
+  height: 760px;
+  border-color: rgba(255, 107, 64, .48);
+}
+
+.asb-landing .asb-closing-orbit > i:nth-child(3) {
+  display: none;
+}
+
+@media (max-width: 860px) {
+  .asb-landing .asb-story-stat { font-size: 72px; }
+  .asb-landing .asb-story-card-symbol h3,
+  .asb-landing .asb-story-card-editorial h3 { font-size: 34px; line-height: 35px; }
+  .asb-landing .asb-closing-orbit::before { top: -310px; left: -280px; width: 560px; height: 560px; }
+  .asb-landing .asb-closing-orbit::after { right: -340px; bottom: -330px; width: 620px; height: 620px; }
+}
+
+/* Round 18: keep the top-left field graphic abstract at its viewport crop;
+   its interior slogan belongs to the full circle, not the clipped hero edge. */
+.asb-landing .asb-orbit-five .asb-orbit-seal strong {
+  visibility: hidden;
+}
+
+/* Round 19: matched 1440px desktop refinement. */
+@media (min-width: 1081px) {
+  .asb-landing .asb-nav {
+    width: calc(100% - 96px);
+    max-width: 1280px;
+  }
+}
+
+.asb-landing .asb-service-ui {
+  -webkit-mask-image: linear-gradient(180deg, #000 0%, #000 77%, rgba(0, 0, 0, .72) 87%, transparent 100%);
+  mask-image: linear-gradient(180deg, #000 0%, #000 77%, rgba(0, 0, 0, .72) 87%, transparent 100%);
+}
+
+@media (min-width: 861px) {
+  .asb-landing .asb-values-label { top: 90px; }
+
+  .asb-landing .asb-values-lead h2 {
+    top: 132px;
+    width: 790px;
+    height: 106px;
+  }
+
+  .asb-landing .asb-values-lead > p:last-child {
+    top: 238px;
+    width: 1100px;
+    max-width: 1100px;
+    font-size: 16px;
+    line-height: 20px;
+  }
+
+  .asb-landing .asb-values-list {
+    top: 298px;
+  }
+
+  .asb-landing .asb-values-list::before {
+    display: block;
+    inset: 0;
+    border: 0;
+    border-radius: 0;
+    background:
+      linear-gradient(rgba(255,255,255,.34), rgba(255,255,255,.34)) 0 0 / 1px 82px no-repeat,
+      linear-gradient(rgba(255,255,255,.34), rgba(255,255,255,.34)) 0 212px / 1px 80px no-repeat,
+      linear-gradient(rgba(255,255,255,.34), rgba(255,255,255,.34)) 0 506px / 1px 82px no-repeat,
+      linear-gradient(rgba(255,255,255,.34), rgba(255,255,255,.34)) 100% 92px / 1px 94px no-repeat,
+      linear-gradient(rgba(255,255,255,.34), rgba(255,255,255,.34)) 100% 324px / 1px 96px no-repeat;
+  }
+
+  .asb-landing .asb-values-list::after {
+    position: absolute;
+    inset: 0;
+    background:
+      linear-gradient(90deg, rgba(255,255,255,.34), rgba(255,255,255,.34)) 0 0 / 148px 1px no-repeat,
+      linear-gradient(90deg, rgba(255,255,255,.34), rgba(255,255,255,.34)) 100% 100% / 132px 1px no-repeat;
+    content: "";
+    pointer-events: none;
+  }
+
+  .asb-landing .asb-values-connector {
+    left: calc(var(--asb-values-route-gap) * -1);
+    display: block;
+    width: 0;
+    background: none;
+  }
+
+  .asb-landing .asb-values-entry::before { display: none; }
+
+  .asb-landing .asb-values-entry::after {
+    right: calc((var(--asb-values-route-gap) + 7px) * -1);
+    display: block;
+    width: 14px;
+  }
+
+  .asb-landing .asb-values-card-honesty {
+    background: #f5a0ef;
+  }
+
+  .asb-landing .asb-values-entry-honesty {
+    --asb-values-connector-color: #f5a0ef;
+  }
+}
+
+.asb-landing .asb-concept-film-stage > img {
+  filter: saturate(.96) contrast(1.09) brightness(.88);
+}
+
+.asb-landing .asb-concept-film-wash {
+  background: linear-gradient(180deg, rgba(8, 3, 49, .08), rgba(8, 3, 49, .22));
+}
+
+@media (min-width: 861px) {
+  .asb-landing .asb-story-mark {
+    font-size: 11px;
+  }
+
+  .asb-landing .asb-story-type {
+    margin-bottom: 10px;
+    font-size: 11px;
+    line-height: 15px;
+  }
+
+  .asb-landing .asb-story-stat {
+    font-size: 76px;
+    line-height: .9;
+  }
+
+  .asb-landing .asb-story-card-stat h3 {
+    font-size: 31px;
+    line-height: 34px;
+  }
+
+  .asb-landing .asb-story-card-symbol h3 {
+    font-size: 36px;
+    line-height: 38px;
+  }
+
+  .asb-landing .asb-story-card-editorial h3 {
+    font-size: 38px;
+    line-height: 40px;
+  }
+
+  .asb-landing .asb-story-card-foot > p {
+    font-size: 14px;
+    line-height: 18px;
+  }
+}
+
+.asb-landing .asb-footer-reveal {
+  display: none;
+}
+
+@media (min-width: 861px) {
+  .asb-landing .asb-footer-reveal {
+    position: absolute;
+    z-index: 5;
+    top: 0;
+    right: 0;
+    left: 0;
+    display: flex;
+    height: 100px;
+    align-items: center;
+    gap: 22px;
+    border-bottom: 1px solid rgba(255,255,255,.14);
+    padding: 0 60px 0 72px;
+    color: rgba(255,255,255,.78);
+  }
+
+  .asb-landing .asb-footer-reveal small {
+    position: static;
+    width: auto;
+    flex: 0 0 auto;
+    border: 0;
+    padding: 0;
+    color: inherit;
+    font-size: 11px;
+  }
+
+  .asb-landing .asb-footer-reveal > span {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: .06em;
+    text-transform: uppercase;
+    white-space: nowrap;
+  }
+
+  .asb-landing .asb-footer-reveal > span i {
+    display: grid;
+    width: 32px;
+    height: 32px;
+    place-items: center;
+    border: 1px solid rgba(255,255,255,.34);
+    border-radius: 50%;
+    color: #f4ca61;
+    font-style: normal;
+  }
+
+  .asb-landing .asb-footer-reveal nav {
+    display: flex;
+    gap: 16px;
+    margin-left: auto;
+  }
+
+  .asb-landing .asb-footer-reveal nav a {
+    color: rgba(255,255,255,.9);
+    font-size: 11px;
+  }
+}
+
+/* Round 20: preserve the complete platform grid, restore the values route,
+   and use the reference's five balanced peripheral closing circles. */
+.asb-landing .asb-service-ui {
+  -webkit-mask-image: none;
+  mask-image: none;
+}
+
+.asb-landing .asb-service-ui-body {
+  position: relative;
+  overflow: hidden;
+}
+
+.asb-landing .asb-service-ui-body::after {
+  position: absolute;
+  z-index: 4;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  height: 62px;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0), rgba(255, 255, 255, .92));
+  content: "";
+  pointer-events: none;
+}
+
+@media (min-width: 861px) {
+  .asb-landing.asb-motion-ready .asb-platform-card {
+    opacity: 1;
+    translate: none;
+  }
+
+  .asb-landing .asb-values-list::before {
+    z-index: 0;
+    inset: 0;
+    display: block;
+    width: auto;
+    height: auto;
+    border: 1px solid rgba(255, 255, 255, .28);
+    border-radius: 46px;
+    background: none;
+  }
+
+  .asb-landing .asb-values-list::after {
+    z-index: 0;
+    inset: -1px auto auto -1px;
+    width: 182px;
+    height: 96px;
+    border-top: 2px solid rgba(50, 138, 59, .95);
+    border-left: 2px solid rgba(50, 138, 59, .95);
+    border-radius: 46px 0 0;
+    background: none;
+  }
+
+  .asb-landing .asb-values-connector {
+    display: block;
+    width: 0;
+    background: none;
+  }
+
+  .asb-landing .asb-values-entry::before { display: none; }
+
+  .asb-landing .asb-values-card .asb-values-explanation {
+    color: rgba(8, 3, 49, .76);
+    font-weight: 430;
+  }
+
+  .asb-landing .asb-stories::before {
+    background-image: radial-gradient(rgba(8, 3, 49, .11) 1.15px, transparent 1.4px);
+  }
+
+  .asb-landing .asb-story-controls {
+    background-image: radial-gradient(rgba(8, 3, 49, .14) 1.2px, transparent 1.45px);
+  }
+
+  .asb-landing .asb-closing-orbit::before,
+  .asb-landing .asb-closing-orbit::after { display: none; }
+
+  .asb-landing .asb-closing-orbit { aspect-ratio: auto; }
+
+  .asb-landing .asb-closing-orbit > i {
+    display: block;
+    border-width: 1.5px;
+    background: transparent;
+    box-shadow: none;
+  }
+
+  .asb-landing .asb-closing-orbit > i:nth-child(1) {
+    top: 4px;
+    left: -228px;
+    width: 532px;
+    height: 532px;
+    border-color: rgba(255, 107, 64, .74);
+  }
+
+  .asb-landing .asb-closing-orbit > i:nth-child(2) {
+    top: 158px;
+    right: -172px;
+    bottom: auto;
+    left: auto;
+    width: 464px;
+    height: 464px;
+    border-color: rgba(245, 160, 239, .72);
+  }
+
+  .asb-landing .asb-closing-orbit > i:nth-child(3) {
+    top: auto;
+    right: auto;
+    bottom: -210px;
+    left: -125px;
+    display: block;
+    width: 470px;
+    height: 470px;
+    border-color: rgba(245, 160, 239, .72);
+  }
+
+  .asb-landing .asb-closing-orbit > i:nth-child(4) {
+    right: 55px;
+    bottom: -210px;
+    width: 480px;
+    height: 480px;
+    border-color: rgba(72, 101, 255, .78);
+  }
+
+  .asb-landing .asb-closing-orbit > i:nth-child(5) {
+    top: -250px;
+    right: 30px;
+    width: 360px;
+    height: 360px;
+    border-color: rgba(255, 107, 64, .72);
+  }
+}
+
+@media (max-width: 860px) {
+  .asb-landing .asb-closing-orbit > i:nth-child(n + 4) { display: none; }
+}
+
+/* Round 21: measured 1440px reference coordinates and scroll-state parity. */
+@media (min-width: 1081px) {
+  .asb-landing .asb-nav {
+    width: calc(100% - 260px);
+    max-width: 1180px;
+  }
+}
+
+@media (min-width: 861px) {
+  .asb-landing .asb-closing > .asb-closing-orbit {
+    position: absolute;
+    inset: 0;
+    width: auto;
+    height: auto;
+  }
+
+  .asb-landing .asb-platform-card::after {
+    position: absolute;
+    z-index: 6;
+    inset: 0;
+    border-radius: inherit;
+    background: rgba(255, 255, 255, .92);
+    content: "";
+    opacity: calc((1 - var(--asb-platform-materialize, 0)) * .88);
+    pointer-events: none;
+    transition: opacity 120ms linear;
+  }
+
+  .asb-landing.asb-platform-materialized .asb-platform-card::after {
+    opacity: 0;
+  }
+
+  .asb-landing .asb-values-list {
+    gap: 32px;
+    padding-top: 18px;
+    transform: translate(-50%, -9px);
+  }
+
+  .asb-landing .asb-how .asb-concept-film {
+    top: 324px;
+  }
+
+  .asb-landing .asb-story-editorial-body {
+    position: absolute;
+    top: 82px;
+    right: 32px;
+    left: 32px;
+    margin-top: 0;
+  }
+
+  .asb-landing .asb-story-card-stat .asb-story-editorial-body {
+    top: 82px;
+    margin-top: 0;
+  }
+
+  .asb-landing .asb-story-card-stat .asb-story-stat {
+    position: absolute;
+    top: 32px;
+    left: 32px;
+    margin-top: 0;
+    font-size: 56px;
+  }
+
+  .asb-landing .asb-story-mark-unumbered {
+    min-height: 48px;
+  }
+
+  .asb-landing .asb-story-rail {
+    height: 450px;
+    transform: translateX(-373px);
+  }
+
+  .asb-landing .asb-story-card {
+    height: 450px;
+  }
+
+  .asb-landing .asb-story-symbol {
+    width: 48px;
+    height: 48px;
+    flex-basis: 48px;
+  }
+
+  .asb-landing .asb-story-card-stat .asb-story-symbol {
+    width: 32px;
+    height: 32px;
+    flex-basis: 32px;
+  }
+
+  .asb-landing .asb-closing-orbit > i:nth-child(1) {
+    top: 34px;
+  }
+
+  .asb-landing .asb-closing-orbit > i:nth-child(3) {
+    bottom: -135px;
+    left: -41px;
+  }
+
+  .asb-landing .asb-closing-orbit > i:nth-child(4) {
+    bottom: -200px;
+  }
+
+  .asb-landing .asb-orbit-three .asb-orbit-route {
+    padding-top: 40px;
+  }
+
+  .asb-landing .asb-orbit-one .asb-orbit-abstract img {
+    top: 64px;
+  }
+
+  .asb-landing .asb-orbit-one .asb-orbit-abstract > i:first-of-type {
+    top: 28px;
+  }
+}
+
+/* Round 23: keep the fixed nav on an ordinary paint layer. Chromium can drop
+   glyph tiles when a transformed/backface-hidden fixed child crosses the
+   platform and footer sticky layers, so stacking stays on the wrapper only. */
+.asb-landing .asb-nav-wrap {
+  position: fixed;
+  z-index: 1000;
+  top: 16px;
+  height: 66px;
+  margin-bottom: -66px;
+  pointer-events: none;
+}
+
+.asb-landing .asb-nav {
+  position: relative;
+  z-index: 1;
+  pointer-events: auto;
+  background: var(--asb-nav-surface);
+  filter: none;
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+}
+
+/* Keep the CTA label in ordinary inline layout so Chromium can paint the full
+   phrase reliably while the sticky nav crosses section boundaries. */
+.asb-landing .asb-nav-cta {
+  overflow: visible;
+  background-image: none;
+  text-indent: 0;
+  white-space: nowrap;
+}
+
+.asb-landing .asb-nav-cta::after {
+  display: none;
+}
+
+@media (min-width: 861px) {
+  .asb-landing .asb-how .asb-stories-lead .asb-label {
+    top: 93px;
+  }
+
+  .asb-landing .asb-how .asb-stories-lead h2 {
+    top: 107px;
+  }
+
+  .asb-landing .asb-how .asb-stories-lead > p:last-child {
+    top: 228px;
+    display: block;
+    width: min(760px, calc(100% - 48px));
+    max-width: 760px;
+  }
+
+  .asb-landing .asb-footer-reveal {
+    gap: 16px;
+    padding-right: 58px;
+    padding-left: 72px;
+  }
+
+  .asb-landing .asb-footer-reveal small {
+    margin-right: 6px;
+    color: rgba(255, 255, 255, .9);
+    font-size: 12px;
+    font-weight: 600;
+  }
+
+  .asb-landing .asb-footer-reveal > span {
+    gap: 7px;
+    color: rgba(255, 255, 255, .92);
+    font-size: 9px;
+    letter-spacing: .07em;
+  }
+
+  .asb-landing .asb-footer-reveal > span i {
+    width: 44px;
+    height: 44px;
+    flex: 0 0 44px;
+    border-color: rgba(255, 255, 255, .58);
+    color: #f4ca61;
+    font-size: 14px;
+    box-shadow: inset 0 0 0 3px rgba(255, 255, 255, .035);
+  }
+
+  .asb-landing .asb-footer-reveal nav {
+    gap: 20px;
+  }
+
+  .asb-landing .asb-footer-reveal nav a {
+    font-size: 12px;
+    font-weight: 600;
+  }
+}
+
+.asb-landing .asb-case-support {
+  display: block;
+  text-align: center;
+}
+
+.asb-landing .asb-case-support-label {
+  display: inline;
+  margin-right: 8px;
+  color: var(--asb-teal);
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+}
+
+.asb-landing .asb-case-support-label::after {
+  margin-left: 8px;
+  content: "—";
+}
+
+@media (max-width: 860px) {
+  .asb-landing .asb-case-support {
+    flex-wrap: wrap;
+  }
+}
+
+.asb-landing .asb-footer-trust {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+}
+
+.asb-landing .asb-footer-trust > span {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: rgba(255, 255, 255, .86);
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: .05em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.asb-landing .asb-footer-trust i {
+  display: grid;
+  width: 26px;
+  height: 26px;
+  place-items: center;
+  border: 1px solid rgba(255, 255, 255, .4);
+  border-radius: 50%;
+  color: #f4ca61;
+  font-size: 10px;
+  font-style: normal;
+}
+
+@media (min-width: 861px) {
+  .asb-landing .asb-footer-bottom {
+    gap: 18px;
+  }
+
+  .asb-landing .asb-footer-bottom small {
+    flex: 0 0 auto;
+  }
+
+  .asb-landing .asb-footer-socials {
+    gap: 14px;
+  }
+}
+
+@media (max-width: 860px) {
+  .asb-landing .asb-footer-trust {
+    flex-wrap: wrap;
+    justify-content: flex-start;
+  }
+}
+
+/* Round 30: clear the fixed navigation at the settled platform handoff and
+   center the visible (transparent-padded) seal artwork in its split panel. */
+@media (min-width: 861px) {
+  .asb-landing .asb-services .asb-section-lead,
+  .asb-landing .asb-services .asb-platform-grid {
+    position: relative;
+    top: 60px;
+  }
+
+  .asb-landing .asb-footer-brand-panel .asb-footer-logo {
+    width: 600px;
+    max-width: none;
+    max-height: none;
+    align-self: center;
+    justify-self: center;
+    transform: translateX(-38px);
+  }
+
+  .asb-landing .asb-nav-cta {
+    column-gap: .28em;
+  }
+
+  .asb-landing .asb-nav-cta > span {
+    display: inline-block;
+  }
+}
+
+/* Round 33: keep the longer adapted CTA unmistakable at every sticky-nav
+   scroll state without changing the approved capsule geometry. */
+@media (min-width: 861px) {
+  .asb-landing .asb-nav-wrap {
+    position: absolute;
+    top: var(--asb-nav-document-top, 16px);
+  }
+
+  .asb-landing .asb-nav-cta {
+    width: 166px;
+    min-width: 166px;
+    flex: 0 0 166px;
+    gap: 5px;
+    overflow: visible;
+    contain: none;
+    transform: none;
+    filter: none;
+    font-size: 16px;
+    font-weight: 700;
+    letter-spacing: -.01em;
+    text-shadow: 0 1px 1px rgba(6, 18, 70, .18);
+  }
+
+  .asb-landing .asb-nav-cta > span {
+    display: inline-block;
+    flex: 0 0 auto;
+    white-space: nowrap;
+  }
+}
+
+/* Round 31: the footer utility rail is one sticky instance shared by the
+   first reveal and final frame; the carousel dot field feathers into paper. */
+@media (min-width: 861px) {
+  .asb-landing .asb-footer-bottom {
+    position: absolute;
+    right: 60px;
+    bottom: 52px;
+    left: 72px;
+    z-index: 4;
+    width: auto;
+    min-height: 54px;
+    margin: 0;
+    padding-top: 18px;
+    background: transparent;
+  }
+
+  .asb-landing.asb-footer-active .asb-footer-bottom {
+    position: fixed;
+    right: var(--asb-footer-rail-right, 60px);
+    bottom: 52px;
+    left: var(--asb-footer-rail-left, calc(36.4vw + 72px));
+  }
+
+  .asb-landing .asb-footer-trust {
+    gap: 10px;
+  }
+
+  .asb-landing .asb-footer-trust > span {
+    width: 28px;
+    height: 28px;
+    gap: 0;
+  }
+
+  .asb-landing .asb-footer-trust i {
+    width: 28px;
+    height: 28px;
+  }
+
+  .asb-landing .asb-footer-socials {
+    gap: 18px;
+  }
+
+  .asb-landing .asb-story-controls {
+    isolation: isolate;
+    background-image: none;
+  }
+
+  .asb-landing .asb-story-controls::before {
+    position: absolute;
+    z-index: 0;
+    inset: -8px -18px;
+    background-image: radial-gradient(rgba(8, 3, 49, .14) 1.2px, transparent 1.45px);
+    background-position: center;
+    background-size: 8px 8px;
+    content: "";
+    pointer-events: none;
+    -webkit-mask-image: radial-gradient(ellipse at center, #000 0 48%, rgba(0,0,0,.82) 66%, rgba(0,0,0,.28) 82%, transparent 100%);
+    mask-image: radial-gradient(ellipse at center, #000 0 48%, rgba(0,0,0,.82) 66%, rgba(0,0,0,.28) 82%, transparent 100%);
+  }
+
+  .asb-landing .asb-story-controls button {
+    position: relative;
+    z-index: 1;
+  }
+
+  .asb-landing .asb-brand {
+    font-size: 25px;
+    font-weight: 500;
+  }
+
+  .asb-landing .asb-brand img {
+    filter: saturate(1.24) contrast(1.18) brightness(.8);
+    transform: scale(1.38);
+  }
+
+  .asb-landing .asb-nav-cta {
+    isolation: isolate;
+    contain: paint;
+    transform: translate3d(0, 0, 0);
+    backface-visibility: hidden;
+  }
+}
+
+/* Round 34: August-like two-column upper tier and three-column lower tier. */
+@media (min-width: 861px) {
+  .asb-landing .asb-footer-links-panel > div:nth-of-type(-n+2) { top: 180px; }
+  .asb-landing .asb-footer-links-panel > div:nth-of-type(n+3) { top: 465px; }
+  .asb-landing .asb-footer-links-panel > div:nth-of-type(1),
+  .asb-landing .asb-footer-links-panel > div:nth-of-type(3) { left: 72px; }
+  .asb-landing .asb-footer-links-panel > div:nth-of-type(2) { left: 360px; }
+  .asb-landing .asb-footer-links-panel > div:nth-of-type(4) { left: 270px; }
+  .asb-landing .asb-footer-links-panel > div:nth-of-type(5) { left: 468px; }
+}
+
+/* Round 36: authored, compact accreditation monograms. */
+.asb-landing .asb-footer-trust i {
+  font-family: var(--font-sans), Arial, sans-serif;
+  font-size: 7px;
+  font-weight: 800;
+  letter-spacing: .045em;
+  line-height: 1;
 }

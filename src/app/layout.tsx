@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Bricolage_Grotesque, Instrument_Serif, Inter, Noto_Kufi_Arabic } from "next/font/google";
+import { Bricolage_Grotesque, Inter, Newsreader, Noto_Kufi_Arabic } from "next/font/google";
 import "./globals.css";
 
 const inter = Inter({
@@ -12,10 +12,12 @@ const bricolage = Bricolage_Grotesque({
   variable: "--font-display",
 });
 
-const editorial = Instrument_Serif({
+const editorial = Newsreader({
   subsets: ["latin"],
   variable: "--font-editorial",
-  weight: "400",
+  weight: "variable",
+  axes: ["opsz"],
+  display: "swap",
 });
 
 const kufi = Noto_Kufi_Arabic({

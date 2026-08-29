@@ -14,10 +14,11 @@ type Story = {
   id: string;
   href: string;
   tone: string;
-  mark: string;
   type: string;
   title: string;
   copy: string;
+  presentation: "stat" | "symbol" | "editorial";
+  stat?: string;
 };
 
 const stories = [
@@ -25,46 +26,48 @@ const stories = [
     id: "water",
     href: "/wakaf/water-pump",
     tone: "water",
-    mark: "FIELD NOTE",
     type: "Wakaf water",
     title: "Start where daily life happens.",
     copy: "Why dependable access changes the rhythm of a community.",
+    presentation: "stat",
+    stat: "100%",
   },
   {
     id: "quran",
     href: "/wakaf/quran",
     tone: "quran",
-    mark: "CONTINUITY",
     type: "Wakaf Quran",
     title: "Make room for learning to continue.",
     copy: "A closer look at giving that keeps knowledge within reach.",
+    presentation: "symbol",
   },
   {
     id: "food",
     href: "/wakaf/food-for-orphans",
     tone: "food",
-    mark: "SHARED TABLE",
     type: "Shared care",
     title: "A simple act can gather people together.",
     copy: "What a meal can hold beyond the moment it is served.",
+    presentation: "editorial",
   },
   {
     id: "korban",
     href: "/korban",
     tone: "korban",
-    mark: "INTENTION",
     type: "Korban guide",
     title: "Carry an intention through with care.",
     copy: "A practical path from choosing a service to receiving its report.",
+    presentation: "symbol",
   },
   {
     id: "updates",
     href: "#amanah",
     tone: "updates",
-    mark: "REVIEWED",
     type: "Giving updates",
     title: "Stay close to work happening far away.",
     copy: "How field evidence becomes an update that is useful and clear.",
+    presentation: "stat",
+    stat: "48h",
   },
 ] as const satisfies readonly Story[];
 
@@ -215,7 +218,7 @@ export function StoryCarousel() {
               const isMiddleSet = setIndex === MIDDLE_SET;
               return (
                 <Link
-                  className={`asb-story-card asb-story-card-${story.tone}`}
+                  className={`asb-story-card asb-story-card-${story.tone} asb-story-card-${story.presentation}`}
                   href={story.href}
                   key={`${setIndex}-${story.id}`}
                   prefetch={false}
@@ -228,15 +231,14 @@ export function StoryCarousel() {
                   data-logical-index={storyIndex}
                   style={{ width: CARD_WIDTH, flexBasis: CARD_WIDTH }}
                 >
-                  <div
-                    className="asb-story-mark asb-story-mark-unumbered"
-                    style={{ justifyContent: "flex-end" }}
-                    data-story-mark
-                  >
-                    <b>{story.mark}</b>
+                  <div className="asb-story-mark asb-story-mark-unumbered" data-story-mark>
+                    <span className="asb-story-symbol" aria-hidden="true" />
                   </div>
-                  <span className="asb-story-type">{story.type}</span>
-                  <h3>{story.title}</h3>
+                  {story.presentation === "stat" && <strong className="asb-story-stat">{story.stat}</strong>}
+                  <div className="asb-story-editorial-body">
+                    <span className="asb-story-type">{story.type}</span>
+                    <h3>{story.title}</h3>
+                  </div>
                   <div className="asb-story-card-foot">
                     <p>{story.copy}</p>
                     <span className="asb-story-arrow"><Arrow /></span>

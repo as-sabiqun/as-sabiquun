@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Image from "next/image";
 import { ScrollGeometry } from "./scroll-geometry";
 import { StoryCarousel } from "./story-carousel";
 import "./landing.css";
@@ -108,9 +109,9 @@ export default function LandingPage() {
     <div className="asb-landing">
       <ScrollGeometry />
       <header className="asb-nav-wrap">
-        <div className="asb-nav" style={{ backdropFilter: "blur(40px)", WebkitBackdropFilter: "blur(40px)" }}>
+        <div className="asb-nav">
           <Link href="/landing" className="asb-brand" aria-label="As-Sabiquun home">
-            <img src="/brand/as-sabiquun-seal.png" alt="" />
+            <Image src="/brand/as-sabiquun-seal.png" width={2000} height={2000} sizes="34px" alt="" />
             <span>As-Sabiquun</span>
           </Link>
           <nav aria-label="Landing page navigation">
@@ -122,7 +123,7 @@ export default function LandingPage() {
           </nav>
           <div className="asb-nav-actions">
             <Link href="/contact" className="asb-nav-text-link">Contact</Link>
-            <Link href="/services" className="asb-nav-cta">Choose a service</Link>
+            <Link href="/services" className="asb-nav-cta"><span>Choose</span>{" "}<span>a</span>{" "}<span>service</span></Link>
             <details className="asb-mobile-menu">
               <summary className="asb-nav-menu" aria-label="Open navigation menu"><i /><i /></summary>
               <div className="asb-mobile-menu-panel">
@@ -149,13 +150,13 @@ export default function LandingPage() {
             <div className="asb-hero-orbit" aria-hidden="true">
               <div className="asb-hero-orbit-item asb-orbit-one">
                 <div className="asb-orbit-visual asb-orbit-abstract">
-                  <img src="/landing-hero-volunteers.png" alt="" />
+                  <Image src="/landing-hero-volunteers.png" width={2048} height={2048} sizes="468px" alt="" />
                   <i /><i />
                 </div>
               </div>
               <div className="asb-hero-orbit-item asb-orbit-two">
                 <div className="asb-orbit-visual asb-orbit-photo asb-orbit-photo-quran">
-                  <img src="/landing-quran-table.png" alt="" />
+                  <Image src="/landing-quran-table.png" width={2752} height={1536} sizes="468px" alt="" />
                 </div>
               </div>
               <div className="asb-hero-orbit-item asb-orbit-three">
@@ -168,24 +169,24 @@ export default function LandingPage() {
               </div>
               <div className="asb-hero-orbit-item asb-orbit-four">
                 <div className="asb-orbit-visual asb-orbit-photo asb-orbit-photo-community">
-                  <img src="/landing-portrait-community.png" alt="" />
+                  <Image src="/landing-portrait-community.png" width={1254} height={1254} sizes="468px" loading="eager" alt="" />
                 </div>
               </div>
               <div className="asb-hero-orbit-item asb-orbit-five">
                 <div className="asb-orbit-visual asb-orbit-seal">
                   <span className="asb-orbit-seal-ring" />
-                  <img src="/brand/as-sabiquun-seal.png" alt="" />
+                  <Image src="/brand/as-sabiquun-seal.png" width={2000} height={2000} sizes="86px" alt="" />
                   <strong>Care,<br />carried<br />forward.</strong>
                 </div>
               </div>
               <div className="asb-hero-orbit-item asb-orbit-six">
                 <div className="asb-orbit-visual asb-orbit-photo asb-orbit-photo-water">
-                  <img src="/landing-water-point.png" alt="" />
+                  <Image src="/landing-water-point.png" width={2752} height={1536} sizes="468px" alt="" />
                 </div>
               </div>
               <div className="asb-hero-orbit-item asb-orbit-seven">
                 <div className="asb-orbit-visual asb-orbit-photo asb-orbit-photo-coordinator">
-                  <img src="/landing-portrait-coordinator.png" alt="" />
+                  <Image src="/landing-portrait-coordinator.png" width={1254} height={1254} sizes="468px" loading="eager" alt="" />
                 </div>
               </div>
               <div className="asb-hero-orbit-item asb-orbit-eight">
@@ -249,7 +250,7 @@ export default function LandingPage() {
 
         <section className="asb-values" id="amanah" aria-labelledby="values-title">
           <div className="asb-values-well" aria-hidden="true">
-            <img src="/brand/as-sabiquun-seal.png" alt="" />
+            <Image src="/brand/as-sabiquun-seal.png" width={2000} height={2000} sizes="118px" alt="" />
           </div>
           <div className="asb-values-content">
             <div className="asb-values-lead">
@@ -271,7 +272,7 @@ export default function LandingPage() {
                 <div className="asb-values-card asb-values-card-care">
                   <span className="asb-values-index">01</span>
                   <p className="asb-values-principle">Care for people.</p>
-                  <p className="asb-values-explanation">Every intention is handled with attention to the people and communities behind it.</p>
+                  <p className="asb-values-explanation">We hold every request with care for the giver, the people receiving support, and the communities around them, making space for context, questions, and human needs at each step.</p>
                 </div>
               </li>
               <li className="asb-values-entry asb-values-entry-dignity">
@@ -279,7 +280,7 @@ export default function LandingPage() {
                 <div className="asb-values-card asb-values-card-dignity">
                   <span className="asb-values-index">02</span>
                   <p className="asb-values-principle">Dignity in every exchange.</p>
-                  <p className="asb-values-explanation">We communicate thoughtfully, protect context, and treat every participant with respect.</p>
+                  <p className="asb-values-explanation">We communicate with patience and respect, protect the meaning behind each request, and design every exchange so families, partners, and communities feel heard, informed, and treated with dignity.</p>
                 </div>
               </li>
               <li className="asb-values-entry asb-values-entry-honesty">
@@ -287,7 +288,7 @@ export default function LandingPage() {
                 <div className="asb-values-card asb-values-card-honesty">
                   <span className="asb-values-index">03</span>
                   <p className="asb-values-principle">Honest updates as work unfolds.</p>
-                  <p className="asb-values-explanation">We share reviewed field evidence and clear progress notes, including while a project is still moving.</p>
+                  <p className="asb-values-explanation">We share clear progress notes and reviewed field evidence as work develops, explaining what is known, what is still moving, and what comes next without pretending every answer is immediate.</p>
                 </div>
               </li>
             </ol>
@@ -296,14 +297,13 @@ export default function LandingPage() {
 
         <section className="asb-how" id="how" aria-labelledby="how-title">
           <div className="asb-section-lead asb-section-lead-centred asb-stories-lead">
-            <p className="asb-label">Case Studies</p>
             <h2 id="how-title">Care is a practice, not a promise.<br />Every detail should show it.</h2>
-            <p>These concept scenes show the kinds of moments a thoughtful service can hold.</p>
+            <p className="asb-case-support"><span className="asb-case-support-label">Case Studies</span><span>These concept scenes show the kinds of moments a thoughtful service can hold.</span></p>
           </div>
 
           <div className="asb-concept-film" aria-label="Concept video placeholder">
             <div className="asb-concept-film-stage">
-              <img src="/landing-portrait-community.png" alt="" />
+              <Image src="/landing-portrait-community.png" width={1254} height={1254} sizes="960px" alt="" />
               <div className="asb-concept-film-wash" aria-hidden="true" />
               <span className="asb-concept-film-label">Concept video placeholder</span>
               <span className="asb-concept-film-play" aria-hidden="true">▶</span>
@@ -312,7 +312,7 @@ export default function LandingPage() {
             <div className="asb-concept-film-quote">
               <p>“Clarity keeps a good intention connected to the people it was meant to serve, from the first conversation to the final field update.”</p>
               <div className="asb-concept-author">
-                <img src="/landing-hero-volunteers.png" alt="" />
+                <Image src="/landing-hero-volunteers.png" width={2048} height={2048} sizes="56px" alt="" />
                 <span><strong>Concept field profile</strong><small>Fictional profile · original concept imagery</small></span>
               </div>
               <div className="asb-concept-operator" aria-label="Fictional Amanah Fieldworks concept mark">
@@ -326,7 +326,7 @@ export default function LandingPage() {
 
         <div className="asb-final-stack">
           <section className="asb-closing" aria-labelledby="closing-title">
-            <div className="asb-closing-orbit" aria-hidden="true"><i /><i /><i /></div>
+            <div className="asb-closing-orbit" aria-hidden="true"><i /><i /><i /><i /><i /></div>
             <div className="asb-closing-inner">
               <h2 id="closing-title">An Islamic giving platform built<br />with care for every intention<br />and clarity at every step.</h2>
               <Link href="/services" className="asb-button asb-button-dark">Explore services <Arrow /></Link>
@@ -335,7 +335,7 @@ export default function LandingPage() {
 
           <footer className="asb-footer">
             <div className="asb-footer-brand-panel">
-              <img className="asb-footer-logo" src="/brand/as-sabiquun-seal.png" alt="As-Sabiquun Association Consultancy" />
+              <Image className="asb-footer-logo" src="/brand/as-sabiquun-seal.png" width={2000} height={2000} sizes="(max-width: 860px) 320px, 660px" alt="As-Sabiquun Association Consultancy" />
             </div>
             <div className="asb-footer-links-panel">
           <div>
@@ -343,17 +343,7 @@ export default function LandingPage() {
             <Link href="/services">Services</Link>
             <Link href="/about">About</Link>
             <Link href="/contact">Contact</Link>
-          </div>
-          <div>
-            <p>Account</p>
-            <Link href="/login">Sign in</Link>
-            <Link href="/signup">Create account</Link>
-            <Link href="/partner-login">Partner login</Link>
-          </div>
-          <div>
-            <p>Learn</p>
             <Link href="/about">Our approach</Link>
-            <Link href="/contact">Ask a question</Link>
             <Link href="/landing#how">Field stories</Link>
           </div>
           <div>
@@ -364,6 +354,12 @@ export default function LandingPage() {
             <Link href="/wakaf/food-for-orphans">Food for orphans</Link>
           </div>
           <div>
+            <p>Account</p>
+            <Link href="/login">Sign in</Link>
+            <Link href="/signup">Create account</Link>
+            <Link href="/partner-login">Partner login</Link>
+          </div>
+          <div>
             <p>Transparency</p>
             <Link href="/landing#amanah">Our amanah</Link>
             <Link href="/landing#how">Giving updates</Link>
@@ -372,16 +368,20 @@ export default function LandingPage() {
           <div>
             <p>Help</p>
             <Link href="/contact">Contact</Link>
+            <Link href="/contact">Ask a question</Link>
             <Link href="/about">FAQs</Link>
             <Link href="/about">Policies</Link>
           </div>
               <section className="asb-footer-bottom" aria-label="Footer details">
                 <small>© {new Date().getFullYear()} As-Sabiquun Association Consultancy</small>
+                <div className="asb-footer-trust" aria-label="Trust principles">
+                  <span aria-label="Amanah" title="Amanah"><i aria-hidden="true">AMN</i></span>
+                  <span aria-label="Reviewed" title="Reviewed"><i aria-hidden="true">REV</i></span>
+                  <span aria-label="Traceable" title="Traceable"><i aria-hidden="true">TRC</i></span>
+                </div>
                 <nav className="asb-footer-socials" aria-label="Social links">
                   <a href="https://www.linkedin.com/" target="_blank" rel="noreferrer">LinkedIn</a>
                   <a href="https://www.instagram.com/" target="_blank" rel="noreferrer">Instagram</a>
-                  <a href="https://www.facebook.com/" target="_blank" rel="noreferrer">Facebook</a>
-                  <a href="https://telegram.org/" target="_blank" rel="noreferrer">Telegram</a>
                 </nav>
               </section>
             </div>

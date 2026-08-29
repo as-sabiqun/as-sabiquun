@@ -26,7 +26,9 @@ export function ScrollGeometry() {
     const update = () => {
       frame = 0;
       const scrollY = window.scrollY;
+      root.style.setProperty("--asb-nav-document-top", `${scrollY + 16}px`);
       const hero = root.querySelector<HTMLElement>(".asb-hero");
+      const heroHeight = hero?.offsetHeight ?? 720;
       const flattenDistance = Math.min(400, (hero?.offsetHeight ?? 720) * 0.56);
       const heroFlatten = Math.min(1, Math.max(0, scrollY / flattenDistance));
       root.style.setProperty("--asb-hero-wave-depth", `${Math.round(92 * (1 - heroFlatten))}px`);
@@ -40,11 +42,40 @@ export function ScrollGeometry() {
 
       root.style.setProperty(
         "--asb-nav-surface",
-        overDarkBand ? "rgba(229, 227, 242, .78)" : "rgba(255, 255, 255, .7)",
+        overDarkBand ? "rgba(229, 227, 242, .78)" : "rgba(255, 254, 250, .97)",
       );
 
+      const platform = root.querySelector<HTMLElement>(".asb-services");
+      if (platform) {
+        const platformTop = platform.getBoundingClientRect().top;
+        const platformMaterialize = Math.min(1, Math.max(0, (100 - platformTop) / 150));
+        root.style.setProperty("--asb-platform-materialize", platformMaterialize.toFixed(3));
+        if (platformMaterialize >= 0.985) {
+          root.classList.add("asb-platform-materialized");
+        } else if (platformTop > 260) {
+          root.classList.remove("asb-platform-materialized");
+        }
+      }
+
+      const footer = root.querySelector<HTMLElement>(".asb-footer");
+      const footerLinks = root.querySelector<HTMLElement>(".asb-footer-links-panel");
+      if (footer && footerLinks) {
+        const footerRect = footer.getBoundingClientRect();
+        const linksRect = footerLinks.getBoundingClientRect();
+        const footerActive = footerRect.top <= window.innerHeight && footerRect.bottom >= 0;
+        root.classList.toggle("asb-footer-active", footerActive);
+        if (footerActive) {
+          root.style.setProperty("--asb-footer-rail-left", `${linksRect.left + 72}px`);
+          root.style.setProperty("--asb-footer-rail-right", `${window.innerWidth - linksRect.right + 60}px`);
+        }
+      }
+
       const delta = scrollY - lastScrollY;
-      if (scrollY <= 12) {
+      const announcementExit = heroHeight + 180;
+      if (scrollY > announcementExit) {
+        upwardTravel = 0;
+        root.classList.add("asb-announcement-hidden");
+      } else if (scrollY <= 12) {
         upwardTravel = 0;
         root.classList.remove("asb-announcement-hidden");
       } else if (delta > 3) {
@@ -89,7 +120,13 @@ export function ScrollGeometry() {
       revealObserver.disconnect();
       root.classList.remove("asb-motion-ready");
       root.classList.remove("asb-announcement-hidden");
+      root.classList.remove("asb-platform-materialized");
+      root.classList.remove("asb-footer-active");
       root.style.removeProperty("--asb-hero-wave-depth");
+      root.style.removeProperty("--asb-nav-document-top");
+      root.style.removeProperty("--asb-platform-materialize");
+      root.style.removeProperty("--asb-footer-rail-left");
+      root.style.removeProperty("--asb-footer-rail-right");
       documentRoot.style.scrollBehavior = previousScrollBehavior;
       if (frame) window.cancelAnimationFrame(frame);
     };
