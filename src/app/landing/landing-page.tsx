@@ -104,7 +104,7 @@ function TrustMarkSet({ hidden = false }: { hidden?: boolean }) {
   );
 }
 
-export default function LandingPage() {
+export default function RedesignedLandingPage() {
   return (
     <div className="asb-landing">
       <ScrollGeometry />
