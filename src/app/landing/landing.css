@@ -6154,24 +6154,33 @@
 
 .asb-landing .asb-platform-dropdown {
   position: absolute;
-  top: 74px;
+  top: 58px;
   right: 0;
   left: 0;
   visibility: hidden;
-  overflow: hidden;
+  overflow: visible;
   border-radius: 32px;
-  padding: 8px;
+  padding: 24px 8px 8px;
+  background: transparent;
+  opacity: 0;
+  pointer-events: none;
+  transform: translateY(-8px);
+  transform-origin: 50% 0;
+  transition: opacity 180ms ease, transform 220ms cubic-bezier(.22, 1, .36, 1), visibility 180ms;
+}
+
+.asb-landing .asb-platform-dropdown::before {
+  position: absolute;
+  z-index: 0;
+  inset: 16px 0 0;
+  border-radius: 32px;
   background: #fff;
   box-shadow:
     0 8px 16px rgba(99, 91, 79, .08),
     0 32px 32px rgba(99, 91, 79, .04),
     0 60px 40px rgba(99, 91, 79, .02),
     0 96px 48px rgba(99, 91, 79, .01);
-  opacity: 0;
-  pointer-events: none;
-  transform: translateY(-8px);
-  transform-origin: 50% 0;
-  transition: opacity 180ms ease, transform 220ms cubic-bezier(.22, 1, .36, 1), visibility 180ms;
+  content: "";
 }
 
 .asb-landing .asb-platform-menu.is-open .asb-platform-dropdown {
@@ -6182,36 +6191,40 @@
 }
 
 .asb-landing .asb-platform-dropdown-grid {
+  position: relative;
+  z-index: 1;
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 0;
+  gap: 16px 0;
 }
 
 .asb-landing .asb-platform-dropdown-item {
   display: grid;
-  min-height: 118px;
+  min-height: 112px;
   grid-template-columns: 32px minmax(0, 1fr);
   align-content: start;
   gap: 12px;
   border-radius: 24px;
   padding: 16px;
   color: #080331;
-  transition: background-color 180ms ease, transform 180ms ease;
+  transition: background-color 300ms ease;
 }
 
 .asb-landing a.asb-platform-dropdown-item:hover,
 .asb-landing a.asb-platform-dropdown-item:focus-visible {
   outline: 0;
-  background: #f8f3eb;
-  transform: translateY(-1px);
+  background: #fbf8f3;
+  box-shadow: inset 0 0 0 1px rgba(8, 3, 49, .04);
 }
 
 .asb-landing .asb-platform-dropdown-item.is-disabled {
+  opacity: .58;
   cursor: default;
+  user-select: none;
 }
 
 .asb-landing .asb-platform-dropdown-item.is-disabled:hover {
-  background: rgba(248, 243, 235, .55);
+  background: transparent;
 }
 
 .asb-landing .asb-platform-menu-icon {
@@ -6228,6 +6241,7 @@
 .asb-landing .asb-platform-menu-icon-green { color: #328a3b; }
 .asb-landing .asb-platform-menu-icon-coral { color: #ff6b40; }
 .asb-landing .asb-platform-menu-icon-blue { color: #4865ff; }
+.asb-landing .asb-platform-menu-icon-pink { color: #f5a0ef; }
 
 .asb-landing .asb-platform-dropdown-copy {
   display: flex;

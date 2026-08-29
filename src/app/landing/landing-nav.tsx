@@ -6,20 +6,38 @@ import { useEffect, useRef, useState } from "react";
 
 const platformItems = [
   {
-    title: "Islamic Services",
-    description: "Korban, wakaf, food support, and transparent giving updates.",
-    href: "/services",
+    title: "Korban",
+    description: "Choose a Korban package and receive a clear completion record.",
+    href: "/korban",
     tone: "green",
+  },
+  {
+    title: "Wakaf Water Pump",
+    description: "Help provide clean water with location details, photos, and video.",
+    href: "/wakaf/water-pump",
+    tone: "blue",
+  },
+  {
+    title: "Wakaf Quran",
+    description: "Place Quran copies where learning and worship can continue.",
+    href: "/wakaf/quran",
+    tone: "coral",
+  },
+  {
+    title: "Food for Orphans",
+    description: "Provide meals for orphans and receive an update after delivery.",
+    href: "/wakaf/food-for-orphans",
+    tone: "pink",
   },
   {
     title: "Islamic Business Consultancy",
     description: "Practical, values-led support for organisations and community ventures.",
-    tone: "coral",
+    tone: "blue",
   },
   {
     title: "AI Automation",
     description: "Thoughtful systems that remove repetitive work and keep teams moving.",
-    tone: "blue",
+    tone: "green",
   },
 ] as const;
 
@@ -38,17 +56,39 @@ function PlatformIcon({ tone }: { tone: (typeof platformItems)[number]["tone"] }
 export function LandingNav() {
   const [platformOpen, setPlatformOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
+  const mobileMenuRef = useRef<HTMLDetailsElement>(null);
+  const suppressFocusOpenRef = useRef(false);
+
+  const closeMobileMenu = () => {
+    mobileMenuRef.current?.removeAttribute("open");
+  };
 
   useEffect(() => {
     const closeOnOutsidePress = (event: PointerEvent) => {
-      if (event.target instanceof Node && !menuRef.current?.contains(event.target)) {
-        setPlatformOpen(false);
+      if (!(event.target instanceof Node)) return;
+
+      if (!menuRef.current?.contains(event.target)) setPlatformOpen(false);
+      if (!mobileMenuRef.current?.contains(event.target)) {
+        mobileMenuRef.current?.removeAttribute("open");
       }
     };
     const closeOnEscape = (event: KeyboardEvent) => {
       if (event.key === "Escape") {
+        const trigger = menuRef.current?.querySelector<HTMLButtonElement>(".asb-platform-trigger");
+        if (menuRef.current?.contains(document.activeElement)) {
+          suppressFocusOpenRef.current = true;
+          trigger?.focus({ preventScroll: true });
+          // focus() dispatches synchronously; clear this immediately so the
+          // next genuine Tab entry still opens the disclosure, even in a
+          // background tab where animation frames can be paused.
+          suppressFocusOpenRef.current = false;
+        }
         setPlatformOpen(false);
-        menuRef.current?.querySelector<HTMLButtonElement>(".asb-platform-trigger")?.focus();
+
+        if (mobileMenuRef.current?.hasAttribute("open")) {
+          mobileMenuRef.current.removeAttribute("open");
+          mobileMenuRef.current.querySelector<HTMLElement>("summary")?.focus({ preventScroll: true });
+        }
       }
     };
 
@@ -85,8 +125,16 @@ export function LandingNav() {
               className="asb-platform-trigger"
               aria-expanded={platformOpen}
               aria-controls="asb-platform-dropdown"
-              onFocus={() => setPlatformOpen(true)}
-              onClick={() => setPlatformOpen(true)}
+              onFocus={() => {
+                if (!suppressFocusOpenRef.current) setPlatformOpen(true);
+              }}
+              // Hover/focus can precede a pointer click; a click should never
+              // undo the menu the pointer is actively trying to enter. Native
+              // keyboard activation reports detail 0 and keeps toggle semantics.
+              onClick={(event) => {
+                if (event.detail === 0) setPlatformOpen((open) => !open);
+                else setPlatformOpen(true);
+              }}
             >
               Services <Chevron open={platformOpen} />
             </button>
@@ -132,18 +180,21 @@ export function LandingNav() {
         <div className="asb-nav-actions">
           <Link href="/login" className="asb-nav-text-link">Login</Link>
           <Link href="/services" className="asb-nav-cta">Pick a service</Link>
-          <details className="asb-mobile-menu">
+          <details ref={mobileMenuRef} className="asb-mobile-menu">
             <summary className="asb-nav-menu" aria-label="Open navigation menu"><i /><i /></summary>
             <div className="asb-mobile-menu-panel">
               <span className="asb-mobile-menu-label">Services</span>
-              <Link href="/services">Islamic Services</Link>
-              <span className="asb-mobile-menu-pending">Islamic Business Consultancy <small>Coming soon</small></span>
-              <span className="asb-mobile-menu-pending">AI Automation <small>Coming soon</small></span>
-              <Link href="/about">About</Link>
-              <Link href="/#how">How it works</Link>
-              <Link href="/contact">Contact</Link>
-              <Link href="/login">Login</Link>
-              <Link href="/services" className="asb-mobile-menu-cta">Pick a service</Link>
+              <Link href="/services" className="asb-mobile-menu-all" onClick={closeMobileMenu}>All services</Link>
+              {platformItems.map((item) => "href" in item ? (
+                <Link key={item.title} href={item.href} onClick={closeMobileMenu}>{item.title}</Link>
+              ) : (
+                <span key={item.title} className="asb-mobile-menu-pending">{item.title} <small>Coming soon</small></span>
+              ))}
+              <Link href="/about" onClick={closeMobileMenu}>About</Link>
+              <Link href="/#how" onClick={closeMobileMenu}>How it works</Link>
+              <Link href="/contact" onClick={closeMobileMenu}>Contact</Link>
+              <Link href="/login" onClick={closeMobileMenu}>Login</Link>
+              <Link href="/services" className="asb-mobile-menu-cta" onClick={closeMobileMenu}>Pick a service</Link>
             </div>
           </details>
         </div>
