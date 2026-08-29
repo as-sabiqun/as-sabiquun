@@ -6160,7 +6160,7 @@
   visibility: hidden;
   overflow: visible;
   border-radius: 32px;
-  padding: 24px 8px 8px;
+  padding: 24px 8px 32px;
   background: transparent;
   opacity: 0;
   pointer-events: none;
@@ -6195,17 +6195,18 @@
   z-index: 1;
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 16px 0;
+  grid-template-rows: repeat(2, 112px) 90px;
+  gap: 8px 0;
 }
 
 .asb-landing .asb-platform-dropdown-item {
   display: grid;
-  min-height: 112px;
+  min-height: 0;
   grid-template-columns: 32px minmax(0, 1fr);
   align-content: start;
   gap: 12px;
   border-radius: 24px;
-  padding: 16px;
+  padding: 10px 0;
   color: #080331;
   transition: background-color 300ms ease;
 }
@@ -6236,6 +6237,7 @@
   background-size: 8px 8px;
   -webkit-mask-image: radial-gradient(circle at center, #000 0 52%, transparent 54%);
   mask-image: radial-gradient(circle at center, #000 0 52%, transparent 54%);
+  transform: translateX(12px);
 }
 
 .asb-landing .asb-platform-menu-icon-green { color: #328a3b; }
@@ -6282,6 +6284,44 @@
   font-size: 14px;
   line-height: 1.35;
   white-space: normal;
+}
+
+.asb-landing .asb-platform-dropdown-item-giving {
+  grid-column: 1;
+  grid-row: 3;
+  align-content: center;
+}
+
+.asb-landing .asb-platform-dropdown-item-giving .asb-platform-dropdown-copy {
+  gap: 6px;
+}
+
+.asb-landing .asb-platform-dropdown-item-giving .asb-platform-dropdown-title {
+  min-height: 0;
+}
+
+.asb-landing .asb-nav .asb-platform-dropdown-all {
+  display: flex;
+  min-width: 0;
+  grid-column: 2 / 4;
+  grid-row: 3;
+  align-items: center;
+  margin: 0 12px 0 0;
+  border: 1px solid rgba(72, 101, 255, .12);
+  border-radius: 24px;
+  padding: 0 36px;
+  background: #f4f4fc;
+  color: #2d2a2a;
+  font-size: 17px;
+  font-weight: 700;
+  line-height: 1.25;
+  transition: background-color 300ms ease;
+}
+
+.asb-landing .asb-platform-dropdown-all:hover,
+.asb-landing .asb-platform-dropdown-all:focus-visible {
+  outline: 0;
+  background: #fbf8f3;
 }
 
 .asb-landing .asb-nav-actions {
@@ -6401,6 +6441,7 @@
 @media (prefers-reduced-motion: reduce) {
   .asb-landing .asb-platform-dropdown,
   .asb-landing .asb-platform-dropdown-item,
+  .asb-landing .asb-platform-dropdown-all,
   .asb-landing .asb-platform-trigger svg {
     transition: none;
   }
