@@ -8,37 +8,32 @@ import type { CatalogService } from "@/components/service-card";
 const serviceMedia: Record<CatalogService["slug"], {
   src: string;
   alt: string;
-  caption: string;
   tone: string;
   evidence: string;
 }> = {
   korban: {
     src: "/services-korban-care.png",
     alt: "Korban workers caring for a cow at a rural farm",
-    caption: "Choose a package and keep the intention connected to its completion record.",
     tone: "coral",
-    evidence: "Photos and videos from the completed Korban work",
+    evidence: "Completion record with reviewed photos and videos",
   },
   water: {
     src: "/landing-water-point.png",
     alt: "A community water point",
-    caption: "Support a water project with reviewed location details, photos, and video.",
     tone: "blue",
-    evidence: "Photos, videos, and the completed water point location",
+    evidence: "Reviewed photos, videos, and the completed location",
   },
   quran: {
     src: "/landing-quran-table.png",
     alt: "Quran copies prepared on a table",
-    caption: "Place Quran copies where learning and worship can continue.",
     tone: "green",
-    evidence: "Distribution photos and a completion summary",
+    evidence: "Distribution photos and a completion record",
   },
   orphans: {
     src: "/landing-portrait-community.png",
     alt: "A community member smiling",
-    caption: "Help coordinate a shared meal and receive the available delivery record.",
     tone: "pink",
-    evidence: "Delivery photos and a completion summary",
+    evidence: "Delivery photos and a completion record",
   },
 };
 
@@ -78,14 +73,11 @@ function ServicePreview({
         />
       </div>
       <div className="asb-service-preview-copy">
-        <h2>{service.title}</h2>
-        <p>{service.description}</p>
-        <span>{media.caption}</span>
-        <dl className="asb-service-proof" aria-label={`${service.title} completion record`}>
-          <div><dt>Partner submits</dt><dd>{media.evidence}</dd></div>
-          <div><dt>We review</dt><dd>Required evidence before the record is released</dd></div>
-          <div><dt>You receive</dt><dd>Email, Telegram, and project-page access</dd></div>
-        </dl>
+        <div className="asb-service-preview-text">
+          <h2>{service.title}</h2>
+          <p>{service.description}</p>
+          <span>{media.evidence}</span>
+        </div>
         <div className="asb-service-preview-action">
           <p><strong>{service.price}</strong><small>{service.priceLabel}</small></p>
           <Link href={service.href}>Choose {service.title} <Arrow /></Link>

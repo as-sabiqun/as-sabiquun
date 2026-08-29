@@ -22,7 +22,7 @@ export default async function ServicesPage() {
       <section className="asb-services-intro" aria-labelledby="services-page-title">
         <h1 id="services-page-title">Choose a service.</h1>
         <div>
-          <p>Compare the starting price, what the partner submits, and what you receive after our review.</p>
+          <p>See what each service supports, its starting contribution, and the record you receive afterwards.</p>
           <a href="#service-directory">Browse the directory <Arrow /></a>
         </div>
       </section>
@@ -41,13 +41,13 @@ export default async function ServicesPage() {
 
       <section className="asb-services-method" id="record-process" aria-labelledby="services-method-title">
         <div className="asb-services-method-heading">
-          <h2 id="services-method-title">From payment to reviewed record.</h2>
-          <p>The service changes. The checks do not.</p>
+          <h2 id="services-method-title">What happens next.</h2>
+          <p>Every service follows the same clear process.</p>
         </div>
         <ol>
-          <li><span>Partner starts</span><p>Your order and details are sent to an approved fulfilment partner.</p></li>
-          <li><span>We check</span><p>Our team reviews the location, photos, videos, and completion summary.</p></li>
-          <li><span>You receive</span><p>Your report is sent by email and Telegram and stays available on your project page.</p></li>
+          <li><span>Arrange</span><p>Your order is sent to an approved fulfilment partner.</p></li>
+          <li><span>Review</span><p>We check the submitted completion evidence.</p></li>
+          <li><span>Receive</span><p>Your record is sent to you and kept on your project page.</p></li>
         </ol>
       </section>
 
