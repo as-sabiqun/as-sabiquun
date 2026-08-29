@@ -146,7 +146,7 @@ export default function RedesignedLandingPage() {
               <div className="asb-hero-orbit-item asb-orbit-five">
                 <div className="asb-orbit-visual asb-orbit-seal">
                   <span className="asb-orbit-seal-ring" />
-                  <Image src="/brand/as-sabiquun-seal.png" width={2000} height={2000} sizes="86px" alt="" />
+                  <Image src="/brand/as-sabiquun-seal.svg" width={802} height={800} sizes="86px" alt="" />
                   <strong>Care,<br />carried<br />forward.</strong>
                 </div>
               </div>
@@ -221,7 +221,7 @@ export default function RedesignedLandingPage() {
 
         <section className="asb-values" id="amanah" aria-labelledby="values-title">
           <div className="asb-values-well" aria-hidden="true">
-            <Image src="/brand/as-sabiquun-seal.png" width={2000} height={2000} sizes="118px" alt="" />
+            <Image src="/brand/as-sabiquun-seal.svg" width={802} height={800} sizes="118px" alt="" />
           </div>
           <div className="asb-values-content">
             <div className="asb-values-lead">
@@ -313,7 +313,7 @@ export default function RedesignedLandingPage() {
           <div className="asb-simple-footer-inner">
             <div className="asb-simple-footer-brand">
               <Link href="/" aria-label="As-Sabiquun home">
-                <Image src="/brand/as-sabiquun-seal.png" width={2000} height={2000} sizes="48px" alt="" />
+                <Image src="/brand/as-sabiquun-seal.svg" width={802} height={800} sizes="48px" alt="" />
                 <span>As-Sabiquun</span>
               </Link>
               <p>Islamic services organised with care, clarity, and accountability.</p>

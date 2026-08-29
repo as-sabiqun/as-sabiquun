@@ -6064,9 +6064,9 @@
 .asb-landing .asb-brand-seal {
   position: relative;
   display: block;
-  width: 36px;
-  height: 36px;
-  flex: 0 0 36px;
+  width: 48px;
+  height: 48px;
+  flex: 0 0 48px;
   overflow: hidden;
   border-radius: 50%;
 }
@@ -6368,9 +6368,9 @@
   }
 
   .asb-landing .asb-brand-seal {
-    width: 32px;
-    height: 32px;
-    flex-basis: 32px;
+    width: 40px;
+    height: 40px;
+    flex-basis: 40px;
   }
 
   .asb-landing .asb-nav .asb-desktop-nav,

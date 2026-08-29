@@ -24,9 +24,9 @@ export function BrandMark({ className = "h-12 w-12", priority = false }: { class
     <span className={`brand-seal ${className}`}>
       <Image
         className="brand-seal-image"
-        src="/brand/as-sabiquun-seal.png"
-        width={2000}
-        height={2000}
+        src="/brand/as-sabiquun-seal.svg"
+        width={802}
+        height={800}
         alt=""
         priority={priority}
         sizes="(max-width: 768px) 192px, 360px"
