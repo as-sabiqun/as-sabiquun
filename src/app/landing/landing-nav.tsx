@@ -70,7 +70,7 @@ export function LandingNav() {
           <span>As-Sabiquun</span>
         </Link>
 
-        <nav className="asb-desktop-nav" aria-label="Landing page navigation">
+        <nav className="asb-desktop-nav" aria-label="Main navigation">
           <div
             ref={menuRef}
             className={`asb-platform-menu${platformOpen ? " is-open" : ""}`}
@@ -124,15 +124,14 @@ export function LandingNav() {
               </div>
             </div>
           </div>
-          <a href="#amanah">Our amanah</a>
-          <a href="#how">How it works</a>
-          <Link href="/dashboard">Giving updates</Link>
           <Link href="/about">About</Link>
+          <Link href="/#how">How it works</Link>
+          <Link href="/contact">Contact</Link>
         </nav>
 
         <div className="asb-nav-actions">
-          <Link href="/contact" className="asb-nav-text-link">Contact</Link>
-          <Link href="/services" className="asb-nav-cta">Choose a service</Link>
+          <Link href="/login" className="asb-nav-text-link">Login</Link>
+          <Link href="/services" className="asb-nav-cta">Pick a service</Link>
           <details className="asb-mobile-menu">
             <summary className="asb-nav-menu" aria-label="Open navigation menu"><i /><i /></summary>
             <div className="asb-mobile-menu-panel">
@@ -140,12 +139,11 @@ export function LandingNav() {
               <Link href="/services">Islamic Services</Link>
               <span className="asb-mobile-menu-pending">Islamic Business Consultancy <small>Coming soon</small></span>
               <span className="asb-mobile-menu-pending">AI Automation <small>Coming soon</small></span>
-              <a href="#amanah">Our amanah</a>
-              <a href="#how">How it works</a>
-              <Link href="/dashboard">Giving updates</Link>
               <Link href="/about">About</Link>
+              <Link href="/#how">How it works</Link>
               <Link href="/contact">Contact</Link>
-              <Link href="/services" className="asb-mobile-menu-cta">Choose a service</Link>
+              <Link href="/login">Login</Link>
+              <Link href="/services" className="asb-mobile-menu-cta">Pick a service</Link>
             </div>
           </details>
         </div>
