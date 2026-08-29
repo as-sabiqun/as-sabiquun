@@ -6011,6 +6011,382 @@
   }
 }
 
+/* August Health navigation parity: the bar and dropdown share one measured
+   1160px rail, restrained glass material, and the same compact 8px shell. */
+.asb-landing .asb-nav-wrap {
+  position: fixed !important;
+  z-index: 1000;
+  top: 16px !important;
+  right: 0;
+  left: 0;
+  height: 66px;
+  margin: 0;
+  padding: 0;
+  pointer-events: none;
+}
+
+.asb-landing .asb-nav {
+  position: relative;
+  display: flex;
+  width: calc(100% - 126px);
+  max-width: 1160px;
+  height: 66px;
+  min-height: 66px;
+  margin-inline: auto;
+  gap: 16px;
+  border: 0;
+  border-radius: 999px;
+  padding: 8px;
+  background: rgba(255, 255, 255, .7) !important;
+  box-shadow:
+    0 8px 16px rgba(99, 91, 79, .08),
+    0 32px 32px rgba(99, 91, 79, .04),
+    0 60px 40px rgba(99, 91, 79, .02),
+    0 96px 48px rgba(99, 91, 79, .01);
+  backdrop-filter: blur(40px) !important;
+  -webkit-backdrop-filter: blur(40px) !important;
+  pointer-events: auto;
+}
+
+.asb-landing .asb-brand {
+  width: 215px;
+  flex: 0 0 215px;
+  gap: 9px;
+  padding-left: 12px;
+  font-family: var(--font-serif), Georgia, serif;
+  font-size: 27px;
+  font-weight: 500;
+  letter-spacing: -.035em;
+}
+
+.asb-landing .asb-brand img {
+  width: 32px;
+  height: 32px;
+  transform: scale(1.28);
+}
+
+.asb-landing .asb-nav .asb-desktop-nav {
+  display: flex;
+  min-width: 0;
+  flex: 1 1 auto;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  color: #080331;
+  font-family: var(--font-sans), Arial, sans-serif;
+  font-size: 15px;
+  line-height: 1;
+  white-space: nowrap;
+}
+
+.asb-landing .asb-desktop-nav > a {
+  display: inline-flex;
+  min-height: 50px;
+  align-items: center;
+  border-radius: 999px;
+  padding: 0 11px;
+  transition: background-color 160ms ease;
+}
+
+.asb-landing .asb-desktop-nav > a:hover,
+.asb-landing .asb-desktop-nav > a:focus-visible {
+  background: rgba(248, 243, 235, .78);
+}
+
+.asb-landing .asb-platform-menu {
+  position: static;
+  height: 50px;
+}
+
+.asb-landing .asb-platform-trigger {
+  display: inline-flex;
+  height: 50px;
+  align-items: center;
+  gap: 8px;
+  border: 0;
+  border-radius: 999px;
+  padding: 0 16px;
+  background: transparent;
+  color: #080331;
+  cursor: pointer;
+  font: inherit;
+  transition: background-color 160ms ease;
+}
+
+.asb-landing .asb-platform-trigger:hover,
+.asb-landing .asb-platform-trigger:focus-visible,
+.asb-landing .asb-platform-menu.is-open .asb-platform-trigger {
+  outline: 0;
+  background: #f8f3eb;
+}
+
+.asb-landing .asb-platform-trigger svg {
+  width: 11px;
+  height: 8px;
+  overflow: visible;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.4;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  transition: transform 180ms ease;
+}
+
+.asb-landing .asb-platform-trigger svg.is-open {
+  transform: rotate(180deg);
+}
+
+.asb-landing .asb-platform-dropdown {
+  position: absolute;
+  top: 74px;
+  right: 0;
+  left: 0;
+  visibility: hidden;
+  overflow: hidden;
+  border-radius: 32px;
+  padding: 8px;
+  background: #fff;
+  box-shadow:
+    0 8px 16px rgba(99, 91, 79, .08),
+    0 32px 32px rgba(99, 91, 79, .04),
+    0 60px 40px rgba(99, 91, 79, .02),
+    0 96px 48px rgba(99, 91, 79, .01);
+  opacity: 0;
+  pointer-events: none;
+  transform: translateY(-8px);
+  transform-origin: 50% 0;
+  transition: opacity 180ms ease, transform 220ms cubic-bezier(.22, 1, .36, 1), visibility 180ms;
+}
+
+.asb-landing .asb-platform-menu.is-open .asb-platform-dropdown {
+  visibility: visible;
+  opacity: 1;
+  pointer-events: auto;
+  transform: translateY(0);
+}
+
+.asb-landing .asb-platform-dropdown-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0;
+}
+
+.asb-landing .asb-platform-dropdown-item {
+  display: grid;
+  min-height: 118px;
+  grid-template-columns: 32px minmax(0, 1fr);
+  align-content: start;
+  gap: 12px;
+  border-radius: 24px;
+  padding: 16px;
+  color: #080331;
+  transition: background-color 180ms ease, transform 180ms ease;
+}
+
+.asb-landing a.asb-platform-dropdown-item:hover,
+.asb-landing a.asb-platform-dropdown-item:focus-visible {
+  outline: 0;
+  background: #f8f3eb;
+  transform: translateY(-1px);
+}
+
+.asb-landing .asb-platform-dropdown-item.is-disabled {
+  cursor: default;
+}
+
+.asb-landing .asb-platform-dropdown-item.is-disabled:hover {
+  background: rgba(248, 243, 235, .55);
+}
+
+.asb-landing .asb-platform-menu-icon {
+  display: block;
+  width: 32px;
+  height: 32px;
+  background-image: radial-gradient(circle, currentColor 0 2px, transparent 2.35px);
+  background-position: center;
+  background-size: 8px 8px;
+  -webkit-mask-image: radial-gradient(circle at center, #000 0 52%, transparent 54%);
+  mask-image: radial-gradient(circle at center, #000 0 52%, transparent 54%);
+}
+
+.asb-landing .asb-platform-menu-icon-green { color: #328a3b; }
+.asb-landing .asb-platform-menu-icon-coral { color: #ff6b40; }
+.asb-landing .asb-platform-menu-icon-blue { color: #4865ff; }
+
+.asb-landing .asb-platform-dropdown-copy {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.asb-landing .asb-platform-dropdown-title {
+  display: flex;
+  min-height: 32px;
+  align-items: flex-start;
+  flex-wrap: wrap;
+  gap: 10px;
+  font-family: var(--font-serif), Georgia, serif;
+  font-size: 20px;
+  font-weight: 400;
+  letter-spacing: normal;
+  line-height: 26px;
+}
+
+.asb-landing .asb-platform-dropdown-title small {
+  flex: 0 0 auto;
+  border-radius: 999px;
+  padding: 5px 8px;
+  background: #f1efff;
+  color: #4865ff;
+  font-family: var(--font-sans), Arial, sans-serif;
+  font-size: 9px;
+  font-weight: 800;
+  letter-spacing: .08em;
+  line-height: 1;
+  text-transform: uppercase;
+}
+
+.asb-landing .asb-platform-dropdown-description {
+  color: #2d2a2a;
+  font-size: 14px;
+  line-height: 1.35;
+  white-space: normal;
+}
+
+.asb-landing .asb-platform-dropdown-note {
+  display: flex;
+  min-height: 80px;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid rgba(72, 101, 255, .12);
+  border-radius: 24px;
+  padding: 18px 28px;
+  background: rgba(243, 241, 255, .7);
+  color: #2d2a2a;
+  font-size: 17px;
+  font-weight: 650;
+  line-height: 1.3;
+  text-align: center;
+}
+
+.asb-landing .asb-nav-actions {
+  gap: 4px;
+}
+
+.asb-landing .asb-nav-text-link {
+  display: inline-flex;
+  height: 50px;
+  align-items: center;
+  border-radius: 999px;
+  padding: 0 13px;
+  color: #4865ff;
+  font-size: 15px;
+}
+
+.asb-landing .asb-nav-cta {
+  width: auto;
+  min-width: 154px;
+  height: 50px;
+  min-height: 50px;
+  flex: 0 0 auto;
+  padding: 0 19px;
+  font-size: 15px;
+  font-weight: 500;
+  letter-spacing: 0;
+  text-shadow: none;
+}
+
+.asb-landing .asb-mobile-menu-label {
+  padding: 8px 14px 5px;
+  color: rgba(8, 3, 49, .5);
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+}
+
+.asb-landing .asb-mobile-menu-pending {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 12px 14px;
+  color: rgba(8, 3, 49, .56);
+  font-size: 14px;
+}
+
+.asb-landing .asb-mobile-menu-pending small {
+  border-radius: 999px;
+  padding: 4px 7px;
+  background: #f1efff;
+  color: #4865ff;
+  font-size: 8px;
+  font-weight: 800;
+  letter-spacing: .07em;
+  text-transform: uppercase;
+}
+
+@media (max-width: 1080px) {
+  .asb-landing .asb-nav-wrap {
+    top: 12px !important;
+    height: 60px;
+    padding-inline: 14px;
+  }
+
+  .asb-landing .asb-nav {
+    width: 100%;
+    max-width: none;
+    height: 60px;
+    min-height: 60px;
+    padding: 7px 8px 7px 13px;
+  }
+
+  .asb-landing .asb-brand {
+    width: auto;
+    flex: 0 1 auto;
+    padding-left: 0;
+    font-size: 17px;
+  }
+
+  .asb-landing .asb-brand img {
+    width: 30px;
+    height: 30px;
+  }
+
+  .asb-landing .asb-nav .asb-desktop-nav,
+  .asb-landing .asb-nav-text-link,
+  .asb-landing .asb-nav-cta {
+    display: none;
+  }
+
+  .asb-landing .asb-nav-actions {
+    margin-left: auto;
+  }
+
+  .asb-landing .asb-mobile-menu {
+    display: block;
+  }
+
+  .asb-landing .asb-nav-menu {
+    display: flex;
+    list-style: none;
+  }
+
+  .asb-landing .asb-mobile-menu-panel {
+    max-height: calc(100vh - 92px);
+    overflow-y: auto;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .asb-landing .asb-platform-dropdown,
+  .asb-landing .asb-platform-dropdown-item,
+  .asb-landing .asb-platform-trigger svg {
+    transition: none;
+  }
+}
+
 /* Keep the carousel controls on the section's single dot field. The previous
    second dot layer overlapped it and produced a dense rectangular moire. */
 @media (min-width: 861px) {

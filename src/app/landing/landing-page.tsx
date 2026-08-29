@@ -1,5 +1,6 @@
 import Link from "next/link";
 import Image from "next/image";
+import { LandingNav } from "./landing-nav";
 import { ScrollGeometry } from "./scroll-geometry";
 import { StoryCarousel } from "./story-carousel";
 import "./landing.css";
@@ -108,37 +109,7 @@ export default function RedesignedLandingPage() {
   return (
     <div className="asb-landing">
       <ScrollGeometry />
-      <header className="asb-nav-wrap">
-        <div className="asb-nav">
-          <Link href="/" className="asb-brand" aria-label="As-Sabiquun home">
-            <Image src="/brand/as-sabiquun-seal.png" width={2000} height={2000} sizes="34px" alt="" />
-            <span>As-Sabiquun</span>
-          </Link>
-          <nav aria-label="Landing page navigation">
-            <a href="#services">Services</a>
-            <a href="#amanah">Our amanah</a>
-            <a href="#how">How it works</a>
-            <Link href="/dashboard">Giving updates</Link>
-            <Link href="/about">About</Link>
-          </nav>
-          <div className="asb-nav-actions">
-            <Link href="/contact" className="asb-nav-text-link">Contact</Link>
-            <Link href="/services" className="asb-nav-cta"><span>Choose</span>{" "}<span>a</span>{" "}<span>service</span></Link>
-            <details className="asb-mobile-menu">
-              <summary className="asb-nav-menu" aria-label="Open navigation menu"><i /><i /></summary>
-              <div className="asb-mobile-menu-panel">
-                <a href="#services">Services</a>
-                <a href="#amanah">Our amanah</a>
-                <a href="#how">How it works</a>
-                <Link href="/dashboard">Giving updates</Link>
-                <Link href="/about">About</Link>
-                <Link href="/contact">Contact</Link>
-                <Link href="/services" className="asb-mobile-menu-cta">Choose a service</Link>
-              </div>
-            </details>
-          </div>
-        </div>
-      </header>
+      <LandingNav />
 
       <Link href="/dashboard" className="asb-announcement">
         Explore latest field updates <Arrow />
