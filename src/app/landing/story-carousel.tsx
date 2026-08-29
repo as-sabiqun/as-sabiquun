@@ -5,10 +5,9 @@ import { useCallback, useEffect, useRef, useState } from "react";
 
 const CARD_WIDTH = 376;
 const CARD_GAP = 32;
-const CARD_STEP = CARD_WIDTH + CARD_GAP;
 const COPY_SET_COUNT = 3;
 const MIDDLE_SET = Math.floor(COPY_SET_COUNT / 2);
-const LEADING_GUTTER = 80;
+const START_STORY_INDEX = 2;
 
 type Story = {
   id: string;
@@ -72,15 +71,45 @@ const stories = [
 ] as const satisfies readonly Story[];
 
 const STORIES_PER_SET = stories.length;
-const SET_WIDTH = STORIES_PER_SET * CARD_STEP;
-const START_INDEX = MIDDLE_SET * STORIES_PER_SET;
+const MIDDLE_SET_START = MIDDLE_SET * STORIES_PER_SET;
+const START_INDEX = MIDDLE_SET_START + START_STORY_INDEX;
 
 function logicalIndex(index: number) {
   return ((index % STORIES_PER_SET) + STORIES_PER_SET) % STORIES_PER_SET;
 }
 
 function middleSetIndex(index: number) {
-  return START_INDEX + logicalIndex(index);
+  return MIDDLE_SET_START + logicalIndex(index);
+}
+
+function storyCards(viewport: HTMLDivElement) {
+  return Array.from(viewport.querySelectorAll<HTMLElement>("[data-story-card]"));
+}
+
+function centeredScrollLeft(viewport: HTMLDivElement, index: number) {
+  const card = storyCards(viewport)[index];
+  if (!card) return viewport.scrollLeft;
+
+  const viewportRect = viewport.getBoundingClientRect();
+  const cardRect = card.getBoundingClientRect();
+  const viewportCenter = viewportRect.left + viewport.clientWidth / 2;
+  const cardCenter = cardRect.left + cardRect.width / 2;
+  return viewport.scrollLeft + cardCenter - viewportCenter;
+}
+
+function nearestStoryIndex(viewport: HTMLDivElement) {
+  const viewportRect = viewport.getBoundingClientRect();
+  const viewportCenter = viewportRect.left + viewport.clientWidth / 2;
+
+  return storyCards(viewport).reduce((nearest, card, index, cards) => {
+    const cardRect = card.getBoundingClientRect();
+    const distance = Math.abs(cardRect.left + cardRect.width / 2 - viewportCenter);
+    if (index === 0) return index;
+
+    const nearestRect = cards[nearest].getBoundingClientRect();
+    const nearestDistance = Math.abs(nearestRect.left + nearestRect.width / 2 - viewportCenter);
+    return distance < nearestDistance ? index : nearest;
+  }, 0);
 }
 
 function Arrow({ direction = "next" }: { direction?: "previous" | "next" }) {
@@ -99,17 +128,21 @@ export function StoryCarousel() {
   const viewportRef = useRef<HTMLDivElement | null>(null);
   const currentIndexRef = useRef(START_INDEX);
   const targetIndexRef = useRef(START_INDEX);
-  const targetLeftRef = useRef(MIDDLE_SET * SET_WIDTH - LEADING_GUTTER);
+  const targetLeftRef = useRef(0);
   const lockedRef = useRef(false);
   const reducedMotionRef = useRef(false);
   const settleTimerRef = useRef<number | null>(null);
   const fallbackTimerRef = useRef<number | null>(null);
   const [isLocked, setIsLocked] = useState(false);
-  const [activeStory, setActiveStory] = useState(0);
+  const [activeStory, setActiveStory] = useState(START_STORY_INDEX);
 
   const setViewport = useCallback((viewport: HTMLDivElement | null) => {
     viewportRef.current = viewport;
-    if (viewport) viewport.scrollLeft = MIDDLE_SET * SET_WIDTH - LEADING_GUTTER;
+    if (viewport) {
+      const targetLeft = centeredScrollLeft(viewport, START_INDEX);
+      viewport.scrollLeft = targetLeft;
+      targetLeftRef.current = targetLeft;
+    }
   }, []);
 
   const clearSettleTimers = useCallback(() => {
@@ -126,7 +159,7 @@ export function StoryCarousel() {
     clearSettleTimers();
     const rebasedIndex = middleSetIndex(index);
     if (rebasedIndex !== index) {
-      viewport.scrollLeft += (rebasedIndex - index) * CARD_STEP;
+      viewport.scrollLeft = centeredScrollLeft(viewport, rebasedIndex);
     }
 
     currentIndexRef.current = rebasedIndex;
@@ -140,7 +173,7 @@ export function StoryCarousel() {
   const settleFromPosition = useCallback(() => {
     const viewport = viewportRef.current;
     if (!viewport) return;
-    const nearestIndex = Math.round(viewport.scrollLeft / CARD_STEP);
+    const nearestIndex = nearestStoryIndex(viewport);
     settleAt(nearestIndex);
   }, [settleAt]);
 
@@ -149,7 +182,7 @@ export function StoryCarousel() {
     if (!viewport || lockedRef.current) return;
 
     const targetIndex = currentIndexRef.current + direction;
-    const targetLeft = viewport.scrollLeft + direction * CARD_STEP;
+    const targetLeft = centeredScrollLeft(viewport, targetIndex);
     targetIndexRef.current = targetIndex;
     targetLeftRef.current = targetLeft;
     lockedRef.current = true;
@@ -191,7 +224,8 @@ export function StoryCarousel() {
 
     const handleResize = () => {
       if (!lockedRef.current) {
-        viewport.scrollLeft = currentIndexRef.current * CARD_STEP - LEADING_GUTTER;
+        viewport.scrollLeft = centeredScrollLeft(viewport, currentIndexRef.current);
+        targetLeftRef.current = viewport.scrollLeft;
       }
     };
 
