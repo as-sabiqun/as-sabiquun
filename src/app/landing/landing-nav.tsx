@@ -88,12 +88,12 @@ export function LandingNav() {
               onFocus={() => setPlatformOpen(true)}
               onClick={() => setPlatformOpen(true)}
             >
-              Platform <Chevron open={platformOpen} />
+              Services <Chevron open={platformOpen} />
             </button>
             <div
               id="asb-platform-dropdown"
               className="asb-platform-dropdown"
-              aria-label="As-Sabiquun platform"
+              aria-label="As-Sabiquun services"
               aria-hidden={!platformOpen}
             >
               <div className="asb-platform-dropdown-grid">
@@ -136,7 +136,7 @@ export function LandingNav() {
           <details className="asb-mobile-menu">
             <summary className="asb-nav-menu" aria-label="Open navigation menu"><i /><i /></summary>
             <div className="asb-mobile-menu-panel">
-              <span className="asb-mobile-menu-label">Platform</span>
+              <span className="asb-mobile-menu-label">Services</span>
               <Link href="/services">Islamic Services</Link>
               <span className="asb-mobile-menu-pending">Islamic Business Consultancy <small>Coming soon</small></span>
               <span className="asb-mobile-menu-pending">AI Automation <small>Coming soon</small></span>
