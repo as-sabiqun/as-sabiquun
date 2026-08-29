@@ -110,7 +110,7 @@ export default function LandingPage() {
       <ScrollGeometry />
       <header className="asb-nav-wrap">
         <div className="asb-nav">
-          <Link href="/landing" className="asb-brand" aria-label="As-Sabiquun home">
+          <Link href="/" className="asb-brand" aria-label="As-Sabiquun home">
             <Image src="/brand/as-sabiquun-seal.png" width={2000} height={2000} sizes="34px" alt="" />
             <span>As-Sabiquun</span>
           </Link>
@@ -341,7 +341,7 @@ export default function LandingPage() {
         <footer className="asb-simple-footer">
           <div className="asb-simple-footer-inner">
             <div className="asb-simple-footer-brand">
-              <Link href="/landing" aria-label="As-Sabiquun home">
+              <Link href="/" aria-label="As-Sabiquun home">
                 <Image src="/brand/as-sabiquun-seal.png" width={2000} height={2000} sizes="48px" alt="" />
                 <span>As-Sabiquun</span>
               </Link>
@@ -358,7 +358,7 @@ export default function LandingPage() {
               <p>Explore</p>
               <Link href="/services">Services</Link>
               <Link href="/about">About</Link>
-              <Link href="/landing#how">Field stories</Link>
+              <Link href="/#how">Field stories</Link>
               <Link href="/contact">Contact</Link>
             </nav>
             <nav className="asb-simple-footer-group" aria-label="Account">
