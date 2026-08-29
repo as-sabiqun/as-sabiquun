@@ -324,69 +324,58 @@ export default function LandingPage() {
           <StoryCarousel />
         </section>
 
-        <div className="asb-final-stack">
-          <section className="asb-closing" aria-labelledby="closing-title">
-            <div className="asb-closing-orbit" aria-hidden="true"><i /><i /><i /><i /><i /></div>
-            <div className="asb-closing-inner">
-              <h2 id="closing-title">An Islamic giving platform built<br />with care for every intention<br />and clarity at every step.</h2>
-              <Link href="/services" className="asb-button asb-button-dark">Explore services <Arrow /></Link>
+        <section className="asb-simple-closing" aria-labelledby="simple-closing-title">
+          <div className="asb-simple-closing-inner">
+            <p className="asb-simple-closing-label">A clear next step</p>
+            <div className="asb-simple-closing-copy">
+              <h2 id="simple-closing-title">Begin with the service that fits your intention.</h2>
+              <p>Explore the available services, or speak with us if you are not yet sure where to start.</p>
+              <div className="asb-simple-closing-actions">
+                <Link href="/services" className="asb-simple-action asb-simple-action-primary">Explore services <Arrow /></Link>
+                <Link href="/contact" className="asb-simple-action asb-simple-action-secondary">Ask a question <Arrow /></Link>
+              </div>
             </div>
-          </section>
+          </div>
+        </section>
 
-          <footer className="asb-footer">
-            <div className="asb-footer-brand-panel">
-              <Image className="asb-footer-logo" src="/brand/as-sabiquun-seal.png" width={2000} height={2000} sizes="(max-width: 860px) 320px, 660px" alt="As-Sabiquun Association Consultancy" />
+        <footer className="asb-simple-footer">
+          <div className="asb-simple-footer-inner">
+            <div className="asb-simple-footer-brand">
+              <Link href="/landing" aria-label="As-Sabiquun home">
+                <Image src="/brand/as-sabiquun-seal.png" width={2000} height={2000} sizes="48px" alt="" />
+                <span>As-Sabiquun</span>
+              </Link>
+              <p>Islamic services organised with care, clarity, and accountability.</p>
             </div>
-            <div className="asb-footer-links-panel">
-          <div>
-            <p>Explore</p>
-            <Link href="/services">Services</Link>
-            <Link href="/about">About</Link>
-            <Link href="/contact">Contact</Link>
-            <Link href="/about">Our approach</Link>
-            <Link href="/landing#how">Field stories</Link>
+            <nav className="asb-simple-footer-group" aria-label="Ways to give">
+              <p>Ways to give</p>
+              <Link href="/korban">Korban</Link>
+              <Link href="/wakaf/water-pump">Wakaf water</Link>
+              <Link href="/wakaf/quran">Wakaf Quran</Link>
+              <Link href="/wakaf/food-for-orphans">Food for orphans</Link>
+            </nav>
+            <nav className="asb-simple-footer-group" aria-label="Explore">
+              <p>Explore</p>
+              <Link href="/services">Services</Link>
+              <Link href="/about">About</Link>
+              <Link href="/landing#how">Field stories</Link>
+              <Link href="/contact">Contact</Link>
+            </nav>
+            <nav className="asb-simple-footer-group" aria-label="Account">
+              <p>Account</p>
+              <Link href="/login">Sign in</Link>
+              <Link href="/signup">Create account</Link>
+              <Link href="/partner-login">Partner login</Link>
+            </nav>
           </div>
-          <div>
-            <p>Ways to give</p>
-            <Link href="/korban">Korban</Link>
-            <Link href="/wakaf/water-pump">Wakaf water</Link>
-            <Link href="/wakaf/quran">Wakaf Quran</Link>
-            <Link href="/wakaf/food-for-orphans">Food for orphans</Link>
+          <div className="asb-simple-footer-bottom">
+            <small>© {new Date().getFullYear()} As-Sabiquun Association Consultancy</small>
+            <nav aria-label="Social links">
+              <a href="https://www.linkedin.com/" target="_blank" rel="noreferrer">LinkedIn</a>
+              <a href="https://www.instagram.com/" target="_blank" rel="noreferrer">Instagram</a>
+            </nav>
           </div>
-          <div>
-            <p>Account</p>
-            <Link href="/login">Sign in</Link>
-            <Link href="/signup">Create account</Link>
-            <Link href="/partner-login">Partner login</Link>
-          </div>
-          <div>
-            <p>Transparency</p>
-            <Link href="/landing#amanah">Our amanah</Link>
-            <Link href="/landing#how">Giving updates</Link>
-            <Link href="/contact">Project support</Link>
-          </div>
-          <div>
-            <p>Help</p>
-            <Link href="/contact">Contact</Link>
-            <Link href="/contact">Ask a question</Link>
-            <Link href="/about">FAQs</Link>
-            <Link href="/about">Policies</Link>
-          </div>
-              <section className="asb-footer-bottom" aria-label="Footer details">
-                <small>© {new Date().getFullYear()} As-Sabiquun Association Consultancy</small>
-                <div className="asb-footer-trust" aria-label="Trust principles">
-                  <span aria-label="Amanah" title="Amanah"><i aria-hidden="true">AMN</i></span>
-                  <span aria-label="Reviewed" title="Reviewed"><i aria-hidden="true">REV</i></span>
-                  <span aria-label="Traceable" title="Traceable"><i aria-hidden="true">TRC</i></span>
-                </div>
-                <nav className="asb-footer-socials" aria-label="Social links">
-                  <a href="https://www.linkedin.com/" target="_blank" rel="noreferrer">LinkedIn</a>
-                  <a href="https://www.instagram.com/" target="_blank" rel="noreferrer">Instagram</a>
-                </nav>
-              </section>
-            </div>
-          </footer>
-        </div>
+        </footer>
       </main>
     </div>
   );

@@ -33,7 +33,7 @@ export function ScrollGeometry() {
       const heroFlatten = Math.min(1, Math.max(0, scrollY / flattenDistance));
       root.style.setProperty("--asb-hero-wave-depth", `${Math.round(92 * (1 - heroFlatten))}px`);
       const navBandY = 49;
-      const overDarkBand = [".asb-values", ".asb-closing"].some((selector) => {
+      const overDarkBand = [".asb-values", ".asb-simple-closing", ".asb-simple-footer"].some((selector) => {
         const band = root.querySelector<HTMLElement>(selector);
         if (!band) return false;
         const rect = band.getBoundingClientRect();
@@ -54,19 +54,6 @@ export function ScrollGeometry() {
           root.classList.add("asb-platform-materialized");
         } else if (platformTop > 260) {
           root.classList.remove("asb-platform-materialized");
-        }
-      }
-
-      const footer = root.querySelector<HTMLElement>(".asb-footer");
-      const footerLinks = root.querySelector<HTMLElement>(".asb-footer-links-panel");
-      if (footer && footerLinks) {
-        const footerRect = footer.getBoundingClientRect();
-        const linksRect = footerLinks.getBoundingClientRect();
-        const footerActive = footerRect.top <= window.innerHeight && footerRect.bottom >= 0;
-        root.classList.toggle("asb-footer-active", footerActive);
-        if (footerActive) {
-          root.style.setProperty("--asb-footer-rail-left", `${linksRect.left + 72}px`);
-          root.style.setProperty("--asb-footer-rail-right", `${window.innerWidth - linksRect.right + 60}px`);
         }
       }
 
@@ -93,7 +80,7 @@ export function ScrollGeometry() {
     };
 
     const revealTargets = root.querySelectorAll<HTMLElement>(
-      ".asb-platform-card, .asb-values-lead > *, .asb-values-entry, .asb-stories-lead > *, .asb-concept-film, .asb-story-card, .asb-closing-inner > *",
+      ".asb-platform-card, .asb-values-lead > *, .asb-values-entry, .asb-stories-lead > *, .asb-concept-film, .asb-story-card, .asb-simple-closing-copy > *",
     );
     root.classList.add("asb-motion-ready");
     const revealObserver = new IntersectionObserver((entries) => {
@@ -121,12 +108,9 @@ export function ScrollGeometry() {
       root.classList.remove("asb-motion-ready");
       root.classList.remove("asb-announcement-hidden");
       root.classList.remove("asb-platform-materialized");
-      root.classList.remove("asb-footer-active");
       root.style.removeProperty("--asb-hero-wave-depth");
       root.style.removeProperty("--asb-nav-document-top");
       root.style.removeProperty("--asb-platform-materialize");
-      root.style.removeProperty("--asb-footer-rail-left");
-      root.style.removeProperty("--asb-footer-rail-right");
       documentRoot.style.scrollBehavior = previousScrollBehavior;
       if (frame) window.cancelAnimationFrame(frame);
     };

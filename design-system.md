@@ -33,7 +33,7 @@ An As-Sabiquun service site rendered with the approved August Health composition
 - Values route frame: 832×588px, 48px radius, 2px low-contrast outline; the enclosing values section remains normal-flow so all three rows can be reached.
 - Case video: 960×748px with a separately rounded 538px stage and 210px white quote panel.
 - Story cards: 376×450px, ~32px gap, clipped neighbors.
-- Closing: one desktop viewport with a 720px floor and one rotating orbit. Footer: 829px sticky desktop reveal with no detached top strip.
+- Closing: a normal-flow 540px green editorial call-to-action band with one clear statement and two pill actions. Footer: a compact, normal-flow deep-green information grid with no sticky reveal or oversized decorative mark.
 
 ## Motion
 
