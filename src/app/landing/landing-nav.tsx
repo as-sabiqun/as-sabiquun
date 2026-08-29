@@ -74,7 +74,7 @@ export function LandingNav() {
     };
     const closeOnEscape = (event: KeyboardEvent) => {
       if (event.key === "Escape") {
-        const trigger = menuRef.current?.querySelector<HTMLButtonElement>(".asb-platform-trigger");
+        const trigger = menuRef.current?.querySelector<HTMLAnchorElement>(".asb-platform-trigger");
         if (menuRef.current?.contains(document.activeElement)) {
           suppressFocusOpenRef.current = true;
           trigger?.focus({ preventScroll: true });
@@ -120,24 +120,18 @@ export function LandingNav() {
               if (!event.currentTarget.contains(event.relatedTarget)) setPlatformOpen(false);
             }}
           >
-            <button
-              type="button"
+            <Link
+              href="/services"
               className="asb-platform-trigger"
               aria-expanded={platformOpen}
               aria-controls="asb-platform-dropdown"
               onFocus={() => {
                 if (!suppressFocusOpenRef.current) setPlatformOpen(true);
               }}
-              // Hover/focus can precede a pointer click; a click should never
-              // undo the menu the pointer is actively trying to enter. Native
-              // keyboard activation reports detail 0 and keeps toggle semantics.
-              onClick={(event) => {
-                if (event.detail === 0) setPlatformOpen((open) => !open);
-                else setPlatformOpen(true);
-              }}
+              onClick={() => setPlatformOpen(false)}
             >
               Services <Chevron open={platformOpen} />
-            </button>
+            </Link>
             <div
               id="asb-platform-dropdown"
               className="asb-platform-dropdown"
