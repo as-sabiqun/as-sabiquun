@@ -29,7 +29,7 @@ An As-Sabiquun service site rendered with the approved August Health composition
 
 - Desktop content width: 1160px.
 - Floating nav: centered with a desktop max-width of 1180px and a 66px height; at a 1440px viewport it sits at x130/y16, translucent and blurred.
-- Services menu: same centered rail as the floating nav, white 32px-radius shell, three equal columns, three rows, and a pale-lavender utility link spanning the final two cells.
+- Services menu: same centered rail as the floating nav, white 32px-radius shell, three equal columns, and two balanced rows containing only the six service categories; no filler tile or lower statement panel.
 - Feature cards: two columns, three rows, 30px radius, interface art in lower half.
 - Values route frame: 832×588px, 48px radius, 2px low-contrast outline; the enclosing values section remains normal-flow so all three rows can be reached.
 - Case video: 960×748px with a separately rounded 538px stage and 210px white quote panel.

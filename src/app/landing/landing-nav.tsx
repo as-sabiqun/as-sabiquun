@@ -169,24 +169,6 @@ export function LandingNav() {
                     </div>
                   );
                 })}
-                <Link
-                  href="/#amanah"
-                  className="asb-platform-dropdown-item asb-platform-dropdown-item-giving"
-                  onClick={() => setPlatformOpen(false)}
-                >
-                  <PlatformIcon tone="green" />
-                  <span className="asb-platform-dropdown-copy">
-                    <span className="asb-platform-dropdown-title">Giving Updates</span>
-                    <span className="asb-platform-dropdown-description">Follow each act of giving through reviewed field evidence and progress notes.</span>
-                  </span>
-                </Link>
-                <Link
-                  href="/services"
-                  className="asb-platform-dropdown-all"
-                  onClick={() => setPlatformOpen(false)}
-                >
-                  <span>View all services</span>
-                </Link>
               </div>
             </div>
           </div>
@@ -207,8 +189,7 @@ export function LandingNav() {
               ) : (
                 <span key={item.title} className="asb-mobile-menu-pending">{item.title} <small>Coming soon</small></span>
               ))}
-              <Link href="/#amanah" onClick={closeMobileMenu}>Giving Updates</Link>
-              <Link href="/services" className="asb-mobile-menu-all" onClick={closeMobileMenu}>View all services</Link>
+              <Link href="/services" className="asb-mobile-menu-all" onClick={closeMobileMenu}>All services</Link>
               <Link href="/about" onClick={closeMobileMenu}>About</Link>
               <Link href="/#how" onClick={closeMobileMenu}>How it works</Link>
               <Link href="/contact" onClick={closeMobileMenu}>Contact</Link>
