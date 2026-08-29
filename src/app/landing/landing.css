@@ -6010,3 +6010,11 @@
     transition: none;
   }
 }
+
+/* Keep the carousel controls on the section's single dot field. The previous
+   second dot layer overlapped it and produced a dense rectangular moire. */
+@media (min-width: 861px) {
+  .asb-landing .asb-story-controls::before {
+    display: none;
+  }
+}
