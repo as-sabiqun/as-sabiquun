@@ -25,19 +25,19 @@
 .asb-services-intro {
   display: grid;
   width: min(1160px, calc(100% - 48px));
-  min-height: 470px;
+  min-height: 385px;
   grid-template-columns: minmax(0, 1.25fr) minmax(300px, .75fr);
   align-items: end;
   gap: 90px;
   margin-inline: auto;
-  padding: 152px 0 72px;
+  padding: 132px 0 52px;
 }
 
 .asb-services-intro h1 {
   max-width: 720px;
   margin: 0;
-  font-size: clamp(4.8rem, 8.7vw, 7.8rem);
-  line-height: .82;
+  font-size: clamp(4.3rem, 7vw, 6rem);
+  line-height: .88;
 }
 
 .asb-services-intro > div {
@@ -85,14 +85,14 @@
 .asb-service-preview-copy a:focus-visible svg { transform: translateX(7px); }
 
 .asb-services-chooser {
-  padding: 0 0 112px;
+  padding: 0 0 96px;
   scroll-margin-top: 98px;
 }
 
 .asb-service-directory {
   display: grid;
   width: min(1160px, calc(100% - 48px));
-  min-height: 650px;
+  min-height: 760px;
   grid-template-columns: minmax(360px, .78fr) minmax(0, 1.22fr);
   overflow: hidden;
   margin-inline: auto;
@@ -100,6 +100,8 @@
   background: #fff;
   box-shadow: 0 20px 70px rgba(8, 3, 49, .08);
 }
+
+.asb-service-directory-mobile { display: none; }
 
 .asb-service-directory-list {
   display: grid;
@@ -172,34 +174,46 @@
   animation: asb-service-preview-in 430ms cubic-bezier(.22, 1, .36, 1) both;
 }
 
-.asb-service-preview-media { position: relative; min-height: 385px; overflow: hidden; background: #e9e6df; }
+.asb-service-preview-media { position: relative; min-height: 350px; overflow: hidden; background: #e9e6df; }
 .asb-service-preview-media::after { position: absolute; inset: 0; background: linear-gradient(180deg, transparent 52%, rgba(8, 3, 49, .2)); content: ""; }
 .asb-service-preview-media img { width: 100%; height: 100%; object-fit: cover; }
 
 .asb-service-preview-copy {
   display: grid;
   grid-template-columns: minmax(0, 1fr) minmax(210px, .65fr);
-  gap: 34px 48px;
-  padding: 34px 38px 37px;
+  gap: 28px 48px;
+  padding: 32px 38px 35px;
   background: #fff3f1;
 }
 .asb-service-preview.is-blue .asb-service-preview-copy { background: #eef4ff; }
 .asb-service-preview.is-green .asb-service-preview-copy { background: #eef6ed; }
 .asb-service-preview.is-pink .asb-service-preview-copy { background: #fff0fc; }
 
-.asb-service-preview-copy h2 { grid-column: 1 / -1; margin: 0 0 -19px; font-size: clamp(2.6rem, 4vw, 4rem); line-height: .94; }
+.asb-service-preview-copy h2 { grid-column: 1 / -1; margin: 0 0 -14px; font-size: clamp(2.6rem, 4vw, 4rem); line-height: .94; }
 .asb-service-preview-copy > p { margin: 0; color: rgba(8, 3, 49, .75); font-size: 15px; line-height: 1.5; }
 .asb-service-preview-copy > span { color: rgba(8, 3, 49, .62); font-size: 13px; line-height: 1.55; }
-.asb-service-preview-copy > div {
+.asb-service-proof {
+  display: grid;
+  grid-column: 1 / -1;
+  grid-template-columns: repeat(3, 1fr);
+  margin: 2px 0 0;
+  border-top: 1px solid rgba(8, 3, 49, .14);
+  border-bottom: 1px solid rgba(8, 3, 49, .14);
+}
+.asb-service-proof > div { min-width: 0; padding: 19px 20px 21px 0; }
+.asb-service-proof > div + div { border-left: 1px solid rgba(8, 3, 49, .14); padding-left: 20px; }
+.asb-service-proof dt { margin-bottom: 8px; color: rgba(8, 3, 49, .52); font-size: 9px; font-weight: 780; letter-spacing: .09em; text-transform: uppercase; }
+.asb-service-proof dd { margin: 0; font-size: 12px; line-height: 1.45; }
+
+.asb-service-preview-action {
   display: flex;
   grid-column: 1 / -1;
   align-items: flex-end;
   justify-content: space-between;
   gap: 28px;
-  border-top: 1px solid rgba(8, 3, 49, .14);
-  padding-top: 22px;
+  padding-top: 2px;
 }
-.asb-service-preview-copy > div > p { display: grid; gap: 3px; margin: 0; }
+.asb-service-preview-action > p { display: grid; gap: 3px; margin: 0; }
 .asb-service-preview-copy strong { font-size: 20px; font-weight: 670; }
 .asb-service-preview-copy small { color: rgba(8, 3, 49, .5); font-size: 9px; font-weight: 780; letter-spacing: .09em; text-transform: uppercase; }
 
@@ -207,7 +221,7 @@
   width: min(1160px, calc(100% - 48px));
   margin-inline: auto;
   border-top: 1px solid rgba(8, 3, 49, .14);
-  padding: 104px 0 116px;
+  padding: 88px 0 104px;
 }
 
 .asb-services-method-heading {
@@ -223,7 +237,7 @@
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   gap: 0;
-  margin: 72px 0 0;
+  margin: 58px 0 0;
   border-top: 1px solid rgba(8, 3, 49, .14);
   border-bottom: 1px solid rgba(8, 3, 49, .14);
   padding: 0;
@@ -238,11 +252,11 @@
 .asb-services-help {
   display: flex;
   width: min(1160px, calc(100% - 48px));
-  min-height: 280px;
+  min-height: 250px;
   align-items: center;
   justify-content: space-between;
   gap: 80px;
-  margin: 0 auto 112px;
+  margin: 0 auto 96px;
   border-radius: 16px;
   padding: 52px 58px;
   background: #328a3b;
@@ -262,25 +276,56 @@
 }
 
 @media (max-width: 980px) {
-  .asb-services-intro { min-height: 420px; gap: 45px; }
+  .asb-services-intro { min-height: 360px; gap: 45px; }
   .asb-service-directory { grid-template-columns: minmax(300px, .8fr) minmax(0, 1.2fr); }
   .asb-service-directory-list button { padding-inline: 20px; }
   .asb-service-directory-price { display: none; }
 }
 
 @media (max-width: 760px) {
-  .asb-services-intro { min-height: auto; grid-template-columns: 1fr; gap: 30px; padding: 130px 0 62px; }
-  .asb-services-intro h1 { font-size: clamp(4.3rem, 21vw, 6.2rem); }
+  .asb-services-intro { min-height: auto; grid-template-columns: 1fr; gap: 22px; padding: 116px 0 42px; }
+  .asb-services-intro h1 { max-width: 340px; font-size: clamp(3.9rem, 18vw, 5.1rem); line-height: .9; }
   .asb-services-intro > div { gap: 18px; }
-  .asb-service-directory { grid-template-columns: 1fr; }
-  .asb-service-directory-list { grid-template-rows: none; border-right: 0; }
-  .asb-service-directory-list button { min-height: 83px; grid-template-columns: 24px minmax(0, 1fr) auto 22px; padding: 19px 20px; }
-  .asb-service-directory-price { display: block; }
-  .asb-service-directory-name { font-size: 1.45rem; }
-  .asb-service-preview-media { min-height: 330px; }
+  .asb-service-directory-desktop { display: none; }
+  .asb-service-directory-mobile {
+    display: grid;
+    width: min(1160px, calc(100% - 48px));
+    overflow: hidden;
+    margin-inline: auto;
+    border-radius: 16px;
+    background: #fff;
+    box-shadow: 0 20px 70px rgba(8, 3, 49, .08);
+  }
+  .asb-service-directory-mobile > div { border-bottom: 1px solid rgba(8, 3, 49, .11); }
+  .asb-service-directory-mobile > div:last-child { border-bottom: 0; }
+  .asb-service-directory-mobile button {
+    display: grid;
+    width: 100%;
+    min-height: 88px;
+    grid-template-columns: 24px minmax(0, 1fr) auto 22px;
+    align-items: center;
+    gap: 12px;
+    border: 0;
+    padding: 18px 20px;
+    background: #fff;
+    color: var(--services-ink);
+    cursor: pointer;
+    text-align: left;
+  }
+  .asb-service-directory-mobile > .is-active > button { background: #1b1463; color: #fff; }
+  .asb-service-directory-mobile > .is-active > button .asb-service-directory-mark { color: #f5a0ef; }
+  .asb-service-directory-mobile > .is-active > button .asb-service-directory-price { color: rgba(255, 255, 255, .7); }
+  .asb-service-directory-mobile > .is-active > button > svg { transform: rotate(90deg); }
+  .asb-service-directory-price { display: block; font-size: 10px; }
+  .asb-service-directory-name { white-space: normal; font-size: 1.4rem; line-height: 1.08; }
+  .asb-service-preview { animation-duration: 360ms; }
+  .asb-service-preview-media { min-height: 270px; }
   .asb-service-preview-copy { grid-template-columns: 1fr; gap: 18px; padding: 29px 24px 31px; }
   .asb-service-preview-copy h2 { grid-column: auto; margin-bottom: 0; }
-  .asb-service-preview-copy > div { grid-column: auto; margin-top: 7px; }
+  .asb-service-proof { grid-column: auto; grid-template-columns: 1fr; }
+  .asb-service-proof > div { padding: 15px 0 16px; }
+  .asb-service-proof > div + div { border-top: 1px solid rgba(8, 3, 49, .14); border-left: 0; padding-left: 0; }
+  .asb-service-preview-action { grid-column: auto; margin-top: 4px; }
   .asb-services-method { padding: 86px 0 92px; }
   .asb-services-method-heading { grid-template-columns: 1fr; gap: 22px; }
   .asb-services-method ol { grid-template-columns: 1fr; margin-top: 48px; }
@@ -294,12 +339,13 @@
 
 @media (max-width: 480px) {
   .asb-services-intro,
-  .asb-service-directory,
+  .asb-service-directory-mobile,
   .asb-services-method,
   .asb-services-help { width: calc(100% - 30px); }
-  .asb-service-directory-price { display: none; }
-  .asb-service-preview-media { min-height: 270px; }
-  .asb-service-preview-copy > div { align-items: flex-start; flex-direction: column; }
+  .asb-service-directory-mobile button { grid-template-columns: 22px minmax(0, 1fr) auto 20px; gap: 9px; padding-inline: 16px; }
+  .asb-service-directory-price { max-width: 64px; text-align: right; white-space: normal; }
+  .asb-service-preview-media { min-height: 235px; }
+  .asb-service-preview-action { align-items: flex-start; flex-direction: column; }
   .asb-services-help { margin-bottom: 78px; }
 }
 

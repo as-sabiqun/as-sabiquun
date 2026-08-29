@@ -55,7 +55,11 @@ export function catalogServicesFrom(offerings: { category_slug: CatalogService["
       .map((offering) => offering.unit_amount ?? offering.min_amount).filter((amount): amount is number => amount !== null);
     if (!amounts.length) return [];
     const price = `From S$${(Math.min(...amounts) / 100).toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 2 })}`;
-    return [{ ...service, price, priceLabel: service.slug === "korban" ? "starting price" : "minimum" }];
+    return [{
+      ...service,
+      price,
+      priceLabel: service.slug === "korban" ? "per share · starting price" : "minimum contribution",
+    }];
   });
 }
 

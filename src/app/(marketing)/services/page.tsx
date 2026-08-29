@@ -22,7 +22,7 @@ export default async function ServicesPage() {
       <section className="asb-services-intro" aria-labelledby="services-page-title">
         <h1 id="services-page-title">Choose a service.</h1>
         <div>
-          <p>Four clear ways to begin, each with its own request flow and a reviewed completion record.</p>
+          <p>Compare the starting price, what the partner submits, and what you receive after our review.</p>
           <a href="#service-directory">Browse the directory <Arrow /></a>
         </div>
       </section>
@@ -39,15 +39,15 @@ export default async function ServicesPage() {
         )}
       </section>
 
-      <section className="asb-services-method" aria-labelledby="services-method-title">
+      <section className="asb-services-method" id="record-process" aria-labelledby="services-method-title">
         <div className="asb-services-method-heading">
-          <h2 id="services-method-title">What happens after you choose.</h2>
-          <p>Different services, one careful operating process.</p>
+          <h2 id="services-method-title">From payment to reviewed record.</h2>
+          <p>The service changes. The checks do not.</p>
         </div>
         <ol>
-          <li><span>Choose</span><p>Select the service and available package that fit your intention.</p></li>
-          <li><span>Coordinate</span><p>An approved fulfilment partner carries out the work and submits evidence.</p></li>
-          <li><span>Receive</span><p>We review what is provided and return the available completion record to you.</p></li>
+          <li><span>Partner starts</span><p>Your order and details are sent to an approved fulfilment partner.</p></li>
+          <li><span>We check</span><p>Our team reviews the location, photos, videos, and completion summary.</p></li>
+          <li><span>You receive</span><p>Your report is sent by email and Telegram and stays available on your project page.</p></li>
         </ol>
       </section>
 
