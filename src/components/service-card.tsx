@@ -109,21 +109,20 @@ export function CatalogCard({ service }: { service: CatalogService }) {
       aria-label={`View ${service.title}, ${service.price}`}
     >
       <div className="asb-service-card-copy">
-        <span className="asb-service-card-mark" aria-hidden="true">
-          <ServiceIcon type={service.slug} />
-        </span>
-        <h3>{service.title}</h3>
-        <p>{service.description}</p>
-        <div className="asb-service-card-meta">
-          <span className="asb-service-card-price">
-            <strong>{service.price}</strong>
-            <small>{service.priceLabel}</small>
+        <div className="asb-service-card-top" aria-hidden="true">
+          <span className="asb-service-card-mark">
+            <ServiceIcon type={service.slug} />
           </span>
           <span className="asb-service-card-action">
-            View {service.title}
-            <svg viewBox="0 0 32 24" aria-hidden="true"><path d="M2 12h26M20 4l8 8-8 8" /></svg>
+            <svg viewBox="0 0 32 24"><path d="M2 12h26M20 4l8 8-8 8" /></svg>
           </span>
         </div>
+        <h3>{service.title}</h3>
+        <p>{service.description}</p>
+        <span className="asb-service-card-price">
+          <strong>{service.price}</strong>
+          <small>{service.priceLabel}</small>
+        </span>
       </div>
       <div className="asb-service-card-media">
         <Image

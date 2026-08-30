@@ -27,6 +27,45 @@ function RecordMark() {
   );
 }
 
+function CompletionRecordPreview() {
+  return (
+    <article className="asb-completion-record" aria-label="Preview of an Amanah completion record">
+      <div className="asb-completion-record-topline">
+        <span className="asb-completion-record-mark"><RecordMark /></span>
+        <span>
+          <small>Amanah</small>
+          <strong>Completion record</strong>
+        </span>
+        <i><b aria-hidden="true">✓</b> Reviewed</i>
+      </div>
+
+      <div className="asb-completion-record-heading">
+        <p>Record preview</p>
+        <h3>Your fulfilled service,<br />kept in one place.</h3>
+      </div>
+
+      <dl className="asb-completion-record-facts">
+        <div><dt>Service</dt><dd>Your chosen service</dd></div>
+        <div><dt>Details</dt><dd>Names or project location</dd></div>
+        <div><dt>Review</dt><dd><span aria-hidden="true" /> Evidence checked</dd></div>
+      </dl>
+
+      <div className="asb-completion-record-media">
+        <p><span>Reviewed media</span><small>Photos or video</small></p>
+        <div>
+          <figure><Image src="/landing-water-point.png" alt="" fill sizes="170px" /></figure>
+          <figure><Image src="/landing-quran-table.png" alt="" fill sizes="170px" /></figure>
+        </div>
+      </div>
+
+      <div className="asb-completion-record-retained">
+        <span aria-hidden="true"><RecordMark /></span>
+        <p><strong>Retained with your project</strong><small>Return to the completion record from your project page.</small></p>
+      </div>
+    </article>
+  );
+}
+
 export default async function ServicesPage() {
   const services = catalogServicesFrom(await getActiveOfferings());
 
@@ -45,77 +84,27 @@ export default async function ServicesPage() {
           </a>
         </div>
 
-        <div className="asb-services-dome" aria-hidden="true" />
-
-        <div className="asb-amanah-preview" aria-label="Illustrative Amanah completion record preview">
-          <aside className="asb-record-sidebar" aria-hidden="true">
-            <div className="asb-record-wordmark"><span>AS</span><b>Amanah</b></div>
-            <div className="asb-record-nav">
-              <span className="is-active"><i />Overview</span>
-              <span><i />Evidence</span>
-              <span><i />Timeline</span>
-              <span><i />Documents</span>
-            </div>
-            <div className="asb-record-partner">
-              <span>Fulfilment</span>
-              <strong>Approved partner</strong>
-            </div>
-          </aside>
-
-          <div className="asb-record-main">
-            <header className="asb-record-header">
-              <div>
-                <span>Amanah completion record</span>
-                <strong>Korban service</strong>
-              </div>
-              <span className="asb-record-id">ASB-0842</span>
-            </header>
-
-            <div className="asb-record-status">
-              <div className="asb-record-check">✓</div>
-              <div>
-                <span>Completed &amp; reviewed</span>
-                <strong>Your service record is ready</strong>
-              </div>
-              <small>Released after evidence review</small>
-            </div>
-
-            <div className="asb-record-content">
-              <div className="asb-record-details">
-                <div className="asb-record-section-title">
-                  <RecordMark />
-                  <div><span>Service summary</span><strong>One complete trail</strong></div>
-                </div>
-                <dl>
-                  <div><dt>Service</dt><dd>Korban</dd></div>
-                  <div><dt>Status</dt><dd><i /> Reviewed</dd></div>
-                  <div><dt>Completion</dt><dd>28 August 2026</dd></div>
-                  <div><dt>Record access</dt><dd>Available anytime</dd></div>
-                </dl>
-              </div>
-
-              <figure className="asb-record-evidence">
-                <div className="asb-record-photo">
-                  <Image
-                    src="/services-korban-care.png"
-                    alt="Korban care team preparing an animal for service"
-                    fill
-                    priority
-                    sizes="(max-width: 760px) 84vw, 450px"
-                  />
-                  <span>Photo evidence</span>
-                </div>
-                <figcaption>
-                  <span><i /> 3 files reviewed</span>
-                  <span>Photo · Video · Location</span>
-                </figcaption>
-              </figure>
-            </div>
-
-            <footer className="asb-record-footer">
-              <span>Illustrative record preview</span>
-              <span>Clear evidence. Kept together.</span>
-            </footer>
+        <div className="asb-services-hero-field" aria-hidden="true">
+          <figure className="asb-services-hero-crop is-korban">
+            <Image src="/services-korban-care.png" alt="" fill priority sizes="320px" />
+            <figcaption>Korban</figcaption>
+          </figure>
+          <figure className="asb-services-hero-crop is-water">
+            <Image src="/landing-water-point.png" alt="" fill priority sizes="330px" />
+            <figcaption>Water pump</figcaption>
+          </figure>
+          <figure className="asb-services-hero-crop is-quran">
+            <Image src="/landing-quran-table.png" alt="" fill priority sizes="350px" />
+            <figcaption>Wakaf Quran</figcaption>
+          </figure>
+          <figure className="asb-services-hero-crop is-orphans">
+            <Image src="/landing-portrait-community.png" alt="" fill priority sizes="340px" />
+            <figcaption>Food for orphans</figcaption>
+          </figure>
+          <div className="asb-services-hero-record">
+            <span className="asb-services-hero-record-mark"><RecordMark /></span>
+            <span><small>Amanah record</small><strong>Evidence reviewed</strong></span>
+            <i>✓</i>
           </div>
         </div>
       </section>
@@ -156,22 +145,19 @@ export default async function ServicesPage() {
 
         <ol className="asb-process-grid">
           <li className="asb-process-card is-arrange">
-            <span className="asb-process-index">Step 01</span>
+            <span className="asb-process-index"><b>01</b> Arrange</span>
             <h3>Arrange</h3>
             <p>Choose a service and provide the details needed for your request.</p>
-            <span className="asb-process-arrow" aria-hidden="true"><Arrow /></span>
           </li>
           <li className="asb-process-card is-fulfil">
-            <span className="asb-process-index">Step 02</span>
+            <span className="asb-process-index"><b>02</b> Fulfil</span>
             <h3>Fulfil</h3>
             <p>An approved partner carries out the work and submits the required evidence.</p>
-            <span className="asb-process-arrow" aria-hidden="true"><Arrow /></span>
           </li>
           <li className="asb-process-card is-review">
-            <span className="asb-process-index">Step 03</span>
-            <h3>Review<br />and receive</h3>
+            <span className="asb-process-index"><b>03</b> Review</span>
+            <h3>Review and receive</h3>
             <p>Evidence is checked and the completion record is added to your project.</p>
-            <span className="asb-process-arrow" aria-hidden="true"><Arrow /></span>
           </li>
         </ol>
       </section>
@@ -181,29 +167,28 @@ export default async function ServicesPage() {
           <div className="asb-evidence-heading">
             <p className="asb-services-section-label">Reviewed evidence</p>
             <h2 id="services-evidence-title">A promise should come with a record.</h2>
-          </div>
-
-          <div className="asb-evidence-inset">
-            <p className="asb-evidence-inset-label">What your record can include</p>
-            <ul>
+            <p className="asb-evidence-summary">See the evidence that was reviewed and keep the completed work with the project it belongs to.</p>
+            <ul className="asb-evidence-deliverables">
               <li>
                 <span className="asb-evidence-icon" aria-hidden="true">01</span>
-                <div><strong>Reviewed photos or video</strong><p>Completion media is shown after the submitted work is approved.</p></div>
+                <div><strong>Reviewed photos or video</strong><p>Completion media appears after the submitted work is approved.</p></div>
               </li>
               <li>
                 <span className="asb-evidence-icon" aria-hidden="true">02</span>
-                <div><strong>Service-specific details</strong><p>Names or project location details are retained where they are relevant to the service.</p></div>
+                <div><strong>Names or location details</strong><p>The record keeps the details relevant to your chosen service.</p></div>
               </li>
               <li>
                 <span className="asb-evidence-icon" aria-hidden="true">03</span>
-                <div><strong>A retained completion record</strong><p>Your reviewed record remains available on the project page.</p></div>
+                <div><strong>A retained completion record</strong><p>The reviewed record remains available on your project page.</p></div>
               </li>
             </ul>
           </div>
+
+          <CompletionRecordPreview />
         </div>
       </section>
 
-      <section className="asb-services-faq" aria-labelledby="services-faq-title">
+      <section id="services-faq" className="asb-services-faq" aria-labelledby="services-faq-title">
         <div className="asb-services-faq-heading">
           <p className="asb-services-section-label">Questions</p>
           <h2 id="services-faq-title">Before you choose.</h2>
@@ -233,19 +218,13 @@ export default async function ServicesPage() {
         </div>
       </section>
 
-      <section className="asb-services-closing" aria-labelledby="services-closing-title">
+      <section id="services-closing" className="asb-services-closing" aria-labelledby="services-closing-title">
         <div className="asb-services-closing-inner">
           <p className="asb-services-closing-label">Your next step</p>
           <h2 id="services-closing-title">Ready to begin<br />with clarity?</h2>
           <a className="asb-services-closing-action" href="#service-directory">
             Choose a service <Arrow />
           </a>
-
-          <div className="asb-services-closing-record" aria-label="Every service follows the same accountable record process">
-            <span><i aria-hidden="true">01</i> Approved fulfilment</span>
-            <span><i aria-hidden="true">02</i> Reviewed evidence</span>
-            <span><i aria-hidden="true">03</i> Retained record</span>
-          </div>
         </div>
       </section>
     </div>
