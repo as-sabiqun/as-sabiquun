@@ -84,29 +84,6 @@ export default async function ServicesPage() {
           </a>
         </div>
 
-        <div className="asb-services-hero-field" aria-hidden="true">
-          <figure className="asb-services-hero-crop is-korban">
-            <Image src="/services-korban-care.png" alt="" fill priority sizes="320px" />
-            <figcaption>Korban</figcaption>
-          </figure>
-          <figure className="asb-services-hero-crop is-water">
-            <Image src="/landing-water-point.png" alt="" fill priority sizes="330px" />
-            <figcaption>Water pump</figcaption>
-          </figure>
-          <figure className="asb-services-hero-crop is-quran">
-            <Image src="/landing-quran-table.png" alt="" fill priority sizes="350px" />
-            <figcaption>Wakaf Quran</figcaption>
-          </figure>
-          <figure className="asb-services-hero-crop is-orphans">
-            <Image src="/landing-portrait-community.png" alt="" fill priority sizes="340px" />
-            <figcaption>Food for orphans</figcaption>
-          </figure>
-          <div className="asb-services-hero-record">
-            <span className="asb-services-hero-record-mark"><RecordMark /></span>
-            <span><small>Amanah record</small><strong>Evidence reviewed</strong></span>
-            <i>✓</i>
-          </div>
-        </div>
       </section>
 
       <section id="service-directory" className="asb-services-catalogue" aria-labelledby="services-catalogue-title">

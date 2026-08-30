@@ -104,124 +104,6 @@
 .asb-services-primary:focus-visible { outline: 3px solid rgba(72, 101, 255, .3); outline-offset: 3px; }
 .asb-services-primary svg { width: 27px; height: 20px; stroke-width: 1.35; }
 
-.asb-services-hero-field {
-  position: absolute;
-  z-index: 1;
-  inset: 0;
-  pointer-events: none;
-  animation: asb-services-field-breathe 18s ease-in-out infinite alternate;
-}
-
-@keyframes asb-services-field-breathe {
-  from { transform: rotate(-.18deg) scale(1.002); }
-  to { transform: rotate(.18deg) scale(1.008); }
-}
-
-.asb-services-hero-crop {
-  position: absolute;
-  overflow: hidden;
-  margin: 0;
-  background: var(--crop-color);
-}
-
-.asb-services-hero-crop::after {
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(180deg, transparent 58%, rgba(8, 3, 49, .28));
-  content: "";
-}
-
-.asb-services-hero-crop img {
-  object-fit: cover;
-  transition: transform 800ms cubic-bezier(.2, .7, .2, 1);
-}
-
-.asb-services-hero-crop figcaption {
-  position: absolute;
-  z-index: 1;
-  right: 24px;
-  bottom: 22px;
-  border: 1px solid rgba(255, 255, 255, .7);
-  border-radius: 999px;
-  padding: 7px 11px;
-  background: rgba(255, 255, 255, .9);
-  color: var(--services-ink);
-  font-family: var(--font-sans), Arial, sans-serif;
-  font-size: 11px;
-  font-weight: 650;
-  letter-spacing: .02em;
-}
-
-.asb-services-hero-crop.is-korban {
-  --crop-color: #f5a0ef;
-  top: -74px;
-  left: -54px;
-  width: 336px;
-  height: 406px;
-  border-radius: 45% 55% 50% 50% / 43% 46% 54% 57%;
-  transform: rotate(-3deg);
-}
-.asb-services-hero-crop.is-korban img { object-position: 54% 50%; transform: scale(1.06) rotate(3deg); }
-
-.asb-services-hero-crop.is-water {
-  --crop-color: #328a3b;
-  top: -44px;
-  right: -62px;
-  width: 360px;
-  height: 374px;
-  border-radius: 0 0 48% 54% / 0 0 44% 54%;
-}
-.asb-services-hero-crop.is-water img { object-position: 50% 50%; }
-
-.asb-services-hero-crop.is-quran {
-  --crop-color: #4865ff;
-  bottom: -118px;
-  left: -92px;
-  width: 428px;
-  height: 392px;
-  border-radius: 52% 48% 46% 54% / 48% 50% 50% 52%;
-  transform: rotate(4deg);
-}
-.asb-services-hero-crop.is-quran img { object-position: 50% 42%; transform: scale(1.08) rotate(-4deg); }
-
-.asb-services-hero-crop.is-orphans {
-  --crop-color: #ff6b40;
-  right: -86px;
-  bottom: -62px;
-  width: 372px;
-  height: 410px;
-  border: 30px solid var(--crop-color);
-  border-radius: 54% 46% 0 48% / 48% 52% 0 46%;
-}
-.asb-services-hero-crop.is-orphans img { object-position: 50% 35%; }
-
-.asb-services-hero-record {
-  position: absolute;
-  right: 218px;
-  bottom: 62px;
-  display: grid;
-  width: 236px;
-  min-height: 92px;
-  grid-template-columns: 42px minmax(0, 1fr) 28px;
-  align-items: center;
-  gap: 12px;
-  border: 1px solid rgba(8, 3, 49, .1);
-  border-radius: 14px;
-  padding: 15px;
-  background: rgba(255, 255, 255, .96);
-  box-shadow: 0 18px 48px rgba(8, 3, 49, .12);
-  color: var(--services-ink);
-  font-family: var(--font-sans), Arial, sans-serif;
-  transform: rotate(-4deg);
-}
-
-.asb-services-hero-record-mark { display: grid; width: 42px; height: 42px; place-items: center; border-radius: 50%; background: var(--services-cream); color: #ff6b40; }
-.asb-services-hero-record-mark svg { width: 23px; height: 23px; stroke-width: 1.4; }
-.asb-services-hero-record > span:nth-child(2) { display: grid; gap: 5px; }
-.asb-services-hero-record small { color: rgba(8, 3, 49, .5); font-size: 8px; font-weight: 720; letter-spacing: .08em; text-transform: uppercase; }
-.asb-services-hero-record strong { font-size: 11px; line-height: 1.2; }
-.asb-services-hero-record > i { display: grid; width: 28px; height: 28px; place-items: center; border-radius: 50%; background: #328a3b; color: #fff; font-size: 12px; font-style: normal; }
-
 .asb-services-catalogue {
   width: 100%;
   scroll-margin-top: 96px;
@@ -750,11 +632,6 @@
   .asb-services-hero h1 { max-width: 590px; margin: 20px auto 0; font-size: 52px; line-height: 54px; }
   .asb-services-summary { max-width: 500px; margin: 18px auto 0 !important; font-size: 16px; line-height: 25px; }
   .asb-services-primary { min-height: 48px; margin-top: 23px; padding-inline: 19px; font-size: 14px; }
-  .asb-services-hero-crop.is-korban { top: -48px; left: -72px; width: 278px; height: 330px; }
-  .asb-services-hero-crop.is-water { top: -32px; right: -68px; width: 286px; height: 310px; }
-  .asb-services-hero-crop.is-quran { bottom: -100px; left: -112px; width: 354px; height: 324px; }
-  .asb-services-hero-crop.is-orphans { right: -100px; bottom: -58px; width: 312px; height: 340px; border-width: 24px; }
-  .asb-services-hero-record { right: 154px; bottom: 42px; transform: rotate(-4deg) scale(.9); transform-origin: right bottom; }
   .asb-services-catalogue { padding: 88px 16px 96px; }
   .asb-services-catalogue-intro { margin-bottom: 44px; }
   .asb-services-section-label { min-height: 31px; font-size: 12px; }
@@ -810,28 +687,10 @@
 }
 
 @media (max-width: 430px) {
-  .asb-services-hero { height: 790px; min-height: 790px; padding: 116px 16px 106px; }
-  .asb-services-hero::after {
-    position: absolute;
-    z-index: 0;
-    right: -16%;
-    bottom: -38px;
-    left: -16%;
-    height: 76px;
-    border-radius: 50% 50% 0 0 / 100% 100% 0 0;
-    background: var(--services-cream);
-    content: "";
-  }
+  .asb-services-hero { height: auto; min-height: 720px; padding: 116px 16px 84px; }
   .asb-services-hero-copy { max-width: 330px; }
   .asb-services-summary { max-width: 286px; font-size: 14px; line-height: 21px; }
   .asb-services-hero h1 { max-width: 330px; margin-inline: auto; font-size: 40px; line-height: 41px; }
-  .asb-services-hero-crop figcaption { display: none; }
-  .asb-services-hero-crop.is-korban { top: 72px; left: -18px; width: 132px; height: 148px; border-radius: 0 0 52% 0 / 0 0 48% 0; transform: none; }
-  .asb-services-hero-crop.is-korban img { transform: scale(1.04); }
-  .asb-services-hero-crop.is-water { top: 72px; right: -18px; width: 132px; height: 148px; border-radius: 0 0 0 52% / 0 0 0 48%; }
-  .asb-services-hero-crop.is-quran { display: none; }
-  .asb-services-hero-crop.is-orphans { right: -18px; bottom: 16px; width: 168px; height: 178px; border-width: 13px; border-radius: 54% 0 0 48% / 50% 0 0 46%; }
-  .asb-services-hero-record { display: none; }
   .asb-services-catalogue { padding-inline: 14px; padding-top: 174px; }
   .asb-services-catalogue-intro { margin-bottom: 38px; }
   .asb-services-grid .asb-service-card { height: 530px; grid-template-rows: 270px minmax(0, 1fr); }
@@ -879,9 +738,7 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .asb-services-hero-field { animation: none; transform: none; }
   .asb-services-primary,
-  .asb-services-hero-crop img,
   .asb-service-card-action svg,
   .asb-service-card-media img,
   .asb-services-faq-list summary > span::after,
