@@ -6382,21 +6382,43 @@
   }
 
   .asb-landing .asb-nav-actions {
+    position: absolute;
+    z-index: 3;
+    top: 7px;
+    right: auto;
+    left: min(322px, calc(100vw - 68px));
     margin-left: auto;
   }
 
   .asb-landing .asb-mobile-menu {
-    display: block;
+    display: block !important;
+    width: 46px;
+    height: 46px;
+    flex: 0 0 46px;
+    overflow: visible;
   }
 
   .asb-landing .asb-nav-menu {
-    display: flex;
+    display: flex !important;
+    visibility: visible;
+    opacity: 1;
     list-style: none;
   }
 
   .asb-landing .asb-mobile-menu-panel {
     max-height: calc(100vh - 92px);
     overflow-y: auto;
+  }
+}
+
+@media (max-width: 430px) {
+  .asb-landing .asb-brand > span:last-child {
+    display: none;
+  }
+
+  .asb-landing .asb-nav {
+    overflow: visible;
+    padding-right: 61px;
   }
 }
 

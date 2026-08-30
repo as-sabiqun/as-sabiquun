@@ -1,3 +1,4 @@
+import Image from "next/image";
 import Link from "next/link";
 
 export interface CatalogService {
@@ -77,19 +78,64 @@ function ServiceIcon({ type }: { type: CatalogService["slug"] }) {
 }
 
 export function CatalogCard({ service }: { service: CatalogService }) {
+  const media: Record<CatalogService["slug"], { src: string; alt: string; evidence: string }> = {
+    korban: {
+      src: "/services-korban-care.png",
+      alt: "Korban workers caring for a cow at a rural farm",
+      evidence: "Reviewed photos, video, and completion record",
+    },
+    water: {
+      src: "/landing-water-point.png",
+      alt: "A completed community water point",
+      evidence: "Reviewed photos, video, and completed location",
+    },
+    quran: {
+      src: "/landing-quran-table.png",
+      alt: "Quran copies prepared for distribution",
+      evidence: "Distribution photos and completion record",
+    },
+    orphans: {
+      src: "/landing-portrait-community.png",
+      alt: "A smiling community member",
+      evidence: "Delivery photos and completion record",
+    },
+  };
+  const serviceMedia = media[service.slug];
+
   return (
-    <Link href={service.href} className="card catalog-card">
-      <div className="catalog-card-media">
-        <span className="catalog-card-badge status">Available</span>
-        <ServiceIcon type={service.slug} />
-      </div>
-      <div className="catalog-card-body">
-        <h3 className="display text-[1.3rem] leading-tight">{service.title}</h3>
-        <p className="mt-2 text-sm leading-6 text-[var(--muted)]">{service.description}</p>
-        <div className="catalog-card-price">
-          <strong>{service.price}</strong>
-          <small>{service.priceLabel}</small>
+    <Link
+      href={service.href}
+      className={`asb-service-card is-${service.slug}`}
+      aria-label={`View ${service.title}, ${service.price}`}
+    >
+      <div className="asb-service-card-copy">
+        <span className="asb-service-card-mark" aria-hidden="true">
+          <ServiceIcon type={service.slug} />
+        </span>
+        <h3>{service.title}</h3>
+        <p>{service.description}</p>
+        <div className="asb-service-card-meta">
+          <span className="asb-service-card-price">
+            <strong>{service.price}</strong>
+            <small>{service.priceLabel}</small>
+          </span>
+          <span className="asb-service-card-action">
+            View {service.title}
+            <svg viewBox="0 0 32 24" aria-hidden="true"><path d="M2 12h26M20 4l8 8-8 8" /></svg>
+          </span>
         </div>
+      </div>
+      <div className="asb-service-card-media">
+        <Image
+          src={serviceMedia.src}
+          alt={serviceMedia.alt}
+          fill
+          sizes="(max-width: 760px) calc(100vw - 32px), (max-width: 1200px) 50vw, 660px"
+        />
+        <span className="asb-service-card-evidence">
+          <i aria-hidden="true" />
+          {serviceMedia.evidence}
+        </span>
       </div>
     </Link>
   );
