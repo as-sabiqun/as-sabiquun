@@ -35,6 +35,7 @@ An As-Sabiquun service site rendered with the approved August Health composition
 - Case video: 960×748px with a separately rounded 538px stage and 210px white quote panel.
 - Story cards: 376×450px, ~32px gap, clipped neighbors.
 - Closing: a normal-flow 540px green editorial call-to-action band with one clear statement and two pill actions. Footer: a compact, normal-flow deep-green information grid with no sticky reveal or oversized decorative mark.
+- `/about` exception: use a 500px cream editorial closing with one blue call-to-action, directly adjoining the deep-green footer; this overrides the landing green closing treatment.
 
 ## Motion
 

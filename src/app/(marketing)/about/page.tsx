@@ -113,17 +113,18 @@ export default function AboutPage() {
               <h2 id="operating-story-title">Islamic services deserve a clear chain of responsibility, from intention through to completion.</h2>
               <div className={styles.projectImages}>
                 <figure className={styles.projectImage}>
-                  <Image src="/landing-water-point.png" width={132} height={132} sizes="132px" alt="Women collecting water at a community pump" />
+                  <Image src="/landing-hero-volunteers.png" width={132} height={132} sizes="132px" alt="" />
                 </figure>
                 <figure className={styles.projectImage}>
-                  <Image src="/services-korban-care.png" width={132} height={132} sizes="132px" alt="A Korban animal being cared for before fulfilment" />
+                  <Image src="/landing-hero-volunteers.png" width={132} height={132} sizes="132px" alt="" />
                 </figure>
               </div>
+              <p className={styles.projectImagesCaption}>One service handoff, seen from both sides.</p>
             </div>
             <div className={styles.storyNarrative}>
-              <p>Arranging Korban or Wakaf involves more than a payment. The details of each request must first be confirmed.</p>
-              <p>Those confirmed details are passed to an approved partner working from a clear brief.</p>
-              <p>As the service is fulfilled, the work and submitted evidence are reviewed before completion.</p>
+              <p>At As-Sabiquun, we confirm the details of each Korban or Wakaf request before fulfilment begins.</p>
+              <p>An approved partner works from that confirmed brief and submits the photos, video, location details, or other evidence required for the service.</p>
+              <p>As-Sabiquun reviews the partner-submitted evidence before the project is marked complete.</p>
               <p>Confirmed service details, reviewed evidence, each handoff, and the completion record remain connected on the customer project.</p>
               <p className={styles.storyAttribution}>— The As-Sabiquun operating model.</p>
               <Link className={styles.storyAction} href="/#how">See how it works <span aria-hidden="true">→</span></Link>
@@ -165,7 +166,7 @@ export default function AboutPage() {
                 <span className={styles.principleNumber}>{String(index + 1).padStart(2, "0")}</span>
                 <h3>{title}</h3>
                 <p>{copy}</p>
-                <span className={styles.principleMark} aria-hidden="true"><Arrow /></span>
+                <span className={styles.principleMotif} aria-hidden="true"><i /></span>
               </li>
             ))}
           </ol>
