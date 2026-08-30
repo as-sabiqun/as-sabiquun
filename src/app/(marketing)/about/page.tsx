@@ -65,6 +65,10 @@ export default function AboutPage() {
   return (
     <div className={styles.aboutPage}>
       <div className={styles.opening}>
+        <Link className={styles.announcement} href="/services">
+          <span>See how every service is followed through.</span>
+          <span aria-hidden="true">&#8599;</span>
+        </Link>
         <section className={styles.hero} aria-labelledby="about-hero-title">
           <div className={styles.heroAmbient} aria-hidden="true">
             <span className={styles.heroCircleOne} />
@@ -72,9 +76,10 @@ export default function AboutPage() {
             <span className={styles.heroCircleThree} />
             <span className={styles.heroCircleFour} />
             <span className={styles.heroCircleFive} />
+            <span className={styles.heroCircleSix} />
+            <span className={styles.heroCircleSeven} />
           </div>
           <div className={styles.heroCopy}>
-            <p className={styles.label}>About As-Sabiquun</p>
             <h1 id="about-hero-title">Good intentions deserve careful follow-through.</h1>
             <p className={styles.heroSupport}>We bring Islamic services into one clear journey—from your request to reviewed evidence and a completion record.</p>
           </div>
@@ -92,9 +97,11 @@ export default function AboutPage() {
             <div className={styles.missionNarrative}>
               <p>Every request begins with the details the service actually needs—who it is for, where it should be fulfilled, and any instructions that must travel with it.</p>
               <p>Once a request is confirmed, an approved partner fulfils the work against that agreed brief. The handoff stays connected to the same journey instead of disappearing into a separate conversation.</p>
-              <p>Submitted photos, video, location details, or other required evidence are reviewed before the project is marked complete. The customer then receives a completion record that is retained with the request.</p>
+              <p>Photos, video, location details, or other evidence required for the service are submitted against the same request.</p>
+              <p>That evidence is reviewed before the project is marked complete. The customer then receives a completion record that is retained with the request.</p>
             </div>
           </div>
+          <div className={styles.missionCurve} aria-hidden="true" />
         </section>
       </div>
 
@@ -103,7 +110,7 @@ export default function AboutPage() {
           <p className={styles.storyLabel}>Why we built this.</p>
           <div className={styles.storyGrid}>
             <div className={styles.storyThesis}>
-              <h2 id="operating-story-title">Islamic services deserve a clear chain of responsibility.</h2>
+              <h2 id="operating-story-title">Islamic services deserve a clear chain of responsibility, from intention through to completion.</h2>
               <div className={styles.projectImages}>
                 <figure className={styles.projectImage}>
                   <Image src="/landing-water-point.png" width={132} height={132} sizes="132px" alt="Women collecting water at a community pump" />
@@ -114,8 +121,10 @@ export default function AboutPage() {
               </div>
             </div>
             <div className={styles.storyNarrative}>
-              <p>Arranging Korban or Wakaf involves more than a payment. The details of each request must be confirmed, then passed to an approved partner working from a clear brief.</p>
-              <p>As the service is fulfilled, the work and submitted evidence are reviewed before completion. Confirmed service details, reviewed evidence, each handoff, and the completion record remain connected on the customer project.</p>
+              <p>Arranging Korban or Wakaf involves more than a payment. The details of each request must first be confirmed.</p>
+              <p>Those confirmed details are passed to an approved partner working from a clear brief.</p>
+              <p>As the service is fulfilled, the work and submitted evidence are reviewed before completion.</p>
+              <p>Confirmed service details, reviewed evidence, each handoff, and the completion record remain connected on the customer project.</p>
               <p className={styles.storyAttribution}>— The As-Sabiquun operating model.</p>
               <Link className={styles.storyAction} href="/#how">See how it works <span aria-hidden="true">→</span></Link>
             </div>
@@ -148,7 +157,6 @@ export default function AboutPage() {
       <section className={styles.principles} aria-labelledby="principles-title">
         <div className={styles.principlesInner}>
           <div className={styles.principlesHeading}>
-            <p className={styles.principlesLabel}>How we work.</p>
             <h2 id="principles-title">Amanah in practice.</h2>
           </div>
           <ol className={styles.principlesList}>
@@ -157,6 +165,7 @@ export default function AboutPage() {
                 <span className={styles.principleNumber}>{String(index + 1).padStart(2, "0")}</span>
                 <h3>{title}</h3>
                 <p>{copy}</p>
+                <span className={styles.principleMark} aria-hidden="true"><Arrow /></span>
               </li>
             ))}
           </ol>
@@ -166,8 +175,8 @@ export default function AboutPage() {
       <section className={styles.closing} aria-labelledby="about-closing-title">
         <div className={styles.closingInner}>
           <h2 id="about-closing-title">Begin with a service you can follow.</h2>
-          <p>Your request is coordinated through an approved partner, checked against reviewed evidence, and kept with a completion record you can return to.</p>
-          <Link className={styles.closingAction} href="/services">Explore services <Arrow /></Link>
+          <p>Follow your service through reviewed evidence to a retained completion record.</p>
+          <Link className={styles.closingAction} href="/services">Explore services</Link>
         </div>
       </section>
     </div>
