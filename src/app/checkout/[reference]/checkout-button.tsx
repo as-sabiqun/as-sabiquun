@@ -43,7 +43,7 @@ async function openAirwallexCheckout(result: AirwallexCheckout) {
     autoSaveCardForFuturePayments: false,
     appearance: {
       mode: "light" as const,
-      variables: { colorBrand: "#087c72", colorBackground: "#ffffff", colorText: "#132f2d" },
+      variables: { colorBrand: "#4865ff", colorBackground: "#ffffff", colorText: "#080331" },
     },
   };
   sdk.payments.redirectToCheckout(options);
@@ -80,7 +80,7 @@ export function CheckoutButton({ orderId, provider }: { orderId: string; provide
 
   return (
     <div className={styles.payAction}>
-      {error && <p role="alert">{error}</p>}
+      {error && <p role="alert">{error} Please try again.</p>}
       <button type="button" onClick={pay} disabled={loading}>
         <LockKeyhole aria-hidden="true" /> {loading ? "Opening secure checkout…" : "Continue to secure payment"} <ArrowRight aria-hidden="true" />
       </button>

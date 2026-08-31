@@ -1,0 +1,211 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-09-01T03:35:26.0511132+08:00",
+  "title": "Design System: As-Sabiquun Public Service Journey",
+  "extensions": {
+    "colorMeta": {
+      "manuscript-cream": {
+        "role": "neutral",
+        "displayName": "Manuscript Cream",
+        "canonical": "#f8f3eb",
+        "tonalRamp": ["oklch(15% 0.016 75)", "oklch(27% 0.016 75)", "oklch(40% 0.016 75)", "oklch(54% 0.016 75)", "oklch(67% 0.016 75)", "oklch(79% 0.016 75)", "oklch(89% 0.016 75)", "oklch(95% 0.016 75)"]
+      },
+      "paper": {
+        "role": "neutral",
+        "displayName": "Warm Paper",
+        "canonical": "#fffefa",
+        "tonalRamp": ["oklch(15% 0.008 85)", "oklch(27% 0.008 85)", "oklch(40% 0.008 85)", "oklch(54% 0.008 85)", "oklch(67% 0.008 85)", "oklch(79% 0.008 85)", "oklch(89% 0.008 85)", "oklch(95% 0.008 85)"]
+      },
+      "midnight-ink": {
+        "role": "neutral",
+        "displayName": "Midnight Ink",
+        "canonical": "#080331",
+        "tonalRamp": ["oklch(15% 0.075 287)", "oklch(27% 0.075 287)", "oklch(40% 0.075 287)", "oklch(54% 0.075 287)", "oklch(67% 0.075 287)", "oklch(79% 0.075 287)", "oklch(89% 0.075 287)", "oklch(95% 0.075 287)"]
+      },
+      "handoff-navy": {
+        "role": "primary",
+        "displayName": "Handoff Navy",
+        "canonical": "#1b1463",
+        "tonalRamp": ["oklch(15% 0.12 287)", "oklch(27% 0.12 287)", "oklch(40% 0.12 287)", "oklch(54% 0.12 287)", "oklch(67% 0.12 287)", "oklch(79% 0.12 287)", "oklch(89% 0.12 287)", "oklch(95% 0.12 287)"]
+      },
+      "action-cobalt": {
+        "role": "primary",
+        "displayName": "Action Cobalt",
+        "canonical": "#4865ff",
+        "tonalRamp": ["oklch(15% 0.19 268)", "oklch(27% 0.19 268)", "oklch(40% 0.19 268)", "oklch(54% 0.19 268)", "oklch(67% 0.19 268)", "oklch(79% 0.19 268)", "oklch(89% 0.19 268)", "oklch(95% 0.19 268)"]
+      },
+      "readable-cobalt": {
+        "role": "primary",
+        "displayName": "Readable Cobalt",
+        "canonical": "#3653ef",
+        "tonalRamp": ["oklch(15% 0.19 269)", "oklch(27% 0.19 269)", "oklch(40% 0.19 269)", "oklch(54% 0.19 269)", "oklch(67% 0.19 269)", "oklch(79% 0.19 269)", "oklch(89% 0.19 269)", "oklch(95% 0.19 269)"]
+      },
+      "verified-green": {
+        "role": "secondary",
+        "displayName": "Verified Green",
+        "canonical": "#328a3b",
+        "tonalRamp": ["oklch(15% 0.12 145)", "oklch(27% 0.12 145)", "oklch(40% 0.12 145)", "oklch(54% 0.12 145)", "oklch(67% 0.12 145)", "oklch(79% 0.12 145)", "oklch(89% 0.12 145)", "oklch(95% 0.12 145)"]
+      },
+      "assurance-mint": {
+        "role": "tertiary",
+        "displayName": "Assurance Mint",
+        "canonical": "#e4efea",
+        "tonalRamp": ["oklch(15% 0.025 160)", "oklch(27% 0.025 160)", "oklch(40% 0.025 160)", "oklch(54% 0.025 160)", "oklch(67% 0.025 160)", "oklch(79% 0.025 160)", "oklch(89% 0.025 160)", "oklch(95% 0.025 160)"]
+      },
+      "ceremonial-sun": {
+        "role": "tertiary",
+        "displayName": "Ceremonial Sun",
+        "canonical": "#f4ca61",
+        "tonalRamp": ["oklch(15% 0.13 88)", "oklch(27% 0.13 88)", "oklch(40% 0.13 88)", "oklch(54% 0.13 88)", "oklch(67% 0.13 88)", "oklch(79% 0.13 88)", "oklch(89% 0.13 88)", "oklch(95% 0.13 88)"]
+      },
+      "white": {
+        "role": "neutral",
+        "displayName": "White",
+        "canonical": "#ffffff",
+        "tonalRamp": ["oklch(15% 0 0)", "oklch(27% 0 0)", "oklch(40% 0 0)", "oklch(54% 0 0)", "oklch(67% 0 0)", "oklch(79% 0 0)", "oklch(89% 0 0)", "oklch(95% 0 0)"]
+      }
+    },
+    "typographyMeta": {
+      "display": {
+        "displayName": "Editorial Display",
+        "purpose": "Purpose-led public and checkout headlines."
+      },
+      "headline": {
+        "displayName": "Editorial Headline",
+        "purpose": "Service names, record headings, and completion statements."
+      },
+      "body": {
+        "displayName": "Operational Body",
+        "purpose": "Explanations and supporting service continuity copy."
+      },
+      "label": {
+        "displayName": "Record Label",
+        "purpose": "Provider, status, reference, chip, and currency metadata."
+      },
+      "arabic-accent": {
+        "displayName": "Arabic Accent",
+        "purpose": "Brief ceremonial detail inside the payment handoff."
+      }
+    },
+    "shadows": [
+      {
+        "name": "handoff-lift",
+        "value": "0 26px 54px rgba(8, 3, 49, .16)",
+        "purpose": "Structural emphasis for the secure-payment panel only."
+      }
+    ],
+    "motion": [
+      {
+        "name": "checkout-state",
+        "value": "180ms ease-out",
+        "purpose": "Short hover and directional feedback on checkout actions; remove under reduced motion."
+      }
+    ],
+    "breakpoints": [
+      {
+        "name": "payment-first",
+        "value": "900px"
+      },
+      {
+        "name": "compact-checkout",
+        "value": "620px"
+      }
+    ]
+  },
+  "components": [
+    {
+      "name": "Payment Button",
+      "kind": "button",
+      "refersTo": "button-payment",
+      "description": "The single primary action that transfers the reviewed order to its named payment provider.",
+      "html": "<button class=\"ds-payment-button\"><svg aria-hidden=\"true\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\"><rect width=\"18\" height=\"11\" x=\"3\" y=\"11\" rx=\"2\"/><path d=\"M7 11V7a5 5 0 0 1 10 0v4\"/></svg><span>Continue to secure payment</span><svg aria-hidden=\"true\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\"><path d=\"M5 12h14M13 6l6 6-6 6\"/></svg></button>",
+      "css": ".ds-payment-button { display:flex; width:100%; min-height:56px; cursor:pointer; align-items:center; justify-content:center; gap:10px; border:1px solid #fff; border-radius:999px; background:#fff; padding:0 18px; color:#1b1463; font-family:Inter,Arial,sans-serif; font-size:13px; font-weight:780; transition:background-color .18s ease-out,color .18s ease-out,transform .18s ease-out; } .ds-payment-button svg { width:16px; height:16px; flex:none; } .ds-payment-button svg:last-child { margin-left:auto; } .ds-payment-button:hover { background:#f4ca61; color:#080331; transform:translateY(-2px); } .ds-payment-button:focus-visible { outline:3px solid rgba(244,202,97,.72); outline-offset:3px; } .ds-payment-button:active { transform:translateY(0); }"
+    },
+    {
+      "name": "Service Type Chip",
+      "kind": "chip",
+      "refersTo": "service-chip",
+      "description": "A restrained record label for the order's service category.",
+      "html": "<span class=\"ds-service-chip\">Wakaf Quran</span>",
+      "css": ".ds-service-chip { display:inline-flex; min-height:28px; align-items:center; border:1px solid rgba(8,3,49,.18); border-radius:999px; padding:0 12px; color:#3653ef; font-family:Inter,Arial,sans-serif; font-size:10px; font-weight:780; letter-spacing:.07em; line-height:1; text-transform:uppercase; }"
+    },
+    {
+      "name": "Handoff Rail",
+      "kind": "custom",
+      "description": "The persistent three-stage context from recorded request through payment to tracked completion.",
+      "html": "<ol class=\"ds-handoff\"><li class=\"ds-complete\"><span>✓</span><div><strong>Service chosen</strong><small>Your request is recorded</small></div></li><li class=\"ds-current\"><span>2</span><div><strong>Secure payment</strong><small>Review and continue</small></div></li><li><span>3</span><div><strong>Track completion</strong><small>Follow every update</small></div></li></ol>",
+      "css": ".ds-handoff { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); margin:0; border-block:1px solid rgba(8,3,49,.15); padding:0; list-style:none; color:#080331; font-family:Inter,Arial,sans-serif; } .ds-handoff li { display:grid; grid-template-columns:32px minmax(0,1fr); gap:12px; align-items:center; padding:20px 24px 20px 0; } .ds-handoff li+li { border-left:1px solid rgba(8,3,49,.15); padding-left:24px; } .ds-handoff li>span { display:grid; width:30px; height:30px; place-items:center; border:1px solid rgba(8,3,49,.2); border-radius:50%; color:rgba(8,3,49,.6); font-size:11px; font-weight:780; } .ds-handoff strong,.ds-handoff small { display:block; } .ds-handoff strong { font-size:13px; line-height:1.35; } .ds-handoff small { margin-top:2px; color:rgba(8,3,49,.68); font-size:11px; line-height:1.35; } .ds-handoff .ds-complete>span { border-color:#328a3b; background:#328a3b; color:#fff; } .ds-handoff .ds-current { background:rgba(72,101,255,.07); } .ds-handoff .ds-current>span { border-color:#4865ff; background:#4865ff; color:#fff; } .ds-handoff .ds-current strong { color:#3653ef; }"
+    },
+    {
+      "name": "Order Record",
+      "kind": "card",
+      "description": "A flat, ruled service record that exposes the exact request before payment.",
+      "html": "<section class=\"ds-order-record\"><header><div><span class=\"ds-service-chip\">Wakaf Quran</span><h2>Quran contribution</h2></div><p><span>Order total</span><strong>$80.00</strong><small>SGD</small></p></header><dl><div><dt>Quantity</dt><dd>2</dd></div><div><dt>Customer</dt><dd>Customer name</dd></div></dl><footer><svg aria-hidden=\"true\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\"><path d=\"M9 11l3 3L22 4\"/><path d=\"M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11\"/></svg><p><strong>Your details stay with this project.</strong><span>You’ll see this same record in your customer portal after payment.</span></p></footer></section>",
+      "css": ".ds-order-record { min-width:0; border-top:1px solid rgba(8,3,49,.18); color:#080331; font-family:Inter,Arial,sans-serif; } .ds-order-record header { display:grid; grid-template-columns:minmax(0,1fr) auto; gap:28px; align-items:start; padding:28px 0 25px; } .ds-order-record h2 { margin:15px 0 0; font-family:Newsreader,Georgia,serif; font-size:38px; font-weight:400; letter-spacing:-.03em; line-height:1.05; } .ds-order-record header>p { margin:0; text-align:right; } .ds-order-record header>p span,.ds-order-record header>p strong,.ds-order-record header>p small { display:block; } .ds-order-record header>p span { color:rgba(8,3,49,.68); font-size:11px; } .ds-order-record header>p strong { margin-top:5px; font-size:21px; font-variant-numeric:tabular-nums; } .ds-order-record header>p small { margin-top:2px; color:rgba(8,3,49,.68); font-size:10px; font-weight:720; } .ds-order-record dl { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); margin:0; border-top:1px solid rgba(8,3,49,.15); } .ds-order-record dl>div { border-bottom:1px solid rgba(8,3,49,.12); padding:17px 20px 17px 0; } .ds-order-record dl>div+div { border-left:1px solid rgba(8,3,49,.12); padding-left:20px; } .ds-order-record dt { color:rgba(8,3,49,.68); font-size:11px; } .ds-order-record dd { margin:5px 0 0; font-size:13px; font-weight:710; } .ds-order-record footer { display:flex; gap:13px; align-items:flex-start; margin-top:28px; background:#e4efea; padding:18px 20px; } .ds-order-record footer svg { width:20px; height:20px; flex:none; color:#328a3b; } .ds-order-record footer p,.ds-order-record footer strong,.ds-order-record footer span { display:block; margin:0; } .ds-order-record footer strong { font-size:12px; } .ds-order-record footer span { margin-top:4px; color:rgba(8,3,49,.63); font-size:11px; line-height:1.5; }"
+    },
+    {
+      "name": "Secure Payment Panel",
+      "kind": "card",
+      "refersTo": "payment-panel",
+      "description": "The dominant secure handoff containing provider, amount, identity, and payment action.",
+      "html": "<aside class=\"ds-payment-panel\"><div class=\"ds-payment-topline\"><p lang=\"ar\" dir=\"rtl\">بِسْمِ اللهِ</p><span>Payment handled by HitPay</span></div><div class=\"ds-amount\"><span>Amount due</span><strong>$80.00</strong><small>SGD</small></div><div class=\"ds-ready\"><span aria-hidden=\"true\">✓</span><p><strong>Signed in as Customer</strong><small>customer@example.com</small></p></div><button class=\"ds-payment-button\"><span>Continue to secure payment</span><span aria-hidden=\"true\">→</span></button></aside>",
+      "css": ".ds-payment-panel { min-width:0; overflow:hidden; border-radius:16px; background:#1b1463; color:#fff; padding:28px; box-shadow:0 26px 54px rgba(8,3,49,.16); font-family:Inter,Arial,sans-serif; } .ds-payment-topline { display:flex; align-items:center; justify-content:space-between; gap:20px; } .ds-payment-topline p { margin:0; color:#f4ca61; font-family:'Noto Kufi Arabic',sans-serif; font-size:18px; line-height:1.3; } .ds-payment-topline span { color:rgba(255,255,255,.72); font-size:10px; font-weight:680; } .ds-amount { border-bottom:1px solid rgba(255,255,255,.2); padding:40px 0 26px; } .ds-amount span,.ds-amount strong,.ds-amount small { display:block; } .ds-amount span { color:rgba(255,255,255,.68); font-size:12px; font-weight:680; } .ds-amount strong { margin-top:8px; font-family:Newsreader,Georgia,serif; font-size:58px; font-weight:400; font-variant-numeric:tabular-nums; letter-spacing:-.04em; line-height:.95; } .ds-amount small { margin-top:7px; color:#f4ca61; font-size:10px; font-weight:780; letter-spacing:.09em; } .ds-ready { display:flex; gap:11px; align-items:flex-start; padding:22px 0 0; } .ds-ready>span { color:#8fda9a; font-weight:800; } .ds-ready p,.ds-ready strong,.ds-ready small { display:block; margin:0; } .ds-ready strong { font-size:12px; } .ds-ready small { margin-top:3px; color:rgba(255,255,255,.62); font-size:10px; } .ds-payment-button { display:flex; width:100%; min-height:56px; align-items:center; justify-content:space-between; gap:10px; margin-top:24px; border:1px solid #fff; border-radius:999px; background:#fff; padding:0 18px; color:#1b1463; font-size:13px; font-weight:780; transition:background-color .18s ease-out,color .18s ease-out,transform .18s ease-out; } .ds-payment-button:hover { background:#f4ca61; color:#080331; transform:translateY(-2px); } .ds-payment-button:focus-visible { outline:3px solid rgba(244,202,97,.72); outline-offset:3px; } .ds-payment-button:active { transform:translateY(0); }"
+    }
+  ],
+  "narrative": {
+    "northStar": "The Reviewed Handoff",
+    "overview": "The public experience should feel like a careful transfer of responsibility: a person chooses a meaningful service, reviews the true record, pays through a named secure provider, and can see how the work moves toward verified completion. Warm manuscript cream and editorial type preserve humanity; precise rules, compact status language, and tabular records make the operational promise legible.\n\nThis system covers the public marketing-to-checkout journey. It does not prescribe the visual language of internal admin or partner portals. Checkout is not a generic ecommerce cart: it is the visible handoff between a reviewed request and accountable fulfilment.",
+    "keyCharacteristics": [
+      "Editorial serif moments set purpose and reassurance; clean sans-serif text carries facts and actions.",
+      "Cream, paper, and fine navy rules keep records calm, open, and inspectable.",
+      "One deep-navy payment panel concentrates security, amount, provider, identity, and the primary action.",
+      "Cobalt marks the current action, green marks verified completion, and sun is a rare ceremonial accent."
+    ],
+    "rules": [
+      {
+        "name": "The Semantic Accent Rule",
+        "body": "Cobalt means active or actionable, green means verified, and sun means ceremonial emphasis; do not swap these roles for decoration.",
+        "section": "colors"
+      },
+      {
+        "name": "The One Dark Handoff Rule",
+        "body": "In checkout, the payment panel is the single deep-navy focal surface so amount and action remain unmistakable.",
+        "section": "colors"
+      },
+      {
+        "name": "The Purpose-and-Proof Rule",
+        "body": "Use editorial type for meaning and outcome; use sans-serif type for facts, controls, and proof.",
+        "section": "typography"
+      },
+      {
+        "name": "The Payment-First Mobile Rule",
+        "body": "Reorder the secure-payment panel before the supporting record on narrow screens without hiding the stage context or primary action.",
+        "section": "layout"
+      },
+      {
+        "name": "The Line-Led Record Rule",
+        "body": "Use rules and alignment for order facts; do not turn every detail into an elevated tile.",
+        "section": "layout"
+      },
+      {
+        "name": "The Flat Record Rule",
+        "body": "Order data rests directly on the page and is separated by rules; elevation belongs to the action that advances the service.",
+        "section": "elevation"
+      }
+    ],
+    "dos": [
+      "**Do** present checkout as a service handoff from reviewed request to payment to tracked completion.",
+      "**Do** keep amount, currency, provider, signed-in identity, and primary payment action together in the deep-navy panel.",
+      "**Do** preserve the horizontal three-stage context and payment-first mobile order.",
+      "**Do** use the detailed As-Sabiquun seal whenever the public brand mark appears.",
+      "**Do** tie status language and visual emphasis to real order and fulfilment behavior."
+    ],
+    "donts": [
+      "**Don't** restyle checkout as a generic cart, basket, or product-tile grid.",
+      "**Don't** multiply dark or elevated panels until the payment handoff loses dominance.",
+      "**Don't** use Cobalt, Verified Green, or Ceremonial Sun interchangeably.",
+      "**Don't** fabricate pricing, fulfilment evidence, testimonials, or completion claims to fill a composition.",
+      "**Don't** apply these public marketing-to-checkout rules as a visual prescription for internal admin or partner portals."
+    ]
+  }
+}

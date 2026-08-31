@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
-import { Check, ChevronLeft, CircleCheck } from "lucide-react";
+import { Check, ChevronLeft, CircleCheck, FileCheck2, LockKeyhole, ScanSearch } from "lucide-react";
 import { Brand } from "@/components/brand";
 import { isCustomerAccount } from "@/lib/auth";
 import { formatCents } from "@/lib/orders";
@@ -44,54 +44,95 @@ export default async function CheckoutPage({ params }: PageProps<"/checkout/[ref
   const provider = order.payment_provider === "airwallex" ? "airwallex" : "hitpay";
   const paid = ["paid", "partially_refunded"].includes(order.payment_status);
   const refunded = order.payment_status === "refunded";
+  const providerName = provider === "airwallex" ? "Airwallex" : "HitPay";
 
   return (
     <main className={styles.page}>
-      <header className={styles.header}><Brand /><span>Secure checkout</span></header>
-      <div className={styles.shell}>
-        <section className={styles.summary}>
-          <Link href={`/dashboard/orders/${order.reference}`} className={styles.back}><ChevronLeft aria-hidden="true" /> Back to project</Link>
-          <p className={styles.eyebrow}>Order {order.reference}</p>
-          <h1>Review your service.</h1>
-          <p className={styles.lead}>Your commercial details are fixed before you leave for secure payment.</p>
+      <header className={styles.header}>
+        <Brand />
+        <div className={styles.headerMeta}>
+          <LockKeyhole aria-hidden="true" />
+          <span>Secure checkout</span>
+          <small>{order.reference}</small>
+        </div>
+      </header>
 
-          <div className={styles.serviceBlock}>
-            <div><span>{order.service_type}</span><h2>{order.offering_title || "Islamic service"}</h2><p>{order.offering_detail}</p></div>
-            <strong>{formatCents(order.total_amount)}</strong>
-          </div>
+      <div className={styles.frame}>
+        <Link href={`/dashboard/orders/${order.reference}`} className={styles.back}><ChevronLeft aria-hidden="true" /> Back to project</Link>
 
-          <dl className={styles.details}>
-            <div><dt>Quantity</dt><dd>{order.quantity}</dd></div>
-            {order.participant_names.length > 0 && <div><dt>Participant names</dt><dd>{order.participant_names.join(", ")}</dd></div>}
-            {order.dedication && <div><dt>Dedication</dt><dd>{order.dedication}</dd></div>}
-            <div><dt>Customer</dt><dd>{order.customer_name}</dd></div>
-            <div><dt>Email</dt><dd>{user.email}</dd></div>
-            <div><dt>Phone</dt><dd>{order.customer_phone}</dd></div>
-          </dl>
+        <section className={styles.introduction}>
+          <h1>Review the service.<br />Then hand it over securely.</h1>
+          <p>Everything stays attached to order <strong>{order.reference}</strong>, from payment through to the reviewed completion record.</p>
         </section>
 
-        <aside className={styles.paymentPanel}>
-          <p className={styles.arabic} lang="ar" dir="rtl">بِسْمِ اللهِ</p>
-          <span className={styles.panelLabel}>Amount due</span>
-          <strong className={styles.total}>{formatCents(order.total_amount)}</strong>
-          <small>{order.currency || "SGD"}</small>
+        <ol className={styles.handoff} aria-label="Checkout progress">
+          <li className={styles.complete}><span><Check aria-hidden="true" /></span><div><strong>Service chosen</strong><small>Your request is recorded</small></div></li>
+          <li className={styles.current} aria-current="step"><span>2</span><div><strong>Secure payment</strong><small>Review and continue</small></div></li>
+          <li><span>3</span><div><strong>Track completion</strong><small>Follow every update</small></div></li>
+        </ol>
 
-          <div className={styles.readiness}>
-            <div><CircleCheck aria-hidden="true" /><span><strong>Customer account verified</strong><small>{user.email}</small></span></div>
+        <div className={styles.checkoutGrid}>
+          <section className={styles.record} aria-labelledby="order-review-heading">
+            <header className={styles.recordHeader}>
+              <div>
+                <span className={styles.serviceType}>{order.service_type}</span>
+                <h2 id="order-review-heading">{order.offering_title || "Islamic service"}</h2>
+              </div>
+              <div className={styles.recordAmount}><span>Order total</span><strong>{formatCents(order.total_amount)}</strong><small>{order.currency || "SGD"}</small></div>
+            </header>
+
+            <p className={styles.serviceDescription}>{order.offering_detail}</p>
+
+            <dl className={styles.details}>
+              <div><dt>Quantity</dt><dd>{order.quantity}</dd></div>
+              {order.participant_names.length > 0 && <div className={styles.wideFact}><dt>Participant names</dt><dd>{order.participant_names.join(", ")}</dd></div>}
+              {order.dedication && <div className={styles.wideFact}><dt>Dedication</dt><dd>{order.dedication}</dd></div>}
+              <div><dt>Customer</dt><dd>{order.customer_name}</dd></div>
+              <div><dt>Email</dt><dd>{user.email}</dd></div>
+              <div><dt>Phone</dt><dd>{order.customer_phone}</dd></div>
+            </dl>
+
+            <footer className={styles.recordFooter}>
+              <FileCheck2 aria-hidden="true" />
+              <p><strong>Your details stay with this project.</strong><span>You’ll see this same record in your customer portal after payment.</span></p>
+            </footer>
+          </section>
+
+          <aside className={styles.paymentPanel} aria-labelledby="payment-heading">
+            <div className={styles.panelTopline}>
+              <p className={styles.arabic} lang="ar" dir="rtl">بِسْمِ اللهِ</p>
+              <span><LockKeyhole aria-hidden="true" /> Payment handled by {providerName}</span>
+            </div>
+            <div className={styles.amountDue}>
+              <span id="payment-heading">Amount due</span>
+              <strong>{formatCents(order.total_amount)}</strong>
+              <small>{order.currency || "SGD"}</small>
+            </div>
+
+            <div className={styles.readiness}>
+              <CircleCheck aria-hidden="true" />
+              <span><strong>Signed in as {order.customer_name}</strong><small>{user.email}</small></span>
+            </div>
+
+            {paid ? (
+              <div className={styles.paidState}><Check aria-hidden="true" /><div><strong>Payment confirmed</strong><p>Your project is ready for our team.</p><Link href={`/dashboard/orders/${order.reference}`}>View project</Link></div></div>
+            ) : refunded ? (
+              <div className={styles.terminalState}><div><strong>Payment refunded</strong><p>This order remains in your project history.</p><Link href="/services">Browse services</Link></div></div>
+            ) : <CheckoutButton orderId={order.id} provider={provider} />}
+          </aside>
+        </div>
+
+        <section className={styles.afterPayment} aria-labelledby="after-payment-heading">
+          <div>
+            <ScanSearch aria-hidden="true" />
+            <h2 id="after-payment-heading">Payment is the handoff—not the end.</h2>
           </div>
-
-          {paid ? (
-            <div className={styles.paidState}><Check aria-hidden="true" /><div><strong>Payment confirmed</strong><p>Your project is ready for our team.</p><Link href={`/dashboard/orders/${order.reference}`}>View project</Link></div></div>
-          ) : refunded ? (
-            <div className={styles.terminalState}><div><strong>Payment refunded</strong><p>This order is retained in your project history. Start a new service if you would like to proceed again.</p><Link href="/services">Browse services</Link></div></div>
-          ) : <CheckoutButton orderId={order.id} provider={provider} />}
-
-          <ol className={styles.nextSteps}>
-            <li><span>1</span><p><strong>Pay securely</strong> on {provider === "airwallex" ? "Airwallex’s" : "HitPay’s"} hosted checkout.</p></li>
-            <li><span>2</span><p><strong>Track the work</strong> from your customer portal.</p></li>
-            <li><span>3</span><p><strong>Receive your report</strong> by email after verification.</p></li>
+          <ol>
+            <li><span>1</span><p><strong>Return here automatically.</strong> Your payment status updates against this order.</p></li>
+            <li><span>2</span><p><strong>Track the work.</strong> Follow the project from your customer portal.</p></li>
+            <li><span>3</span><p><strong>Keep the reviewed record.</strong> Receive the completion report after verification.</p></li>
           </ol>
-        </aside>
+        </section>
       </div>
     </main>
   );
