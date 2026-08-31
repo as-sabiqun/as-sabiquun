@@ -35,6 +35,7 @@ export interface VendorLedgerRow {
 
 export interface ProviderTransactionRow {
   id: string;
+  provider: "hitpay" | "airwallex" | "manual";
   transaction_type: "payment" | "refund";
   amount: number;
   currency: string;
@@ -49,6 +50,7 @@ export interface RefundableOrder {
   id: string;
   reference: string;
   customer_name: string;
+  payment_provider: "hitpay" | "airwallex";
   refundable_amount: number;
   fulfilment_started: boolean;
   refund_pending: boolean;
@@ -111,7 +113,7 @@ export function FinanceReal({ settlements, vendorLedger, providerTransactions, r
     setError(null);
     setNotice(null);
     startTransition(async () => {
-      const response = await fetch("/api/payments/hitpay/refund", {
+      const response = await fetch(`/api/payments/${order.payment_provider}/refund`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -125,13 +127,17 @@ export function FinanceReal({ settlements, vendorLedger, providerTransactions, r
       if (!response.ok) setError(result?.error ?? "The refund could not be started.");
       else {
         setRefunding(null);
-        setNotice(result?.message ?? "The refund is pending HitPay confirmation.");
+        setNotice(result?.message ?? "The refund is pending provider confirmation.");
         router.refresh();
       }
     });
   }
 
   function reconcileProviderTransaction(transaction: ProviderTransactionRow) {
+    if (transaction.provider !== "hitpay") {
+      setError("Airwallex retries are idempotent and settle through signed webhooks; manual HitPay reconciliation does not apply.");
+      return;
+    }
     setError(null);
     setNotice(null);
     setReconciling(transaction.id);
@@ -156,7 +162,7 @@ export function FinanceReal({ settlements, vendorLedger, providerTransactions, r
         });
         result = await response.json().catch(() => null) as { error?: string; message?: string } | null;
       }
-      if (!response.ok) setError(result?.error ?? "The HitPay transaction could not be reconciled.");
+      if (!response.ok) setError(result?.error ?? "The provider transaction could not be reconciled.");
       else setNotice(result?.message ?? "HitPay reconciliation completed.");
       setReconciling(null);
       router.refresh();
@@ -173,7 +179,7 @@ export function FinanceReal({ settlements, vendorLedger, providerTransactions, r
         <a href="#settlements"><span>{settlements.length}</span>Vendor payouts</a>
         <a href="#refunds"><span>{refundableOrders.length}</span>Refunds</a>
         <a href="#vendor-ledger"><span>{vendorLedger.length}</span>Vendor payments</a>
-        <a href="#hitpay-ledger"><span>{providerTransactions.length}</span>Customer payments</a>
+        <a href="#provider-ledger"><span>{providerTransactions.length}</span>Customer payments</a>
       </nav>
 
       <div className="admin-finance-layout">
@@ -227,8 +233,8 @@ export function FinanceReal({ settlements, vendorLedger, providerTransactions, r
       </section>
 
       <section id="refunds" className="card vendor-panel admin-finance-panel admin-finance-refunds">
-        <div className="vendor-panel-head"><div><p className="vendor-eyebrow">Customer refunds</p><h2 className="display text-lg mt-1">Refundable HitPay orders</h2></div></div>
-        <p className="admin-record-help mb-4">HitPay accepts the request here; only its signed webhook changes the confirmed customer balance.</p>
+        <div className="vendor-panel-head"><div><p className="vendor-eyebrow">Customer refunds</p><h2 className="display text-lg mt-1">Refundable online orders</h2></div></div>
+        <p className="admin-record-help mb-4">The original payment provider accepts the request; only its signed webhook changes the confirmed customer balance.</p>
         {refundableOrders.length === 0 ? <p className="vendor-empty">No customer payment is currently refundable.</p> : (
           <div className="vendor-report-list">
             {refundableOrders.map((order) => (
@@ -237,12 +243,12 @@ export function FinanceReal({ settlements, vendorLedger, providerTransactions, r
                   <div><Link href={`/admin/jobs/${order.id}`}><strong>{order.reference}</strong></Link><small>{order.customer_name}</small></div>
                   <div className="text-right"><strong className="numeral">{formatCents(order.refundable_amount)}</strong><small>maximum refundable</small></div>
                 </div>
-                {order.refund_pending ? <p className="vendor-empty mt-4">A refund is awaiting HitPay confirmation.</p> : canManageFinance && (refunding === order.id ? (
+                {order.refund_pending ? <p className="vendor-empty mt-4">A refund is awaiting provider confirmation.</p> : canManageFinance && (refunding === order.id ? (
                   <form className="grid gap-4 mt-4" onSubmit={(event) => refundCustomer(event, order)}>
                     <label className="label">Amount (SGD)<input className="input" name="amount" type="number" min="0.01" max={(order.refundable_amount / 100).toFixed(2)} step="0.01" defaultValue={(order.refundable_amount / 100).toFixed(2)} required /></label>
-                    <label className="label">Refund reason<textarea className="input vendor-textarea" name="reason" rows={3} maxLength={1000} required /></label>
+                    <label className="label">Refund reason<textarea className="input vendor-textarea" name="reason" rows={3} maxLength={order.payment_provider === "airwallex" ? 128 : 1000} required /></label>
                     {order.fulfilment_started && <label className="flex gap-3 items-start"><input name="confirmFulfilmentStarted" type="checkbox" required /><span><strong>Project work has started.</strong><small className="block">I have reviewed what this refund affects and still want to request it.</small></span></label>}
-                    <div className="flex gap-3"><button className="btn btn-small" disabled={pending}>Request HitPay refund</button><button className="btn btn-secondary btn-small" type="button" onClick={() => setRefunding(null)}>Cancel</button></div>
+                    <div className="flex gap-3"><button className="btn btn-small" disabled={pending}>Request {order.payment_provider === "airwallex" ? "Airwallex" : "HitPay"} refund</button><button className="btn btn-secondary btn-small" type="button" onClick={() => setRefunding(null)}>Cancel</button></div>
                   </form>
                 ) : <button className="btn btn-secondary btn-small mt-4" type="button" onClick={() => setRefunding(order.id)}>Refund customer</button>)}
               </article>
@@ -251,12 +257,12 @@ export function FinanceReal({ settlements, vendorLedger, providerTransactions, r
         )}
       </section>
 
-      <section id="hitpay-ledger" className="card vendor-panel admin-finance-panel admin-finance-hitpay-ledger">
+      <section id="provider-ledger" className="card vendor-panel admin-finance-panel admin-finance-hitpay-ledger">
         <div className="vendor-panel-head"><div><p className="vendor-eyebrow">Payment history</p><h2 className="display text-lg mt-1">Customer payments</h2></div></div>
-        <p className="admin-record-help mb-4">Payments and refunds appear here after HitPay confirms them.</p>
-        {providerTransactions.length === 0 ? <p className="vendor-empty">No HitPay transactions recorded.</p> : (
+        <p className="admin-record-help mb-4">Payments and refunds appear here after the recorded provider confirms them.</p>
+        {providerTransactions.length === 0 ? <p className="vendor-empty">No provider transactions recorded.</p> : (
           <div className="admin-payment-list">
-            {providerTransactions.map((transaction) => <div key={transaction.id}><strong className="numeral">{formatCents(transaction.transaction_type === "refund" ? -transaction.amount : transaction.amount)}</strong><span>{transaction.order_reference} · {transaction.transaction_type}</span><small>{transaction.status} · {new Date(transaction.created_at).toLocaleString()}{canManageFinance && ["pending", "reconciliation_required"].includes(transaction.status) && <button type="button" className="btn btn-secondary btn-small ml-3" disabled={pending} onClick={() => reconcileProviderTransaction(transaction)}>{reconciling === transaction.id ? "Checking…" : "Check HitPay"}</button>}</small></div>)}
+            {providerTransactions.map((transaction) => <div key={transaction.id}><strong className="numeral">{formatCents(transaction.transaction_type === "refund" ? -transaction.amount : transaction.amount)}</strong><span>{transaction.order_reference} · {transaction.transaction_type} · {transaction.provider}</span><small>{transaction.status} · {new Date(transaction.created_at).toLocaleString()}{canManageFinance && transaction.provider === "hitpay" && ["pending", "reconciliation_required"].includes(transaction.status) && <button type="button" className="btn btn-secondary btn-small ml-3" disabled={pending} onClick={() => reconcileProviderTransaction(transaction)}>{reconciling === transaction.id ? "Checking…" : "Check HitPay"}</button>}</small></div>)}
           </div>
         )}
       </section>

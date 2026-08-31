@@ -35,7 +35,7 @@ export function customerAccountLabel(customer: Pick<CustomerDirectoryRecord, "ve
 
 export function customerOrderMetrics(orders: CustomerOrderInput[]) {
   return orders.reduce((metrics, order) => {
-    if (order.payment_provider !== "hitpay" || !isPaid(order.payment_status)) return metrics;
+    if (!["hitpay", "airwallex"].includes(order.payment_provider) || !isPaid(order.payment_status)) return metrics;
     const refunds = (order.payment_transactions ?? [])
       .filter((transaction) => transaction.transaction_type === "refund" && transaction.status === "succeeded")
       .reduce((total, transaction) => total + transaction.amount, 0);

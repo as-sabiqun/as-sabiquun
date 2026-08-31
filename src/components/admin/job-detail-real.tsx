@@ -22,7 +22,7 @@ export interface AdminOrderDetail extends OrderRow {
   commission_amount: number;
   vendor_payout_amount: number;
   payment_reference: string | null;
-  payment_provider: "hitpay" | "manual" | "demo";
+  payment_provider: "hitpay" | "airwallex" | "manual" | "demo";
   entry_source: "customer" | "admin_manual";
   notes: string | null;
   assigned_vendor: { id: string; display_name: string; phone: string | null } | null;

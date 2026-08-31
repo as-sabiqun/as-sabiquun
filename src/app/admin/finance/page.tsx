@@ -21,10 +21,10 @@ export default async function AdminFinancePage() {
     supabase.from("vendor_payments").select(`id, vendor_id, order_id, amount, currency, payment_date, method, reference, notes,
       entry_type, reverses_payment_id, created_at, vendor:profiles!vendor_payments_vendor_id_fkey(display_name), orders(reference)`)
       .order("created_at", { ascending: false }),
-    supabase.from("payment_transactions").select("id, order_id, transaction_type, amount, currency, status, provider_request_id, provider_payment_id, created_at, orders(reference)")
+    supabase.from("payment_transactions").select("id, order_id, provider, transaction_type, amount, currency, status, provider_request_id, provider_payment_id, created_at, orders(reference)")
       .order("created_at", { ascending: false }).limit(100),
-    supabase.from("orders").select("id, reference, customer_name, total_amount, payment_status, fulfilment_status")
-      .eq("payment_provider", "hitpay").in("payment_status", ["paid", "partially_refunded"]).order("created_at", { ascending: false }),
+    supabase.from("orders").select("id, reference, customer_name, total_amount, payment_provider, payment_status, fulfilment_status")
+      .in("payment_provider", ["hitpay", "airwallex"]).in("payment_status", ["paid", "partially_refunded"]).order("created_at", { ascending: false }),
     supabase.from("payment_transactions").select("order_id, amount, status")
       .eq("transaction_type", "refund").in("status", ["pending", "reconciliation_required", "succeeded"]),
   ]);
@@ -64,6 +64,7 @@ export default async function AdminFinancePage() {
       id: order.id,
       reference: order.reference,
       customer_name: order.customer_name,
+      payment_provider: order.payment_provider as RefundableOrder["payment_provider"],
       refundable_amount: refundableAmount,
       fulfilment_started: !["not_ready", "ready", "cancelled"].includes(order.fulfilment_status),
       refund_pending: pendingRefunds.has(order.id),
@@ -91,7 +92,7 @@ export default async function AdminFinancePage() {
         <dl className="admin-finance-summary">
           <div><dt>Vendors to pay</dt><dd>{settlements.length}</dd><small>Needs action</small></div>
           <div><dt>Payment records</dt><dd>{vendorLedger.length}</dd><small>Vendor payments</small></div>
-          <div><dt>Confirmed refunds</dt><dd>{formatCents(refunds)}</dd><small>HitPay confirmed</small></div>
+          <div><dt>Confirmed refunds</dt><dd>{formatCents(refunds)}</dd><small>Provider confirmed</small></div>
         </dl>
       </section>
       <DashboardBarChart

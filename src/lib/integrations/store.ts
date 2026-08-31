@@ -1,6 +1,7 @@
 import "server-only";
 
 import type { SupabaseClient } from "@supabase/supabase-js";
+import type { AirwallexRefundWebhookEvent, AirwallexWebhookEvent } from "./airwallex";
 import { ProviderError, type HitPayWebhookEvent, type JsonObject } from "./providers";
 
 function databaseError(message: string): ProviderError {
@@ -44,6 +45,169 @@ export interface PreparedRefund {
   reason: string;
   refundableAmountCents: number;
   fulfilmentStarted: boolean;
+}
+
+export interface PreparedAirwallexPayment {
+  transactionId: string;
+  orderId: string;
+  reference: string;
+  requestId: string;
+  providerIntentId: string | null;
+  amountCents: number;
+  currency: "SGD";
+  customerName: string;
+  customerEmail: string;
+  customerPhone: string | null;
+  expiresAt: string;
+  reused: boolean;
+}
+
+export async function prepareAirwallexPayment(client: SupabaseClient, orderId: string): Promise<PreparedAirwallexPayment> {
+  const { data, error } = await client.rpc("prepare_airwallex_payment", { p_order_id: orderId });
+  if (error) throw new ProviderError(error.message, "payment_not_payable");
+  const row = object(data);
+  const amountCents = Number(row.amount);
+  if (!Number.isSafeInteger(amountCents) || amountCents <= 0 || row.currency !== "SGD") {
+    throw databaseError("The Airwallex payment snapshot is invalid.");
+  }
+  return {
+    transactionId: text(row.transaction_id, "the payment transaction ID"),
+    orderId: text(row.order_id, "the order ID"),
+    reference: text(row.reference, "the order reference"),
+    requestId: text(row.request_id, "the Airwallex request ID"),
+    providerIntentId: typeof row.provider_intent_id === "string" ? row.provider_intent_id : null,
+    amountCents,
+    currency: "SGD",
+    customerName: text(row.customer_name, "the customer name"),
+    customerEmail: text(row.customer_email, "the customer email"),
+    customerPhone: typeof row.customer_phone === "string" ? row.customer_phone : null,
+    expiresAt: text(row.expires_at, "the checkout expiry"),
+    reused: row.reused === true,
+  };
+}
+
+export async function recordAirwallexPaymentIntent(client: SupabaseClient, input: {
+  transactionId: string;
+  requestId: string;
+  providerIntentId: string;
+  providerStatus: string;
+  expiresAt: string;
+  payload: JsonObject;
+}): Promise<void> {
+  const { error } = await client.rpc("record_airwallex_payment_intent", {
+    p_transaction_id: input.transactionId,
+    p_request_id: input.requestId,
+    p_provider_intent_id: input.providerIntentId,
+    p_provider_status: input.providerStatus,
+    p_expires_at: input.expiresAt,
+    p_payload: input.payload,
+  });
+  if (error) throw databaseError("The Airwallex PaymentIntent could not be recorded.");
+}
+
+export async function failAirwallexPaymentCreation(client: SupabaseClient, input: {
+  transactionId: string;
+  errorMessage: string;
+}): Promise<void> {
+  const { data, error } = await client.rpc("fail_airwallex_payment_creation", {
+    p_transaction_id: input.transactionId,
+    p_error_message: input.errorMessage.slice(0, 1_000),
+  });
+  if (error || data !== true) throw databaseError("The failed Airwallex PaymentIntent could not be recorded.");
+}
+
+export async function processAirwallexWebhook(client: SupabaseClient, event: AirwallexWebhookEvent): Promise<void> {
+  const { error } = await client.rpc("process_airwallex_payment_event", {
+    p_event_id: event.eventId,
+    p_event_type: event.eventType,
+    p_provider_event_at: event.providerEventAt,
+    p_provider_intent_id: event.providerRequestId,
+    p_reference: event.reference,
+    p_status: event.status,
+    p_provider_status: event.providerStatus,
+    p_amount: event.amountCents,
+    p_currency: event.currency,
+    p_payload_hash: event.payloadHash,
+    p_payload: event.payload,
+  });
+  if (error) throw databaseError("The Airwallex payment event could not be applied.");
+}
+
+export interface PreparedAirwallexRefund {
+  transactionId: string;
+  orderId: string;
+  reference: string;
+  requestId: string;
+  paymentIntentId: string;
+  amountCents: number;
+  currency: "SGD";
+  reason: string;
+}
+
+export async function prepareAirwallexRefund(client: SupabaseClient, input: {
+  orderId: string;
+  amountCents: number;
+  reason: string;
+  confirmFulfilmentStarted: boolean;
+}): Promise<PreparedAirwallexRefund> {
+  const { data, error } = await client.rpc("prepare_airwallex_refund", {
+    p_order_id: input.orderId,
+    p_amount: input.amountCents,
+    p_reason: input.reason,
+    p_confirm_fulfilment_started: input.confirmFulfilmentStarted,
+  });
+  if (error) throw new ProviderError(error.message, "refund_not_allowed");
+  const row = object(data);
+  const amountCents = Number(row.amount);
+  if (!Number.isSafeInteger(amountCents) || amountCents <= 0 || row.currency !== "SGD") {
+    throw databaseError("The Airwallex refund reservation is invalid.");
+  }
+  return {
+    transactionId: text(row.transaction_id, "the refund transaction ID"),
+    orderId: text(row.order_id, "the order ID"),
+    reference: text(row.reference, "the order reference"),
+    requestId: text(row.request_id, "the Airwallex refund request ID"),
+    paymentIntentId: text(row.payment_intent_id, "the Airwallex PaymentIntent ID"),
+    amountCents,
+    currency: "SGD",
+    reason: text(row.reason, "the refund reason"),
+  };
+}
+
+export async function recordAirwallexRefund(client: SupabaseClient, input: {
+  transactionId: string;
+  requestId: string;
+  refundId: string;
+  providerStatus: string;
+  payload: JsonObject;
+}): Promise<void> {
+  const { data, error } = await client.rpc("record_airwallex_refund", {
+    p_transaction_id: input.transactionId,
+    p_request_id: input.requestId,
+    p_refund_id: input.refundId,
+    p_provider_status: input.providerStatus,
+    p_payload: input.payload,
+  });
+  if (error || data !== true) throw databaseError("The Airwallex refund could not be recorded.");
+}
+
+export async function processAirwallexRefundWebhook(client: SupabaseClient, event: AirwallexRefundWebhookEvent): Promise<void> {
+  const { error } = await client.rpc("process_airwallex_refund_event", {
+    p_event_id: event.eventId,
+    p_event_type: event.eventType,
+    p_provider_event_at: event.providerEventAt,
+    p_refund_id: event.refundId,
+    p_request_id: event.requestId,
+    p_payment_intent_id: event.paymentIntentId,
+    p_status: event.status,
+    p_provider_status: event.providerStatus,
+    p_amount: event.amountCents,
+    p_currency: event.currency,
+    p_reason: event.reason,
+    p_payload_hash: event.payloadHash,
+    p_payload: event.payload,
+  });
+  if (error) throw databaseError("The Airwallex refund event could not be applied.");
 }
 
 export async function prepareHitPayPayment(client: SupabaseClient, orderId: string): Promise<PreparedPayment> {
@@ -297,7 +461,7 @@ export async function processBrevoWebhook(client: SupabaseClient, event: {
 }
 
 export async function recordIntegrationFailure(client: SupabaseClient, input: {
-  provider: "hitpay" | "brevo" | "telegram" | "internal";
+  provider: "hitpay" | "airwallex" | "brevo" | "telegram" | "internal";
   failureKind: string;
   detail: string;
   payloadHash?: string | null;

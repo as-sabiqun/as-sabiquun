@@ -6,7 +6,9 @@ import { deriveOrderMilestone, isPaid, milestoneLabels, type DeliveryStatus, typ
 import { formatCents, orderTitle, type OrderRow } from "@/lib/orders";
 import { createClient, getCurrentUser, getProfile } from "@/lib/supabase/server";
 import { isCustomerAccount } from "@/lib/auth";
+import { createAdminClient } from "@/lib/supabase/admin";
 import styles from "../../dashboard.module.css";
+import { PaymentStatusWatcher } from "./payment-status-watcher";
 
 interface CustomerOrder extends OrderRow {
   customer_name: string;
@@ -107,6 +109,12 @@ export default async function OrderDetailPage({ params, searchParams }: PageProp
   if (orderError) throw new Error("Project details could not be loaded.");
   if (!order) notFound();
   const row = order as unknown as CustomerOrder;
+  const { data: providerRow, error: providerError } = await createAdminClient()
+    .from("orders")
+    .select("payment_provider")
+    .eq("id", row.id)
+    .single();
+  if (providerError || !providerRow) throw new Error("Payment provider could not be loaded.");
   const [recordResult, reportResult, notificationResult, eventResult] = await Promise.all([
     supabase.from("customer_completion_records").select("submission_id, version, project_country, project_state, project_village, project_address, project_lat, project_lng, project_maps_link, vendor_remarks, reviewed_at").eq("order_id", row.id).order("version", { ascending: false }).limit(1).maybeSingle(),
     supabase.from("customer_completion_report_metadata").select("id, generated_at, version").eq("order_id", row.id).order("version", { ascending: false }).limit(1).maybeSingle(),
@@ -154,8 +162,8 @@ export default async function OrderDetailPage({ params, searchParams }: PageProp
         <strong className={styles.milestone}>{milestoneLabels[milestone]}</strong>
       </header>
 
-      {typeof paymentQuery === "string" && paymentQuery === "processing" && !paid && (
-        <p className={styles.notice} role="status">HitPay is still confirming your payment. This page will update automatically.</p>
+      {typeof paymentQuery === "string" && ["processing", "checking"].includes(paymentQuery) && !paid && (
+        <p className={styles.notice} role="status"><PaymentStatusWatcher orderId={row.id} provider={providerRow.payment_provider} /></p>
       )}
       {["failed", "expired", "cancelled"].includes(row.payment_status) && (
         <p className={styles.alert}>Payment was not completed. Your order is safe and can be paid again.</p>

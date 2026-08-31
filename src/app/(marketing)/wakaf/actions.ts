@@ -7,6 +7,7 @@ import { createClient, getProfile, isSupabaseConfigured } from "@/lib/supabase/s
 import { createAdminClient } from "@/lib/supabase/admin";
 import { formatCents } from "@/lib/orders";
 import { customerAccessMessage, isCustomerAccount } from "@/lib/auth";
+import { configuredPaymentProvider } from "@/lib/payments/config";
 
 const PROJECT_MAP = {
   "water-pump": { category: "water" },
@@ -119,7 +120,7 @@ export async function submitWakafContribution(_prevState: SubmitWakafState, form
       commission_amount: commissionAmount,
       vendor_payout_amount: vendorPayoutAmount,
       currency: "SGD",
-      payment_provider: "hitpay",
+      payment_provider: configuredPaymentProvider(),
       payment_status: "pending",
       fulfilment_status: "not_ready",
       delivery_status: "not_ready",

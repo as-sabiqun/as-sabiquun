@@ -6,6 +6,7 @@ import { isContactNumber } from "@/lib/checkout-validation";
 import { createClient, getProfile, isSupabaseConfigured } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { customerAccessMessage, isCustomerAccount } from "@/lib/auth";
+import { configuredPaymentProvider } from "@/lib/payments/config";
 
 const LEGACY_PACKAGE_SLUGS: Record<string, string> = { share: "korban-share", goat: "korban-goat", cow: "korban-cow" };
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
@@ -112,7 +113,7 @@ export async function submitKorbanOrder(_prevState: SubmitKorbanState, formData:
       commission_amount: commissionAmount,
       vendor_payout_amount: vendorPayoutAmount,
       currency: "SGD",
-      payment_provider: "hitpay",
+      payment_provider: configuredPaymentProvider(),
       payment_status: "pending",
       fulfilment_status: "not_ready",
       delivery_status: "not_ready",

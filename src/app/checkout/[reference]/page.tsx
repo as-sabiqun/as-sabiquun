@@ -5,6 +5,7 @@ import { Brand } from "@/components/brand";
 import { isCustomerAccount } from "@/lib/auth";
 import { formatCents } from "@/lib/orders";
 import { createClient, getCurrentUser, getProfile } from "@/lib/supabase/server";
+import { createAdminClient } from "@/lib/supabase/admin";
 import { CheckoutButton } from "./checkout-button";
 import styles from "./checkout.module.css";
 
@@ -40,6 +41,13 @@ export default async function CheckoutPage({ params }: PageProps<"/checkout/[ref
   if (error) throw new Error("Checkout could not be loaded.");
   if (!data) notFound();
   const order = data as unknown as CheckoutOrder;
+  const { data: providerRow, error: providerError } = await createAdminClient()
+    .from("orders")
+    .select("payment_provider")
+    .eq("id", order.id)
+    .single();
+  if (providerError || !providerRow) throw new Error("Checkout provider could not be loaded.");
+  const provider = providerRow.payment_provider === "airwallex" ? "airwallex" : "hitpay";
   const paid = ["paid", "partially_refunded"].includes(order.payment_status);
   const refunded = order.payment_status === "refunded";
 
@@ -82,10 +90,10 @@ export default async function CheckoutPage({ params }: PageProps<"/checkout/[ref
             <div className={styles.paidState}><Check aria-hidden="true" /><div><strong>Payment confirmed</strong><p>Your project is ready for our team.</p><Link href={`/dashboard/orders/${order.reference}`}>View project</Link></div></div>
           ) : refunded ? (
             <div className={styles.terminalState}><div><strong>Payment refunded</strong><p>This order is retained in your project history. Start a new service if you would like to proceed again.</p><Link href="/services">Browse services</Link></div></div>
-          ) : <CheckoutButton orderId={order.id} />}
+          ) : <CheckoutButton orderId={order.id} provider={provider} />}
 
           <ol className={styles.nextSteps}>
-            <li><span>1</span><p><strong>Pay securely</strong> on HitPay’s hosted checkout.</p></li>
+            <li><span>1</span><p><strong>Pay securely</strong> on {provider === "airwallex" ? "Airwallex’s" : "HitPay’s"} hosted checkout.</p></li>
             <li><span>2</span><p><strong>Track the work</strong> from your customer portal.</p></li>
             <li><span>3</span><p><strong>Receive your report</strong> by email after verification.</p></li>
           </ol>
