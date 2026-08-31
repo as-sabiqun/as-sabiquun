@@ -65,14 +65,21 @@ export default function AboutPage() {
   return (
     <div className={styles.aboutPage}>
       <div className={styles.opening}>
-        <Link className={styles.announcement} href="/services">
-          <span>See how every service is followed through.</span>
-          <span aria-hidden="true">&#8599;</span>
-        </Link>
         <section className={styles.hero} aria-labelledby="about-hero-title">
-          <div className={styles.heroCopy}>
-            <h1 id="about-hero-title">A sincere intention should never become an invisible handoff.</h1>
-            <p className={styles.heroSupport}>When you entrust an Islamic service to someone, you should be able to see how that trust is carried.</p>
+          <div className={styles.heroCharter}>
+            <div className={styles.heroCopy}>
+              <h1 id="about-hero-title">We carry your trust through to completion.</h1>
+              <p className={styles.heroSupport}>Every Islamic service stays connected to its confirmed details, reviewed evidence, and completion record.</p>
+            </div>
+            <aside className={styles.heroCommitment} aria-label="Amānah, kept visible">
+              <h2>Amānah, kept visible</h2>
+              <ul>
+                <li>The confirmed service details</li>
+                <li>The evidence returned for review</li>
+                <li>The retained completion record</li>
+              </ul>
+              <p>Completion follows review.</p>
+            </aside>
           </div>
         </section>
 

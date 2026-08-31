@@ -10,83 +10,128 @@
   background: #1b1463;
 }
 
-.announcement {
-  position: absolute;
-  z-index: 8;
-  top: 92px;
-  left: 50%;
-  display: inline-flex;
-  min-height: 44px;
-  align-items: center;
-  justify-content: center;
-  gap: 14px;
-  border: 1px solid rgba(255, 255, 255, .52);
-  border-radius: 999px;
-  padding: 6px 7px 6px 17px;
-  color: #080331;
-  background: rgba(229, 227, 242, .96);
-  font-family: var(--font-sans), Arial, sans-serif;
-  font-size: 12px;
-  line-height: 1.3;
-  text-decoration: none;
-  white-space: nowrap;
-  transform: translateX(-50%);
-  animation: announcementExit linear both;
-  animation-timeline: scroll(root);
-  animation-range: 0 260px;
-}
-
-.announcement span:last-child {
-  display: grid;
-  width: 29px;
-  height: 29px;
-  place-items: center;
-  border: 1px solid rgba(72, 101, 255, .5);
-  border-radius: 50%;
-  color: #4865ff;
-  font-size: 14px;
-  line-height: 1;
-}
-
-.announcement span:first-child {
-  color: #080331 !important;
-}
-
 .hero {
   position: relative;
   display: grid;
   min-height: max(720px, 100svh);
   place-items: center;
   overflow: clip;
-  padding: clamp(136px, 15vh, 160px) 24px 72px;
+  padding: 112px 48px;
+}
+
+.heroCharter {
+  position: relative;
+  display: grid;
+  width: min(1120px, 100%);
+  min-height: 510px;
+  grid-template-columns: minmax(0, 1.45fr) minmax(330px, .8fr);
+  color: #080331;
+  background: #f8f3eb;
+}
+
+.heroCharter::before {
+  position: absolute;
+  z-index: 2;
+  inset: 12px;
+  border: 1px solid rgba(8, 3, 49, .18);
+  content: "";
+  pointer-events: none;
+}
+
+.heroCharter::after {
+  position: absolute;
+  z-index: 3;
+  inset: 12px;
+  background:
+    linear-gradient(#207280, #207280) left top / 44px 3px no-repeat,
+    linear-gradient(#207280, #207280) left top / 3px 44px no-repeat,
+    linear-gradient(#207280, #207280) right top / 44px 3px no-repeat,
+    linear-gradient(#207280, #207280) right top / 3px 44px no-repeat,
+    linear-gradient(#207280, #207280) left bottom / 44px 3px no-repeat,
+    linear-gradient(#207280, #207280) left bottom / 3px 44px no-repeat,
+    linear-gradient(#207280, #207280) right bottom / 44px 3px no-repeat,
+    linear-gradient(#207280, #207280) right bottom / 3px 44px no-repeat;
+  content: "";
+  pointer-events: none;
 }
 
 .heroCopy {
   position: relative;
-  z-index: 2;
-  width: min(680px, 100%);
-  text-align: center;
+  z-index: 1;
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  justify-content: center;
+  padding: 76px 68px;
 }
 
 .hero h1 {
-  max-width: 630px;
-  margin: 0 auto;
+  max-width: 650px;
+  margin: 0;
   text-wrap: balance;
   font-family: var(--font-editorial), Georgia, "Times New Roman", serif;
   font-size: 48px;
   font-weight: 400;
-  letter-spacing: -.045em;
-  line-height: 1.1;
+  letter-spacing: -.035em;
+  line-height: 1.02;
 }
 
 .heroSupport {
-  max-width: 610px;
-  margin: 26px auto 0;
-  color: rgba(248, 243, 235, .82);
+  max-width: 560px;
+  margin: 30px 0 0;
+  color: rgba(8, 3, 49, .72);
   font-family: var(--font-sans), Arial, sans-serif;
   font-size: 18px;
   line-height: 1.6;
-  text-wrap: balance;
+}
+
+.heroCommitment {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  justify-content: center;
+  margin: 52px 40px 52px 0;
+  border-left: 1px solid rgba(8, 3, 49, .2);
+  padding: 34px 28px 34px 48px;
+  color: #080331;
+}
+
+.heroCommitment h2 {
+  margin: 0;
+  font-family: var(--font-editorial), Georgia, "Times New Roman", serif;
+  color: #207280;
+  font-size: 30px;
+  font-weight: 400;
+  letter-spacing: -.025em;
+  line-height: 1.1;
+}
+
+.heroCommitment ul {
+  margin: 30px 0 0;
+  border-top: 1px solid rgba(8, 3, 49, .2);
+  padding: 0;
+  list-style: none;
+}
+
+.heroCommitment li {
+  border-bottom: 1px solid rgba(8, 3, 49, .2);
+  padding: 17px 0;
+  font-family: var(--font-sans), Arial, sans-serif;
+  font-size: 15px;
+  line-height: 1.45;
+}
+
+.heroCommitment > p {
+  margin: 28px 0 0;
+  color: #080331;
+  font-family: var(--font-sans), Arial, sans-serif;
+  font-size: 13px;
+  font-weight: 750;
+  letter-spacing: .08em;
+  line-height: 1.35;
+  text-transform: uppercase;
 }
 
 .mission {
@@ -678,11 +723,6 @@
   outline-offset: 4px;
 }
 
-@keyframes announcementExit {
-  0%, 25% { opacity: 1; transform: translateX(-50%) translateY(0); }
-  100% { opacity: 0; transform: translateX(-50%) translateY(-8px); }
-}
-
 @keyframes aboutNavSurface {
   0%, 55% { --about-nav-surface: rgba(229, 227, 242, 1); }
   72%, 100% { --about-nav-surface: rgba(255, 255, 255, 1); }
@@ -738,10 +778,6 @@
     line-height: 1;
   }
 
-  .announcement {
-    top: 92px;
-  }
-
   .mission {
     padding-top: 0;
     scroll-margin-top: 135px;
@@ -775,18 +811,49 @@
 
 @media (max-width: 860px) {
   .hero {
-    min-height: max(680px, 100svh);
-    padding: 136px 28px 72px;
+    min-height: max(760px, 100svh);
+    padding: 128px 28px 72px;
+  }
+
+  .heroCharter {
+    min-height: 0;
+    grid-template-columns: 1fr;
+  }
+
+  .heroCopy {
+    padding: 68px 54px 52px;
   }
 
   .hero h1 {
-    max-width: 650px;
+    max-width: 610px;
     font-size: 42px;
   }
 
   .heroSupport {
-    max-width: 600px;
+    max-width: 560px;
     font-size: 18px;
+  }
+
+  .heroCommitment {
+    margin: 0 54px 42px;
+    border-top: 1px solid rgba(8, 3, 49, .2);
+    border-left: 0;
+    padding: 36px 0 18px;
+  }
+
+  .heroCommitment ul {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .heroCommitment li {
+    border-bottom: 0;
+    padding: 16px 20px 16px 0;
+  }
+
+  .heroCommitment li + li {
+    border-left: 1px solid rgba(8, 3, 49, .2);
+    padding-left: 20px;
   }
 
   .mission {
@@ -951,35 +1018,66 @@
     flex-basis: 44px;
   }
 
-  .announcement {
-    top: 68px;
-    width: max-content;
-    max-width: 335px;
-    min-height: 44px;
-    padding: 4px 5px 4px 13px;
-    opacity: 1;
-    visibility: visible;
-    animation: none;
-    font-size: 10px;
-  }
-
   .hero {
     height: auto;
-    min-height: max(720px, 100svh);
-    padding: 128px 20px 64px;
+    min-height: max(760px, 100svh);
+    padding: 102px 20px 56px;
+  }
+
+  .heroCharter::before {
+    inset: 8px;
+  }
+
+  .heroCharter::after {
+    inset: 8px;
+    background-size: 30px 3px, 3px 30px, 30px 3px, 3px 30px, 30px 3px, 3px 30px, 30px 3px, 3px 30px;
+  }
+
+  .heroCopy {
+    padding: 54px 28px 42px;
   }
 
   .hero h1 {
-    max-width: 335px;
-    font-size: 32px;
-    line-height: 1.1;
+    max-width: 300px;
+    font-size: 38px;
+    line-height: 1.04;
   }
 
   .heroSupport {
-    max-width: 335px;
+    max-width: 300px;
     margin-top: 24px;
-    font-size: 18px;
-    line-height: 1.6;
+    font-size: 16px;
+    line-height: 1.55;
+  }
+
+  .heroCommitment {
+    margin: 0 28px 28px;
+    padding: 30px 0 18px;
+  }
+
+  .heroCommitment h2 {
+    font-size: 26px;
+  }
+
+  .heroCommitment ul {
+    display: block;
+    margin-top: 24px;
+  }
+
+  .heroCommitment li {
+    border-bottom: 1px solid rgba(8, 3, 49, .2);
+    padding: 14px 0;
+    font-size: 14px;
+  }
+
+  .heroCommitment li + li {
+    border-left: 0;
+    padding-left: 0;
+  }
+
+  .heroCommitment > p {
+    margin-top: 22px;
+    font-size: 11px;
   }
 
   .mission {
@@ -1194,7 +1292,6 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .announcement,
   :global(.asb-marketing-shell):has(.aboutPage) :global(.asb-nav) {
     animation: none;
   }
