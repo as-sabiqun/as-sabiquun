@@ -8,10 +8,10 @@ export const metadata: Metadata = {
   description: "Learn how As-Sabiquun carries Islamic services from intention to completion through approved partners, reviewed evidence, and retained project records.",
 };
 
-const principles = [
-  ["Amanah", "We treat each request as a trust: its scope, money, handoffs, and evidence remain connected in one record."],
-  ["Clarity", "Customers, partners, and administrators see the information they need without hidden steps or vague statuses."],
-  ["Verification", "A project is only marked complete after its evidence is reviewed and the completion record is added to the customer project."],
+const standards = [
+  ["One connected project record.", "Confirmed service details, fulfilment handoffs, submitted evidence, and the completion record stay attached to the same customer project."],
+  ["The right information for each role.", "Customers can follow their project, approved partners receive the confirmed brief, and administrators can review the work and submitted evidence."],
+  ["Completion only after review.", "A project is marked complete only after the evidence required for that service has been submitted and reviewed."],
 ] as const;
 
 const platformServices = [
@@ -80,8 +80,8 @@ export default function AboutPage() {
             <span className={styles.heroCircleSeven} />
           </div>
           <div className={styles.heroCopy}>
-            <h1 id="about-hero-title">Good intentions deserve careful follow-through.</h1>
-            <p className={styles.heroSupport}>We bring Islamic services into one clear journey—from your request to reviewed evidence and a completion record.</p>
+            <h1 id="about-hero-title">A sincere intention should never become an invisible handoff.</h1>
+            <p className={styles.heroSupport}>When you entrust an Islamic service to someone, you should be able to see how that trust is carried.</p>
           </div>
         </section>
 
@@ -92,14 +92,26 @@ export default function AboutPage() {
             <span className={styles.missionCircleThree} />
           </div>
           <div className={styles.missionPanel}>
-            <h2 id="about-mission-title">Our mission is to make Islamic services clear from intention to completion.</h2>
-            <p className={styles.missionLead}>Amanah should be visible at every handoff.</p>
-            <div className={styles.missionNarrative}>
-              <p>Every request begins with the details the service actually needs—who it is for, where it should be fulfilled, and any instructions that must travel with it.</p>
-              <p>Once a request is confirmed, an approved partner fulfils the work against that agreed brief. The handoff stays connected to the same journey instead of disappearing into a separate conversation.</p>
-              <p>Photos, video, location details, or other evidence required for the service are submitted against the same request.</p>
-              <p>That evidence is reviewed before the project is marked complete. The customer then receives a completion record that is retained with the request.</p>
-            </div>
+            <h2 id="about-mission-title">The trust should not disappear after the request.</h2>
+            <p className={styles.missionLead}>Details move between people and fulfilment happens elsewhere. As-Sabiquun keeps one accountable thread through the work.</p>
+            <ol className={styles.missionNarrative}>
+              <li>
+                <span className={styles.missionStep}>Intention</span>
+                <p>Your service details and instructions begin one project record.</p>
+              </li>
+              <li>
+                <span className={styles.missionStep}>Handoff</span>
+                <p>An approved partner receives the confirmed brief, with responsibility still attached.</p>
+              </li>
+              <li>
+                <span className={styles.missionStep}>Evidence</span>
+                <p>Required photos, video, or location details return to the same request for review.</p>
+              </li>
+              <li>
+                <span className={styles.missionStep}>Completion</span>
+                <p>Only then is the work marked complete and retained on the customer project.</p>
+              </li>
+            </ol>
           </div>
           <div className={styles.missionCurve} aria-hidden="true" />
         </section>
@@ -107,27 +119,28 @@ export default function AboutPage() {
 
       <section className={styles.operatingStory} aria-labelledby="operating-story-title">
         <div className={styles.operatingInner}>
-          <p className={styles.storyLabel}>Why we built this.</p>
           <div className={styles.storyGrid}>
             <div className={styles.storyThesis}>
-              <h2 id="operating-story-title">Islamic services deserve a clear chain of responsibility, from intention through to completion.</h2>
-              <div className={styles.projectImages}>
-                <figure className={styles.projectImage}>
-                  <Image src="/landing-hero-volunteers.png" width={132} height={132} sizes="132px" alt="" />
-                </figure>
-                <figure className={styles.projectImage}>
-                  <Image src="/landing-hero-volunteers.png" width={132} height={132} sizes="132px" alt="" />
-                </figure>
-              </div>
-              <p className={styles.projectImagesCaption}>One service handoff, seen from both sides.</p>
+              <h2 id="operating-story-title">Responsibility should travel with the service—not fall between organisations.</h2>
+              <figure className={styles.storyFigure}>
+                <div className={styles.storyFigureImage}>
+                  <Image
+                    src="/landing-water-point.png"
+                    alt="Illustrative view of a community water point"
+                    fill
+                    sizes="(max-width: 860px) calc(100vw - 40px), 552px"
+                  />
+                </div>
+                <figcaption>
+                  <span>Wakaf water</span>
+                  <span>Illustrative view of a community water point.</span>
+                </figcaption>
+              </figure>
             </div>
             <div className={styles.storyNarrative}>
-              <p>At As-Sabiquun, we confirm the details of each Korban or Wakaf request before fulfilment begins.</p>
-              <p>An approved partner works from that confirmed brief and submits the photos, video, location details, or other evidence required for the service.</p>
-              <p>As-Sabiquun reviews the partner-submitted evidence before the project is marked complete.</p>
-              <p>Confirmed service details, reviewed evidence, each handoff, and the completion record remain connected on the customer project.</p>
-              <p className={styles.storyAttribution}>— The As-Sabiquun operating model.</p>
-              <Link className={styles.storyAction} href="/#how">See how it works <span aria-hidden="true">→</span></Link>
+              <p>As-Sabiquun exists to keep responsibility attached after someone chooses and funds an Islamic service.</p>
+              <p>Approved fulfilment partners carry out the work locally. As-Sabiquun keeps the confirmed brief with that handoff and reviews the evidence returned against it.</p>
+              <p>The customer receives more than an unsupported promise: confirmed service details, reviewed evidence, and completion status remain together on their project record.</p>
             </div>
           </div>
         </div>
@@ -136,9 +149,8 @@ export default function AboutPage() {
       <section className={styles.platform} aria-labelledby="platform-title">
         <div className={styles.platformInner}>
           <div className={styles.platformHeading}>
-            <p className={styles.platformLabel}>What we do.</p>
-            <h2 id="platform-title">The As-Sabiquun service platform.</h2>
-            <p>Four services, one clear path from request to reviewed completion.</p>
+            <h2 id="platform-title">Four ways to begin.</h2>
+            <p>Each service continues into the same clear, reviewed project journey.</p>
           </div>
           <div className={styles.platformGrid}>
             {platformServices.map((service) => (
@@ -158,26 +170,25 @@ export default function AboutPage() {
       <section className={styles.principles} aria-labelledby="principles-title">
         <div className={styles.principlesInner}>
           <div className={styles.principlesHeading}>
-            <h2 id="principles-title">Amanah in practice.</h2>
+            <h2 id="principles-title">What customers can expect.</h2>
           </div>
-          <ol className={styles.principlesList}>
-            {principles.map(([title, copy], index) => (
+          <ul className={styles.principlesList}>
+            {standards.map(([title, copy]) => (
               <li className={styles.principleRow} key={title}>
-                <span className={styles.principleNumber}>{String(index + 1).padStart(2, "0")}</span>
                 <h3>{title}</h3>
                 <p>{copy}</p>
                 <span className={styles.principleMotif} aria-hidden="true"><i /></span>
               </li>
             ))}
-          </ol>
+          </ul>
         </div>
       </section>
 
       <section className={styles.closing} aria-labelledby="about-closing-title">
         <div className={styles.closingInner}>
-          <h2 id="about-closing-title">Begin with a service you can follow.</h2>
-          <p>Follow your service through reviewed evidence to a retained completion record.</p>
-          <Link className={styles.closingAction} href="/services">Explore services</Link>
+          <h2 id="about-closing-title">Choose a service. Keep sight of what follows.</h2>
+          <p>Your service details, reviewed evidence, and completion status stay connected from the first request.</p>
+          <Link className={styles.closingAction} href="/services">Choose a service</Link>
         </div>
       </section>
     </div>

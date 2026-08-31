@@ -201,11 +201,11 @@
 .missionPanel {
   position: relative;
   z-index: 2;
-  width: min(750px, 100%);
+  width: min(920px, 100%);
   margin: 0 auto;
   border-radius: 32px;
-  min-height: 740px;
-  padding: 74px 26px 84px;
+  min-height: 0;
+  padding: 74px 54px 84px;
   background: #4865ff;
   box-shadow: 0 30px 80px rgba(8, 3, 49, .18);
 }
@@ -225,7 +225,7 @@
 
 .missionLead {
   width: 100%;
-  max-width: 700px;
+  max-width: 620px;
   margin: 26px auto 0;
   color: rgba(255, 255, 255, .8);
   font-family: var(--font-sans), Arial, sans-serif;
@@ -235,20 +235,64 @@
 }
 
 .missionNarrative {
-  max-width: 700px;
-  margin: 76px auto 0;
+  position: relative;
+  display: grid;
+  max-width: 788px;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 24px;
+  margin: 72px auto 0;
+  padding: 0;
+  list-style: none;
+}
+
+.missionNarrative::before {
+  position: absolute;
+  top: 6px;
+  right: calc(25% - 6px);
+  left: 6px;
+  height: 1px;
+  background: rgba(255, 255, 255, .38);
+  content: "";
+}
+
+.missionNarrative li {
+  position: relative;
+  min-width: 0;
+  padding-top: 34px;
+}
+
+.missionNarrative li::before {
+  position: absolute;
+  z-index: 1;
+  top: 0;
+  left: 0;
+  width: 13px;
+  height: 13px;
+  border: 3px solid #4865ff;
+  border-radius: 50%;
+  background: #fff;
+  box-shadow: 0 0 0 1px rgba(255, 255, 255, .32);
+  content: "";
+}
+
+.missionStep {
+  display: block;
+  margin-bottom: 12px;
+  color: #fff;
+  font-family: var(--font-sans), Arial, sans-serif;
+  font-size: 12px;
+  font-weight: 750;
+  letter-spacing: .1em;
+  line-height: 1;
+  text-transform: uppercase;
 }
 
 .missionNarrative p {
   margin: 0;
   color: rgba(255, 255, 255, .9);
   font-family: var(--font-sans), Arial, sans-serif;
-  font-size: 16px;
-  line-height: 1.65;
-}
-
-.missionNarrative p + p {
-  margin-top: 46px;
+  font-size: 15px;
+  line-height: 1.6;
 }
 
 .missionCircleOne {
@@ -278,11 +322,12 @@
 .operatingStory {
   position: relative;
   display: flex;
-  min-height: 800px;
+  min-height: 860px;
   align-items: center;
-  padding: 146px 48px 138px;
+  padding: 150px 48px 154px;
   color: #080331;
   background: var(--asb-cream, #f8f3eb);
+  scroll-margin-top: 100px;
 }
 
 .operatingInner {
@@ -290,29 +335,11 @@
   margin: 0 auto;
 }
 
-.storyLabel {
-  display: flex;
-  width: max-content;
-  min-height: 33px;
-  align-items: center;
-  justify-content: center;
-  margin: 0 0 40px;
-  border: 1px solid rgba(8, 3, 49, .24);
-  border-radius: 999px;
-  padding: 0 16px;
-  color: #080331;
-  font-family: var(--font-sans), Arial, sans-serif;
-  font-size: 12px;
-  font-weight: 700;
-  letter-spacing: .09em;
-  line-height: 1;
-  text-transform: uppercase;
-}
-
 .storyGrid {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 56px;
+  align-items: center;
+  gap: 72px;
 }
 
 .storyThesis h2 {
@@ -324,67 +351,83 @@
   font-weight: 400;
   letter-spacing: -.035em;
   line-height: 1.1;
+  scroll-margin-top: 100px;
   text-wrap: balance;
 }
 
-.projectImages {
-  display: flex;
-  align-items: flex-start;
-  gap: 16px;
-  margin-top: 44px;
+.storyFigure {
+  margin: 48px 0 0;
 }
 
-.projectImage {
-  width: 132px;
-  height: 132px;
-  flex: 0 0 132px;
+.storyFigureImage {
+  position: relative;
+  aspect-ratio: 4 / 3;
   overflow: hidden;
-  margin: 0;
-  border-radius: 50%;
+  border-radius: 30px;
   background: #e8e1d5;
 }
 
-.projectImage:nth-child(2) {
-  margin-top: 0;
-}
-
-.projectImage img {
-  display: block;
-  width: 100%;
-  height: 100%;
+.storyFigureImage img {
   object-fit: cover;
+  object-position: 56% center;
 }
 
-.projectImage:first-child img {
-  width: 400%;
-  max-width: none;
-  height: 400%;
-  object-position: center;
-  transform: translate(-25%, -31.25%);
-}
-
-.projectImage:nth-child(2) img {
-  width: 400%;
-  max-width: none;
-  height: 400%;
-  object-position: center;
-  transform: translate(-53.5%, -28.5%);
-}
-
-.projectImagesCaption {
-  margin: 12px 0 0;
-  color: rgba(8, 3, 49, .58);
+.storyFigure figcaption {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+  margin-top: 14px;
+  color: rgba(8, 3, 49, .62);
   font-family: var(--font-sans), Arial, sans-serif;
-  font-size: 11px;
-  font-weight: 700;
-  letter-spacing: .11em;
-  line-height: 1.3;
+  font-size: 12px;
+  line-height: 1.4;
+}
+
+.storyFigure figcaption span:first-child {
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+  color: #080331;
+  font-weight: 750;
+  letter-spacing: .08em;
   text-transform: uppercase;
 }
 
+.storyFigure figcaption span:first-child::before {
+  width: 8px;
+  height: 8px;
+  flex: 0 0 8px;
+  border-radius: 50%;
+  background: #4865ff;
+  content: "";
+}
+
 .storyNarrative {
+  position: relative;
   max-width: 520px;
-  padding-top: 5px;
+  padding-left: 42px;
+}
+
+.storyNarrative::before {
+  position: absolute;
+  top: 9px;
+  bottom: 7px;
+  left: 6px;
+  width: 1px;
+  background: linear-gradient(to bottom, #4865ff, rgba(72, 101, 255, .14));
+  content: "";
+}
+
+.storyNarrative::after {
+  position: absolute;
+  top: 4px;
+  left: 1px;
+  width: 11px;
+  height: 11px;
+  border-radius: 50%;
+  background: #4865ff;
+  content: "";
 }
 
 .storyNarrative > p {
@@ -395,66 +438,19 @@
   line-height: 1.6;
 }
 
+.storyNarrative > p:first-child {
+  font-family: var(--font-editorial), Georgia, "Times New Roman", serif;
+  font-size: 28px;
+  letter-spacing: -.02em;
+  line-height: 1.32;
+}
+
 .storyNarrative > p + p {
-  margin-top: 25px;
-}
-
-.storyNarrative .storyAttribution {
-  margin-top: 42px;
-  color: rgba(8, 3, 49, .72);
-  font-size: 14px;
-  font-weight: 650;
-}
-
-.storyAction {
-  display: inline-flex;
-  min-width: 184px;
-  min-height: 54px;
-  align-items: center;
-  justify-content: space-between;
-  gap: 24px;
-  margin-top: 38px;
-  border: 1px solid #4865ff;
-  border-radius: 999px;
-  padding: 0 19px 0 23px;
-  color: #fff;
-  background: #4865ff;
-  font-family: var(--font-sans), Arial, sans-serif;
-  font-size: 15px;
-  font-weight: 650;
-  line-height: 1;
-  text-decoration: none;
-  transition: border-color .2s ease, color .2s ease, background-color .2s ease;
-}
-
-.aboutPage a.storyAction {
-  color: #fff;
-}
-
-.storyAction span {
-  font-size: 19px;
-  transition: transform .2s ease;
-}
-
-.aboutPage a.storyAction:hover,
-.aboutPage a.storyAction:focus-visible {
-  border-color: #1b1463;
-  color: #fff;
-  background: #1b1463;
-}
-
-.storyAction:hover span,
-.storyAction:focus-visible span {
-  transform: translateX(5px);
-}
-
-.storyAction:focus-visible {
-  outline: 3px solid #080331;
-  outline-offset: 3px;
+  margin-top: 30px;
 }
 
 .platform {
-  padding: 150px 48px 86px;
+  padding: 112px 48px 42px;
   color: #080331;
   background: #fff;
 }
@@ -470,28 +466,9 @@
   text-align: center;
 }
 
-.platformLabel,
-.principlesLabel {
-  display: inline-flex;
-  min-height: 33px;
-  align-items: center;
-  justify-content: center;
-  margin: 0;
-  border: 1px solid rgba(8, 3, 49, .24);
-  border-radius: 999px;
-  padding: 0 16px;
-  color: #080331;
-  font-family: var(--font-sans), Arial, sans-serif;
-  font-size: 12px;
-  font-weight: 700;
-  letter-spacing: .09em;
-  line-height: 1;
-  text-transform: uppercase;
-}
-
 .platformHeading h2,
 .principlesHeading h2 {
-  margin: 28px auto 0;
+  margin: 0 auto;
   color: #080331;
   font-family: var(--font-editorial), Georgia, "Times New Roman", serif;
   font-size: 48px;
@@ -499,6 +476,10 @@
   letter-spacing: -.035em;
   line-height: 1.1;
   text-wrap: balance;
+}
+
+.platformHeading h2 {
+  font-size: 44px;
 }
 
 .platformHeading > p:last-child {
@@ -515,7 +496,7 @@
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 6px;
-  margin-top: 74px;
+  margin-top: 52px;
 }
 
 .platformTile {
@@ -524,8 +505,8 @@
   position: relative;
   display: flex;
   min-width: 0;
-  height: 207px;
-  min-height: 207px;
+  height: 198px;
+  min-height: 198px;
   flex-direction: column;
   overflow: hidden;
   border-radius: 24px;
@@ -603,7 +584,7 @@
 .platformCopy > span {
   color: rgba(8, 3, 49, .68);
   font-family: var(--font-sans), Arial, sans-serif;
-  font-size: 16px;
+  font-size: 15px;
   line-height: 1.6;
 }
 
@@ -639,13 +620,13 @@
 }
 
 .principles {
-  padding: 96px 48px 154px;
+  padding: 56px 48px 142px;
   color: #080331;
   background: #fff;
 }
 
 .principlesList {
-  margin: 74px 0 0;
+  margin: 60px 0 0;
   border-top: 1px solid rgba(8, 3, 49, .16);
   padding: 0;
   list-style: none;
@@ -657,23 +638,12 @@
 
 .principleRow {
   display: grid;
-  min-height: 165px;
-  grid-template-columns: 96px 260px minmax(0, 1fr) 48px;
+  min-height: 158px;
+  grid-template-columns: 300px minmax(0, 1fr) 48px;
   align-items: center;
   gap: 24px;
   border-bottom: 1px solid rgba(8, 3, 49, .16);
-  padding: 30px 0;
-}
-
-.principleNumber {
-  align-self: start;
-  padding-top: 8px;
-  color: rgba(8, 3, 49, .52);
-  font-family: var(--font-sans), Arial, sans-serif;
-  font-size: 12px;
-  font-weight: 750;
-  letter-spacing: .12em;
-  line-height: 1;
+  padding: 28px 0;
 }
 
 .principleRow h3 {
@@ -740,7 +710,7 @@
 
 .closing {
   display: grid;
-  min-height: 500px;
+  min-height: 460px;
   place-items: center;
   overflow: clip;
   padding: 80px 48px;
@@ -754,7 +724,7 @@
 }
 
 .closingInner h2 {
-  max-width: 760px;
+  max-width: 700px;
   margin: 0 auto;
   font-family: var(--font-editorial), Georgia, "Times New Roman", serif;
   font-size: 48px;
@@ -765,7 +735,7 @@
 }
 
 .closingInner > p {
-  max-width: 760px;
+  max-width: 620px;
   margin: 20px auto 0;
   color: rgba(8, 3, 49, .76);
   font-family: var(--font-sans), Arial, sans-serif;
@@ -900,10 +870,10 @@
 
   .operatingStory {
     z-index: 1;
-    min-height: 760px;
+    min-height: 0;
     align-items: flex-start;
     margin-top: -170px;
-    padding: 80px 48px 138px;
+    padding: 120px 48px 130px;
   }
 }
 
@@ -964,7 +934,25 @@
   }
 
   .missionNarrative {
+    display: grid;
+    max-width: 600px;
+    grid-template-columns: 1fr;
+    gap: 30px;
     margin-top: 72px;
+  }
+
+  .missionNarrative::before {
+    top: 6px;
+    right: auto;
+    bottom: 6px;
+    left: 6px;
+    width: 1px;
+    height: auto;
+  }
+
+  .missionNarrative li {
+    padding-top: 0;
+    padding-left: 38px;
   }
 
   .operatingStory {
@@ -972,13 +960,9 @@
     padding: 116px 28px 110px;
   }
 
-  .storyLabel {
-    margin-bottom: 42px;
-  }
-
   .storyGrid {
     grid-template-columns: 1fr;
-    gap: 72px;
+    gap: 64px;
   }
 
   .storyThesis h2 {
@@ -986,18 +970,20 @@
     font-size: 44px;
   }
 
-  .projectImages {
-    margin-top: 46px;
+  .storyFigure {
+    margin-top: 44px;
   }
 
   .storyNarrative {
     max-width: 620px;
-    padding-top: 0;
   }
 
-  .platform,
+  .platform {
+    padding: 100px 28px 46px;
+  }
+
   .principles {
-    padding: 116px 28px 120px;
+    padding: 60px 28px 116px;
   }
 
   .platformHeading h2,
@@ -1008,11 +994,11 @@
   .platformGrid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: 8px;
-    margin-top: 62px;
+    margin-top: 48px;
   }
 
   .platformTile {
-    min-height: 207px;
+    min-height: 198px;
     padding: 24px;
   }
 
@@ -1022,12 +1008,12 @@
 
   .principleRow {
     min-height: 150px;
-    grid-template-columns: 64px 210px minmax(0, 1fr);
+    grid-template-columns: 250px minmax(0, 1fr) 48px;
     gap: 22px;
   }
 
   .closing {
-    min-height: 400px;
+    min-height: 380px;
     padding: 72px 28px;
   }
 
@@ -1107,13 +1093,16 @@
     max-width: 335px;
     min-height: 44px;
     padding: 4px 5px 4px 13px;
+    opacity: 1;
+    visibility: visible;
+    animation: none;
     font-size: 10px;
   }
 
   .hero {
-    height: 535px;
-    min-height: 535px;
-    padding: 190px 20px 36px;
+    height: auto;
+    min-height: max(720px, 100svh);
+    padding: 190px 20px 72px;
   }
 
   .hero h1 {
@@ -1217,10 +1206,6 @@
     line-height: 1.62;
   }
 
-  .missionNarrative p + p {
-    margin-top: 40px;
-  }
-
   .operatingStory {
     padding: 96px 20px 92px;
   }
@@ -1229,12 +1214,8 @@
     width: min(335px, 100%);
   }
 
-  .storyLabel {
-    margin-bottom: 36px;
-  }
-
   .storyGrid {
-    gap: 64px;
+    gap: 54px;
   }
 
   .storyThesis h2 {
@@ -1243,19 +1224,18 @@
     line-height: 1.1;
   }
 
-  .projectImages {
-    gap: 14px;
-    margin-top: 42px;
+  .storyFigure {
+    margin-top: 36px;
   }
 
-  .projectImage {
-    width: 124px;
-    height: 124px;
-    flex-basis: 124px;
+  .storyFigureImage {
+    border-radius: 24px;
   }
 
-  .projectImage:nth-child(2) {
-    margin-top: 0;
+  .storyFigure figcaption {
+    align-items: flex-start;
+    gap: 16px;
+    font-size: 11px;
   }
 
   .storyNarrative > p {
@@ -1263,21 +1243,17 @@
     line-height: 1.6;
   }
 
-  .storyNarrative .storyAttribution {
-    margin-top: 36px;
-  }
-
-  .storyAction {
-    min-height: 56px;
-    margin-top: 34px;
+  .storyNarrative > p:first-child {
+    font-size: 24px;
+    line-height: 1.38;
   }
 
   .platform {
-    padding: 96px 20px 64px;
+    padding: 82px 20px 36px;
   }
 
   .principles {
-    padding: 70px 20px 100px;
+    padding: 48px 20px 100px;
   }
 
   .platformInner,
@@ -1288,7 +1264,7 @@
   .platformHeading h2,
   .principlesHeading h2 {
     max-width: 335px;
-    margin-top: 24px;
+    margin-top: 0;
     font-size: 32px;
     line-height: 1.1;
   }
@@ -1306,7 +1282,7 @@
   .platformGrid {
     grid-template-columns: 1fr;
     gap: 6px;
-    margin-top: 52px;
+    margin-top: 44px;
   }
 
   .platformTile {
@@ -1347,33 +1323,34 @@
     grid-template-columns: 1fr;
     align-items: start;
     gap: 0;
-    padding: 46px 0;
-  }
-
-  .principleNumber {
-    grid-row: auto;
-    padding-top: 0;
+    padding: 36px 0;
   }
 
   .principleRow h3 {
-    margin-top: 28px;
+    align-self: auto;
+    margin-top: 0;
     font-size: 30px;
   }
 
   .principleRow p {
+    grid-column: 1 / -1;
     margin-top: 16px;
     font-size: 16px;
     line-height: 1.6;
   }
 
   .principleMotif {
+    grid-row: auto;
+    grid-column: 1;
+    width: 48px;
+    height: 28px;
     justify-self: start;
-    margin-top: 30px;
+    margin-top: 20px;
   }
 
   .closing {
-    min-height: 296px;
-    padding: 32px 20px;
+    min-height: 340px;
+    padding: 48px 20px;
   }
 
   .closingInner h2 {
@@ -1408,8 +1385,6 @@
     will-change: auto;
   }
 
-  .storyAction,
-  .storyAction span,
   .platformArrow,
   .closingAction,
   .closingAction svg {
@@ -1420,8 +1395,6 @@
     --about-nav-surface: rgba(255, 255, 255, 1);
   }
 
-  .storyAction:hover span,
-  .storyAction:focus-visible span,
   .platformTile:hover .platformArrow,
   .platformTile:focus-visible .platformArrow {
     transform: none;
