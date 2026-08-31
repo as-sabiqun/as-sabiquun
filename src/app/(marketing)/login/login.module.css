@@ -1,0 +1,268 @@
+.shell {
+  --login-navy: #1b1463;
+  --login-ink: #080331;
+  --login-cobalt: #4865ff;
+  --login-green: #328a3b;
+  --login-paper: #fffefa;
+  --login-cream: #f8f3eb;
+  min-height: 760px;
+  padding: clamp(7.5rem, 12vw, 10rem) 1.5rem clamp(4.5rem, 8vw, 7rem);
+  background: var(--login-cream);
+}
+
+.frame {
+  display: grid;
+  grid-template-columns: minmax(0, .94fr) minmax(420px, 1.06fr);
+  width: min(1180px, 100%);
+  min-height: 660px;
+  margin: 0 auto;
+  overflow: hidden;
+  border-radius: 16px;
+  background: var(--login-paper);
+  box-shadow: 0 26px 70px rgba(8, 3, 49, .14);
+}
+
+.recordCover {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  overflow: hidden;
+  padding: clamp(2.5rem, 5vw, 4.75rem);
+  background: var(--login-navy);
+  color: #fff;
+}
+
+.recordCover::after {
+  position: absolute;
+  right: -5rem;
+  bottom: -6rem;
+  width: 18rem;
+  height: 18rem;
+  border: 1px solid rgba(244, 202, 97, .28);
+  border-radius: 50%;
+  content: "";
+  pointer-events: none;
+}
+
+.coverMark {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+  gap: .8rem;
+  margin-bottom: clamp(4rem, 9vw, 7.5rem);
+  color: rgba(255, 255, 255, .7);
+  font-size: .72rem;
+  font-weight: 750;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+}
+
+.coverMark > span:first-child {
+  display: grid;
+  width: 2.25rem;
+  height: 2.25rem;
+  place-items: center;
+  border: 1px solid rgba(255, 255, 255, .42);
+  border-radius: 50%;
+  color: #fff;
+}
+
+.coverMark > span:first-child svg { width: .85rem; stroke-width: 2; }
+
+.coverMark i { height: 1px; background: rgba(255, 255, 255, .2); }
+
+.title {
+  max-width: 9.7em;
+  margin: 0;
+  color: #fff;
+  font-family: var(--font-editorial), Georgia, "Times New Roman", serif;
+  font-size: clamp(3.1rem, 5vw, 5rem);
+  font-weight: 400;
+  letter-spacing: -.035em;
+  line-height: .96;
+  text-wrap: balance;
+}
+
+.intro {
+  max-width: 33rem;
+  margin: 1.6rem 0 0;
+  color: rgba(255, 255, 255, .76);
+  font-size: clamp(.95rem, 1.25vw, 1.08rem);
+  line-height: 1.65;
+}
+
+.recordTrail {
+  display: grid;
+  margin: clamp(3rem, 7vw, 5.5rem) 0 0;
+  padding: 0;
+  border-top: 1px solid rgba(255, 255, 255, .22);
+  list-style: none;
+}
+
+.recordTrail li {
+  display: grid;
+  grid-template-columns: 2.2rem 1fr auto;
+  align-items: center;
+  gap: 1rem;
+  min-height: 4.7rem;
+  border-bottom: 1px solid rgba(255, 255, 255, .16);
+}
+
+.recordTrail strong,
+.recordTrail small,
+.passwordlessNote strong,
+.passwordlessNote small { display: block; }
+
+.recordTrail strong { color: #fff; font-size: .82rem; }
+.recordTrail small { margin-top: .2rem; color: rgba(255, 255, 255, .62); font-size: .72rem; line-height: 1.45; }
+.recordTrail svg { width: 1rem; color: #9cd3a2; stroke-width: 2.4; }
+.trailNumber { color: rgba(255, 255, 255, .5); font-size: .68rem; font-weight: 800; letter-spacing: .08em; }
+
+.passwordlessNote {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  gap: .9rem;
+  margin-top: 2.25rem;
+}
+
+.passwordlessNote > svg { width: 1.15rem; color: #f4ca61; }
+.passwordlessNote strong { color: #fff; font-size: .72rem; }
+.passwordlessNote small { margin-top: .18rem; color: rgba(255, 255, 255, .58); font-size: .68rem; }
+
+.accessSheet {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: clamp(2.5rem, 6vw, 5.75rem);
+  background: var(--login-paper);
+  color: var(--login-ink);
+}
+
+.sheetHeader {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  align-items: start;
+  gap: 1rem;
+}
+
+.sheetIcon {
+  display: grid;
+  width: 2.8rem;
+  height: 2.8rem;
+  place-items: center;
+  border-radius: 50%;
+  background: #e4efea;
+  color: var(--login-green);
+}
+
+.sheetIcon svg { width: 1.15rem; stroke-width: 2; }
+.sheetHeader h2 { margin: 0; font-size: clamp(1.55rem, 2.5vw, 2rem); font-weight: 740; letter-spacing: -.025em; line-height: 1.15; }
+.sheetHeader p { max-width: 34rem; margin: .55rem 0 0; color: #5c596d; font-size: .9rem; line-height: 1.55; }
+
+.form { display: grid; gap: .75rem; margin-top: 2.5rem; }
+.form label { color: var(--login-ink); font-size: .78rem; font-weight: 760; }
+
+.input {
+  width: 100%;
+  height: 3.5rem;
+  padding: 0 1rem;
+  border: 1px solid #c9c5d2;
+  border-radius: 12px;
+  outline: 0;
+  background: #fff;
+  color: var(--login-ink);
+  font: inherit;
+  font-size: .95rem;
+  transition: border-color 140ms ease, box-shadow 140ms ease;
+}
+
+.input::placeholder { color: #777486; opacity: 1; }
+.input:hover { border-color: #9994aa; }
+.input:focus-visible { border-color: var(--login-cobalt); box-shadow: 0 0 0 3px rgba(72, 101, 255, .18); }
+.codeInput { font-size: 1.35rem; font-weight: 750; letter-spacing: .32em; font-variant-numeric: tabular-nums; }
+.fieldHelp { margin: -.15rem 0 .25rem; color: #656274; font-size: .72rem; line-height: 1.45; }
+
+.primaryButton,
+.googleButton {
+  display: inline-flex;
+  min-height: 3.5rem;
+  align-items: center;
+  justify-content: center;
+  gap: .7rem;
+  border-radius: 999px;
+  cursor: pointer;
+  font: inherit;
+  font-size: .84rem;
+  font-weight: 780;
+  transition: background-color 140ms ease, border-color 140ms ease, transform 140ms ease;
+}
+
+.primaryButton { margin-top: .4rem; border: 1px solid var(--login-cobalt); background: var(--login-cobalt); color: #fff; }
+.primaryButton svg { width: 1rem; transition: transform 140ms ease; }
+.primaryButton:hover { background: #3653ef; border-color: #3653ef; transform: translateY(-1px); }
+.primaryButton:hover svg { transform: translateX(3px); }
+.primaryButton:focus-visible,
+.googleButton:focus-visible,
+.changeEmail:focus-visible,
+.partnerNote a:focus-visible { outline: 3px solid rgba(72, 101, 255, .32); outline-offset: 3px; }
+
+.divider { display: flex; align-items: center; gap: 1rem; margin: 1.5rem 0; color: #6a6778; font-size: .7rem; }
+.divider::before,
+.divider::after { flex: 1; height: 1px; background: #ded9d1; content: ""; }
+
+.googleButton { width: 100%; border: 1px solid #c9c5d2; background: #fff; color: var(--login-ink); }
+.googleButton svg { width: 1.15rem; height: 1.15rem; }
+.googleButton:hover { border-color: #8e89a0; background: #f8f6f1; transform: translateY(-1px); }
+
+.assurance { display: flex; align-items: flex-start; gap: .55rem; margin: 1.5rem 0 0; color: #656274; font-size: .7rem; line-height: 1.5; }
+.assurance svg { flex: 0 0 auto; width: .9rem; margin-top: .1rem; color: var(--login-green); }
+
+.partnerNote { display: flex; align-items: center; justify-content: space-between; gap: 1rem; margin-top: 2.5rem; padding-top: 1.35rem; border-top: 1px solid #ded9d1; color: #656274; font-size: .72rem; }
+.partnerNote a,
+.changeEmail { display: inline-flex; align-items: center; gap: .35rem; color: #3653ef; font-weight: 760; text-decoration: none; }
+.partnerNote svg { width: .85rem; }
+.partnerNote a:hover,
+.changeEmail:hover { text-decoration: underline; text-underline-offset: .22em; }
+.changeEmail { justify-self: center; margin-top: .35rem; font-size: .76rem; }
+
+.error { margin: 1.5rem 0 -.8rem; padding: .85rem 1rem; border: 1px solid rgba(179, 64, 47, .34); border-radius: 12px; background: #fff4f1; color: #812f22; font-size: .78rem; font-weight: 650; line-height: 1.5; }
+.loading { min-height: 760px; background: var(--asb-cream, #f8f3eb); }
+
+@media (max-width: 900px) {
+  .shell { padding-top: 7rem; }
+  .frame { grid-template-columns: 1fr; }
+  .recordCover { min-height: auto; padding: 3rem; }
+  .accessSheet { order: -1; padding: 4rem 3rem; }
+  .coverMark { margin-bottom: 4.5rem; }
+  .title { max-width: 11em; font-size: clamp(3rem, 8vw, 4.6rem); }
+  .recordTrail { margin-top: 3.5rem; }
+}
+
+@media (max-width: 560px) {
+  .shell { min-height: 0; padding: 5.9rem 0 0; }
+  .frame { border-radius: 0; box-shadow: none; }
+  .recordCover { padding: 2.3rem 1.25rem 2.5rem; }
+  .recordCover::after { display: none; }
+  .coverMark { margin-bottom: 3.5rem; }
+  .coverMark > span:last-child { font-size: .64rem; }
+  .title { max-width: 8.5em; font-size: clamp(2.85rem, 14vw, 4rem); }
+  .intro { font-size: .9rem; }
+  .recordTrail { margin-top: 2.75rem; }
+  .recordTrail li { min-height: 4.4rem; }
+  .recordTrail small { max-width: 16rem; }
+  .accessSheet { padding: 3rem 1.25rem 3.5rem; }
+  .sheetHeader { grid-template-columns: 1fr; }
+  .sheetIcon { width: 2.5rem; height: 2.5rem; }
+  .form { margin-top: 2rem; }
+  .partnerNote { align-items: flex-start; flex-direction: column; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .input,
+  .primaryButton,
+  .primaryButton svg,
+  .googleButton { transition: none; }
+}

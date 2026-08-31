@@ -24,7 +24,7 @@ export async function POST(request: NextRequest) {
   const supabase = await createClient();
   const { error } = await supabase.auth.signInWithOtp({ email });
   if (error) return loginRedirect(request, { error: "We could not send a sign-in code. Please try again.", next });
-  const response = loginRedirect(request, { sent: "otp" });
+  const response = loginRedirect(request, { sent: "otp", next });
   const cookieOptions = { httpOnly: true, sameSite: "lax" as const, secure: request.nextUrl.protocol === "https:", maxAge: 600, path: "/" };
   response.cookies.set("as_customer_email", email, cookieOptions);
   response.cookies.set("as_customer_next", next, cookieOptions);
