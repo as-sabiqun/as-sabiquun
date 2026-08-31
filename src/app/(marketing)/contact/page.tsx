@@ -1,54 +1,100 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import styles from "./contact.module.css";
 
 export const metadata: Metadata = {
   title: "Contact",
-  description: "Contact the As-Sabiqun team about Islamic services or get support for an existing project.",
+  description: "Contact the As-Sabiquun team about Islamic services or get support for an existing project.",
 };
+
+function MessageMark() {
+  return (
+    <svg viewBox="0 0 32 32" aria-hidden="true">
+      <path d="M7.5 8.5h17v11h-9l-5.5 4v-4H7.5v-11Z" />
+      <path d="M12 13h8M12 16.5h5" />
+    </svg>
+  );
+}
+
+function ProjectMark() {
+  return (
+    <svg viewBox="0 0 32 32" aria-hidden="true">
+      <path d="M10 7.5h12v17H10z" />
+      <path d="M13 12h6M13 16h6M13 20h3" />
+      <path d="m20.5 23.5 4-4" />
+    </svg>
+  );
+}
+
+function Arrow() {
+  return (
+    <svg viewBox="0 0 24 18" aria-hidden="true">
+      <path d="M2 9h18M14 3l6 6-6 6" />
+    </svg>
+  );
+}
 
 export default function ContactPage() {
   return (
-    <>
-      <section className="page-header">
-        <div className="container">
-          <p className="eyebrow-label">Contact</p>
-          <h1 className="display max-w-4xl">Tell us what you are trying to arrange.</h1>
-          <p className="lede">Ask about a service before you begin, or sign in to raise a concern about an existing project.</p>
-        </div>
-      </section>
+    <div className={styles.contactPage}>
+      <section className={styles.opening} aria-labelledby="contact-title">
+        <div className={styles.openingInner}>
+          <header className={styles.intro}>
+            <h1 id="contact-title">Plan a service or get help with a project.</h1>
+            <p>Choose the route that matches where you are now. We will keep the next step clear.</p>
+          </header>
 
-      <section className="py-20 lg:py-28">
-        <div className="container grid gap-6 lg:grid-cols-2">
-          <article className="card flex min-h-[340px] flex-col p-7 lg:p-10">
-            <span className="numeral text-xs text-[var(--gold)]">01</span>
-            <h2 className="display mt-6 text-3xl">Starting a new service</h2>
-            <p className="mt-4 max-w-md text-sm leading-7 text-[var(--muted)]">Message the team with the service you are considering, the country if relevant, and anything you need clarified before ordering.</p>
-            <div className="mt-auto flex flex-wrap gap-3 pt-10">
-              <a className="btn" href="https://wa.me/6589933786" target="_blank" rel="noreferrer">Message on WhatsApp <span aria-hidden="true">↗</span></a>
-              <a className="btn btn-secondary" href="tel:+6589933786">Call +65 8993 3786</a>
-            </div>
-          </article>
+          <div className={styles.routes}>
+            <article className={styles.routeCard}>
+              <span className={styles.routeMark}><MessageMark /></span>
+              <div className={styles.routeCopy}>
+                <h2>Planning a service</h2>
+                <p>Ask about an Islamic service, location, or what you need before placing an order.</p>
+              </div>
+              <a className={styles.routeAction} href="https://wa.me/6589933786" target="_blank" rel="noreferrer">
+                Message on WhatsApp
+                <Arrow />
+              </a>
+            </article>
 
-          <article className="card flex min-h-[340px] flex-col p-7 lg:p-10">
-            <span className="numeral text-xs text-[var(--gold)]">02</span>
-            <h2 className="display mt-6 text-3xl">Help with an existing project</h2>
-            <p className="mt-4 max-w-md text-sm leading-7 text-[var(--muted)]">Open support from your customer portal so the concern stays connected to the right project and order reference.</p>
-            <div className="mt-auto flex flex-wrap gap-3 pt-10">
-              <Link className="btn" href="/dashboard/report">Report a concern <span aria-hidden="true">→</span></Link>
-              <Link className="btn btn-secondary" href="/login">Customer login</Link>
-            </div>
-          </article>
-        </div>
-      </section>
-
-      <section className="border-y border-[var(--line)] bg-[var(--teal)] py-16 text-white lg:py-20">
-        <div className="container grid gap-8 lg:grid-cols-[.9fr_1.1fr] lg:gap-20">
-          <h2 className="display text-3xl leading-tight lg:text-5xl">A useful message gets you a useful answer.</h2>
-          <div>
-            <p className="text-sm leading-7 text-white/75">Include the service name and your question. For an existing project, also include the order reference—but do not send card details, passwords, or identity documents through WhatsApp.</p>
+            <article className={styles.routeCard}>
+              <span className={styles.routeMark}><ProjectMark /></span>
+              <div className={styles.routeCopy}>
+                <h2>Support for a project</h2>
+                <p>Keep a question or concern connected to the right project and order reference.</p>
+              </div>
+              <Link className={styles.routeAction} href="/dashboard/report">
+                Report a concern
+                <Arrow />
+              </Link>
+            </article>
           </div>
         </div>
       </section>
-    </>
+
+      <section className={styles.secondary} aria-labelledby="other-contact-title">
+        <div className={styles.secondaryInner}>
+          <h2 id="other-contact-title">Other ways to continue.</h2>
+          <div className={styles.secondaryGrid}>
+            <div className={styles.secondaryItem}>
+              <h3>Speak with the team</h3>
+              <p>If a call is easier, you can reach the team directly.</p>
+              <a href="tel:+6589933786">Call +65 8993 3786 <span aria-hidden="true">↗</span></a>
+            </div>
+
+            <div className={styles.secondaryItem}>
+              <h3>Customer login</h3>
+              <p>Open your account to find a project and its order reference.</p>
+              <Link href="/login">Sign in to your account <span aria-hidden="true">→</span></Link>
+            </div>
+
+            <div className={`${styles.secondaryItem} ${styles.safetyItem}`}>
+              <h3>Send information safely</h3>
+              <p>Include the service name and your question. For an existing project, add the order reference. Never send card details, passwords, or identity documents through WhatsApp.</p>
+            </div>
+          </div>
+        </div>
+      </section>
+    </div>
   );
 }
