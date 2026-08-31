@@ -1,0 +1,75 @@
+.page { padding-top: 98px; background: #f7f3eb; color: #080331; }
+.frame { width: min(100% - 48px, 1160px); margin: 0 auto; }
+.introduction { padding: 46px 0 58px; border-bottom: 1px solid rgba(8, 3, 49, .14); }
+.breadcrumb { display: flex; align-items: center; gap: 8px; color: rgba(8, 3, 49, .6); font-family: var(--font-sans), Arial, sans-serif; font-size: 12px; font-weight: 720; letter-spacing: .08em; text-transform: uppercase; }
+.breadcrumb a, .textLink { color: #4865ff; text-decoration: none; }
+.breadcrumb a:hover, .textLink:hover { text-decoration: underline; text-underline-offset: 4px; }
+.introGrid { display: grid; grid-template-columns: minmax(0, 1.32fr) minmax(300px, .68fr); gap: 72px; align-items: end; margin-top: 28px; }
+.introGrid h1 { max-width: 780px; margin: 0; font-family: var(--font-editorial), Georgia, "Times New Roman", serif; font-size: clamp(52px, 5.4vw, 70px); font-weight: 400; letter-spacing: -.045em; line-height: .98; }
+.introGrid p { margin: 0; color: rgba(8, 3, 49, .7); font-family: var(--font-sans), Arial, sans-serif; font-size: 17px; line-height: 1.6; }
+.textLink { display: inline-flex; gap: 9px; margin-top: 22px; font-family: var(--font-sans), Arial, sans-serif; font-size: 14px; font-weight: 740; }
+.catalogue { padding: 70px 0 82px; }
+.sectionHeading { display: grid; grid-template-columns: minmax(0, 1.2fr) minmax(300px, .8fr); gap: 72px; align-items: end; }
+.sectionHeading > div > span, .assurance > div > span { color: #4865ff; font-family: var(--font-sans), Arial, sans-serif; font-size: 12px; font-weight: 760; letter-spacing: .09em; text-transform: uppercase; }
+.sectionHeading h2, .assurance h2 { margin: 14px 0 0; font-family: var(--font-editorial), Georgia, "Times New Roman", serif; font-size: clamp(38px, 4vw, 52px); font-weight: 400; letter-spacing: -.035em; line-height: 1.02; }
+.sectionHeading > p, .assurance > p { margin: 0; color: rgba(8, 3, 49, .65); font-family: var(--font-sans), Arial, sans-serif; font-size: 16px; line-height: 1.65; }
+.projectGrid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 24px; margin-top: 46px; }
+.projectCard { display: grid; grid-template-rows: 310px minmax(0, 1fr); min-width: 0; overflow: hidden; border: 1px solid rgba(8, 3, 49, .1); border-radius: 26px; color: #080331; text-decoration: none; transition: box-shadow 200ms ease, transform 200ms ease; }
+.projectCard:hover { box-shadow: 0 24px 56px rgba(8, 3, 49, .1); transform: translateY(-3px); }
+.projectCard:focus-visible { outline: 3px solid #4865ff; outline-offset: 4px; }
+.featured { grid-column: 1 / -1; grid-template-columns: minmax(0, 1.18fr) minmax(360px, .82fr); grid-template-rows: 510px; }
+.water { background: #edf3ff; }
+.quran { background: #edf7e9; }
+.orphans { background: #fff0f8; }
+.cardMedia { position: relative; min-width: 0; min-height: 0; overflow: hidden; background: #e6e1d8; }
+.cardMedia::after { position: absolute; inset: 0; background: linear-gradient(180deg, transparent 58%, rgba(8, 3, 49, .13)); content: ""; }
+.cardMedia img { object-fit: cover; transition: transform 600ms cubic-bezier(.22, 1, .36, 1); }
+.water .cardMedia img { object-position: 52% 52%; }
+.quran .cardMedia img { object-position: 50% 53%; }
+.orphans .cardMedia img { object-position: 50% 43%; }
+.projectCard:hover .cardMedia img { transform: scale(1.025); }
+.cardCopy { display: flex; min-width: 0; flex-direction: column; padding: 30px; }
+.featured .cardCopy { padding: 40px; }
+.cardTopline { display: flex; align-items: center; justify-content: space-between; gap: 16px; color: rgba(8, 3, 49, .56); font-family: var(--font-sans), Arial, sans-serif; font-size: 12px; font-weight: 760; letter-spacing: .07em; text-transform: uppercase; }
+.price { color: #080331; letter-spacing: .025em; }
+.cardCopy h3 { margin: 28px 0 0; font-family: var(--font-editorial), Georgia, "Times New Roman", serif; font-size: 38px; font-weight: 400; letter-spacing: -.03em; line-height: 1; }
+.featured .cardCopy h3 { font-size: 48px; }
+.cardCopy > p { margin: 18px 0 0; color: rgba(8, 3, 49, .7); font-family: var(--font-sans), Arial, sans-serif; font-size: 16px; line-height: 1.6; }
+.evidence { display: grid; gap: 7px; margin-top: auto; padding-top: 28px; font-family: var(--font-sans), Arial, sans-serif; }
+.evidence span { color: rgba(8, 3, 49, .55); font-size: 11px; font-weight: 760; letter-spacing: .08em; text-transform: uppercase; }
+.evidence strong { font-size: 14px; font-weight: 660; line-height: 1.45; }
+.cardAction { display: flex; align-items: center; justify-content: space-between; gap: 16px; margin-top: 24px; padding-top: 18px; border-top: 1px solid rgba(8, 3, 49, .14); font-family: var(--font-sans), Arial, sans-serif; font-size: 14px; font-weight: 760; }
+.cardAction span:last-child { color: #4865ff; font-size: 22px; transition: transform 180ms ease; }
+.projectCard:hover .cardAction span:last-child { transform: translateX(5px); }
+.assurance { display: grid; grid-template-columns: minmax(0, 1.18fr) minmax(300px, .82fr); gap: 72px; align-items: end; padding: 72px 0 94px; border-top: 1px solid rgba(8, 3, 49, .15); }
+
+@media (max-width: 900px) {
+  .page { padding-top: 84px; }
+  .frame { width: min(100% - 36px, 720px); }
+  .introGrid, .sectionHeading, .assurance { grid-template-columns: 1fr; gap: 22px; }
+  .projectGrid { grid-template-columns: 1fr; }
+  .featured { grid-column: auto; grid-template-columns: 1fr; grid-template-rows: 380px minmax(0, 1fr); }
+  .projectCard { grid-template-rows: 360px minmax(0, 1fr); }
+  .featured .cardCopy { padding: 30px; }
+}
+
+@media (max-width: 520px) {
+  .frame { width: min(100% - 28px, 480px); }
+  .introduction { padding: 22px 0 34px; }
+  .introGrid { margin-top: 20px; }
+  .introGrid h1 { font-size: clamp(44px, 13vw, 54px); }
+  .introGrid p { font-size: 16px; }
+  .catalogue { padding: 48px 0 58px; }
+  .sectionHeading h2, .assurance h2 { font-size: 38px; }
+  .projectGrid { gap: 18px; margin-top: 34px; }
+  .projectCard, .featured { grid-template-rows: 240px minmax(0, 1fr); border-radius: 22px; }
+  .cardCopy, .featured .cardCopy { padding: 24px 20px; }
+  .cardCopy h3, .featured .cardCopy h3 { margin-top: 22px; font-size: 36px; }
+  .cardCopy > p { margin-top: 14px; font-size: 15px; }
+  .evidence { margin-top: 24px; padding-top: 0; }
+  .assurance { padding: 48px 0 62px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .projectCard, .projectCard:hover, .cardMedia img, .projectCard:hover .cardMedia img, .cardAction span:last-child, .projectCard:hover .cardAction span:last-child { transform: none; transition: none; }
+}
