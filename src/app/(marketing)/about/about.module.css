@@ -6,8 +6,8 @@
 .opening {
   position: relative;
   isolation: isolate;
-  color: #f8f3eb;
-  background: #1b1463;
+  color: #080331;
+  background: var(--asb-cream, #f8f3eb);
 }
 
 .hero {
@@ -16,68 +16,37 @@
   min-height: max(720px, 100svh);
   place-items: center;
   overflow: clip;
-  padding: 112px 48px;
+  padding: 118px 48px 76px;
+  background: linear-gradient(to right, var(--asb-cream, #f8f3eb) 0 68%, #e4efea 68% 100%);
 }
 
-.heroCharter {
-  position: relative;
+.heroInner {
   display: grid;
-  width: min(1120px, 100%);
-  min-height: 510px;
-  grid-template-columns: minmax(0, 1.45fr) minmax(330px, .8fr);
-  color: #080331;
-  background: #f8f3eb;
-}
-
-.heroCharter::before {
-  position: absolute;
-  z-index: 2;
-  inset: 12px;
-  border: 1px solid rgba(8, 3, 49, .18);
-  content: "";
-  pointer-events: none;
-}
-
-.heroCharter::after {
-  position: absolute;
-  z-index: 3;
-  inset: 12px;
-  background:
-    linear-gradient(#207280, #207280) left top / 44px 3px no-repeat,
-    linear-gradient(#207280, #207280) left top / 3px 44px no-repeat,
-    linear-gradient(#207280, #207280) right top / 44px 3px no-repeat,
-    linear-gradient(#207280, #207280) right top / 3px 44px no-repeat,
-    linear-gradient(#207280, #207280) left bottom / 44px 3px no-repeat,
-    linear-gradient(#207280, #207280) left bottom / 3px 44px no-repeat,
-    linear-gradient(#207280, #207280) right bottom / 44px 3px no-repeat,
-    linear-gradient(#207280, #207280) right bottom / 3px 44px no-repeat;
-  content: "";
-  pointer-events: none;
+  width: min(1160px, 100%);
+  grid-template-columns: minmax(0, 1.05fr) minmax(420px, .82fr);
+  align-items: center;
+  gap: clamp(64px, 7vw, 104px);
 }
 
 .heroCopy {
-  position: relative;
-  z-index: 1;
   display: flex;
   min-width: 0;
   flex-direction: column;
-  justify-content: center;
-  padding: 76px 68px;
 }
 
 .hero h1 {
-  max-width: 650px;
+  max-width: 640px;
   margin: 0;
   text-wrap: balance;
   font-family: var(--font-editorial), Georgia, "Times New Roman", serif;
   font-size: 48px;
   font-weight: 400;
-  letter-spacing: -.035em;
-  line-height: 1.02;
+  letter-spacing: -.03em;
+  line-height: 1;
 }
 
 .heroSupport {
-  max-width: 560px;
+  max-width: 570px;
   margin: 30px 0 0;
   color: rgba(8, 3, 49, .72);
   font-family: var(--font-sans), Arial, sans-serif;
@@ -85,52 +54,78 @@
   line-height: 1.6;
 }
 
-.heroCommitment {
-  position: relative;
-  z-index: 1;
-  display: flex;
-  min-width: 0;
-  flex-direction: column;
+.heroAction {
+  display: inline-flex;
+  width: fit-content;
+  min-height: 56px;
+  align-items: center;
   justify-content: center;
-  margin: 52px 40px 52px 0;
-  border-left: 1px solid rgba(8, 3, 49, .2);
-  padding: 34px 28px 34px 48px;
-  color: #080331;
-}
-
-.heroCommitment h2 {
-  margin: 0;
-  font-family: var(--font-editorial), Georgia, "Times New Roman", serif;
-  color: #207280;
-  font-size: 30px;
-  font-weight: 400;
-  letter-spacing: -.025em;
-  line-height: 1.1;
-}
-
-.heroCommitment ul {
-  margin: 30px 0 0;
-  border-top: 1px solid rgba(8, 3, 49, .2);
-  padding: 0;
-  list-style: none;
-}
-
-.heroCommitment li {
-  border-bottom: 1px solid rgba(8, 3, 49, .2);
-  padding: 17px 0;
+  margin-top: 36px;
+  border: 1px solid #4865ff;
+  border-radius: 999px;
+  padding: 0 28px;
+  color: #fff;
+  background: #4865ff;
   font-family: var(--font-sans), Arial, sans-serif;
-  font-size: 15px;
+  font-size: 16px;
+  font-weight: 700;
+  line-height: 1;
+  text-decoration: none;
+  transition: background-color .2s ease, border-color .2s ease, transform .2s ease;
+}
+
+.aboutPage .heroAction {
+  color: #fff;
+}
+
+.heroAction:hover,
+.heroAction:focus-visible {
+  border-color: #1b1463;
+  background: #1b1463;
+  transform: translateY(-2px);
+}
+
+.heroAction:focus-visible {
+  outline: 3px solid #080331;
+  outline-offset: 4px;
+}
+
+.heroFigure {
+  width: min(500px, 100%);
+  justify-self: end;
+  margin: 0;
+}
+
+.heroImage {
+  position: relative;
+  aspect-ratio: 5 / 6;
+  overflow: hidden;
+  border-radius: 28px;
+  background: #dbe9df;
+  box-shadow: 0 24px 58px rgba(8, 3, 49, .16);
+}
+
+.heroImage img {
+  object-fit: cover;
+  object-position: 52% center;
+}
+
+.heroFigure figcaption {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 20px;
+  margin-top: 14px;
+  color: rgba(8, 3, 49, .64);
+  font-family: var(--font-sans), Arial, sans-serif;
+  font-size: 12px;
   line-height: 1.45;
 }
 
-.heroCommitment > p {
-  margin: 28px 0 0;
-  color: #080331;
-  font-family: var(--font-sans), Arial, sans-serif;
-  font-size: 13px;
-  font-weight: 750;
+.heroFigure figcaption span:first-child {
+  color: #207280;
+  font-weight: 800;
   letter-spacing: .08em;
-  line-height: 1.35;
   text-transform: uppercase;
 }
 
@@ -811,17 +806,18 @@
 
 @media (max-width: 860px) {
   .hero {
-    min-height: max(760px, 100svh);
-    padding: 128px 28px 72px;
+    min-height: 0;
+    padding: 128px 28px 92px;
+    background: linear-gradient(to bottom, var(--asb-cream, #f8f3eb) 0 58%, #e4efea 58% 100%);
   }
 
-  .heroCharter {
-    min-height: 0;
+  .heroInner {
     grid-template-columns: 1fr;
+    gap: 64px;
   }
 
   .heroCopy {
-    padding: 68px 54px 52px;
+    max-width: 650px;
   }
 
   .hero h1 {
@@ -834,26 +830,13 @@
     font-size: 18px;
   }
 
-  .heroCommitment {
-    margin: 0 54px 42px;
-    border-top: 1px solid rgba(8, 3, 49, .2);
-    border-left: 0;
-    padding: 36px 0 18px;
+  .heroFigure {
+    width: min(650px, 100%);
+    justify-self: center;
   }
 
-  .heroCommitment ul {
-    display: grid;
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-  }
-
-  .heroCommitment li {
-    border-bottom: 0;
-    padding: 16px 20px 16px 0;
-  }
-
-  .heroCommitment li + li {
-    border-left: 1px solid rgba(8, 3, 49, .2);
-    padding-left: 20px;
+  .heroImage {
+    aspect-ratio: 16 / 10;
   }
 
   .mission {
@@ -1020,63 +1003,41 @@
 
   .hero {
     height: auto;
-    min-height: max(760px, 100svh);
-    padding: 102px 20px 56px;
+    padding: 102px 20px 72px;
+    background: linear-gradient(to bottom, var(--asb-cream, #f8f3eb) 0 64%, #e4efea 64% 100%);
   }
 
-  .heroCharter::before {
-    inset: 8px;
-  }
-
-  .heroCharter::after {
-    inset: 8px;
-    background-size: 30px 3px, 3px 30px, 30px 3px, 3px 30px, 30px 3px, 3px 30px, 30px 3px, 3px 30px;
-  }
-
-  .heroCopy {
-    padding: 54px 28px 42px;
+  .heroInner {
+    width: min(335px, 100%);
+    gap: 46px;
   }
 
   .hero h1 {
-    max-width: 300px;
-    font-size: 38px;
-    line-height: 1.04;
+    max-width: 335px;
+    font-size: 42px;
+    line-height: 1.02;
   }
 
   .heroSupport {
-    max-width: 300px;
+    max-width: 335px;
     margin-top: 24px;
-    font-size: 16px;
-    line-height: 1.55;
+    font-size: 17px;
+    line-height: 1.58;
   }
 
-  .heroCommitment {
-    margin: 0 28px 28px;
-    padding: 30px 0 18px;
+  .heroAction {
+    min-height: 54px;
+    margin-top: 30px;
+    padding: 0 24px;
   }
 
-  .heroCommitment h2 {
-    font-size: 26px;
+  .heroImage {
+    aspect-ratio: 4 / 3;
+    border-radius: 24px;
   }
 
-  .heroCommitment ul {
-    display: block;
-    margin-top: 24px;
-  }
-
-  .heroCommitment li {
-    border-bottom: 1px solid rgba(8, 3, 49, .2);
-    padding: 14px 0;
-    font-size: 14px;
-  }
-
-  .heroCommitment li + li {
-    border-left: 0;
-    padding-left: 0;
-  }
-
-  .heroCommitment > p {
-    margin-top: 22px;
+  .heroFigure figcaption {
+    gap: 12px;
     font-size: 11px;
   }
 
@@ -1297,6 +1258,7 @@
   }
 
   .platformArrow,
+  .heroAction,
   .closingAction,
   .closingAction svg {
     transition: none;
@@ -1307,7 +1269,9 @@
   }
 
   .platformTile:hover .platformArrow,
-  .platformTile:focus-visible .platformArrow {
+  .platformTile:focus-visible .platformArrow,
+  .heroAction:hover,
+  .heroAction:focus-visible {
     transform: none;
   }
 }

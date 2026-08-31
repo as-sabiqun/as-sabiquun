@@ -66,20 +66,27 @@ export default function AboutPage() {
     <div className={styles.aboutPage}>
       <div className={styles.opening}>
         <section className={styles.hero} aria-labelledby="about-hero-title">
-          <div className={styles.heroCharter}>
+          <div className={styles.heroInner}>
             <div className={styles.heroCopy}>
-              <h1 id="about-hero-title">We carry your trust through to completion.</h1>
-              <p className={styles.heroSupport}>Every Islamic service stays connected to its confirmed details, reviewed evidence, and completion record.</p>
+              <h1 id="about-hero-title">A sincere intention deserves visible follow-through.</h1>
+              <p className={styles.heroSupport}>As-Sabiquun keeps the service details, reviewed evidence, and completion record connected from the first request.</p>
+              <Link className={styles.heroAction} href="/#how">See how it works</Link>
             </div>
-            <aside className={styles.heroCommitment} aria-label="Amānah, kept visible">
-              <h2>Amānah, kept visible</h2>
-              <ul>
-                <li>The confirmed service details</li>
-                <li>The evidence returned for review</li>
-                <li>The retained completion record</li>
-              </ul>
-              <p>Completion follows review.</p>
-            </aside>
+            <figure className={styles.heroFigure}>
+              <div className={styles.heroImage}>
+                <Image
+                  src="/landing-hero-volunteers.png"
+                  alt="Illustrative view of a food parcel being handed between two people"
+                  fill
+                  priority
+                  sizes="(max-width: 860px) calc(100vw - 40px), 500px"
+                />
+              </div>
+              <figcaption>
+                <span>Care in motion</span>
+                <span>Illustrative service scene.</span>
+              </figcaption>
+            </figure>
           </div>
         </section>
 
