@@ -74,6 +74,12 @@ export default function AboutPage() {
             <h1 id="about-hero-title">A sincere intention should never become an invisible handoff.</h1>
             <p className={styles.heroSupport}>When you entrust an Islamic service to someone, you should be able to see how that trust is carried.</p>
           </div>
+          <ol className={styles.heroJourney} aria-label="The service journey">
+            <li><span>01</span><strong>Intention</strong></li>
+            <li><span>02</span><strong>Handoff</strong></li>
+            <li><span>03</span><strong>Evidence</strong></li>
+            <li><span>04</span><strong>Completion</strong></li>
+          </ol>
         </section>
 
         <section className={styles.mission} aria-labelledby="about-mission-title">
