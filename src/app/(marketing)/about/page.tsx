@@ -71,11 +71,7 @@ export default function AboutPage() {
         </Link>
         <section className={styles.hero} aria-labelledby="about-hero-title">
           <div className={styles.heroCopy}>
-            <h1 id="about-hero-title">
-              <span className={styles.heroStatement}>A sincere intention</span>
-              <span className={styles.heroBridge}>should never become</span>
-              <span className={styles.heroStatement}>an invisible handoff.</span>
-            </h1>
+            <h1 id="about-hero-title">A sincere intention should never become an invisible handoff.</h1>
             <p className={styles.heroSupport}>When you entrust an Islamic service to someone, you should be able to see how that trust is carried.</p>
           </div>
         </section>

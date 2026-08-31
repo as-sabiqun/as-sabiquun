@@ -64,39 +64,19 @@
 .heroCopy {
   position: relative;
   z-index: 2;
-  width: min(1120px, 100%);
+  width: min(680px, 100%);
   text-align: center;
 }
 
 .hero h1 {
-  display: flex;
-  max-width: none;
-  flex-direction: column;
-  align-items: center;
-  gap: .08em;
+  max-width: 630px;
   margin: 0 auto;
+  text-wrap: balance;
   font-family: var(--font-editorial), Georgia, "Times New Roman", serif;
-  font-size: clamp(64px, 5.4vw, 96px);
+  font-size: 48px;
   font-weight: 400;
-  letter-spacing: -.04em;
-  line-height: .92;
-}
-
-.heroStatement {
-  display: block;
-  color: #f8f3eb;
-  white-space: nowrap;
-}
-
-.heroBridge {
-  display: block;
-  margin: .12em 0 .08em;
-  color: #ff6b40;
-  font-size: .68em;
-  font-style: italic;
-  letter-spacing: -.02em;
-  line-height: 1;
-  white-space: nowrap;
+  letter-spacing: -.045em;
+  line-height: 1.1;
 }
 
 .heroSupport {
@@ -753,9 +733,9 @@
   }
 
   .hero h1 {
-    max-width: none;
-    font-size: clamp(72px, 5.4vw, 96px);
-    line-height: .92;
+    max-width: 680px;
+    font-size: 64px;
+    line-height: 1;
   }
 
   .announcement {
@@ -800,7 +780,8 @@
   }
 
   .hero h1 {
-    font-size: clamp(48px, 7.5vw, 64px);
+    max-width: 650px;
+    font-size: 42px;
   }
 
   .heroSupport {
@@ -990,17 +971,8 @@
 
   .hero h1 {
     max-width: 335px;
-    font-size: clamp(42px, 12vw, 48px);
-    line-height: .96;
-  }
-
-  .heroStatement {
-    max-width: 335px;
-    white-space: normal;
-  }
-
-  .heroBridge {
-    font-size: .68em;
+    font-size: 32px;
+    line-height: 1.1;
   }
 
   .heroSupport {
