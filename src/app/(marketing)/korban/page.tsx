@@ -8,9 +8,8 @@ export default async function KorbanPage() {
   const packages = offerings.filter((offering) => offering.service_type === "korban" && offering.unit_amount)
     .map((offering) => ({ id: offering.slug, label: offering.title.replace(/^Korban\s*[—–-]\s*/i, ""), priceCents: offering.unit_amount! }));
   return (
-    <section className="product-page">
-      <div className="container">
-        <div>
+    <section className="product-page service-detail-page">
+      <div>
           {packages.length ? (
             <KorbanContent initialRequestId={randomUUID()} packages={packages} />
           ) : (
@@ -20,7 +19,6 @@ export default async function KorbanPage() {
               <Link className="btn mt-6" href="/contact">Contact us</Link>
             </div>
           )}
-        </div>
       </div>
     </section>
   );

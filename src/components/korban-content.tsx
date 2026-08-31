@@ -3,7 +3,9 @@
 import { useActionState, useEffect, useRef, useState } from "react";
 import { submitKorbanOrder } from "@/app/(marketing)/korban/actions";
 import { CustomerAccountGate } from "@/components/customer-account-gate";
+import { ServiceDetailFrame } from "@/components/service-detail-frame";
 import { shouldResumeCheckout } from "@/lib/customer-account-handoff";
+import transaction from "./service-transaction.module.css";
 
 export interface KorbanPackage {
   id: string;
@@ -13,11 +15,6 @@ export interface KorbanPackage {
 
 const details = {
   description: "Book a Korban carried out overseas by an approved partner. Your participant names stay attached to the order from request to completion.",
-  facts: [
-    ["Fulfilment location", "Coordinated overseas with an approved partner"],
-    ["Documented completion", "Photos or video reviewed before being returned to you"],
-    ["Participant record", "Every name stays connected to the correct order"],
-  ],
 };
 
 const DRAFT_KEY = "korban-draft";
@@ -41,7 +38,6 @@ export function KorbanContent({ initialRequestId, packages }: { initialRequestId
   const [names, setNames] = useState<string[]>([""]);
   const [customerName, setCustomerName] = useState("");
   const [customerPhone, setCustomerPhone] = useState("");
-  const [tab, setTab] = useState<"details" | "faq">("details");
   const [accountGateOpen, setAccountGateOpen] = useState(false);
   const [resumeCheckout, setResumeCheckout] = useState(false);
   const [state, action, pending] = useActionState(submitKorbanOrder, undefined);
@@ -92,28 +88,32 @@ export function KorbanContent({ initialRequestId, packages }: { initialRequestId
   }
 
   return (
-    <div className="product-layout">
-      <div className="product-media">
-        <span className="status">Available</span>
-        <svg viewBox="0 0 64 64" aria-hidden="true"><path d="M15 42c2-11 9-19 17-19 9 0 16 8 17 19" /><path d="M20 24c-3-1-6-4-7-8 6 0 10 2 13 6M44 24c3-1 6-4 7-8-6 0-10 2-13 6M23 42v7M41 42v7M27 32h.1M37 32h.1" /></svg>
-      </div>
-
-      <div>
-        <h1 className="display product-title">Korban</h1>
-        <div className="product-price">
-          <strong>S${(selected.priceCents / 100).toLocaleString()}</strong>
-          <small>per package</small>
-        </div>
-        <p className="product-lead">{details.description}</p>
-
-        <form ref={formRef} className="mt-6 grid gap-5" action={action}>
+    <ServiceDetailFrame
+      family="Services"
+      familyHref="/services"
+      title="Korban"
+      promise={details.description}
+      price={`S$${(selected.priceCents / 100).toLocaleString()}`}
+      priceNote="per package"
+      imageSrc="/services-korban-care.png"
+      imageAlt="Hands carefully preparing a Korban service"
+      imagePosition="center center"
+    >
+        <form ref={formRef} className={transaction.form} action={action}>
+            <header className={transaction.formIntro}>
+              <span>Request details</span>
+              <h2>Arrange your Korban</h2>
+              <p>Choose a live package, add the participant names, then confirm who we should keep updated.</p>
+            </header>
             {state && "error" in state && <p className="auth-error">{state.error}</p>}
             <input type="hidden" name="packageId" value={packageId} />
             <input type="hidden" name="quantity" value={quantity} />
             <input type="hidden" name="requestId" value={requestId} />
 
-            <div>
-              <span className="label mb-2 block">Package</span>
+            <fieldset className={transaction.section}>
+              <legend className={transaction.sectionTitle}>1. Choose a package</legend>
+              <div className={transaction.field}>
+              <span className={transaction.fieldLabel}>Package</span>
               <div className="option-row">
                 {packages.map((p) => (
                   <label key={p.id} className={`option-tile ${packageId === p.id ? "is-active" : ""}`}>
@@ -123,22 +123,26 @@ export function KorbanContent({ initialRequestId, packages }: { initialRequestId
                   </label>
                 ))}
               </div>
-            </div>
+              <p className={transaction.helper}>Prices and package availability come from the current service offering.</p>
+              </div>
 
-            <div>
-              <span className="label mb-2 block">Quantity</span>
-              <div className="flex items-center gap-3">
+              <div className={transaction.field}>
+              <span className={transaction.fieldLabel}>Quantity</span>
+              <div className={transaction.quantityRow}>
                 <div className="stepper">
                   <button type="button" onClick={() => updateQuantity(quantity - 1)} aria-label="Decrease shares">−</button>
                   <span>{quantity}</span>
                   <button type="button" onClick={() => updateQuantity(quantity + 1)} aria-label="Increase shares">+</button>
                 </div>
-                <span className="text-xs text-[var(--muted)]">up to 7 packages per order</span>
+                <span className={transaction.helper}>Up to 7 packages per order.</span>
               </div>
-            </div>
+              </div>
+            </fieldset>
 
-            <div>
-              <span className="label mb-2 block">Participant name{names.length > 1 ? "s" : ""}</span>
+            <fieldset className={transaction.section}>
+              <legend className={transaction.sectionTitle}>2. Add participant details</legend>
+              <div className={transaction.field}>
+              <span className={transaction.fieldLabel}>Participant name{names.length > 1 ? "s" : ""}</span>
               <div className="grid gap-3">
                 {names.map((name, i) => (
                   <input
@@ -152,45 +156,34 @@ export function KorbanContent({ initialRequestId, packages }: { initialRequestId
                   />
                 ))}
               </div>
-            </div>
+              <p className={transaction.helper}>Each name remains attached to the correct package throughout the order.</p>
+              </div>
+            </fieldset>
 
+            <fieldset className={transaction.section}>
+              <legend className={transaction.sectionTitle}>3. Your contact details</legend>
             <label className="label">Your name
               <input className="input" name="customerName" required placeholder="Your full name" value={customerName} onChange={(event) => setCustomerName(event.target.value)} />
             </label>
             <label className="label">Phone
               <input className="input" name="customerPhone" required placeholder="+65 8123 4567" value={customerPhone} onChange={(event) => setCustomerPhone(event.target.value)} />
             </label>
+              <p className={transaction.helper}>Used for order updates and your completion record.</p>
+            </fieldset>
 
+            <div className={transaction.totalBlock}>
             <div className="buy-box-total">
               <span className="text-sm font-bold">Total</span>
               <strong className="numeral">S${(totalCents / 100).toLocaleString()}</strong>
             </div>
 
-            <button type="submit" className="btn" disabled={pending}>{pending ? "Submitting…" : "Continue"} <span aria-hidden="true">→</span></button>
-            <p className="text-xs leading-5 text-[var(--muted)]">We will save your details before secure payment.</p>
+            <button type="submit" className={`btn ${transaction.submit}`} disabled={pending}>{pending ? "Submitting…" : "Continue"} <span aria-hidden="true">→</span></button>
+            <p className={transaction.secureNote}>We save your request details before taking you to secure payment.</p>
+            </div>
         </form>
 
         {accountGateOpen && <CustomerAccountGate next="/korban?resume=checkout" onClose={() => setAccountGateOpen(false)} />}
 
-        <div className="detail-tabs">
-          <button type="button" className={tab === "details" ? "is-active" : ""} onClick={() => setTab("details")}>Details</button>
-          <button type="button" className={tab === "faq" ? "is-active" : ""} onClick={() => setTab("faq")}>What’s included</button>
-        </div>
-        <div className="pt-5">
-          {tab === "details" ? (
-            <p className="text-sm leading-6 text-[var(--muted)]">Package, pricing, and location will be confirmed with our operations team before launch.</p>
-          ) : (
-            <div className="grid gap-3">
-              {details.facts.map(([title, body]) => (
-                <div key={title} className="border-b border-[var(--line)] pb-3 last:border-0">
-                  <strong className="text-sm">{title}</strong>
-                  <p className="mt-1 text-xs leading-6 text-[var(--muted)]">{body}</p>
-                </div>
-              ))}
-            </div>
-          )}
-        </div>
-      </div>
-    </div>
+    </ServiceDetailFrame>
   );
 }

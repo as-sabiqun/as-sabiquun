@@ -21,15 +21,8 @@ export default async function WakafProjectPage({ params }: { params: Promise<{ p
   );
 
   return (
-    <section className="product-page">
-      <div className="container">
-        <nav className="breadcrumb">
-          <Link href="/wakaf">Wakaf</Link>
-          <span aria-hidden="true">/</span>
-          <span>{project.title}</span>
-        </nav>
-
-        <div className="mt-6">
+    <section className="product-page service-detail-page">
+      <div>
           {offerings.length ? (
             <WakafProjectContent
               initialRequestId={randomUUID()}
@@ -44,7 +37,6 @@ export default async function WakafProjectPage({ params }: { params: Promise<{ p
               <Link className="btn mt-6" href="/contact">Contact us</Link>
             </div>
           )}
-        </div>
       </div>
     </section>
   );

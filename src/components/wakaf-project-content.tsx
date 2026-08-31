@@ -4,7 +4,9 @@ import { useActionState, useEffect, useRef, useState } from "react";
 import { submitWakafContribution } from "@/app/(marketing)/wakaf/actions";
 import { wakafProjects, type WakafProjectSlug } from "@/lib/wakaf-projects";
 import { CustomerAccountGate } from "@/components/customer-account-gate";
+import { ServiceDetailFrame } from "@/components/service-detail-frame";
 import { shouldResumeCheckout } from "@/lib/customer-account-handoff";
+import transaction from "./service-transaction.module.css";
 
 const draftKey = (slug: string) => `wakaf-draft-${slug}`;
 
@@ -35,10 +37,16 @@ export function WakafProjectContent({ initialRequestId, projectId, project, offe
   const [dedication, setDedication] = useState("");
   const [customerName, setCustomerName] = useState("");
   const [customerPhone, setCustomerPhone] = useState("");
-  const [tab, setTab] = useState<"details" | "impact">("details");
   const [accountGateOpen, setAccountGateOpen] = useState(false);
   const [resumeCheckout, setResumeCheckout] = useState(false);
   const [state, action, pending] = useActionState(submitWakafContribution, undefined);
+
+  const projectImages: Record<WakafProjectSlug, { src: string; alt: string; position: string }> = {
+    "water-pump": { src: "/landing-water-point.png", alt: "A community water point in use", position: "center center" },
+    quran: { src: "/landing-quran-table.png", alt: "Copies of the Quran arranged on a table", position: "center center" },
+    "food-for-orphans": { src: "/landing-hero-volunteers.png", alt: "Volunteers handing over a food parcel beside a delivery van", position: "center center" },
+  };
+  const projectImage = projectImages[projectId];
 
   useEffect(() => {
     const raw = sessionStorage.getItem(draftKey(projectId));
@@ -78,27 +86,31 @@ export function WakafProjectContent({ initialRequestId, projectId, project, offe
   }, [resumeCheckout]);
 
   return (
-    <div className="product-layout">
-      <div className="product-media">
-        <span className="status">Available</span>
-        {project.icon}
-      </div>
-
-      <div>
-        <h1 className="display product-title">{offering.title}</h1>
-        <div className="product-price">
-          <strong>From S${minimum}</strong>
-          <small>minimum</small>
-        </div>
-        <p className="product-lead">{offering.detail}</p>
-
-        <form ref={formRef} className="mt-6 grid gap-5" action={action}>
+    <ServiceDetailFrame
+      family="Wakaf"
+      familyHref="/wakaf"
+      title={project.title}
+      promise={project.lead}
+      price={`From S$${minimum.toLocaleString()}`}
+      priceNote="minimum contribution"
+      imageSrc={projectImage.src}
+      imageAlt={projectImage.alt}
+      imagePosition={projectImage.position}
+    >
+        <form ref={formRef} className={transaction.form} action={action}>
+            <header className={transaction.formIntro}>
+              <span>Contribution details</span>
+              <h2>Arrange your contribution</h2>
+              <p>Choose a live offering and amount, add an optional dedication, then confirm who we should keep updated.</p>
+            </header>
             {state && "error" in state && <p className="auth-error">{state.error}</p>}
             <input type="hidden" name="projectId" value={projectId} />
             <input type="hidden" name="requestId" value={requestId} />
             <input type="hidden" name="offeringId" value={offering.id} />
 
-            {offerings.length > 1 && <label className="label">Package
+            <fieldset className={transaction.section}>
+              <legend className={transaction.sectionTitle}>1. Choose an amount</legend>
+            {offerings.length > 1 && <label className="label">Offering
               <select className="input" value={offering.id} onChange={(event) => {
                 const next = offerings.find((item) => item.id === event.target.value) ?? offerings[0];
                 setOfferingId(next.id);
@@ -108,9 +120,9 @@ export function WakafProjectContent({ initialRequestId, projectId, project, offe
               </select>
             </label>}
 
-            <div>
-              <span className="label mb-2 block">Contribution</span>
-              <div className="flex flex-wrap gap-2">
+            <div className={transaction.field}>
+              <span className={transaction.fieldLabel}>Contribution</span>
+              <div className={transaction.amounts}>
                 {presets.map((v) => (
                   <button type="button" key={v} className={`amount-pill ${amount === v ? "is-active" : ""}`} onClick={() => setAmount(v)}>S${v}</button>
                 ))}
@@ -118,48 +130,42 @@ export function WakafProjectContent({ initialRequestId, projectId, project, offe
               <label className="label mt-3">Custom amount (SGD)
                 <input className="input" type="number" name="amount" min={minimum} step="0.01" value={amount} onChange={(event) => setAmount(Number(event.target.value))} required />
               </label>
+              <p className={transaction.helper}>The minimum for this offering is S${minimum.toLocaleString()}.</p>
             </div>
+            </fieldset>
 
-            <label className="label">Dedication <span className="font-normal text-[var(--muted)]">Optional</span>
+            <fieldset className={transaction.section}>
+              <legend className={transaction.sectionTitle}>2. Add a dedication</legend>
+            <label className="label">Dedication <span className={transaction.optional}>Optional</span>
               <input className="input" name="dedication" placeholder="In honour or memory of..." value={dedication} onChange={(event) => setDedication(event.target.value)} />
             </label>
+              <p className={transaction.helper}>If supplied, the dedication stays attached to this contribution record.</p>
+            </fieldset>
+
+            <fieldset className={transaction.section}>
+              <legend className={transaction.sectionTitle}>3. Your contact details</legend>
             <label className="label">Your name
               <input className="input" name="customerName" required placeholder="Your full name" value={customerName} onChange={(event) => setCustomerName(event.target.value)} />
             </label>
             <label className="label">Phone
               <input className="input" name="customerPhone" required placeholder="+65 8123 4567" value={customerPhone} onChange={(event) => setCustomerPhone(event.target.value)} />
             </label>
+              <p className={transaction.helper}>Used for order updates and your completion record.</p>
+            </fieldset>
 
+            <div className={transaction.totalBlock}>
             <div className="buy-box-total">
               <span className="text-sm font-bold">Total</span>
               <strong className="numeral">S${amount}</strong>
             </div>
 
-            <button type="submit" className="btn" disabled={pending}>{pending ? "Submitting…" : "Continue"} <span aria-hidden="true">→</span></button>
-            <p className="text-xs leading-5 text-[var(--muted)]">We will save your details before secure payment.</p>
+            <button type="submit" className={`btn ${transaction.submit}`} disabled={pending}>{pending ? "Submitting…" : "Continue"} <span aria-hidden="true">→</span></button>
+            <p className={transaction.secureNote}>We save your contribution details before taking you to secure payment.</p>
+            </div>
         </form>
 
         {accountGateOpen && <CustomerAccountGate next={`/wakaf/${projectId}?resume=checkout`} onClose={() => setAccountGateOpen(false)} />}
 
-        <div className="detail-tabs">
-          <button type="button" className={tab === "details" ? "is-active" : ""} onClick={() => setTab("details")}>Details</button>
-          <button type="button" className={tab === "impact" ? "is-active" : ""} onClick={() => setTab("impact")}>Your impact</button>
-        </div>
-        <div className="pt-5">
-          {tab === "details" ? (
-            <p className="text-sm leading-6 text-[var(--muted)]">Project scope, minimums, and required proof are placeholders until the relevant partners confirm them.</p>
-          ) : (
-            <div className="grid gap-3">
-              {project.impact.map(([amt, body]) => (
-                <div key={amt} className="flex items-baseline gap-3 border-b border-[var(--line)] pb-3 last:border-0">
-                  <strong className="numeral shrink-0 text-sm" style={{ color: "var(--teal-dark)" }}>{amt}</strong>
-                  <p className="text-xs leading-6 text-[var(--muted)]">{body}</p>
-                </div>
-              ))}
-            </div>
-          )}
-        </div>
-      </div>
-    </div>
+    </ServiceDetailFrame>
   );
 }
