@@ -70,15 +70,6 @@ export default function AboutPage() {
           <span aria-hidden="true">&#8599;</span>
         </Link>
         <section className={styles.hero} aria-labelledby="about-hero-title">
-          <div className={styles.heroAmbient} aria-hidden="true">
-            <span className={styles.heroCircleOne} />
-            <span className={styles.heroCircleTwo} />
-            <span className={styles.heroCircleThree} />
-            <span className={styles.heroCircleFour} />
-            <span className={styles.heroCircleFive} />
-            <span className={styles.heroCircleSix} />
-            <span className={styles.heroCircleSeven} />
-          </div>
           <div className={styles.heroCopy}>
             <h1 id="about-hero-title">A sincere intention should never become an invisible handoff.</h1>
             <p className={styles.heroSupport}>When you entrust an Islamic service to someone, you should be able to see how that trust is carried.</p>
@@ -86,11 +77,6 @@ export default function AboutPage() {
         </section>
 
         <section className={styles.mission} aria-labelledby="about-mission-title">
-          <div className={styles.missionAmbient} aria-hidden="true">
-            <span className={styles.missionCircleOne} />
-            <span className={styles.missionCircleTwo} />
-            <span className={styles.missionCircleThree} />
-          </div>
           <div className={styles.missionPanel}>
             <h2 id="about-mission-title">The trust should not disappear after the request.</h2>
             <p className={styles.missionLead}>Details move between people and fulfilment happens elsewhere. As-Sabiquun keeps one accountable thread through the work.</p>

@@ -89,84 +89,6 @@
   text-wrap: balance;
 }
 
-.heroAmbient,
-.missionAmbient {
-  position: absolute;
-  z-index: 0;
-  inset: 0;
-  overflow: clip;
-  pointer-events: none;
-}
-
-.heroAmbient span,
-.missionAmbient span {
-  position: absolute;
-  display: block;
-  aspect-ratio: 1;
-  border: 1.5px solid currentColor;
-  border-radius: 50%;
-  will-change: transform;
-  animation: ambientDrift 300s linear infinite;
-}
-
-.heroCircleOne {
-  top: -330px;
-  left: -10px;
-  width: 520px;
-  color: #43a34c;
-}
-
-.heroCircleTwo {
-  top: 180px;
-  left: -200px;
-  width: 470px;
-  color: #ff6b40;
-  animation-delay: -12s !important;
-}
-
-.heroCircleThree {
-  top: -325px;
-  right: -20px;
-  width: 520px;
-  color: #ff6b40;
-  animation-delay: -6s !important;
-}
-
-.heroCircleFour {
-  top: 215px;
-  right: -200px;
-  width: 460px;
-  color: #f5a0ef;
-  animation-delay: -19s !important;
-}
-
-.heroCircleFive {
-  right: auto;
-  bottom: -300px;
-  left: -30px;
-  width: 500px;
-  color: #f5a0ef;
-  animation-delay: -23s !important;
-}
-
-.heroCircleSix {
-  right: 10%;
-  bottom: -315px;
-  left: auto;
-  width: 530px;
-  color: #4865ff;
-  animation-delay: -31s !important;
-}
-
-.heroCircleSeven {
-  top: auto;
-  bottom: -470px;
-  left: 42%;
-  width: 510px;
-  color: #328a3b;
-  animation-delay: -41s !important;
-}
-
 .mission {
   position: relative;
   overflow: clip;
@@ -293,30 +215,6 @@
   font-family: var(--font-sans), Arial, sans-serif;
   font-size: 15px;
   line-height: 1.6;
-}
-
-.missionCircleOne {
-  top: 45px;
-  right: -220px;
-  width: 520px;
-  color: #ff6b40;
-  animation-delay: -9s !important;
-}
-
-.missionCircleTwo {
-  top: 420px;
-  left: -306px;
-  width: 510px;
-  color: #4865ff;
-  animation-delay: -17s !important;
-}
-
-.missionCircleThree {
-  right: -232px;
-  bottom: 52px;
-  width: 460px;
-  color: #328a3b;
-  animation-delay: -3s !important;
 }
 
 .operatingStory {
@@ -780,15 +678,6 @@
   outline-offset: 4px;
 }
 
-@keyframes ambientDrift {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
-}
-
 @keyframes announcementExit {
   0%, 25% { opacity: 1; transform: translateX(-50%) translateY(0); }
   100% { opacity: 0; transform: translateX(-50%) translateY(-8px); }
@@ -898,31 +787,6 @@
   .heroSupport {
     max-width: 600px;
     font-size: 18px;
-  }
-
-  .heroCircleOne {
-    top: -210px;
-    left: -250px;
-  }
-
-  .heroCircleTwo {
-    top: 260px;
-    left: -420px;
-  }
-
-  .heroCircleThree {
-    top: -340px;
-    right: -250px;
-  }
-
-  .heroCircleFour {
-    top: 240px;
-    right: -420px;
-  }
-
-  .heroCircleFive {
-    right: 10%;
-    bottom: -420px;
   }
 
   .mission {
@@ -1116,49 +980,6 @@
     margin-top: 24px;
     font-size: 18px;
     line-height: 1.6;
-  }
-
-  .heroAmbient span,
-  .missionAmbient span {
-    width: 340px;
-  }
-
-  .heroCircleOne {
-    top: -174px;
-    left: -230px;
-  }
-
-  .heroCircleTwo {
-    top: 264px;
-    left: -300px;
-  }
-
-  .heroCircleThree {
-    top: -218px;
-    right: -236px;
-  }
-
-  .heroCircleFour {
-    top: 280px;
-    right: -302px;
-  }
-
-  .heroCircleFive {
-    right: -60px;
-    bottom: -260px;
-    left: auto;
-  }
-
-  .heroCircleSix {
-    right: auto;
-    bottom: -255px;
-    left: 9%;
-  }
-
-  .heroCircleSeven {
-    top: -270px;
-    bottom: auto;
-    left: 30%;
   }
 
   .mission {
@@ -1376,13 +1197,6 @@
   .announcement,
   :global(.asb-marketing-shell):has(.aboutPage) :global(.asb-nav) {
     animation: none;
-  }
-
-  .heroAmbient span,
-  .missionAmbient span {
-    animation: none;
-    transform: none;
-    will-change: auto;
   }
 
   .platformArrow,
