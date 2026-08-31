@@ -55,10 +55,10 @@
 .hero {
   position: relative;
   display: grid;
-  min-height: 720px;
-  place-items: start center;
+  min-height: max(720px, 100svh);
+  place-items: center;
   overflow: clip;
-  padding: clamp(230px, 30vh, 270px) 24px 74px;
+  padding: clamp(136px, 15vh, 160px) 24px 72px;
 }
 
 .heroCopy {
@@ -776,7 +776,7 @@
 @media (max-width: 860px) {
   .hero {
     min-height: max(680px, 100svh);
-    padding: 230px 28px 72px;
+    padding: 136px 28px 72px;
   }
 
   .hero h1 {
@@ -966,7 +966,7 @@
   .hero {
     height: auto;
     min-height: max(720px, 100svh);
-    padding: 190px 20px 72px;
+    padding: 128px 20px 64px;
   }
 
   .hero h1 {
