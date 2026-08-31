@@ -6,7 +6,6 @@ import { deriveOrderMilestone, isPaid, milestoneLabels, type DeliveryStatus, typ
 import { formatCents, orderTitle, type OrderRow } from "@/lib/orders";
 import { createClient, getCurrentUser, getProfile } from "@/lib/supabase/server";
 import { isCustomerAccount } from "@/lib/auth";
-import { createAdminClient } from "@/lib/supabase/admin";
 import styles from "../../dashboard.module.css";
 import { PaymentStatusWatcher } from "./payment-status-watcher";
 
@@ -17,6 +16,7 @@ interface CustomerOrder extends OrderRow {
   fulfilment_status: FulfilmentStatus;
   delivery_status: DeliveryStatus;
   settlement_status: SettlementStatus;
+  payment_provider: string;
   accepted_at: string | null;
   proof_submitted_at: string | null;
   completed_at: string | null;
@@ -103,18 +103,12 @@ export default async function OrderDetailPage({ params, searchParams }: PageProp
 
   const { data: order, error: orderError } = await supabase
     .from("customer_orders")
-    .select("id, reference, service_type, category_slug, quantity, participant_names, dedication, customer_name, total_amount, currency, payment_status, fulfilment_status, delivery_status, settlement_status, status, accepted_at, proof_submitted_at, completed_at, created_at, offering_title")
+    .select("id, reference, service_type, category_slug, quantity, participant_names, dedication, customer_name, total_amount, currency, payment_status, payment_provider, fulfilment_status, delivery_status, settlement_status, status, accepted_at, proof_submitted_at, completed_at, created_at, offering_title")
     .eq("reference", reference)
     .maybeSingle();
   if (orderError) throw new Error("Project details could not be loaded.");
   if (!order) notFound();
   const row = order as unknown as CustomerOrder;
-  const { data: providerRow, error: providerError } = await createAdminClient()
-    .from("orders")
-    .select("payment_provider")
-    .eq("id", row.id)
-    .single();
-  if (providerError || !providerRow) throw new Error("Payment provider could not be loaded.");
   const [recordResult, reportResult, notificationResult, eventResult] = await Promise.all([
     supabase.from("customer_completion_records").select("submission_id, version, project_country, project_state, project_village, project_address, project_lat, project_lng, project_maps_link, vendor_remarks, reviewed_at").eq("order_id", row.id).order("version", { ascending: false }).limit(1).maybeSingle(),
     supabase.from("customer_completion_report_metadata").select("id, generated_at, version").eq("order_id", row.id).order("version", { ascending: false }).limit(1).maybeSingle(),
@@ -163,7 +157,7 @@ export default async function OrderDetailPage({ params, searchParams }: PageProp
       </header>
 
       {typeof paymentQuery === "string" && ["processing", "checking"].includes(paymentQuery) && !paid && (
-        <p className={styles.notice} role="status"><PaymentStatusWatcher orderId={row.id} provider={providerRow.payment_provider} /></p>
+        <p className={styles.notice} role="status"><PaymentStatusWatcher orderId={row.id} provider={row.payment_provider} /></p>
       )}
       {["failed", "expired", "cancelled"].includes(row.payment_status) && (
         <p className={styles.alert}>Payment was not completed. Your order is safe and can be paid again.</p>

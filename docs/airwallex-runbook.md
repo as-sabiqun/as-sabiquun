@@ -23,7 +23,7 @@ AIRWALLEX_ACCOUNT_ID=
 
 ## Database
 
-Apply `supabase/migrations/024_airwallex_payments.sql` before enabling Airwallex. It:
+Apply `supabase/migrations/025_airwallex_payments.sql` before enabling Airwallex. It:
 
 - adds `airwallex` to provider constraints without modifying HitPay history;
 - reserves stable UUID idempotency keys for PaymentIntents and refunds;

@@ -5,7 +5,6 @@ import { Brand } from "@/components/brand";
 import { isCustomerAccount } from "@/lib/auth";
 import { formatCents } from "@/lib/orders";
 import { createClient, getCurrentUser, getProfile } from "@/lib/supabase/server";
-import { createAdminClient } from "@/lib/supabase/admin";
 import { CheckoutButton } from "./checkout-button";
 import styles from "./checkout.module.css";
 
@@ -21,6 +20,7 @@ interface CheckoutOrder {
   total_amount: number;
   currency: string;
   payment_status: string;
+  payment_provider: string;
   offering_title: string;
   offering_detail: string;
 }
@@ -35,19 +35,13 @@ export default async function CheckoutPage({ params }: PageProps<"/checkout/[ref
 
   const { data, error } = await supabase
     .from("customer_orders")
-    .select("id, reference, service_type, quantity, participant_names, dedication, customer_name, customer_phone, total_amount, currency, payment_status, offering_title, offering_detail")
+    .select("id, reference, service_type, quantity, participant_names, dedication, customer_name, customer_phone, total_amount, currency, payment_status, payment_provider, offering_title, offering_detail")
     .eq("reference", reference)
     .maybeSingle();
   if (error) throw new Error("Checkout could not be loaded.");
   if (!data) notFound();
   const order = data as unknown as CheckoutOrder;
-  const { data: providerRow, error: providerError } = await createAdminClient()
-    .from("orders")
-    .select("payment_provider")
-    .eq("id", order.id)
-    .single();
-  if (providerError || !providerRow) throw new Error("Checkout provider could not be loaded.");
-  const provider = providerRow.payment_provider === "airwallex" ? "airwallex" : "hitpay";
+  const provider = order.payment_provider === "airwallex" ? "airwallex" : "hitpay";
   const paid = ["paid", "partially_refunded"].includes(order.payment_status);
   const refunded = order.payment_status === "refunded";
 
