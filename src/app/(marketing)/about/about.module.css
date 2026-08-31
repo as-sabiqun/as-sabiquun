@@ -66,7 +66,6 @@
   z-index: 2;
   width: min(680px, 100%);
   text-align: center;
-  animation: heroCopyReveal .8s cubic-bezier(.22, 1, .36, 1) both;
 }
 
 .hero h1 {
@@ -88,58 +87,6 @@
   font-size: 18px;
   line-height: 1.6;
   text-wrap: balance;
-}
-
-.heroJourney {
-  position: absolute;
-  z-index: 2;
-  bottom: clamp(28px, 5vh, 52px);
-  left: 50%;
-  display: grid;
-  width: min(920px, calc(100% - 96px));
-  grid-template-columns: repeat(4, minmax(0, 1fr));
-  margin: 0;
-  border-top: 1px solid rgba(248, 243, 235, .28);
-  padding: 0;
-  list-style: none;
-  transform: translateX(-50%);
-}
-
-.heroJourney li {
-  position: relative;
-  display: grid;
-  justify-items: center;
-  gap: 7px;
-  padding: 16px 8px 0;
-  font-family: var(--font-sans), Arial, sans-serif;
-  text-align: center;
-}
-
-.heroJourney li::before {
-  position: absolute;
-  top: -5px;
-  left: 50%;
-  width: 1px;
-  height: 9px;
-  background: #8799ff;
-  content: "";
-}
-
-.heroJourney li > span {
-  color: #8799ff;
-  font-size: 9px;
-  font-weight: 750;
-  letter-spacing: .12em;
-  line-height: 1;
-}
-
-.heroJourney li > strong {
-  color: rgba(248, 243, 235, .86);
-  font-size: 11px;
-  font-weight: 600;
-  letter-spacing: .06em;
-  line-height: 1.2;
-  text-transform: uppercase;
 }
 
 .mission {
@@ -731,19 +678,6 @@
   outline-offset: 4px;
 }
 
-@keyframes heroCopyReveal {
-  from {
-    opacity: .72;
-    filter: blur(4px);
-    transform: translateY(14px);
-  }
-  to {
-    opacity: 1;
-    filter: blur(0);
-    transform: translateY(0);
-  }
-}
-
 @keyframes announcementExit {
   0%, 25% { opacity: 1; transform: translateX(-50%) translateY(0); }
   100% { opacity: 0; transform: translateX(-50%) translateY(-8px); }
@@ -1048,21 +982,6 @@
     line-height: 1.6;
   }
 
-  .heroJourney {
-    bottom: 28px;
-    width: calc(100% - 40px);
-  }
-
-  .heroJourney li {
-    gap: 6px;
-    padding: 14px 2px 0;
-  }
-
-  .heroJourney li > strong {
-    font-size: 9px;
-    letter-spacing: .035em;
-  }
-
   .mission {
     padding: 35px 0 96px;
   }
@@ -1276,7 +1195,6 @@
 
 @media (prefers-reduced-motion: reduce) {
   .announcement,
-  .heroCopy,
   :global(.asb-marketing-shell):has(.aboutPage) :global(.asb-nav) {
     animation: none;
   }
