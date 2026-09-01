@@ -4,8 +4,8 @@ import { useActionState, useState } from "react";
 import { completePartnerOnboarding } from "./actions";
 import { vendorServiceOptions, vendorTypes, type VendorServiceSlug } from "@/lib/vendor-options";
 
-export function PartnerOnboardingForm({ initialName }: { initialName: string }) {
-  const [state, action, pending] = useActionState(completePartnerOnboarding, undefined);
+export function PartnerOnboardingForm({ initialName, next }: { initialName: string; next: string }) {
+  const [state, action, pending] = useActionState(completePartnerOnboarding.bind(null, next), undefined);
   const [services, setServices] = useState<VendorServiceSlug[]>([]);
 
   function toggle(slug: VendorServiceSlug) {

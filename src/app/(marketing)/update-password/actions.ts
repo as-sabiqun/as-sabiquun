@@ -1,15 +1,21 @@
 "use server";
 
 import { redirect } from "next/navigation";
+import { safeVendorRedirectPath } from "@/lib/auth-redirect";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { createClient, getProfile, isSupabaseAdminConfigured } from "@/lib/supabase/server";
 import { hasCompleteVendorProfile } from "@/lib/vendor-profile";
 
 export type UpdatePasswordState = { error: string } | undefined;
 
-export async function updatePassword(_state: UpdatePasswordState, formData: FormData): Promise<UpdatePasswordState> {
+function partnerLoginRedirect(params: Record<string, string>) {
+  redirect(`/partner-login?${new URLSearchParams(params).toString()}`);
+}
+
+export async function updatePassword(nextValue: string, _state: UpdatePasswordState, formData: FormData): Promise<UpdatePasswordState> {
   const password = String(formData.get("password") ?? "");
   const confirmation = String(formData.get("confirmation") ?? "");
+  const next = safeVendorRedirectPath(nextValue);
   if (password.length < 8) return { error: "Password must be at least 8 characters." };
   if (password !== confirmation) return { error: "The passwords do not match." };
 
@@ -66,20 +72,20 @@ export async function updatePassword(_state: UpdatePasswordState, formData: Form
         .eq("id", invitationId);
       if (profileError || invitationError) return { error: "Your password was saved, but the vendor profile could not be activated. Contact As-Sabiquun." };
       await supabase.auth.signOut();
-      redirect("/partner-login?message=Password saved. Sign in to open your vendor dashboard.");
+      partnerLoginRedirect({ message: "Password saved. Sign in to open your vendor dashboard.", next });
     }
-    redirect("/partner-onboarding");
+    redirect(`/partner-onboarding?${new URLSearchParams({ next }).toString()}`);
   }
 
   if (profile.role === "vendor" && profile.vendor_onboarding_status && profile.vendor_onboarding_status !== "approved") {
     await supabase.auth.signOut();
-    redirect("/partner-login?message=Password saved. Your partner account is awaiting approval.");
+    partnerLoginRedirect({ message: "Password saved. Your partner account is awaiting approval.", next });
   }
 
   if (profile.status !== "active") {
     await supabase.auth.signOut();
-    redirect("/partner-login?error=This account is suspended.");
+    partnerLoginRedirect({ error: "This account is suspended.", next });
   }
   await supabase.auth.signOut();
-  redirect("/partner-login?message=Password updated. Sign in again to continue.");
+  partnerLoginRedirect({ message: "Password updated. Sign in again to continue.", next });
 }

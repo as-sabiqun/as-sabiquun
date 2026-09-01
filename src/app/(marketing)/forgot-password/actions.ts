@@ -1,13 +1,16 @@
 "use server";
 
 import { getSiteUrl } from "@/lib/site-url";
+import { safeVendorRedirectPath } from "@/lib/auth-redirect";
 import { consumeRateLimit, requestAddress } from "@/lib/rate-limit";
 import { createClient } from "@/lib/supabase/server";
 
 export type ForgotPasswordState = { error?: string; message?: string } | undefined;
 
-export async function requestPasswordReset(_state: ForgotPasswordState, formData: FormData): Promise<ForgotPasswordState> {
+export async function requestPasswordReset(context: string, nextValue: string, _state: ForgotPasswordState, formData: FormData): Promise<ForgotPasswordState> {
   const email = String(formData.get("email") ?? "").trim().toLowerCase();
+  const isPartner = context === "partner";
+  const next = safeVendorRedirectPath(nextValue);
   if (!email || email.length > 254) return { error: "Enter your email address." };
 
   try {
@@ -20,8 +23,11 @@ export async function requestPasswordReset(_state: ForgotPasswordState, formData
 
   const supabase = await createClient();
   const siteUrl = await getSiteUrl();
+  const updatePasswordPath = isPartner
+    ? `/update-password?context=partner&next=${encodeURIComponent(next)}`
+    : "/update-password";
   const { error } = await supabase.auth.resetPasswordForEmail(email, {
-    redirectTo: `${siteUrl}/auth/callback?intent=recovery&next=/update-password`,
+    redirectTo: `${siteUrl}/auth/callback?intent=recovery&next=${encodeURIComponent(updatePasswordPath)}`,
   });
 
   if (error) return { error: "A reset email could not be sent right now. Please try again." };

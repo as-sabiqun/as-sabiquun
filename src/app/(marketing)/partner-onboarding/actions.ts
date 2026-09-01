@@ -2,13 +2,14 @@
 
 import { redirect } from "next/navigation";
 import { sessionUsesAuthMethod } from "@/lib/auth";
+import { safeVendorRedirectPath } from "@/lib/auth-redirect";
 import { isContactNumber } from "@/lib/checkout-validation";
 import { createClient, getProfile } from "@/lib/supabase/server";
 import { vendorServiceOptions, vendorTypes } from "@/lib/vendor-options";
 
 export type PartnerOnboardingState = { error: string } | undefined;
 
-export async function completePartnerOnboarding(_state: PartnerOnboardingState, formData: FormData): Promise<PartnerOnboardingState> {
+export async function completePartnerOnboarding(nextValue: string, _state: PartnerOnboardingState, formData: FormData): Promise<PartnerOnboardingState> {
   const organisationName = String(formData.get("organisationName") ?? "").trim();
   const contactPerson = String(formData.get("contactPerson") ?? "").trim();
   const phone = String(formData.get("phone") ?? "").trim();
@@ -59,5 +60,6 @@ export async function completePartnerOnboarding(_state: PartnerOnboardingState, 
   if (error || !data) return { error: error?.message ?? "Partner onboarding could not be completed." };
 
   await supabase.auth.signOut();
-  redirect("/partner-login?message=Setup complete. Your partner account is awaiting administrator approval.");
+  const next = safeVendorRedirectPath(nextValue);
+  redirect(`/partner-login?${new URLSearchParams({ message: "Setup complete. Your partner account is awaiting administrator approval.", next }).toString()}`);
 }

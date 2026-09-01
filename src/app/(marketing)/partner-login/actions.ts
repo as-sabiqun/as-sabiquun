@@ -6,32 +6,32 @@ import { safeVendorRedirectPath } from "@/lib/auth-redirect";
 import { consumeRateLimit, requestAddress } from "@/lib/rate-limit";
 import { createClient, getProfile } from "@/lib/supabase/server";
 
-export type PartnerLoginState = { error: string } | undefined;
+export type PartnerLoginState = { error: string; email: string } | undefined;
 
-export async function partnerLogin(_state: PartnerLoginState, formData: FormData): Promise<PartnerLoginState> {
+export async function partnerLogin(nextValue: string, _state: PartnerLoginState, formData: FormData): Promise<PartnerLoginState> {
   const email = String(formData.get("email") ?? "").trim().toLowerCase();
   const password = String(formData.get("password") ?? "");
   if (!email || !password || email.length > 254 || password.length > 1024) {
-    return { error: "Enter your partner email and password." };
+    return { error: "Enter your partner email and password.", email };
   }
 
   try {
     if (!await consumeRateLimit("partner-login", `${email}:${await requestAddress()}`, 10, 900)) {
-      return { error: "Too many sign-in attempts. Wait 15 minutes and try again." };
+      return { error: "Too many sign-in attempts. Wait 15 minutes and try again.", email };
     }
   } catch {
-    return { error: "Partner sign-in is temporarily unavailable." };
+    return { error: "Partner sign-in is temporarily unavailable.", email };
   }
 
   const supabase = await createClient();
   const { data, error } = await supabase.auth.signInWithPassword({ email, password });
-  if (error || !data.user) return { error: "That email and password do not match a partner account." };
+  if (error || !data.user) return { error: "That email and password do not match a partner account.", email };
 
   const profile = await getProfile(supabase, data.user.id);
   if (!isApprovedVendor(profile)) {
     await supabase.auth.signOut();
-    return { error: vendorAccessMessage(profile) };
+    return { error: vendorAccessMessage(profile), email };
   }
 
-  redirect(safeVendorRedirectPath(String(formData.get("next") ?? "")));
+  redirect(safeVendorRedirectPath(nextValue));
 }

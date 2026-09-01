@@ -1,11 +1,18 @@
 "use client";
 
 import Link from "next/link";
+import { useSearchParams } from "next/navigation";
 import { useActionState } from "react";
 import { requestPasswordReset } from "./actions";
 
 export default function ForgotPasswordPage() {
-  const [state, action, pending] = useActionState(requestPasswordReset, undefined);
+  const searchParams = useSearchParams();
+  const isPartner = searchParams.get("context") === "partner";
+  const next = searchParams.get("next") ?? "";
+  const [state, action, pending] = useActionState(requestPasswordReset.bind(null, isPartner ? "partner" : "", next), undefined);
+  const backHref = isPartner
+    ? next ? { pathname: "/partner-login", query: { next } } : "/partner-login"
+    : "/login";
 
   return (
     <section className="auth-shell">
@@ -25,7 +32,7 @@ export default function ForgotPasswordPage() {
             <button type="submit" className="btn" disabled={pending}>{pending ? "Sending…" : "Send reset link"}</button>
           </form>
 
-          <p className="auth-switch"><Link href="/login">Back to login</Link></p>
+          <p className="auth-switch"><Link href={backHref}>Back to {isPartner ? "partner sign in" : "login"}</Link></p>
         </div>
       </div>
     </section>

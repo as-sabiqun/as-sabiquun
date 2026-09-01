@@ -1,10 +1,12 @@
 "use client";
 
 import { useActionState } from "react";
+import { useSearchParams } from "next/navigation";
 import { updatePassword } from "./actions";
 
 export default function UpdatePasswordPage() {
-  const [state, action, pending] = useActionState(updatePassword, undefined);
+  const searchParams = useSearchParams();
+  const [state, action, pending] = useActionState(updatePassword.bind(null, searchParams.get("next") ?? ""), undefined);
 
   return (
     <section className="auth-shell">

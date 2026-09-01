@@ -1,0 +1,223 @@
+.shell {
+  --partner-navy: #1b1463;
+  --partner-ink: #080331;
+  --partner-cobalt: #4865ff;
+  --partner-green: #328a3b;
+  --partner-mint: #e4efea;
+  --partner-paper: #fffefa;
+  --partner-cream: #f8f3eb;
+  min-height: 760px;
+  padding: clamp(7.5rem, 12vw, 10rem) 1.5rem clamp(4.5rem, 8vw, 7rem);
+  background: var(--partner-cream);
+}
+
+.frame {
+  display: grid;
+  grid-template-columns: minmax(420px, 1.05fr) minmax(0, .95fr);
+  width: min(1180px, 100%);
+  min-height: 680px;
+  margin: 0 auto;
+  overflow: hidden;
+  border-radius: 16px;
+  background: var(--partner-paper);
+  box-shadow: 0 26px 70px rgba(8, 3, 49, .14);
+}
+
+.accessSheet {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: clamp(2.75rem, 6vw, 5.75rem);
+  background: var(--partner-paper);
+  color: var(--partner-ink);
+}
+
+.sheetHeader {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  align-items: start;
+  gap: 1rem;
+}
+
+.sheetIcon {
+  display: grid;
+  width: 2.8rem;
+  height: 2.8rem;
+  place-items: center;
+  border-radius: 50%;
+  background: var(--partner-mint);
+  color: var(--partner-green);
+}
+
+.sheetIcon svg { width: 1.15rem; stroke-width: 2; }
+
+.sheetHeader h1 {
+  max-width: 11em;
+  margin: 0;
+  font-family: var(--font-editorial), Georgia, "Times New Roman", serif;
+  font-size: clamp(3rem, 4.6vw, 4.25rem);
+  font-weight: 400;
+  letter-spacing: -.035em;
+  line-height: .98;
+  text-wrap: balance;
+}
+
+.sheetHeader p { max-width: 31rem; margin: 1rem 0 0; color: #5c596d; font-size: .9rem; line-height: 1.6; }
+
+.form { margin-top: 2.75rem; }
+.form fieldset { display: grid; gap: .75rem; margin: 0; padding: 0; border: 0; }
+.form label { color: var(--partner-ink); font-size: .78rem; font-weight: 760; }
+
+.input {
+  width: 100%;
+  height: 3.5rem;
+  padding: 0 1rem;
+  border: 1px solid #c9c5d2;
+  border-radius: 12px;
+  outline: 0;
+  background: #fff;
+  color: var(--partner-ink);
+  font: inherit;
+  font-size: .95rem;
+  transition: border-color 140ms ease, box-shadow 140ms ease;
+}
+
+.input::placeholder { color: #777486; opacity: 1; }
+.input:hover { border-color: #9994aa; }
+.input:focus-visible { border-color: var(--partner-cobalt); box-shadow: 0 0 0 3px rgba(72, 101, 255, .18); }
+.form fieldset:disabled .input { cursor: wait; opacity: .72; }
+
+.passwordLabel { display: flex; align-items: center; justify-content: space-between; gap: 1rem; margin-top: .55rem; }
+.passwordLabel a { color: #3653ef; font-size: .72rem; font-weight: 760; }
+.passwordLabel a:hover { text-decoration: underline; text-underline-offset: .22em; }
+
+.primaryButton {
+  display: inline-flex;
+  min-height: 3.5rem;
+  align-items: center;
+  justify-content: center;
+  gap: .7rem;
+  margin-top: .7rem;
+  border: 1px solid var(--partner-cobalt);
+  border-radius: 999px;
+  background: var(--partner-cobalt);
+  color: #fff;
+  cursor: pointer;
+  font: inherit;
+  font-size: .84rem;
+  font-weight: 780;
+  transition: background-color 140ms ease, border-color 140ms ease, transform 140ms ease;
+}
+
+.primaryButton svg { width: 1rem; transition: transform 140ms ease; }
+.primaryButton:hover { border-color: #3653ef; background: #3653ef; transform: translateY(-1px); }
+.primaryButton:hover svg { transform: translateX(3px); }
+.primaryButton:disabled { cursor: wait; opacity: .68; transform: none; }
+.primaryButton:focus-visible,
+.passwordLabel a:focus-visible,
+.customerNote a:focus-visible { outline: 3px solid rgba(72, 101, 255, .32); outline-offset: 3px; }
+
+.error,
+.message { margin: 0 0 1.25rem; padding: .85rem 1rem; border-radius: 12px; font-size: .78rem; font-weight: 650; line-height: 1.5; }
+.error { border: 1px solid rgba(179, 64, 47, .34); background: #fff4f1; color: #812f22; }
+.message { display: flex; align-items: flex-start; gap: .55rem; border: 1px solid rgba(50, 138, 59, .3); background: var(--partner-mint); color: #24692c; }
+.message svg { flex: 0 0 auto; width: 1rem; margin-top: .08rem; }
+
+.securityNote { display: flex; align-items: flex-start; gap: .55rem; margin: 1.35rem 0 0; color: #656274; font-size: .7rem; line-height: 1.5; }
+.securityNote svg { flex: 0 0 auto; width: .9rem; margin-top: .1rem; color: var(--partner-green); }
+
+.customerNote { display: flex; align-items: center; justify-content: space-between; gap: 1rem; margin-top: 2.5rem; padding-top: 1.35rem; border-top: 1px solid #ded9d1; color: #656274; font-size: .72rem; }
+.customerNote a { display: inline-flex; align-items: center; gap: .35rem; color: #3653ef; font-weight: 760; }
+.customerNote svg { width: .85rem; }
+.customerNote a:hover { text-decoration: underline; text-underline-offset: .22em; }
+
+.handoffPanel {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  overflow: hidden;
+  padding: clamp(2.75rem, 5vw, 4.75rem);
+  background: var(--partner-navy);
+  color: #fff;
+}
+
+.handoffPanel::after {
+  position: absolute;
+  right: -6rem;
+  bottom: -6rem;
+  width: 19rem;
+  height: 19rem;
+  border: 1px solid rgba(244, 202, 97, .28);
+  border-radius: 50%;
+  content: "";
+  pointer-events: none;
+}
+
+.panelMark {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+  gap: .8rem;
+  margin-bottom: clamp(4rem, 8vw, 7rem);
+  color: rgba(255, 255, 255, .7);
+  font-size: .72rem;
+  font-weight: 750;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+}
+
+.panelMark > span:first-child { display: grid; width: 2.25rem; height: 2.25rem; place-items: center; border: 1px solid rgba(255, 255, 255, .42); border-radius: 50%; color: #fff; }
+.panelMark > span:first-child svg { width: .85rem; stroke-width: 2; }
+.panelMark i { height: 1px; background: rgba(255, 255, 255, .2); }
+
+.handoffPanel h2 { max-width: 8.6em; margin: 0; font-family: var(--font-editorial), Georgia, "Times New Roman", serif; font-size: clamp(3rem, 4.7vw, 4.25rem); font-weight: 400; letter-spacing: -.035em; line-height: .98; text-wrap: balance; }
+.handoffPanel > div:nth-child(2) > p { max-width: 30rem; margin: 1.4rem 0 0; color: rgba(255, 255, 255, .74); font-size: .92rem; line-height: 1.65; }
+
+.partnerFlow { display: grid; margin: clamp(3rem, 7vw, 5rem) 0 0; padding: 0; border-top: 1px solid rgba(255, 255, 255, .22); list-style: none; }
+.partnerFlow li { display: grid; grid-template-columns: 2.1rem 1.3rem 1fr; align-items: center; gap: .85rem; min-height: 4.7rem; border-bottom: 1px solid rgba(255, 255, 255, .16); }
+.partnerFlow svg { width: 1rem; color: #9cd3a2; stroke-width: 2; }
+.partnerFlow strong,
+.partnerFlow small { display: block; }
+.partnerFlow strong { color: #fff; font-size: .82rem; }
+.partnerFlow small { margin-top: .2rem; color: rgba(255, 255, 255, .62); font-size: .72rem; line-height: 1.45; }
+.flowNumber { color: rgba(255, 255, 255, .5); font-size: .68rem; font-weight: 800; letter-spacing: .08em; }
+
+.panelNote { position: relative; z-index: 1; display: flex; align-items: flex-start; gap: .65rem; margin: 2.25rem 0 0; color: rgba(255, 255, 255, .68); font-size: .7rem; line-height: 1.5; }
+.panelNote svg { flex: 0 0 auto; width: .95rem; margin-top: .1rem; color: #f4ca61; }
+.loading { min-height: 760px; background: var(--asb-cream, #f8f3eb); }
+
+@media (max-width: 900px) {
+  .shell { padding-top: 7rem; }
+  .frame { grid-template-columns: 1fr; }
+  .accessSheet { padding: 4rem 3rem; }
+  .handoffPanel { padding: 3rem; }
+  .panelMark { margin-bottom: 4.5rem; }
+  .handoffPanel h2 { max-width: 11em; font-size: clamp(3rem, 8vw, 4.25rem); }
+  .partnerFlow { margin-top: 3.5rem; }
+}
+
+@media (max-width: 560px) {
+  .shell { min-height: 0; padding: 5.9rem 0 0; }
+  .frame { border-radius: 0; box-shadow: none; }
+  .accessSheet { padding: 3rem 1.25rem 3.5rem; }
+  .sheetHeader { grid-template-columns: 1fr; }
+  .sheetIcon { width: 2.5rem; height: 2.5rem; }
+  .sheetHeader h1 { font-size: clamp(2.85rem, 13vw, 4rem); }
+  .form { margin-top: 2.25rem; }
+  .customerNote { align-items: flex-start; flex-direction: column; }
+  .handoffPanel { padding: 2.5rem 1.25rem 2.75rem; }
+  .handoffPanel::after { display: none; }
+  .panelMark { margin-bottom: 3.75rem; }
+  .panelMark > span:last-child { font-size: .64rem; }
+  .handoffPanel h2 { max-width: 8.5em; font-size: clamp(2.85rem, 13vw, 4rem); }
+  .handoffPanel > div:nth-child(2) > p { font-size: .9rem; }
+  .partnerFlow { margin-top: 2.75rem; }
+  .partnerFlow li { min-height: 4.65rem; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .input,
+  .primaryButton,
+  .primaryButton svg { transition: none; }
+}
