@@ -29,6 +29,8 @@
 .ledger {
   display: flex;
   flex-direction: column;
+  grid-column: 1;
+  grid-row: 1;
   padding: clamp(2.5rem, 5vw, 4.5rem);
   background: var(--admin-teal-dark);
   color: #fff;
@@ -40,12 +42,12 @@
 .adminIdentity strong,
 .adminIdentity small { display: block; }
 .adminIdentity strong { font-size: .95rem; }
-.adminIdentity small { margin-top: .18rem; color: rgba(255, 255, 255, .6); font-size: .64rem; font-weight: 750; letter-spacing: .08em; text-transform: uppercase; }
+.adminIdentity small { margin-top: .18rem; color: rgba(255, 255, 255, .76); font-size: .64rem; font-weight: 750; letter-spacing: .08em; text-transform: uppercase; }
 
 .ledgerIntro { margin-top: clamp(4rem, 8vw, 6.5rem); }
 .ledgerIntro > svg { width: 1.25rem; color: #e0c48f; stroke-width: 1.8; }
 .ledgerIntro h2 { max-width: 8.5em; margin: 1.15rem 0 0; color: #fff; font-family: var(--font-display), var(--font-sans), Arial, sans-serif; font-size: clamp(2.45rem, 4vw, 3.6rem); font-weight: 700; letter-spacing: -.04em; line-height: .98; text-wrap: balance; }
-.ledgerIntro p { max-width: 31rem; margin: 1.2rem 0 0; color: rgba(255, 255, 255, .7); font-size: .82rem; line-height: 1.65; }
+.ledgerIntro p { max-width: 31rem; margin: 1.2rem 0 0; color: rgba(255, 255, 255, .78); font-size: .82rem; line-height: 1.65; }
 
 .accessRoute { display: grid; margin: auto 0 0; padding: 0; border-top: 1px solid rgba(255, 255, 255, .22); list-style: none; }
 .accessRoute li { display: grid; grid-template-columns: 2.3rem 1fr; gap: .9rem; padding: 1.2rem 0; border-bottom: 1px solid rgba(255, 255, 255, .16); }
@@ -53,13 +55,15 @@
 .stepMark svg { width: .95rem; stroke-width: 1.9; }
 .accessRoute small,
 .accessRoute strong { display: block; }
-.accessRoute small { color: rgba(255, 255, 255, .45); font-size: .58rem; font-weight: 850; letter-spacing: .1em; }
+.accessRoute small { color: rgba(255, 255, 255, .76); font-size: .58rem; font-weight: 850; letter-spacing: .1em; }
 .accessRoute strong { margin-top: .18rem; font-size: .78rem; }
-.accessRoute p { margin: .28rem 0 0; color: rgba(255, 255, 255, .58); font-size: .68rem; line-height: 1.45; }
+.accessRoute p { margin: .28rem 0 0; color: rgba(255, 255, 255, .76); font-size: .68rem; line-height: 1.45; }
 .currentStep .stepMark { border-color: var(--admin-gold); background: var(--admin-gold); color: #fff; }
 .currentStep small { color: #e0c48f; }
+.completedStep .stepMark { border-color: rgba(255, 255, 255, .62); background: rgba(255, 255, 255, .12); color: #fff; }
+.completedStep small { color: rgba(255, 255, 255, .66); }
 
-.credentialSheet { display: flex; flex-direction: column; justify-content: center; padding: clamp(3rem, 7vw, 6.5rem); background: var(--admin-paper); }
+.credentialSheet { display: flex; flex-direction: column; grid-column: 2; grid-row: 1; justify-content: center; padding: clamp(3rem, 7vw, 6.5rem); background: var(--admin-paper); }
 .formIntro { display: grid; grid-template-columns: auto 1fr; align-items: start; gap: 1rem; }
 .formIcon { display: grid; width: 2.75rem; height: 2.75rem; place-items: center; border-radius: 12px; background: var(--admin-teal-soft); color: var(--admin-teal-dark); }
 .formIcon svg { width: 1.1rem; stroke-width: 2; }
@@ -85,12 +89,46 @@
 .mfaNote { display: flex; align-items: flex-start; gap: .55rem; margin: 1.4rem 0 0; color: var(--admin-muted); font-size: .68rem; line-height: 1.5; }
 .mfaNote svg { flex: 0 0 auto; width: .9rem; margin-top: .1rem; color: var(--admin-teal); }
 
+.mfaSheet { max-width: 42rem; }
+.enrollmentFrame { min-height: 740px; }
+.enrollmentSheet { justify-content: flex-start; padding: clamp(3.5rem, 6vw, 5.5rem) clamp(3rem, 5vw, 4.5rem); }
+.codeField { display: grid; gap: .7rem; }
+.codeField label { margin-top: .6rem; }
+.codeField > p { margin: -.1rem 0 0; color: var(--admin-muted); font-size: .68rem; line-height: 1.45; }
+.codeInput { font-size: 1.2rem; font-variant-numeric: tabular-nums; font-weight: 780; letter-spacing: .22em; }
+.codeInput::placeholder { letter-spacing: .22em; }
+.setupLaunch fieldset { gap: 1.25rem; }
+.setupSummary { display: grid; grid-template-columns: auto 1fr; gap: .9rem; padding: 1.15rem 0 1.35rem; border-top: 1px solid #ded9d4; border-bottom: 1px solid #ded9d4; }
+.setupSummary > svg { width: 1.2rem; color: var(--admin-teal); stroke-width: 1.8; }
+.setupSummary strong { display: block; color: var(--admin-ink); font-size: .78rem; }
+.setupSummary p { margin: .35rem 0 0; color: var(--admin-muted); font-size: .72rem; line-height: 1.55; }
+
+.enrollmentSetup { display: grid; grid-template-columns: minmax(220px, .82fr) minmax(230px, 1.18fr); gap: 1.75rem 2.25rem; margin-top: 2.5rem; }
+.qrPanel { grid-row: span 2; padding-right: 1.75rem; border-right: 1px solid #ded9d4; }
+.setupStep { display: block; margin-bottom: 1rem; color: var(--admin-ink); font-size: .7rem; font-weight: 800; }
+.qrCode { display: grid; width: fit-content; padding: .75rem; place-items: center; border: 1px solid #d6d0ca; border-radius: 12px; background: #fff; }
+.qrCode img { display: block; width: min(220px, 100%); height: auto; }
+.manualKey { align-self: end; }
+.manualKey strong { display: block; color: var(--admin-ink); font-size: .76rem; }
+.manualKey p { margin: .35rem 0 .7rem; color: var(--admin-muted); font-size: .7rem; line-height: 1.5; }
+.manualKey code { display: block; overflow-wrap: anywhere; padding: .8rem .9rem; border-radius: 10px; background: var(--admin-cream); color: var(--admin-teal-dark); font-family: ui-monospace, SFMono-Regular, Consolas, monospace; font-size: .72rem; line-height: 1.5; user-select: all; }
+.manualKey small { display: block; margin-top: .65rem; color: var(--admin-muted); font-size: .65rem; line-height: 1.45; }
+.enrollmentSetup .form { align-self: start; margin-top: 0; }
+.accountEscape { margin-top: 1.6rem; padding-top: 1.25rem; border-top: 1px solid #ded9d4; }
+.accountEscape > p { margin: 0; color: var(--admin-muted); font-size: .7rem; line-height: 1.55; }
+.accountEscape form { margin-top: .7rem; }
+.secondaryButton { display: inline-flex; min-height: 44px; align-items: center; gap: .5rem; padding: .35rem 0; border: 0; background: transparent; color: var(--admin-teal-dark); cursor: pointer; font: inherit; font-size: .72rem; font-weight: 800; text-decoration: underline; text-decoration-color: rgba(29, 115, 127, .35); text-underline-offset: .22em; }
+.secondaryButton svg { width: .9rem; }
+.secondaryButton:hover { color: var(--admin-ink); text-decoration-color: currentColor; }
+.secondaryButton:focus-visible { border-radius: 4px; outline: 3px solid rgba(162, 124, 71, .38); outline-offset: 3px; }
+.srOnly { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0, 0, 0, 0); clip-path: inset(50%); white-space: nowrap; }
+
 @keyframes access-arrival { from { opacity: .01; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
 
-@media (max-width: 900px) {
+@media (max-width: 1050px) {
   .frame { grid-template-columns: 1fr; }
-  .credentialSheet { order: -1; padding: 4rem 3rem; }
-  .ledger { padding: 3rem; }
+  .credentialSheet { grid-column: 1; grid-row: 1; padding: 4rem 3rem; }
+  .ledger { grid-column: 1; grid-row: 2; padding: 3rem; }
   .ledgerIntro { margin-top: 0; }
   .ledgerIntro > svg { display: none; }
   .ledgerIntro h2 { max-width: none; font-size: clamp(2.2rem, 6vw, 3.2rem); }
@@ -98,6 +136,13 @@
   .accessRoute li { padding-right: 1rem; border-right: 1px solid rgba(255, 255, 255, .16); border-bottom: 0; }
   .accessRoute li:nth-child(2), .accessRoute li:last-child { padding-left: 1rem; }
   .accessRoute li:last-child { border-right: 0; }
+  .mfaSheet { max-width: none; }
+}
+
+@media (max-width: 720px) {
+  .enrollmentSetup { grid-template-columns: 1fr; }
+  .qrPanel { grid-row: auto; padding: 0 0 1.75rem; border-right: 0; border-bottom: 1px solid #ded9d4; }
+  .manualKey { align-self: auto; }
 }
 
 @media (max-width: 560px) {
@@ -107,6 +152,9 @@
   .formIntro { grid-template-columns: 1fr; }
   .formIntro h1 { font-size: clamp(2.5rem, 11vw, 3.25rem); }
   .form { margin-top: 2.25rem; }
+  .enrollmentSheet { padding-top: 3rem; }
+  .enrollmentSetup { margin-top: 2.25rem; }
+  .qrCode { width: 100%; }
   .ledger { padding: 2.5rem 1.25rem; }
   .adminIdentity { display: none; }
   .ledgerIntro h2 { font-size: 2.2rem; }
@@ -122,5 +170,5 @@
 
 @media (prefers-reduced-motion: reduce) {
   .frame { animation: none; }
-  .input, .submitButton, .submitButton svg { transition: none; }
+  .input, .submitButton, .submitButton svg, .secondaryButton { transition: none; }
 }

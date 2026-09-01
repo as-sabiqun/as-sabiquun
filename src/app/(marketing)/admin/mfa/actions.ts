@@ -60,15 +60,23 @@ export async function verifyMfaEnrollment(_state: MfaVerificationState, formData
 export async function verifyMfaChallenge(_state: MfaVerificationState, formData: FormData): Promise<MfaVerificationState> {
   const code = String(formData.get("code") ?? "").replace(/\s/g, "");
   if (!/^[0-9]{6}$/.test(code)) return { error: "Enter the six-digit code from your authenticator app." };
+  const next = safeAdminRedirectPath(String(formData.get("next") ?? ""));
 
   const supabase = await createClient();
   if (!(await getActiveAdmin(supabase))) return { error: "Administrator access is required." };
   const { data: factors, error: factorsError } = await supabase.auth.mfa.listFactors();
   const factor = factors?.totp[0];
-  if (factorsError || !factor) redirect("/admin/mfa/enroll");
+  if (factorsError || !factor) redirect(`/admin/mfa/enroll?next=${encodeURIComponent(next)}`);
 
   const { error } = await supabase.auth.mfa.challengeAndVerify({ factorId: factor.id, code });
   if (error) return { error: "That code was not accepted. Try the current code from your authenticator app." };
 
-  redirect(safeAdminRedirectPath(String(formData.get("next") ?? "")));
+  redirect(next);
+}
+
+export async function switchAdminAccount(formData: FormData) {
+  const next = safeAdminRedirectPath(String(formData.get("next") ?? ""));
+  const supabase = await createClient();
+  await supabase.auth.signOut();
+  redirect(`/admin/sign-in?next=${encodeURIComponent(next)}`);
 }

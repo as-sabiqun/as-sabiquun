@@ -1,22 +1,26 @@
+import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 import Link from "next/link";
 import { AdminSidebar } from "@/components/admin/admin-sidebar";
 import { adminAccessLevel, getActiveAdmin, getAdminMfaState } from "@/lib/auth";
+import { safeAdminRedirectPath } from "@/lib/auth-redirect";
 import { createClient, isSupabaseConfigured } from "@/lib/supabase/server";
 
 export const metadata = { robots: { index: false, follow: false } };
 
 export default async function AdminLayout({ children }: { children: React.ReactNode }) {
-  if (!isSupabaseConfigured) redirect("/admin/sign-in?error=Admin access is not configured on this deployment.");
+  const next = safeAdminRedirectPath((await headers()).get("x-asb-request-path"));
+  const encodedNext = encodeURIComponent(next);
+  if (!isSupabaseConfigured) redirect(`/admin/sign-in?error=${encodeURIComponent("Admin access is not configured on this deployment.")}&next=${encodedNext}`);
 
   const supabase = await createClient();
   const admin = await getActiveAdmin(supabase);
-  if (!admin) redirect("/admin/sign-in?error=Administrator access is required.");
+  if (!admin) redirect(`/admin/sign-in?error=${encodeURIComponent("Administrator access is required.")}&next=${encodedNext}`);
 
   const mfaState = await getAdminMfaState(supabase);
-  if (mfaState === "challenge") redirect("/admin/mfa/challenge");
-  if (mfaState === "enroll") redirect("/admin/mfa/enroll");
-  if (mfaState !== "verified") redirect("/admin/sign-in?error=We could not verify this administrator session.");
+  if (mfaState === "challenge") redirect(`/admin/mfa/challenge?next=${encodedNext}`);
+  if (mfaState === "enroll") redirect(`/admin/mfa/enroll?next=${encodedNext}`);
+  if (mfaState !== "verified") redirect(`/admin/sign-in?error=${encodeURIComponent("We could not verify this administrator session.")}&next=${encodedNext}`);
 
   const adminEmail = admin.user.email ?? "Administrator";
   const adminName = admin.profile.display_name || adminEmail.split("@")[0];
