@@ -1,0 +1,126 @@
+.shell {
+  --paper: #fffefa;
+  --cream: #f8f3eb;
+  --ink: #080331;
+  --navy: #1b1463;
+  --cobalt: #4865ff;
+  --green: #328a3b;
+  --rule: #d9d3cb;
+  min-height: 100vh;
+  padding: clamp(7.5rem, 11vw, 9.5rem) 1.5rem clamp(4rem, 7vw, 6.5rem);
+  background: var(--cream);
+  color: var(--ink);
+}
+
+.frame { display: grid; grid-template-columns: minmax(0, 1fr) minmax(280px, 350px); width: min(1240px, 100%); margin: 0 auto; overflow: clip; border-radius: 16px; background: var(--navy); box-shadow: 0 28px 75px rgba(8, 3, 49, .14); animation: register-arrival 520ms cubic-bezier(.16, 1, .3, 1) both; }
+.register { min-width: 0; padding: clamp(2.4rem, 5vw, 5.25rem); background: var(--paper); }
+.intro { padding-bottom: clamp(2.5rem, 5vw, 4rem); border-bottom: 1px solid var(--rule); }
+.intro h1 { max-width: 10em; margin: 0; font-family: var(--font-editorial), Georgia, serif; font-size: clamp(3.4rem, 5.5vw, 5.3rem); font-weight: 400; letter-spacing: -.04em; line-height: .94; text-wrap: balance; }
+.intro > p { max-width: 65ch; margin: 1.25rem 0 0; color: #555166; font-size: .95rem; line-height: 1.7; }
+.recordNote { display: flex; align-items: flex-start; gap: .65rem; max-width: 60ch; margin-top: 1.4rem; color: #3d7042; font-size: .76rem; font-weight: 650; line-height: 1.55; }
+.recordNote svg { flex: 0 0 auto; width: 1rem; margin-top: .1rem; stroke-width: 2; }
+
+.form { display: grid; }
+.error { margin: 2rem 0 0; padding: .9rem 1rem; border: 1px solid rgba(179, 64, 47, .34); border-radius: 12px; background: #fff4f1; color: #812f22; font-size: .8rem; font-weight: 650; line-height: 1.5; }
+.section { margin: 0; padding: clamp(2.7rem, 5vw, 4.25rem) 0; border: 0; border-bottom: 1px solid var(--rule); }
+.section legend { display: grid; grid-template-columns: 2.4rem 1fr; gap: .9rem; width: 100%; padding: 0; font-family: var(--font-editorial), Georgia, serif; font-size: clamp(1.8rem, 3vw, 2.35rem); font-weight: 400; letter-spacing: -.025em; line-height: 1; }
+.section legend > span:first-child { padding-top: .2rem; color: var(--cobalt); font-family: var(--font-sans), Arial, sans-serif; font-size: .72rem; font-weight: 800; letter-spacing: .08em; }
+.section legend small { display: block; margin-top: .55rem; color: #656174; font-family: var(--font-sans), Arial, sans-serif; font-size: .78rem; font-weight: 500; letter-spacing: 0; line-height: 1.5; }
+.fieldGrid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1.35rem 1.2rem; margin-top: 2.1rem; }
+.fieldGrid label,
+.selectField { display: grid; gap: .55rem; color: var(--ink); font-size: .76rem; font-weight: 760; }
+.fieldGrid label > span { margin-left: .3rem; color: #686477; font-size: .68rem; font-weight: 500; }
+.fieldGrid input,
+.selectField select { width: 100%; height: 3.35rem; padding: 0 .95rem; border: 1px solid #c8c2cc; border-radius: 10px; outline: 0; background: #fff; color: var(--ink); font: inherit; font-size: .88rem; transition: border-color 140ms ease, box-shadow 140ms ease, background-color 140ms ease; }
+.fieldGrid input::placeholder { color: #747081; opacity: 1; }
+.fieldGrid input:hover,
+.selectField select:hover { border-color: #918b9e; }
+.fieldGrid input:focus-visible,
+.selectField select:focus-visible { border-color: var(--cobalt); box-shadow: 0 0 0 3px rgba(72, 101, 255, .18); }
+.section:disabled { opacity: .72; }
+.section:disabled input,
+.section:disabled select { cursor: wait; }
+.selectField { margin-top: 2.1rem; }
+.serviceHeader { display: flex; align-items: baseline; justify-content: space-between; gap: 1rem; margin-top: 1.7rem; color: var(--ink); font-size: .76rem; }
+.serviceHeader span { color: #686477; font-size: .68rem; }
+.serviceGrid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: .65rem; margin-top: .75rem; }
+.serviceOption { display: grid; grid-template-columns: 1.15rem 1fr; align-items: center; gap: .65rem; min-height: 3.25rem; padding: .65rem .75rem; border: 1px solid #cbc5cf; border-radius: 10px; background: #fff; color: #3f3a50; cursor: pointer; font-size: .72rem; font-weight: 650; line-height: 1.35; transition: border-color 140ms ease, background-color 140ms ease, color 140ms ease; }
+.serviceOption:hover { border-color: #8a83a0; }
+.serviceOption:focus-within { outline: 3px solid rgba(72, 101, 255, .2); outline-offset: 2px; }
+.serviceOption input { position: absolute; width: 1px; height: 1px; overflow: hidden; opacity: 0; }
+.checkMark { display: grid; width: 1.15rem; height: 1.15rem; place-items: center; border: 1px solid #9e98aa; border-radius: 4px; background: #fff; }
+.checkMark svg { width: .78rem; stroke-width: 3; }
+.serviceSelected { border-color: rgba(72, 101, 255, .55); background: #f0f2ff; color: var(--ink); }
+.serviceSelected .checkMark { border-color: var(--cobalt); background: var(--cobalt); color: #fff; }
+.settlementNote { max-width: 66ch; margin: 2rem 0 0; padding: .85rem 1rem; border-radius: 10px; background: #f0eee9; color: #565164; font-size: .74rem; line-height: 1.55; }
+.submitRow { display: flex; align-items: center; justify-content: space-between; gap: 2rem; padding-top: clamp(2.25rem, 4vw, 3.25rem); }
+.submitRow strong { display: block; font-family: var(--font-editorial), Georgia, serif; font-size: 1.35rem; font-weight: 500; }
+.submitRow p { margin: .35rem 0 0; color: #656174; font-size: .72rem; line-height: 1.5; }
+.submitRow button { display: inline-flex; min-height: 3.45rem; flex: 0 0 auto; align-items: center; justify-content: center; gap: .65rem; padding: 0 1.4rem; border: 1px solid var(--cobalt); border-radius: 999px; background: var(--cobalt); color: #fff; cursor: pointer; font: inherit; font-size: .78rem; font-weight: 780; transition: background-color 140ms ease, border-color 140ms ease, transform 140ms ease; }
+.submitRow button svg { width: .95rem; transition: transform 140ms ease; }
+.submitRow button:hover:not(:disabled) { border-color: #3653ef; background: #3653ef; transform: translateY(-1px); }
+.submitRow button:hover:not(:disabled) svg { transform: translateX(3px); }
+.submitRow button:focus-visible { outline: 3px solid rgba(72, 101, 255, .28); outline-offset: 3px; }
+.submitRow button:disabled { cursor: not-allowed; opacity: .5; transform: none; }
+
+.route { min-width: 0; padding: clamp(2.4rem, 4vw, 3.7rem) clamp(1.75rem, 3.5vw, 3rem); color: #fff; }
+.routeInner { position: sticky; top: 7.5rem; }
+.invitationState { display: grid; grid-template-columns: 2.3rem 1fr; align-items: center; gap: .8rem; padding-bottom: 2rem; border-bottom: 1px solid rgba(255, 255, 255, .2); }
+.invitationState > span { display: grid; width: 2.3rem; height: 2.3rem; place-items: center; border: 1px solid rgba(156, 211, 162, .72); border-radius: 50%; color: #9cd3a2; }
+.invitationState svg { width: 1rem; stroke-width: 2.5; }
+.invitationState strong,
+.invitationState small { display: block; }
+.invitationState strong { font-size: .78rem; }
+.invitationState small { margin-top: .2rem; color: rgba(255, 255, 255, .62); font-size: .66rem; line-height: 1.45; }
+.route h2 { max-width: 7em; margin: 2.5rem 0 0; font-family: var(--font-editorial), Georgia, serif; font-size: clamp(2.5rem, 4vw, 3.5rem); font-weight: 400; letter-spacing: -.035em; line-height: .96; text-wrap: balance; }
+.routeLead { margin: 1rem 0 0; color: rgba(255, 255, 255, .66); font-size: .76rem; line-height: 1.55; }
+.routeSteps { display: grid; margin: 2.5rem 0 0; padding: 0; border-top: 1px solid rgba(255, 255, 255, .2); list-style: none; }
+.routeSteps li { display: grid; grid-template-columns: 2.25rem 1fr; gap: .85rem; padding: 1.35rem 0; border-bottom: 1px solid rgba(255, 255, 255, .16); }
+.routeIcon { display: grid; width: 2.25rem; height: 2.25rem; place-items: center; border: 1px solid rgba(255, 255, 255, .32); border-radius: 10px; color: #9cd3a2; }
+.routeIcon svg { width: 1rem; stroke-width: 1.8; }
+.routeSteps small { display: block; color: rgba(255, 255, 255, .48); font-size: .6rem; font-weight: 800; letter-spacing: .09em; }
+.routeSteps strong { display: block; margin-top: .18rem; font-size: .8rem; }
+.routeSteps p { margin: .3rem 0 0; color: rgba(255, 255, 255, .6); font-size: .68rem; line-height: 1.45; }
+.afterSubmit { margin-top: 2.25rem; padding: 1.15rem; border-radius: 12px; background: rgba(255, 255, 255, .08); }
+.afterSubmit strong { font-size: .72rem; }
+.afterSubmit p { margin: .45rem 0 0; color: rgba(255, 255, 255, .66); font-size: .68rem; line-height: 1.55; }
+
+@keyframes register-arrival { from { opacity: .01; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
+
+@media (max-width: 960px) {
+  .frame { grid-template-columns: 1fr; }
+  .route { grid-row: 1; }
+  .routeInner { position: static; }
+  .route h2 { max-width: none; font-size: clamp(2.4rem, 7vw, 3.5rem); }
+  .routeSteps { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .routeSteps li { grid-template-columns: 2.25rem 1fr; border-right: 1px solid rgba(255, 255, 255, .16); border-bottom: 0; padding-right: 1rem; }
+  .routeSteps li:nth-child(2), .routeSteps li:last-child { padding-left: 1rem; }
+  .routeSteps li:last-child { border-right: 0; }
+  .afterSubmit { max-width: 42rem; }
+}
+
+@media (max-width: 680px) {
+  .shell { min-height: 0; padding: 5.9rem 0 0; }
+  .frame { border-radius: 0; box-shadow: none; }
+  .route { padding: 2rem 1.25rem; }
+  .invitationState { padding-bottom: 1.25rem; }
+  .route h2 { max-width: none; margin-top: 1.5rem; font-size: 2.35rem; }
+  .routeLead { margin-top: .55rem; }
+  .routeSteps { grid-template-columns: repeat(3, minmax(0, 1fr)); margin-top: 1.4rem; }
+  .routeSteps li, .routeSteps li:nth-child(2), .routeSteps li:last-child { display: block; min-width: 0; padding: .9rem .65rem; border-right: 1px solid rgba(255, 255, 255, .16); border-bottom: 0; }
+  .routeSteps li:first-child { padding-left: 0; }
+  .routeSteps li:last-child { padding-right: 0; border-right: 0; }
+  .routeIcon, .routeSteps p, .afterSubmit { display: none; }
+  .routeSteps strong { overflow-wrap: anywhere; font-size: .7rem; }
+  .register { padding: 3rem 1.25rem 3.5rem; }
+  .intro h1 { font-size: clamp(3rem, 13vw, 4rem); }
+  .fieldGrid, .serviceGrid { grid-template-columns: 1fr; }
+  .serviceGrid { gap: .55rem; }
+  .submitRow { align-items: stretch; flex-direction: column; }
+  .submitRow button { width: 100%; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .frame { animation: none; }
+  .fieldGrid input, .selectField select, .serviceOption, .submitRow button, .submitRow button svg { transition: none; }
+}
