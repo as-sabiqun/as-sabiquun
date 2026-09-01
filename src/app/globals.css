@@ -608,8 +608,10 @@ button, a, summary { -webkit-tap-highlight-color: transparent; }
 }
 @media (max-width: 860px) {
   .vendor-shell { grid-template-columns: 1fr; }
-  .vendor-sidebar { position: static; height: auto; flex-direction: row; align-items: center; overflow-x: auto; }
+  .vendor-sidebar { position: static; height: auto; flex-direction: row; align-items: center; overflow-x: auto; scrollbar-width: none; }
+  .vendor-sidebar::-webkit-scrollbar { display: none; }
   .vendor-sidebar-nav { grid-auto-flow: column; }
+  .admin-sidebar .vendor-sidebar-link.is-active { order: -1; }
   .vendor-sidebar-profile { margin-top: 0; margin-left: auto; border-top: 0; padding-top: 0; flex-direction: row; align-items: center; }
   .vendor-sidebar-heading { display: none; }
   .vendor-content { padding: 20px; }
